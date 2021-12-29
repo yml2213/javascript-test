@@ -4,28 +4,35 @@
 12.29 完成视频(二)模块 
 平台: node.js   青龙
 软件：  走财运app (看视频脚本5个视频)
-收益：  5*80=400能量   
+收益：  测试中   
 注意事项 ： 一定要填写 hd bd 
 =============变量=============
-export zzkdhd = '{"Authorization":"", "User-Agent":""}'
-export zzkdbd = ''
+export zcyhd = '{"Authorization":"", "User-Agent":""}'
+export zcybd1 = ''          //视频1 bd
+export zcybd2 = ''          //视频2 bd
 =============变量获取==========
 圈x为例   开启http抓包
 打开app,观看一个视频,然后搜索关键字  step-money.quanxiangweilai.cn/api/gain_common_bonus  
-即可找到 Authorization , User-Agent ;   
-bd是请求体-文本查看里面的
+即可找到 Authorization , User-Agent ;
+bd是 请求体-文本 查看里面的
+视频1  视频2 的 bd 是不同的,请自己抓取后按照格式填写
 */
 
 require('dotenv').config(); 
 const $ = new Env('走财运');
 const notify = $.isNode() ? require('./sendNotify') : ''; 
+
+/* 
 let status;
 status = (status = ($.getval(`zcystatus`) || "1")) > 1 ? `${status}` : "";    // 账号扩展字符       
+ */
+
 let zcyhdArr = [];     //数组 Array
 let zcyhd = { "Authorization": "", "User-Agent": "" };
-let zcyhdstr = $.isNode() ? (process.env.zcyhd ? process.env.zcyhd : "") : ($.getdata('zcyhd') ? $.getdata('zcyhd') : "");   //字符串 str/String 
+// let zcyhdstr = $.isNode() ? (process.env.zcyhd ? process.env.zcyhd : "") : ($.getdata('zcyhd') ? $.getdata('zcyhd') : "");   //字符串 str/String 
 let zcyhds = "";
-let zcybody = process.env.zcybd;
+let zcybody1 = process.env.zcybd1;      //视频1 bd
+let zcybody2 = process.env.zcybd2;      //视频2 bd
 let host=`https://step-money.quanxiangweilai.cn`;
 
 //开始运行
@@ -58,30 +65,32 @@ let host=`https://step-money.quanxiangweilai.cn`;
   .catch((e) => $.logErr(e))
   .finally(() => $.done())
 
-
+/* 
 console.log(`下面是hd`);
 console.log(zcyhd);
 console.log(`======================================================`);
 console.log(`下面是hdarr`);
 console.log(zcyhdArr);
 console.log(`======================================================`);
-
+ */
 
 
 
 //要执行的代码
 async function byxiaopeng() {
-  // await dutang() 
-  await $.wait(2000)
-  await sp2() 
+  // await dutang(); 
+  await $.wait(2000);        // 延时 2000ms  也就是2秒
+  await sp1();
+  await $.wait(2000);        // 延时 2000ms  也就是2秒
+  await sp2();
+
 }
 
 
-
-
-// https://step-money.quanxiangweilai.cn/api/gain_common_bonus
-//抽奖
-function sp2(timeout = 0) {
+// 执行视频一 任务  
+function sp1(timeout = 0) {
+  
+    
   return new Promise((resolve) => {
     let url = {
       url: `${host}/api/gain_common_bonus`,
@@ -90,25 +99,72 @@ function sp2(timeout = 0) {
         'User-Agent': JSON.parse(zcyhd)['User-Agent']
         
       },
-      body: zcybody
+      body: zcybody1
     }
 
-    console.log(url);
+    // console.log(url);
 
 
     $.post(url, async (err, resp, data) => {
       try {
 
-        console.log(`输出data开始===================`);
-        console.log(data);
-        console.log(`输出data结束===================`);
+        // console.log(`输出data开始===================`);
+        // console.log(data);
+        // console.log(`输出data结束===================`);
+
+        
+        result = JSON.parse(data);     
+        if (result.error_code == 0) {
+          $.log(`\n【看视频(一)】：${result.message} 获得能量${result.data.money}`)
+          await $.wait(60000)        //// 延时 1分钟
+          await sp1();
+        } else {
+          $.log(`\n【看视频(一】：失败,${result.message}`)
+        }
+
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve()
+      }
+    }, timeout)
+
+  })
+
+}
+
+
+
+// 看视频2 
+function sp2(timeout = 0) {
+
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_common_bonus`,
+      headers: {
+        'Authorization': JSON.parse(zcyhd).Authorization,
+        'User-Agent': JSON.parse(zcyhd)['User-Agent']
+        
+      },
+      body: zcybody2
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+        // console.log(`输出data开始===================`);
+        // console.log(data);
+        // console.log(`输出data结束===================`);
 
         
         result = JSON.parse(data);     
         if (result.error_code == 0) {
           $.log(`\n【看视频(二)】：${result.message} 获得能量${result.data.money}`)
-          await $.wait(2000)
-          // await start()
+          await $.wait(2000);
+          await sp2();
         } else {
           $.log(`\n【看视频(二】：失败,${result.message}`)
         }
@@ -123,6 +179,7 @@ function sp2(timeout = 0) {
 
 
   })
+
 }
 
 
