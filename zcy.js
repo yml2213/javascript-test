@@ -33,7 +33,7 @@ let zcyhd = { "Authorization": "", "User-Agent": "" };
 let zcyhds = "";
 let zcybody1 = process.env.zcysp1;      //视频1      bd
 let zcybody2 = process.env.zcysp2;      //视频2      bd
-// let zcybody3 = process.env.zcybs;       //1000步数   bd
+let zcybody3 = process.env.zcybs;       //步数测试   bd
 
 
 
@@ -85,9 +85,9 @@ console.log(`======================================================`);
 async function byxiaopeng() {
   await wyy(); 
   await $.wait(2000);        // 延时 2000ms  也就是2秒
-  await sp1();
+  // await sp1();
   await $.wait(2000);        // 延时 2000ms  也就是2秒
-  await sp2();
+  // await sp2();
   await $.wait(2000);        // 延时 2000ms  也就是2秒
   await bs();
 
@@ -211,56 +211,65 @@ function sp2(timeout = 0) {
 // 步数任务  1000步数  
 // https://step-money.quanxiangweilai.cn/api/gain_bonus
 
-// account_id=147150&bonus_type=bonus&gain_category=energy&sign=0ac7725635e7cf59be5bafd11e5cd126&step_level=1000     //自己的步数
-// account_id=147150&bonus_type=bonus&gain_category=energy&sign=9e19c74dfc446ef1cf7f32454b5860b0&step_level=2000     //自己的步数
-// account_id=147150&bonus_type=bonus&gain_category=energy&sign=ada9a8fbdd5e1311f6ce8093350189f2&step_level=3000     //自己的步数  12-24
+// account_id=147150&bonus_type=bonus&gain_category=energy&sign=0ac7725635e7cf59be5bafd11e5cd126&step_level=1000     // 自己的步数
+// account_id=147150&bonus_type=bonus&gain_category=energy&sign=9e19c74dfc446ef1cf7f32454b5860b0&step_level=2000     // 自己的步数
+// account_id=147150&bonus_type=bonus&gain_category=energy&sign=ada9a8fbdd5e1311f6ce8093350189f2&step_level=3000     // 自己的步数  12-24
 
+// account_id=147150&bonus_type=bonus&gain_category=energy&sign=5665010e87fd9c9225995962f818c261&step_level=6000     // 自己的步数 
+// account_id=147150&bonus_type=bonus&gain_category=energy&sign=648f77721ef619b324818538544f8205&step_level=8000     // 自己的步数
+
+// 0e1d7d1a520ec74180ea044a53ebc928   7895c5034a1a1942474f3720bae5d8f6 7ea9628b6dcbe6c2a29b341a14b5e08f  7421d388ee8e22831d70a0ccf46d3ad9
+// fe9d4d1266ab18b969559a9dc106c80d  b6559221984e02f41b53325d820ae16f
+
+// account_id=147271&bonus_type=bonus&gain_category=energy&geetest_challenge=61dce5afec3a22189a4997af0f142b3054&geetest_seccode=7f7b04457d08bf8e471bdaecc8dff0e5%7Cjordan&geetest_validate=7f7b04457d08bf8e471bdaecc8dff0e5&sign=ac7b48afc66f62506ec69c8ab226ff07&step_level=1000
+
+// account_id=147271&bonus_type=bonus&gain_category=energy&sign=b39467b361f779e17b9a680ffd7846e5&step_level=3000
 // account_id=147271&bonus_type=bonus&gain_category=energy&sign=942af1196677c20e3b28122ef0b8e243&step_level=5000     //他 
 
 function bs(timeout = 0) {
-	let m = 'account_id=147150&bonus_type=bonus&gain_category=energy&sign=0ac7725635e7cf59be5bafd11e5cd126&step_level=';
-	for (let i = 1000; i < 20000; i += 1000) {
+  // let m = 'account_id=147150&bonus_type=bonus&gain_category=energy&sign=0ac7725635e7cf59be5bafd11e5cd126&step_level=';
+	// let m = 'account_id=147150';
+  
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybody3
+    }
+
+    console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      console.log(`输出data开始===================`);
+      console.log(data);
+      console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        await $.wait(660000);      //延迟11分钟
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
 	
-		let n = (m + i);
-		console.log(n);
-		return new Promise((resolve) => {
-		let url = {
-		url: `${host}/api/gain_bonus`,
-		headers: {
-		'Authorization': JSON.parse(zcyhd).Authorization,
-		'User-Agent': JSON.parse(zcyhd)['User-Agent']
-		},
-		body: n
-		}
-	
-		// console.log(url);
-	
-	
-		$.post(url, async (err, resp, data) => {
-		try {
-	
-		// console.log(`输出data开始===================`);
-		// console.log(data);
-		// console.log(`输出data结束===================`);
-	
-		
-		result = JSON.parse(data);     
-		if (result.error_code == 0) {
-			$.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-			await $.wait(660000);      //延迟11分钟
-		} else {
-			$.log(`\n【🎉 恭喜个屁 🎉】你的 ${i} 步失败🙅🏻了鸭,可能是:${result.message}`)
-		}
-	
-		} catch (e) {
-		$.logErr(e, resp);
-		} finally {
-		resolve()
-		}
-		}, timeout)
-		})
-	
-	}
 }
 
 
