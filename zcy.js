@@ -1,10 +1,10 @@
 /*
 邀请码:  XWXW0K   
 感谢填写(虽然软件邀请机制不太好)
-12.29 完成视频(一)(二)模块  待测试 
+12.29 完成视频(一)(二)模块  待000步数 
 平台: node.js   青龙
 软件：  走财运app 
-收益：  测试中   
+收益：  000步数中   
 注意事项 ： 一定要填写 hd bd 
 =============变量=============
 export zcyhd = '{"Authorization":"", "User-Agent":""}'
@@ -31,16 +31,35 @@ let zcyhdArr = [];     //数组 Array
 let zcyhd = { "Authorization": "", "User-Agent": "" };
 // let zcyhdstr = $.isNode() ? (process.env.zcyhd ? process.env.zcyhd : "") : ($.getdata('zcyhd') ? $.getdata('zcyhd') : "");   //字符串 str/String 
 let zcyhds = "";
-let zcybody1 = process.env.zcysp1;      //视频1      bd
-let zcybody2 = process.env.zcysp2;      //视频2      bd
-let zcybody3 = process.env.zcybs;       //步数测试   bd
+let zcybody1 = process.env.zcysp1;        //视频1      
+let zcybody2 = process.env.zcysp2;        //视频2      
+let zcybs1 = process.env.zcybs1;          //1000步数   
+let zcybs2 = process.env.zcybs2;          //2000步数   
+let zcybs3 = process.env.zcybs3;          //3000步数   
+let zcybs4 = process.env.zcybs4;          //4000步数   
+let zcybs5 = process.env.zcybs5;          //5000步数   
+let zcybs6 = process.env.zcybs6;          //6000步数   
+let zcybs7 = process.env.zcybs7;          //7000步数   
+let zcybs8 = process.env.zcybs8;          //8000步数   
+let zcybs9 = process.env.zcybs9;          //9000步数   
+let zcybs10 = process.env.zcybs10;        //10000步数   
+let zcybs11 = process.env.zcybs11;        //11000步数   
+let zcybs12 = process.env.zcybs12;        //12000步数   
+let zcybs13 = process.env.zcybs13;        //13000步数   
+let zcybs14 = process.env.zcybs14;        //14000步数   
+let zcybs15 = process.env.zcybs15;        //15000步数   
+let zcybs16 = process.env.zcybs16;        //16000步数   
+let zcybs17 = process.env.zcybs17;        //17000步数   
+let zcybs18 = process.env.zcybs18;        //18000步数   
+let zcybs19 = process.env.zcybs19;        //19000步数   
+let zcybs20 = process.env.zcybs20;        //20000步数   
 
 
 
 
 let host=`https://step-money.quanxiangweilai.cn`;
 
-//开始运行
+//开始运行 
 
 !(async () => {
   if (process.env.zcyhd && process.env.zcyhd.indexOf('@') > -1) {
@@ -81,7 +100,7 @@ console.log(`======================================================`);
 
 
 
-//要执行的代码
+//这里是要执行的代码     ======如果有你不需要的  请自行注释  使用 // 注释就行========
 async function byxiaopeng() {
   await wyy(); 
   await $.wait(2000);        // 延时 2000ms  也就是2秒
@@ -89,7 +108,48 @@ async function byxiaopeng() {
   await $.wait(2000);        // 延时 2000ms  也就是2秒
   // await sp2();
   await $.wait(2000);        // 延时 2000ms  也就是2秒
-  await bs();
+  await bs1();
+  await $.wait(660000);      //延迟11分钟
+  await bs2();
+  await $.wait(660000);      //延迟11分钟
+  await bs3();
+  await $.wait(660000);      //延迟11分钟
+  await bs4();
+  await $.wait(660000);      //延迟11分钟
+  await bs5();
+  await $.wait(660000);      //延迟11分钟
+  await bs6();
+  await $.wait(660000);      //延迟11分钟
+  await bs7();
+  await $.wait(660000);      //延迟11分钟
+  await bs8();
+  await $.wait(660000);      //延迟11分钟
+  await bs9();
+  await $.wait(660000);      //延迟11分钟
+  await bs10();
+  await $.wait(660000);      //延迟11分钟
+  await bs11();
+  await $.wait(660000);      //延迟11分钟
+  await bs12();
+  await $.wait(660000);      //延迟11分钟
+  await bs13();
+  await $.wait(660000);      //延迟11分钟
+  await bs14();
+  await $.wait(660000);      //延迟11分钟
+  await bs15();
+  await $.wait(660000);      //延迟11分钟
+  await bs16();
+  await $.wait(660000);      //延迟11分钟
+  await bs17();
+  await $.wait(660000);      //延迟11分钟
+  await bs18();
+  await $.wait(660000);      //延迟11分钟
+  await bs19();
+  await $.wait(660000);      //延迟11分钟
+  await bs20();
+  await $.wait(2000);        // 延时 2000ms  也就是2秒
+
+
 
 
 
@@ -145,11 +205,11 @@ function sp1(timeout = 0) {
         
         result = JSON.parse(data);     
         if (result.error_code == 0) {
-          $.log(`\n【看视频(一)】：${result.message} 获得能量${result.data.money}`)
+          $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】看视频(一):${result.message} , 获得能量${result.data.money}`)
           await $.wait(60000)        //// 延时 1分钟
           await sp1();
         } else {
-          $.log(`\n【看视频(一】：失败,${result.message}`)
+          $.log(`\n【🎉 恭喜个屁 🎉】:看视频(一):失败🙅🏻了呢,可能是${result.message}`)
         }
       } catch (e) {
         $.logErr(e, resp);
@@ -191,11 +251,11 @@ function sp2(timeout = 0) {
         
         result = JSON.parse(data);     
         if (result.error_code == 0) {
-          $.log(`\n【看视频(二)】：${result.message} 获得能量${result.data.money}`)
+          $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】看视频(二):${result.message} 获得能量${result.data.money}`)
           await $.wait(2000);
           await sp2();
         } else {
-          $.log(`\n【看视频(二】：失败,${result.message}`)
+          $.log(`\n【🎉 恭喜个屁 🎉】:看视频(二):失败🙅🏻了呢,可能是${result.message}`)
         }
 
       } catch (e) {
@@ -213,23 +273,9 @@ function sp2(timeout = 0) {
 
 // account_id=147150&bonus_type=bonus&gain_category=energy&sign=0ac7725635e7cf59be5bafd11e5cd126&step_level=1000     // 自己的步数
 // account_id=147150&bonus_type=bonus&gain_category=energy&sign=9e19c74dfc446ef1cf7f32454b5860b0&step_level=2000     // 自己的步数
-// account_id=147150&bonus_type=bonus&gain_category=energy&sign=ada9a8fbdd5e1311f6ce8093350189f2&step_level=3000     // 自己的步数  12-24
 
-// account_id=147150&bonus_type=bonus&gain_category=energy&sign=5665010e87fd9c9225995962f818c261&step_level=6000     // 自己的步数 
-// account_id=147150&bonus_type=bonus&gain_category=energy&sign=648f77721ef619b324818538544f8205&step_level=8000     // 自己的步数
 
-// 0e1d7d1a520ec74180ea044a53ebc928   7895c5034a1a1942474f3720bae5d8f6 7ea9628b6dcbe6c2a29b341a14b5e08f  7421d388ee8e22831d70a0ccf46d3ad9
-// fe9d4d1266ab18b969559a9dc106c80d  b6559221984e02f41b53325d820ae16f
-
-// account_id=147271&bonus_type=bonus&gain_category=energy&geetest_challenge=61dce5afec3a22189a4997af0f142b3054&geetest_seccode=7f7b04457d08bf8e471bdaecc8dff0e5%7Cjordan&geetest_validate=7f7b04457d08bf8e471bdaecc8dff0e5&sign=ac7b48afc66f62506ec69c8ab226ff07&step_level=1000
-
-// account_id=147271&bonus_type=bonus&gain_category=energy&sign=b39467b361f779e17b9a680ffd7846e5&step_level=3000
-// account_id=147271&bonus_type=bonus&gain_category=energy&sign=942af1196677c20e3b28122ef0b8e243&step_level=5000     //他 
-
-function bs(timeout = 0) {
-  // let m = 'account_id=147150&bonus_type=bonus&gain_category=energy&sign=0ac7725635e7cf59be5bafd11e5cd126&step_level=';
-	// let m = 'account_id=147150';
-  
+function bs1(timeout = 0) {
   // console.log(n);
   return new Promise((resolve) => {
     let url = {
@@ -238,24 +284,117 @@ function bs(timeout = 0) {
       'Authorization': JSON.parse(zcyhd).Authorization,
       'User-Agent': JSON.parse(zcyhd)['User-Agent']
       },
-      body: zcybody3
+      body: zcybs1
     }
 
-    console.log(url);
+    // console.log(url);
 
 
     $.post(url, async (err, resp, data) => {
       try {
 
-      console.log(`输出data开始===================`);
-      console.log(data);
-      console.log(`输出data结束===================`);
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
 
       
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        await $.wait(660000);      //延迟11分钟
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】:你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+
+function bs2(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs2
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+function bs3(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs3
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
         await $.wait(2000);      //延迟 2 秒
@@ -273,7 +412,778 @@ function bs(timeout = 0) {
 }
 
 
+function bs4(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs4
+    }
 
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+function bs5(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs5
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+
+function bs6(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs6
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+function bs7(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs7
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+
+function bs8(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs8
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+function bs9(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs9
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+
+function bs10(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs10
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+function bs11(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs11
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+
+function bs12(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs12
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+function bs13(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs13
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+
+function bs14(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs14
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+function bs15(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs15
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+
+function bs16(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs16
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+function bs17(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs17
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+
+function bs18(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs18
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+function bs19(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs19
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
+
+
+function bs20(timeout = 0) {
+  // console.log(n);
+  return new Promise((resolve) => {
+    let url = {
+      url: `${host}/api/gain_bonus`,
+      headers: {
+      'Authorization': JSON.parse(zcyhd).Authorization,
+      'User-Agent': JSON.parse(zcyhd)['User-Agent']
+      },
+      body: zcybs20
+    }
+
+    // console.log(url);
+
+
+    $.post(url, async (err, resp, data) => {
+      try {
+
+      // console.log(`输出data开始===================`);
+      // console.log(data);
+      // console.log(`输出data结束===================`);
+
+      
+      result = JSON.parse(data);     
+      if (result.error_code == 0) {
+        $.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+        // await $.wait(660000);      //延迟11分钟
+        await $.wait(2000);      //延迟 2 秒
+        
+      } else {
+        $.log(`\n【🎉 恭喜个屁 🎉】你领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
+        await $.wait(2000);      //延迟 2 秒
+      }
+
+      } catch (e) {
+      $.logErr(e, resp);
+      } finally {
+      resolve()
+      }
+    }, timeout)
+    })
+    
+	
+}
 
 
 
