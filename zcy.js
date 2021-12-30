@@ -31,8 +31,13 @@ let zcyhdArr = [];     //数组 Array
 let zcyhd = { "Authorization": "", "User-Agent": "" };
 // let zcyhdstr = $.isNode() ? (process.env.zcyhd ? process.env.zcyhd : "") : ($.getdata('zcyhd') ? $.getdata('zcyhd') : "");   //字符串 str/String 
 let zcyhds = "";
-let zcybody1 = process.env.zcybd1;      //视频1 bd
-let zcybody2 = process.env.zcybd2;      //视频2 bd
+let zcybody1 = process.env.zcysp1;      //视频1      bd
+let zcybody2 = process.env.zcysp2;      //视频2      bd
+// let zcybody3 = process.env.zcybs;       //1000步数   bd
+
+
+
+
 let host=`https://step-money.quanxiangweilai.cn`;
 
 //开始运行
@@ -78,19 +83,45 @@ console.log(`======================================================`);
 
 //要执行的代码
 async function byxiaopeng() {
-  // await dutang(); 
+  await wyy(); 
   await $.wait(2000);        // 延时 2000ms  也就是2秒
   await sp1();
   await $.wait(2000);        // 延时 2000ms  也就是2秒
   await sp2();
+  await $.wait(2000);        // 延时 2000ms  也就是2秒
+  await bs();
+
+
 
 }
 
 
+
+
+//每日网抑云
+function wyy(timeout = 0) {
+  return new Promise((resolve) => {
+      let url = {
+        url: `https://tenapi.cn/comment/`
+      }
+      $.get(url, async (err, resp, data) => {
+          try {
+            data = JSON.parse(data)
+            $.log(`\n【网抑云时间】: ${data.data.content}  by--${data.data.song}`);
+  
+          } catch (e) {
+              $.logErr(e, resp);
+          } finally {
+              resolve()
+          }
+      }, timeout)
+  })
+}
+ 
+
+
 // 执行视频一 任务  
 function sp1(timeout = 0) {
-  
-    
   return new Promise((resolve) => {
     let url = {
       url: `${host}/api/gain_common_bonus`,
@@ -111,7 +142,6 @@ function sp1(timeout = 0) {
         // console.log(`输出data开始===================`);
         // console.log(data);
         // console.log(`输出data结束===================`);
-
         
         result = JSON.parse(data);     
         if (result.error_code == 0) {
@@ -121,7 +151,6 @@ function sp1(timeout = 0) {
         } else {
           $.log(`\n【看视频(一】：失败,${result.message}`)
         }
-
       } catch (e) {
         $.logErr(e, resp);
       } finally {
@@ -175,13 +204,64 @@ function sp2(timeout = 0) {
         resolve()
       }
     }, timeout)
-
-
-
   })
-
 }
 
+
+// 步数任务  1000步数  
+// https://step-money.quanxiangweilai.cn/api/gain_bonus
+
+// account_id=147150&bonus_type=bonus&gain_category=energy&sign=0ac7725635e7cf59be5bafd11e5cd126&step_level=1000     //自己的步数
+// account_id=147150&bonus_type=bonus&gain_category=energy&sign=9e19c74dfc446ef1cf7f32454b5860b0&step_level=2000     //自己的步数
+// account_id=147150&bonus_type=bonus&gain_category=energy&sign=ada9a8fbdd5e1311f6ce8093350189f2&step_level=3000     //自己的步数  12-24
+
+// account_id=147271&bonus_type=bonus&gain_category=energy&sign=942af1196677c20e3b28122ef0b8e243&step_level=5000     //他 
+
+function bs(timeout = 0) {
+	let m = 'account_id=147150&bonus_type=bonus&gain_category=energy&sign=0ac7725635e7cf59be5bafd11e5cd126&step_level=';
+	for (let i = 1000; i < 20000; i += 1000) {
+	
+		let n = (m + i);
+		console.log(n);
+		return new Promise((resolve) => {
+		let url = {
+		url: `${host}/api/gain_bonus`,
+		headers: {
+		'Authorization': JSON.parse(zcyhd).Authorization,
+		'User-Agent': JSON.parse(zcyhd)['User-Agent']
+		},
+		body: n
+		}
+	
+		// console.log(url);
+	
+	
+		$.post(url, async (err, resp, data) => {
+		try {
+	
+		// console.log(`输出data开始===================`);
+		// console.log(data);
+		// console.log(`输出data结束===================`);
+	
+		
+		result = JSON.parse(data);     
+		if (result.error_code == 0) {
+			$.log(`\n【🎉🎉🎉 恭喜你鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
+			await $.wait(660000);      //延迟11分钟
+		} else {
+			$.log(`\n【🎉 恭喜个屁 🎉】你的 ${i} 步失败🙅🏻了鸭,可能是:${result.message}`)
+		}
+	
+		} catch (e) {
+		$.logErr(e, resp);
+		} finally {
+		resolve()
+		}
+		}, timeout)
+		})
+	
+	}
+}
 
 
 
