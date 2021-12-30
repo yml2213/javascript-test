@@ -136,18 +136,18 @@ async function byxiaopeng() {
   await $.wait(660000);      //延迟11分钟
   await bs14();
   await $.wait(660000);      //延迟11分钟
-  await bs15();
-  await $.wait(660000);      //延迟11分钟
-  await bs16();
-  await $.wait(660000);      //延迟11分钟
-  await bs17();
-  await $.wait(660000);      //延迟11分钟
-  await bs18();
-  await $.wait(660000);      //延迟11分钟
-  await bs19();
-  await $.wait(660000);      //延迟11分钟
-  await bs20();
-  await $.wait(2000);        // 延时 2000ms  也就是2秒
+  // await bs15();
+  // await $.wait(660000);      //延迟11分钟
+  // await bs16();
+  // await $.wait(660000);      //延迟11分钟
+  // await bs17();
+  // await $.wait(660000);      //延迟11分钟
+  // await bs18();
+  // await $.wait(660000);      //延迟11分钟
+  // await bs19();
+  // await $.wait(660000);      //延迟11分钟
+  // await bs20();
+  // await $.wait(2000);        // 延时 2000ms  也就是2秒
 
 
 
