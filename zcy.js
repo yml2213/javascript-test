@@ -1,22 +1,39 @@
 /*
 邀请码:  XWXW0K   
-感谢填写(虽然软件邀请机制不太好)
+感谢填写
 12.29 完成视频(一)(二)模块  待000步数 
-平台: node.js   青龙
-软件：  走财运app 
-收益：  000步数中   
+平台:   青龙
+软件:  走财运app 
+收益:  1000能量等于0.1元 每天不到1元   
 注意事项 ： 一定要填写 hd bd 
 =============变量=============
-export zcyhd = '{"Authorization":"", "User-Agent":""}'
-export zcybd1 = ''
-export zcybd2 = ''
+1. export zcyhd = '{"Authorization":"", "User-Agent":""}'
+2. export zcysp1 = ''
+3. export zcysp2 = ''
+4. export zcynl1 = ''
+5. export zcynl2 = ''
+5. export zcybs1 = ''
+6. export zcybs2 = ''
+7. export zcybs3 = ''
+......
+export zcybs20 = ''
+=============变量解释==========
+sp:视频类变量
+nl:能量类变量
+bs:步数类变量
+其中第一条属于必填,其他根据自己需要填写;
+sp1 ,sp2  对应我的界面的视频一,二  
+nl1 ,nl2  对应我的界面的能量
+bs1 ,bs2 -- bs20  对应 健步 板块中的步数,非常简单,很好理解
+第一条是基础,其他均配合第一条,使用,可按需抓包使用
+
 =============变量获取==========
 可以使用圈x(需要把去广告功能关闭)  也可以使用 steam , thor 等工具
 圈x为例   开启http抓包
-打开app,观看一个视频,然后搜索关键字  step-money.quanxiangweilai.cn/api/gain_common_bonus  
+打开app,观看一个视频,然后搜索关键字  step-money.quanxiangweilai.cn
 即可找到 Authorization , User-Agent ;
 bd是 请求体-文本 查看里面的
-视频1  视频2 的 bd 是不同的,请自己抓取后按照格式填写
+视频1  视频2 等的 bd 是不同的,请自己抓取后按照格式填写
 */
 
 const $ = new Env('走财运');
