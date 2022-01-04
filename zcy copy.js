@@ -110,7 +110,7 @@ let zcybs20 = process.env.zcybs20;        //20000步数
     zcyhd = zcyhdArr[k]
     $.index = k + 1;
     console.log(`\n开始【走财运账户 ${$.index}】`)
-    await byxiaopeng()
+    await byyml()
   }
   
   
@@ -120,63 +120,50 @@ let zcybs20 = process.env.zcybs20;        //20000步数
   .catch((e) => $.logErr(e))
   .finally(() => $.done())
 
-
+/* 
+console.log(`下面是hd`);
+console.log(zcyhd);
+console.log(`======================================================`);
+console.log(`下面是hdarr`);
+console.log(zcyhdArr);
+console.log(`======================================================`);
+ */
 
 
 // 1000 ms == 1 s    60000 ms == 1 min    600000 ms == 10 min
-//这里是要执行的代码     ====== 如果有您不需要的  请自行注释  使用 // 注释就行 ========   
-async function byxiaopeng() {
+//这里是要执行的代码     ======如果有您不需要的  请自行注释  使用 // 注释就行========   
+async function byyml() {
   await wyy(); 
   await $.wait(2000);        // 延迟 2000ms  也就是2秒
-  await sp1();
-  await $.wait(60000);        // 延迟 1分钟
+  // await sp1();
+  // await $.wait(60000);        // 延迟 1分钟
   await sp2();
-  await $.wait(60000);        // 延迟1分钟
+  // await $.wait(60000);        // 延迟1分钟
   // await sp3();
   // await $.wait(60000);        // 延迟1分钟
 
   // await nl1();
   // await $.wait(60000);       // 延迟1分钟
   // await bs1();
-  // await $.wait(780000);      //延迟13分钟
   // await bs2();
-  // await $.wait(780000);      //延迟13分钟
   // await bs3();
-  // await $.wait(780000);      //延迟13分钟
   // await bs4();
-  // await $.wait(780000);      //延迟13分钟
   // await bs5();
-  // await $.wait(780000);      //延迟13分钟
   // await bs6();
-  // await $.wait(780000);      //延迟13分钟
   // await bs7();
-  // await $.wait(780000);      //延迟13分钟
   // await bs8();
-  // await $.wait(780000);      //延迟13分钟
   // await bs9();
-  // await $.wait(780000);      //延迟13分钟
   // await bs10();
-  // await $.wait(780000);      //延迟13分钟
   // await bs13();
-  // await $.wait(780000);      //延迟13分钟
   // await bs12();
-  // await $.wait(780000);      //延迟13分钟
   // await bs13();
-  // await $.wait(780000);      //延迟13分钟
   // await bs14();
-  // await $.wait(780000);      //延迟13分钟
   // await bs15();
-  // await $.wait(780000);      //延迟13分钟
   // await bs16();
-  // await $.wait(780000);      //延迟13分钟
   // await bs17();
-  // await $.wait(780000);      //延迟13分钟
   // await bs18();
-  // await $.wait(780000);      //延迟13分钟
   // await bs19();
-  // await $.wait(780000);      //延迟13分钟
   // await bs20();
-  // await $.wait(2000);        // 延时 2000ms  也就是2秒
 
 
 
@@ -371,7 +358,7 @@ function nl1(timeout = 0) {
         if (result.error_code == 0) {
           $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】每天一次能量:${result.message} ,获得能量${result.data.money}`)
           await $.wait(2000);
-          // await nl1();
+          await sp2();
         } else {
           $.log(`\n【🎉 恭喜个屁 🎉】:每天一次能量:失败🙅🏻了呢,可能是${result.message}`)
         }
@@ -422,7 +409,9 @@ function bs1(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`);
-        await $.wait(2000);      //延迟 2 秒
+        // await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】:您领取1000步数能量失败🙅🏻了鸭,可能是:${result.message}`);
@@ -467,7 +456,8 @@ function bs2(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取2000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -511,7 +501,8 @@ function bs3(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取3000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -556,7 +547,8 @@ function bs4(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取4000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -600,7 +592,8 @@ function bs5(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取5000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -645,7 +638,8 @@ function bs6(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取6000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -689,8 +683,8 @@ function bs7(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取7000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -735,8 +729,8 @@ function bs8(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取8000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -780,8 +774,8 @@ function bs9(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取9000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -826,8 +820,8 @@ function bs10(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取10000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -871,8 +865,8 @@ function bs11(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取11000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -917,8 +911,8 @@ function bs12(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取12000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -962,8 +956,8 @@ function bs13(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取13000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -1008,8 +1002,8 @@ function bs14(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取14000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -1053,8 +1047,8 @@ function bs15(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取15000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -1099,8 +1093,8 @@ function bs16(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取16000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -1144,8 +1138,8 @@ function bs17(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取17000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -1190,8 +1184,8 @@ function bs18(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取18000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -1235,8 +1229,8 @@ function bs19(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取19000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
@@ -1281,8 +1275,8 @@ function bs20(timeout = 0) {
       result = JSON.parse(data);     
       if (result.error_code == 0) {
         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】:${result.message} 获得能量${result.data.money}`)
-        // await $.wait(780000);      //延迟13分钟
-        await $.wait(2000);      //延迟 2 秒
+        await $.wait(780000);      //延迟13分钟
+        // await $.wait(2000);      //延迟 2 秒
         
       } else {
         $.log(`\n【🎉 恭喜个屁 🎉】您领取20000步数能量失败🙅🏻了鸭,可能是:${result.message}`)
