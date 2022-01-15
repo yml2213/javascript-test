@@ -7,8 +7,8 @@
 收益:  1000能量等于0.1元 每天不到1元   
 注意事项 ： 一定要认真阅读以下内容
 
-
-cron "30 6,12,22 * * *" script-path=https://raw.githubusercontent.com/moposmall/Script/main/Me/jx_cfd_exchange.js,tag=京喜财富岛兑换提醒
+[Script]
+cron "8 6 * * *" script-path=https://raw.githubusercontent.com/yml2213/javascript/master/zcy.js,tag=走财运
 =============变量=============
 1. export zcyhd='{"Authorization":"", "User-Agent":""}'
 2. export zcysp1=''
@@ -113,7 +113,7 @@ let zcybs20 = process.env.zcybs20;        //20000步数
     zcyhd = zcyhdArr[k]
     $.index = k + 1;
     console.log(`\n开始【走财运账户 ${$.index}】`)
-    await byxiaopeng()
+    await yml()
   }
   
   
@@ -128,7 +128,7 @@ let zcybs20 = process.env.zcybs20;        //20000步数
 
 // 1000 ms == 1 s    60000 ms == 1 min    600000 ms == 10 min
 //这里是要执行的代码     ====== 如果有您不需要的  请自行注释  使用 // 注释就行 ========   
-async function byxiaopeng() {
+async function yml() {
   await wyy(); 
   await $.wait(2000);        // 延迟 2000ms  也就是2秒
   await sp1();
@@ -197,7 +197,7 @@ function sp1(timeout = 0) {
       url: `${host}/api/gain_common_bonus`,
       headers: {
         'Authorization': JSON.parse(zcyhd).Authorization,
-        'User-Agent': JSON.parse(zcyhd)['User-Agent']
+        'User-Agent': JSON.parse(zcyhd)['User-Agent'],
         
       },
       body: zcybody1

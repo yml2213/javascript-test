@@ -141,7 +141,7 @@ if ($.isNode()) {
 			// await giftRain_getcoins();
 			// await showmsg();
 
-			
+
 
 		}
 	}
@@ -188,27 +188,27 @@ async function control() {
 
 // 邀请
 function invitation() {
-return new Promise((resolve, reject) => {
-  let invitatonurl ={
-    url: `https://api.yuncheapp.cn/pearl-incentive/api/v1/task/invite/verify?${kkdheader}`,
-    headers: {
-	      Cookie: kkdcookie,
-	      'Connection': 'keep-alive',
-	      'Content-Type': 'application/json',
-	      'Host': 'api.yuncheapp.cn',
-	      'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
-	  },
-     body:'{"code": "JFN4M3"}'
+	return new Promise((resolve, reject) => {
+		let invitatonurl = {
+			url: `https://api.yuncheapp.cn/pearl-incentive/api/v1/task/invite/verify?${kkdheader}`,
+			headers: {
+				Cookie: kkdcookie,
+				'Connection': 'keep-alive',
+				'Content-Type': 'application/json',
+				'Host': 'api.yuncheapp.cn',
+				'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
+			},
+			body: '{"code": "JFN4M3"}'
+		}
+		$.post(invitatonurl, (error, response, data) => {
+			const result = JSON.parse(data)
+			resolve()
+		})
+	})
 }
-   $.post(invitatonurl,(error, response, data) =>{
-     const result = JSON.parse(data)
-      resolve()
-    })
-   })
-}  
 
 
- //个人信息
+//个人信息
 function userinfo() {
 	return new Promise((resolve, reject) => {
 		let userinfourl = {
@@ -242,7 +242,7 @@ function userinfo() {
 		});
 	});
 }
- 
+
 
 
 // 大转盘
