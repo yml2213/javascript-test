@@ -1,36 +1,36 @@
 /*
 邀请码:  003584319
 感谢填写! 感谢填写!! 感谢填写!!!
-1.15 日常活动-开宝箱
+1.17 首页看视频(每天一次)
 平台:   青龙
 软件:  东方头条
 收益:  10000金币=1元
 [Script]
-cron "30 6-22/2 * * *" https://raw.githubusercontent.com/yml2213/javascript/master/dftt/dfttbox.js,tag=东方头条开宝箱
+cron "8 9 * * *" https://raw.githubusercontent.com/yml2213/javascript/master/dftt/dfttksp.js,tag=东方头条看视频
 
 注意事项 ： 一定要仔细阅读一下内容
 =============青龙变量格式=============
 export dfttua=''
-export dfttboxbd='params=XXXXX'
+export dfttkspbd='id=3&lt=xxx'
 
 =============青龙变量实例=============
-export dfttua='Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
-export dfttboxbd='params=H0QHGzkHERoCAFZeRCAbKicMAh1HWEYWGwc2BwwMHEdORoPFxbvL+UFeRxUHBR0QfUldW0VRRlVRQUJzUQwQBQwSDUROVigaAwpQSVYHDwANfUlHhcfrkenxkczdUUlBAwwQRlxWNS8DNhcdFxFWVERFbkdHT1AKB0ZcVh0wAEdPUBYbAhIaFTIWR1lQITIwMj07DFFJQQYcBAFETlZuUUlBHhFWXkQRPBUhLlNLFCMyID07GAdWMCUdHjciPQ4+CS80JzAAHigxMi0nDjU4NEQIPiUsDQEHCEsfLjNTDiJvPSM2HwpHAQwxDQ0fCRU+VhwmBB8cMCpWJQIGLD4KOh4FQCg7KCIXDwJBEG0DNi02Lyw+CjYiCB4GWiI0SVlEWFYrBwQAEQwQRlxMTGhHV1JFUEJIRBsRMlFfQTYjIDBEWFYpFhdBSEdGSlBaQX1fRw4dBx0IA1ZOfUJWVEdRQlFWTERrUUlBAg0bCgMaATJRX0FDVkNRUkJBb0tVV1BJVgsVKwI6ARYKHQtWXkQdOwxTVFZcV1ZIRB0ZOlFfQTNQNSBSRzZtXlcmRyFZUCNGNnIxUVdLSEEmIkNMHDdcWkshRUZKVhUxFxcMGwE9AEROVm9DVVNCVURUS0REb0NIU0JVRElWRERvXlVTQlVEVFZERG9DVUFeRxcVDxBWZVEkEwI2AAsUEVZzUQEGBAwXATkWBj4dAUFIRxoRChhWc1EBBgQMFwFETlY2Iw0MHABFUEpGViI='
+export dfttua='DFTT/2.6.5 (iPhone; iOS 15.2; Scale/3.00)'
+export dfttkspbd='id=3&lt=eHJRK09qWVFIOGt3SWxjSDIzazJWUUtzNEFrTkVJQ0lXQXRrbk9zZW5zVnpaTWhHNXErMGp6VUVIYmZVVFAweEkxZDdaS1BybjlPcTV1ZHFGTkkwbWc9PQ=='
 =============变量解释==========
 dfttua:UA 这个不需要解释了吧
-dfttboxbd:变量中的xxxx是你的body包数据,,可以搜索关键词  open_treasure_box  包里找到所有变量
+dfttkspbd:变量中的xxxx是你的body包数据,可以从 关键词 send_gold/bonus 包里找到所有变量(lt=xxx,与时段奖励相同,抓一次即可)
 
 =============变量获取==========
 懒得写了，自己研究吧
 不会的请百度或者群里求助：QQ群：1001401060  tg：科技玩家@我即可
 
 */
-// https://shoutu2.dftoutiao.com/invite/open_treasure_box
-const $ = new Env('东方头条开宝箱');
-const host = 'shoutu2.dftoutiao.com';
+
+const $ = new Env('东方头条看视频');
+const host = 'adv-invedio.dftoutiao.com';
 const notify = $.isNode() ? require('../sendNotify') : '';
 let dfttua = process.env.dfttua;
-let body = process.env.dfttboxbd;
+let body = process.env.dfttkspbd;
 
 //开始运行
 !(async () => {
@@ -40,10 +40,11 @@ let body = process.env.dfttboxbd;
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
 
+// https://adv-invedio.dftoutiao.com/adv/send_gold/bonus
 //这里是要执行的代码     ====== 如果有您不需要的  请自行注释  使用 // 注释就行 ========
 async function yml() {
     await wyy();
-    await qd();
+    await ksp();
 
 //每日网抑云
     function wyy(timeout = 3*1000) {
@@ -65,18 +66,20 @@ async function yml() {
         })
     }
 
-// https://shoutu2.dftoutiao.com/invite/open_treasure_box
-// 开宝箱任务
-    function qd(timeout = 0) {
+
+// https://adv-invedio.dftoutiao.com/adv/send_gold/bonus
+// 看视频任务
+    function ksp(timeout = 0) {
         return new Promise((resolve) => {
             let url = {
-                url: `https://${host}/invite/open_treasure_box`,
+                url: `https://${host}/adv/send_gold/bonus`,
                 headers: {
                     'User-Agent': dfttua,
                 },
                 body: body
             }
-            // console.log(url);
+            console.log(url);
+
             $.post(url, async (err, resp, data) => {
                 try {
 
@@ -85,11 +88,11 @@ async function yml() {
                     console.log(`输出data结束===================`);
 
                     result = JSON.parse(data);
-                    if (result.code == 0) {
-                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行开宝箱:${result.message} ✅ 了呢 , 获得积分${result.data.bonus}`)
-                        // await $.wait(3 * 1000)
+                    if (result.code === 0) {
+                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】首页看视频: 成功 ✅ 了呢 , 获得金币${result.data.bonus}`)
+                        await $.wait(3 * 1000)
                     } else {
-                        $.log(`\n【🎉 恭喜个屁 🎉】冷却中，开宝箱失败啦，两小时后再试!`)
+                        $.log(`\n【🎉 恭喜个屁 🎉】首页看视频:失败 ❌ 了呢,原因可能是:${result.message}`)
                     }
                 } catch (e) {
                     $.logErr(e, resp);

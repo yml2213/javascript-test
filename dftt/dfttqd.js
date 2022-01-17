@@ -85,9 +85,9 @@ async function yml() {
 			$.post(url, async (err, resp, data) => {
 				try {
 
-					// console.log(`输出data开始===================`);
-					// console.log(data);
-					// console.log(`输出data结束===================`);
+					console.log(`输出data开始===================`);
+					console.log(data);
+					console.log(`输出data结束===================`);
 
 					result = JSON.parse(data);
 					if (result.status == true) {

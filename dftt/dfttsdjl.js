@@ -1,21 +1,21 @@
 /*
 邀请码:  003584319
 感谢填写! 感谢填写!! 感谢填写!!!
-1.15 新闻右上角-时段宝箱
+1.17 新闻右上角-时段奖励
 平台:   青龙
 软件:  东方头条
 收益:  10000金币=1元
 [Script]
-cron "20 6-22 * * *" https://raw.githubusercontent.com/yml2213/javascript/master/dftt/dfttsdjl.js,tag=东方头条开宝箱
+cron "0-59/30 * * * *" https://raw.githubusercontent.com/yml2213/javascript/master/dftt/dfttsdjl.js,tag=东方头条开宝箱
 
 注意事项 ： 一定要仔细阅读一下内容
 =============青龙变量格式=============
 export dfttua=''
-export dfttsdjlbd='lt=xxx&os=xxx'
+export dfttsdjlbd='lt=xxx&os=xxx&ver=2.6.5'
 
 =============青龙变量实例=============
-export dfttua='Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
-export dfttsdjlbd='lt=eHJRK09qWVFIOGt3SWxjSDIzazJWUUtzNEFrTkVJQ0lXQXRrbk9zZW5zVnpaTWhHNXErMGp6VUVIYmZVVFAweEkxZDdaS1BybjlPcTV1ZHFGTkkwbWc9PQ%3D%3D&os=iOS'
+export dfttua=''DFTT/2.6.5 (iPhone; iOS 15.2; Scale/3.00)'
+export dfttsdjlbd='lt=eHJRK09qWVFIOGt3SWxjSDIzazJWUUtzNEFrTkVJQ0lXQXRrbk9zZW5zVnpaTWhHNXErMGp6VUVIYmZVVFAweEkxZDdaS1BybjlPcTV1ZHFGTkkwbWc9PQ==&os=iOS&ver=2.6.5'
 =============变量解释==========
 dfttua:UA 这个不需要解释了吧
 dfttboxbd:变量中的xxxx是你的body包数据,,可以搜索关键词  timesaward/get_award  包里找到所有变量
@@ -23,7 +23,6 @@ dfttboxbd:变量中的xxxx是你的body包数据,,可以搜索关键词  timesaw
 =============变量获取==========
 懒得写了，自己研究吧
 不会的请百度或者群里求助：QQ群：1001401060  tg：科技玩家@我即可
-
 */
 
 // https://timesaward.dftoutiao.com/timesaward/timesaward/get_award
@@ -44,7 +43,7 @@ let body = process.env.dfttsdjlbd;
 //这里是要执行的代码     ====== 如果有您不需要的  请自行注释  使用 // 注释就行 ========
 async function yml() {
     await wyy();
-    await httpRequest();
+    await dzp();
 
 //每日网抑云
     function wyy(timeout = 3*1000) {
@@ -68,7 +67,6 @@ async function yml() {
 
 
 // https://timesaward.dftoutiao.com/timesaward/timesaward/get_award
-
 // 时段奖励
     function dzp(timeout = 0) {
         return new Promise((resolve) => {
@@ -81,6 +79,7 @@ async function yml() {
 
             }
             // console.log(url);
+
             $.post(url, async (err, resp, data) => {
                 try {
 
@@ -89,12 +88,11 @@ async function yml() {
                     // console.log(`输出data结束===================`);
 
                     result = JSON.parse(data);
-                    if (result.code == 0) {
-                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】大转盘发动成功 ✅ 了呢, 获得金币${result.data.gold}`)
+                    if (result.data.status == 1) {
+                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】时段奖励领取 成功 ✅ 了呢, 获得金币${result.data.coin}`)
                         await $.wait(2 * 1000)
-                        await dzp();
                     } else {
-                        $.log(`\n【🎉 恭喜个屁 🎉】大转盘发动:失败 ❌ 了呢,可能是:${result.message}`)
+                        $.log(`\n【🎉 恭喜个屁 🎉】时段奖励领取:失败 ❌ 了呢,可能是:${result.data.msg}`)
                     }
                 } catch (e) {
                     $.logErr(e, resp);
