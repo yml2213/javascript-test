@@ -20,7 +20,7 @@ cron "0-59/30 * * * *"
 
 
 const $ = new Env('燃旅视频');
-const notify = $.isNode() ? require('./sendNotify') : '';
+const notify = $.isNode() ? require('../sendNotify') : '';
 
 let subTitle = ``,app_rlsp_data=[]
 

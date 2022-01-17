@@ -64,7 +64,7 @@ let tz = ($.getval('tz') || '1');
     }
 })()
 
-    .catch((e) => $.logErr(e));
+    .catch((e) => $.logErr(e))
     .finally(() => $.done());
 
 

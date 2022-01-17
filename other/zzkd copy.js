@@ -1,10 +1,10 @@
 require('dotenv').config(); 
 const $ = new Env('追追看点');
-const notify = $.isNode() ? require('./sendNotify') : '';
+const notify = $.isNode() ? require('../sendNotify') : '';
 let status;
 status = (status = ($.getval(`zzkdstatus`) || "1")) > 1 ? `${status}` : ""; // 账号扩展字符
 let zzkdhdArr = [];
-let zzkdhd = {"Authorization":"", "User-Agent":"", "JSESSIONID":"", "Cookie":""};
+let zzkdhd = {"Authorization":"", "User-Agent":""};
 let zzkdhdstr = $.isNode() ? (process.env.zzkdhd ? process.env.zzkdhd : "") : ($.getdata('zzkdhd') ? $.getdata('zzkdhd') : "");
 let zzkdhds = "";
 let tz = ($.getval('zzkdtz') || '1');
@@ -14,7 +14,7 @@ $.message = ''
 //开始运行
 !(async () => {
   if (typeof $request !== "undefined") {
-    zzkdck()
+
   } else {
     if (!$.isNode()) {
       zzkdhdArr.push($.getdata('zzkdhd'))
@@ -116,16 +116,10 @@ function start(timeout = 0) {
         'Cookie': JSON.parse(zzkdhd).Cookie
       }
     }
-
-    console.log(url);
-
     $.post(url, async (err, resp, data) => {
       try {
-
         console.log(`输出data开始===================`);
         console.log(data);
-        console.log(`输出data结束===================`);
-
 
         result = JSON.parse(data)
         if (result.code == 200) {

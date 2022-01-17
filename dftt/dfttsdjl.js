@@ -1,24 +1,24 @@
 /*
 邀请码:  003584319
 感谢填写! 感谢填写!! 感谢填写!!!
-1.15 完成签到，感谢群里大佬指导
+1.15 新闻右上角-时段宝箱
 平台:   青龙
 软件:  东方头条
 收益:  10000金币=1元
 [Script]
-cron "8 8 * * *" https://raw.githubusercontent.com/yml2213/javascript/master/dftt/dfttqd.js,tag=东方头条签到
+cron "20 6-22 * * *" https://raw.githubusercontent.com/yml2213/javascript/master/dftt/dfttsdjl.js,tag=东方头条开宝箱
 
 注意事项 ： 一定要仔细阅读一下内容
 =============青龙变量格式=============
 export dfttua=''
-export dfttqdbd='params=XXXXX'
+export dfttsdjlbd='lt=xxx&os=xxx'
 
 =============青龙变量实例=============
 export dfttua='Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
-export dfttqdbd='params=H0QHGzkHERoCAFZeRCAbKicMAh1HWEYWGwc2BwwMHEdORoPFxbvL+UFeRxUHBR0QfUldW0VRRlVRQUJzUQwQBQwSDUROVigaAwpQSVYHDwANfUlHhcfrkenxkczdUUlBAwwQRlxWNS8DNhcdFxFWVERFbkdHT1AEFQ0CVk59HRAPHkdYRgkHVmVRDAwBR1hGFRsSKx0EDhdHTkYiMiALOiowUElWCBJWTn0+CTkCARkUExAaEQUwUxUcEAk8Hi0lMTcuNQkzNlQALj40Lw0jMBMdKDAubyYhOSIrIxRTLiw0AQEwSy8WICA4FzUxUTknXDorMD0OPR0JEyAyDFYwDU1qPVYlKDYhCBcmMAU2AQ0aEhEIKw0iCTFWABgzQDZWLiEMQRENJS0ENwUfMjQiVARHBkcuLiBEagooJAIcFywOGhAzMTI0Jy8jKSMyOwVCPyogDhdZRFhWKwcEABEMEEZcTExoR1dSRVBCSEQbETJRX0E2IyAwRFhWKRYXQUhHRkpQWkF9X0cMEwwQRlxWGiofCUFeRxkLBB0YOlFfQRwQGAhEWFYvGwoNFwsBCUROVjEGCQ9QSVYLFSsCOgEWCh0LVl5EHTsMU1RWXFdWSEQdGTpRX0EzUDUgUkc2bV5XJkchWVAjRjZyMVFXS0hBJiJDTBw3XFpLIUVGSlYVMRcXDBsBPQBETlZvQ1VTQlVEVEtERG9DSFNCVURJVkREb15VU0JVRFRWRERvQ1VBXkcXFQ8QVmVRJBMCNgALFBFWc1EBBgQMFwE5FgY+HQFBSEcaEQoYVnNRAQYEDBcBRE5WNiMNDBwARVBKRlYi'
+export dfttsdjlbd='lt=eHJRK09qWVFIOGt3SWxjSDIzazJWUUtzNEFrTkVJQ0lXQXRrbk9zZW5zVnpaTWhHNXErMGp6VUVIYmZVVFAweEkxZDdaS1BybjlPcTV1ZHFGTkkwbWc9PQ%3D%3D&os=iOS'
 =============变量解释==========
 dfttua:UA 这个不需要解释了吧
-dfttqdbd:变量中的xxxx是你的body包数据,,可以从 关键词 new_user_sign 包里找到所有变量
+dfttboxbd:变量中的xxxx是你的body包数据,,可以搜索关键词  timesaward/get_award  包里找到所有变量
 
 =============变量获取==========
 懒得写了，自己研究吧
@@ -26,85 +26,87 @@ dfttqdbd:变量中的xxxx是你的body包数据,,可以从 关键词 new_user_si
 
 */
 
-const $ = new Env('东方头条签到');
-const host = 'sign2.dftoutiao.com';
-const notify = $.isNode() ? require('./sendNotify') : '';
+// https://timesaward.dftoutiao.com/timesaward/timesaward/get_award
+const $ = new Env('东方头条时段奖励');
+const host = 'timesaward.dftoutiao.com';
+const notify = $.isNode() ? require('../sendNotify') : '';
 let dfttua = process.env.dfttua;
-let body = process.env.dfttqdbd;
+let body = process.env.dfttsdjlbd;
 
 //开始运行
 !(async () => {
-	await yml()
+    await yml()
 
 })()
-	.catch((e) => $.logErr(e))
-	.finally(() => $.done())
+    .catch((e) => $.logErr(e))
+    .finally(() => $.done())
 
-
-// https://sign2.dftoutiao.com/sign/signv4/new_user_sign
 //这里是要执行的代码     ====== 如果有您不需要的  请自行注释  使用 // 注释就行 ========
 async function yml() {
-	await wyy();
-	await qd();
+    await wyy();
+    await httpRequest();
 
 //每日网抑云
-	function wyy(timeout = 3*1000) {
-		return new Promise((resolve) => {
-			let url = {
-				url: `https://keai.icu/apiwyy/api`
-			}
-			$.get(url, async (err, resp, data) => {
-				try {
-					data = JSON.parse(data)
-					$.log(`\n【网抑云时间】: ${data.content}  by--${data.music}`);
+    function wyy(timeout = 3*1000) {
+        return new Promise((resolve) => {
+            let url = {
+                url: `https://keai.icu/apiwyy/api`
+            }
+            $.get(url, async (err, resp, data) => {
+                try {
+                    data = JSON.parse(data)
+                    $.log(`\n【网抑云时间】: ${data.content}  by--${data.music}`);
 
-				} catch (e) {
-					$.logErr(e, resp);
-				} finally {
-					resolve()
-				}
-			}, timeout)
-		})
-	}
+                } catch (e) {
+                    $.logErr(e, resp);
+                } finally {
+                    resolve()
+                }
+            }, timeout)
+        })
+    }
 
 
+// https://timesaward.dftoutiao.com/timesaward/timesaward/get_award
 
-// https://sign2.dftoutiao.com/sign/signv4/new_user_sign
-// 签到任务
-	function qd(timeout = 0) {
-		return new Promise((resolve) => {
-			let url = {
-				url: `https://${host}/sign/signv4/new_user_sign`,
-				headers: {
-					'User-Agent': dfttua,
-				},
-				body: body
-			}
-			// console.log(url);
-			$.post(url, async (err, resp, data) => {
-				try {
-					//
-					// console.log(`输出data开始===================`);
-					// console.log(data);
-					// console.log(`输出data结束===================`);
+// 时段奖励
+    function dzp(timeout = 0) {
+        return new Promise((resolve) => {
+            let url = {
+                url: `https://${host}/timesaward/timesaward/get_award`,
+                headers: {
+                    'User-Agent': dfttua
+                },
+                body: body
 
-					result = JSON.parse(data);
-					if (result.code == 0) {
-						$.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行签到: 成功 ✅ 了呢 , 获得积分${result.data.bonus}`)
-						await $.wait(3 * 1000)
-					} else {
-						$.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,原因可能是是:${result.message}`)
-					}
-				} catch (e) {
-					$.logErr(e, resp);
-				} finally {
-					resolve()
-				}
-			}, timeout)
+            }
+            // console.log(url);
+            $.post(url, async (err, resp, data) => {
+                try {
 
-		})
+                    // console.log(`输出data开始===================`);
+                    // console.log(data);
+                    // console.log(`输出data结束===================`);
 
-	}
+                    result = JSON.parse(data);
+                    if (result.code == 0) {
+                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】大转盘发动成功 ✅ 了呢, 获得金币${result.data.gold}`)
+                        await $.wait(2 * 1000)
+                        await dzp();
+                    } else {
+                        $.log(`\n【🎉 恭喜个屁 🎉】大转盘发动:失败 ❌ 了呢,可能是:${result.message}`)
+                    }
+                } catch (e) {
+                    $.logErr(e, resp);
+                } finally {
+                    resolve()
+                }
+            }, timeout)
+
+        })
+
+    }
+
 }
 
 
