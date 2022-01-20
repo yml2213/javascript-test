@@ -1,5 +1,5 @@
 /*
-cron "18 7 * * *" https://raw.githubusercontent.com/yml2213/javascript/master/dftt/dfttdt.js,tag=东方头条答题
+cron "18 7 * * *"
 
 */
 
