@@ -30,8 +30,7 @@ const $ = new Env('东方头条答题');
 const host = 'answer-question.dftoutiao.com';
 const notify = $.isNode() ? require('../sendNotify') : '';
 let dfttua = process.env.dfttua;
-let body = process.env.dfttdtbd;
-let dfttlt = process.env.dfttlt;
+let dfttdtbd = process.env.dfttdtbd;
 
 //开始运行
 !(async () => {
@@ -46,7 +45,9 @@ let dfttlt = process.env.dfttlt;
 //这里是要执行的代码     ====== 如果有您不需要的  请自行注释  使用 // 注释就行 ========
 async function yml() {
     await wyy();
-    await dt();
+    await dt1();
+    // await dt2();
+
 
 //每日网抑云
     function wyy(timeout = 3*1000) {
@@ -71,31 +72,36 @@ async function yml() {
 
 // https://answer-question.dftoutiao.com/cheese_superman/answer_question_new/double_bouns
 // https://answer-question.dftoutiao.com/cheese_superman/answer_question_new/add_user_bonus
-
 // 答题闯关任务
-    function dt(timeout = 0) {
+    function dt1(timeout = 0) {
         return new Promise((resolve) => {
             let url = {
-                url: `https://${host}/cheese_superman/answer_question_new/double_bouns`,
+                url: `https://${host}/cheese_superman/answer_question_new/add_user_bonus`,
                 headers: {
-                    'User-Agent': dfttua,
+                    'Accept': `*/*`,
+                    'Accept-Encoding': `gzip, deflate, br`,
+                    'Accept-Language': `zh-Hans-CN;q=1`,
+                    'Connection': `keep-alive`,
+                    'Content-Type': `application/x-www-form-urlencoded`,
+                    'Host': host,
+                    'User-Agent': dfttua
                 },
-                body: dfttlt
+                body: dfttdtbd,
             }
-            // console.log(url);
+            console.log(url);
 
             $.post(url, async (err, resp, data) => {
                 try {
 
-                    // console.log(`输出data开始===================`);
-                    // console.log(data);
-                    // console.log(`输出data结束===================`);
+                    console.log(`输出data开始===================`);
+                    console.log(data);
+                    console.log(`输出data结束===================`);
 
                     result = JSON.parse(data);
-                    if (result.code == 0) {
-                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行答题闯关: 成功 ✅ 了呢 , 获得金币${result.data.bonus}\n已有金币${result.data.current_bonus}`)
-                        await $.wait(1 * 1000)
-                        await dt();
+                    if (result.code === 0) {
+                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行答题闯关: 成功 ✅ 了呢 , 获得金币${result.data.bonus}枚!\n已累计获得金币共计${result.data.current_bonus}枚,可兑换${result.data.current_bonus/10000}元`)
+                        await $.wait(3 * 1000)
+                        await dt1();
                     } else {
                         $.log(`\n【🎉 恭喜个屁 🎉】执行答题闯关:失败 ❌ 了呢,原因未知!`)
                     }
@@ -110,6 +116,44 @@ async function yml() {
 
     }
 }
+function dt2(timeout = 0) {
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://${host}/cheese_superman/answer_question_new/double_bouns`,
+            headers: {
+                'User-Agent': dfttua,
+            },
+            body: dfttdtbd
+        }
+        console.log(url);
+
+        $.post(url, async (err, resp, data) => {
+            try {
+
+                console.log(`输出data开始===================`);
+                console.log(data);
+                console.log(`输出data结束===================`);
+
+                result = JSON.parse(data);
+                if (result.code == 0) {
+                    $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行答题闯关翻倍奖励: 成功 ✅ 了呢 , 获得金币${result.data.bonus}\n已累计获得金币共计${result.data.current_bonus}枚!`)
+                    await $.wait(3 * 1000)
+                    await dt();
+                } else {
+                    $.log(`\n【🎉 恭喜个屁 🎉】执行答题闯关翻倍奖励:失败 ❌ 了呢,原因未知!`)
+                }
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+
+    })
+
+}
+
+
 
 
 
