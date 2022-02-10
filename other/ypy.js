@@ -1,36 +1,14 @@
 /*
-邀请码:  003584319
-感谢填写! 感谢填写!! 感谢填写!!!
-1.15 日常活动-开宝箱
-平台:   青龙
-软件:  东方头条
-收益:  10000金币=1元
+
 [Script]
-cron "30 6-22/2 * * *" https://raw.githubusercontent.com/yml2213/javascript/master/dftt/dfttbox.js,tag=东方头条开宝箱
-
-注意事项 ： 一定要仔细阅读一下内容
-=============青龙变量格式=============
-export dfttua=''
-export dfttboxbd='params=XXXXX'
-
-=============青龙变量实例=============
-export dfttua='Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
-export dfttboxbd='params=H0QHGzkHERoCAFZeRCAbKicMAh1HWEYWGwc2BwwMHEdORoPFxbvL+UFeRxUHBR0QfUldW0VRRlVRQUJzUQwQBQwSDUROVigaAwpQSVYHDwANfUlHhcfrkenxkczdUUlBAwwQRlxWNS8DNhcdFxFWVERFbkdHT1AKB0ZcVh0wAEdPUBYbAhIaFTIWR1lQITIwMj07DFFJQQYcBAFETlZuUUlBHhFWXkQRPBUhLlNLFCMyID07GAdWMCUdHjciPQ4+CS80JzAAHigxMi0nDjU4NEQIPiUsDQEHCEsfLjNTDiJvPSM2HwpHAQwxDQ0fCRU+VhwmBB8cMCpWJQIGLD4KOh4FQCg7KCIXDwJBEG0DNi02Lyw+CjYiCB4GWiI0SVlEWFYrBwQAEQwQRlxMTGhHV1JFUEJIRBsRMlFfQTYjIDBEWFYpFhdBSEdGSlBaQX1fRw4dBx0IA1ZOfUJWVEdRQlFWTERrUUlBAg0bCgMaATJRX0FDVkNRUkJBb0tVV1BJVgsVKwI6ARYKHQtWXkQdOwxTVFZcV1ZIRB0ZOlFfQTNQNSBSRzZtXlcmRyFZUCNGNnIxUVdLSEEmIkNMHDdcWkshRUZKVhUxFxcMGwE9AEROVm9DVVNCVURUS0REb0NIU0JVRElWRERvXlVTQlVEVFZERG9DVUFeRxcVDxBWZVEkEwI2AAsUEVZzUQEGBAwXATkWBj4dAUFIRxoRChhWc1EBBgQMFwFETlY2Iw0MHABFUEpGViI='
-=============变量解释==========
-dfttua:UA 这个不需要解释了吧
-dfttboxbd:变量中的xxxx是你的body包数据,,可以搜索关键词  open_treasure_box  包里找到所有变量
-
-=============变量获取==========
-懒得写了，自己研究吧
-不会的请百度或者群里求助：QQ群：1001401060  tg：科技玩家@我即可
+cron "8 8 * * *" https://raw.githubusercontent.com/yml2213/javascript/master/dftt/dfttqd.js,tag=东方头条签到
 
 */
-// https://shoutu2.dftoutiao.com/invite/open_treasure_box
-const $ = new Env('东方头条开宝箱');
-const host = 'shoutu2.dftoutiao.com';
+// https://console.upyun.com/activity/signin
+const $ = new Env('又拍云签到');
+const host = 'console.upyun.com';
 const notify = $.isNode() ? require('../sendNotify') : '';
-let dfttua = process.env.dfttua;
-let body = process.env.dfttboxbd;
+
 
 //开始运行
 !(async () => {
@@ -40,6 +18,8 @@ let body = process.env.dfttboxbd;
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
 
+
+// https://sign2.dftoutiao.com/sign/signv4/new_user_sign
 //这里是要执行的代码     ====== 如果有您不需要的  请自行注释  使用 // 注释就行 ========
 async function yml() {
     await wyy();
@@ -65,18 +45,22 @@ async function yml() {
         })
     }
 
-// https://shoutu2.dftoutiao.com/invite/open_treasure_box
-// 开宝箱任务
+
+// https://console.upyun.com/activity/signin
+// 签到任务
     function qd(timeout = 0) {
         return new Promise((resolve) => {
             let url = {
-                url: `https://${host}/invite/open_treasure_box`,
+                url: `https://console.upyun.com/activity/signin`,
                 headers: {
-                    'User-Agent': dfttua,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    // 'Cookie': "zg_ecc4e43232c6415fb5022f4c7369ae5e=%7B%22sid%22%3A%201642785413997%2C%22updated%22%3A%201642785474495%2C%22info%22%3A%201642785413999%2C%22superProperty%22%3A%20%22%7B%5C%22%E5%BA%94%E7%94%A8%E5%90%8D%E7%A7%B0%5C%22%3A%20%5C%22UPYUN%20%E5%AE%98%E7%BD%91%5C%22%7D%22%2C%22platform%22%3A%20%22%7B%7D%22%2C%22utm%22%3A%20%22%7B%5C%22%24utm_source%5C%22%3A%20%5C%22baidu%5C%22%2C%5C%22%24utm_medium%5C%22%3A%20%5C%22ppc%5C%22%2C%5C%22%24utm_campaign%5C%22%3A%20%5C%22cdn%5C%22%2C%5C%22%24utm_content%5C%22%3A%20%5C%22cdnyew006%5C%22%2C%5C%22%24utm_term%5C%22%3A%20%5C%22cdnyew%5C%22%7D%22%2C%22referrerDomain%22%3A%20%22m.baidu.com%22%2C%22landHref%22%3A%20%22https%3A%2F%2Fwww.upyun.com%2Fproducts%2Fcdn%3Futm_source%3Dbaidu%26utm_medium%3Dppc%26utm_campaign%3Dcdn%26utm_term%3Dcdnyew%26utm_content%3Dcdnyew006%26bd_vid%3D11722322928664204709%22%2C%22cuid%22%3A%20%22199859%22%7D; Hm_lpvt_09e47f90c12c9a15516512c0d87f6791=1642785474; Hm_lvt_09e47f90c12c9a15516512c0d87f6791=1642785413; _dc_gtm_UA-74565715-1=1; _ga=GA1.2.1488246331.1642785413; _gid=GA1.2.158033766.1642785413; zg_did=%7B%22did%22%3A%20%2217e7da41b6b92-0c55fac0a7d254-7d7d3162-505c8-17e7da41b6c1bd3%22%7D; _gat_UA-74565715-1=1; s=RrMe4JegtSyvT_fymRWUTnZmq7_QDrZucfMydoon_VOO8A1q-AaTA8ml6gV5OkLn5qr6ZFX8r-UsROrbEs31DNscruOU6a7LadMYDLRLYT0hfnMFJLuZZG2u2V9G-ZN6B74uyjekOfO1u8Gc8JxLN83M9f5ZhkxvEEL9mtgwbMXEKvXtYRTUdJF5YRtgfNNUe6mNnLlSmO4LxDzeRqg43Q==; sid=rWUYohjy77_6hymA5a1SiY2p23rZe4_ANaXjb-9IKeIp9vredUF4PGw2GZxQNuks; _ga=GA1.3.1488246331.1642785413; _gid=GA1.3.158033766.1642785413; _gat=1",
+                    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
                 },
-                body: body
+                body: {}
             }
-            // console.log(url);
+            console.log(url);
+
             $.post(url, async (err, resp, data) => {
                 try {
 
@@ -85,11 +69,11 @@ async function yml() {
                     console.log(`输出data结束===================`);
 
                     result = JSON.parse(data);
-                    if (result.code == 0) {
-                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行开宝箱:${result.message} ✅ 了呢 , 获得积分${result.data.bonus}`)
-                        // await $.wait(3 * 1000);
+                    if (result.result === true) {
+                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行签到: 成功 ✅ 了呢 `)
+                        await $.wait(3 * 1000)
                     } else {
-                        $.log(`\n【🎉 恭喜个屁 🎉】冷却中，开宝箱失败啦，两小时后再试!`)
+                        $.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,原因未知!`)
                     }
                 } catch (e) {
                     $.logErr(e, resp);
