@@ -80,7 +80,7 @@ async function yml() {
 				},
 				body: body
 			}
-			// console.log(url);
+			console.log(url);
 
 			$.post(url, async (err, resp, data) => {
 				try {
@@ -94,7 +94,7 @@ async function yml() {
 						$.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行签到: 成功 ✅ 了呢 , 获得积分${result.data.bonus}`)
 						await $.wait(3 * 1000)
 					} else {
-						$.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,原因未知!`)
+						$.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,原因:${result.msg}`)
 					}
 				} catch (e) {
 					$.logErr(e, resp);
