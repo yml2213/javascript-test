@@ -1,129 +1,197 @@
 /*
-cron "28 8 * * *"
+cron "18 8 * * *"
+
+2-15 发布第一版  视频宝箱完成
+
+入口: https://github.com/yml2213/javascript/blob/master/dzl/dzl.jpg
 
 注意事项 ： 一定要仔细阅读一下内容
 =============青龙变量格式=============
-export body=''
-
+export yml_dzl_data='xxx@xxx'
+xxx :xxx是token 签到,抽奖token相同(感谢全体测试人员);  多账号使用 @ 分割
 =============青龙变量实例=============
-export body='id=17f1b&token=1d48e55ea9a1e0c8a3d3eb87840ff631'
+export yml_dzl_data='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU0VSX0lEIjoiNjg5MDQ0MTYxMzE3NzU4OTc2MS1XRUIiLCJleHAiOjE2NDQ5OTE5NTl9.uZ-6fmExOsAQoqTl7aTpGy-uS38BPEV3RrR89YLVfuc@eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU0VSX0lEIjoiNjg5MDQ0MTYxMzE3NzU4OTc2MS1XRUIiLCJleHAiOjE2NDQ5OTQ2MzV9.72rW4JHQ4Y3NhXqp7J1-QMj9BLh1TyaD2AL3wskSLZ0'
 =============变量解释==========
-body: 可以从 关键词 Index/QianDao 包里找到所有变量
-
-=============变量获取=============
+签到token: 可以从 关键词 integralSignIn 包里找到
+抽奖token: 可以从 关键词 turntable/open 包里找到
+=============变量获取==========
 懒得写了，自己研究吧
 不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
 
-
-
-POST /api/task/sign h2
-Host: api.rkturtle.com
-x-versioncode: 2.2.1
-devicebrand: HONOR
-model: BLN-TL10
-systemversion: 6.0
-packagename: com.duodian.huojiangui
-androidid: 160324e6e2d33e31
-token: 8NPWVht0USnO7QJS2DPZgvrz047aK8uje9nIbXM2Nt77hVUVqFjCWf9KjTR7oKrx
-deviceid: 4d245c85807f4be89c7dbd950316de73
-user-agent: Mozilla/5.0 (Linux; Android 6.0; BLN-TL10 Build/HONORBLN-TL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/55.0.2883.91 Mobile Safari/537.36
-x-channel: YYB
-content-length: 0
-accept-encoding: gzip
-
-
-
 */
-
-const $ = new Env('火箭龟签到');
+const $ = new Env('多走路');
+const host = 'api-sport.chenglie.tech';
 const notify = $.isNode() ? require('./sendNotify') : '';
-let body = process.env.body;
+let app_dzl_data = [];
 
-// http://apijb.sunql.top:4002/Index/QianDao
-//开始运行
+// http://api-sport.chenglie.tech/reward/videoNotify
+
+
 !(async () => {
-    await yml();
+
+    if ($.isNode()) {
+        //$.isNode()环境执行部分  青龙执行
+        if (!process.env.yml_dzl_data) {
+            console.log(`\n【${$.name}】：未填写相应变量 yml_dzl_data`);
+            return;
+        }
+        if (process.env.yml_dzl_data && process.env.yml_dzl_data.indexOf('@') > -1) {
+            app_yml_dzl_data = process.env.yml_dzl_data.split('@');
+            console.log(`您选择的是使用 '@' 分割多账号`)
+        } else if (process.env.yml_dzl_data && process.env.yml_dzl_data.indexOf('\n') > -1) {
+            app_yml_dzl_data = process.env.env.yml_dzl_data.split('\n');
+        } else if (process.env.yml_dzl_data && process.env.yml_dzl_data.indexOf('#') > -1) {
+            app_yml_dzl_data = process.env.yml_dzl_data.split('#');
+        } else {
+            app_yml_dzl_data = process.env.yml_dzl_data.split();
+        }
+        ;
+    }
+
+    console.log(`-------- 共 ${app_yml_dzl_data.length} 个账号 --------`)
+    console.log(app_yml_dzl_data);
+    console.log(
+        `\n\n====== 脚本执行 - 北京时间(UTC+8)：${new Date(
+            new Date().getTime() +
+            new Date().getTimezoneOffset() * 60 * 1000 +
+            8 * 60 * 60 * 1000
+        ).toLocaleString()} ======\n`);
+
+
+    await wyy();
+
+    for (i = 0; i < app_yml_dzl_data.length; i++) {
+        $.index = i + 1;
+        console.log(`\n----- 开始【第 ${$.index} 个账号】-----`)
+        console.log(`这里是分割后:${app_yml_dzl_data}`);
+        ApiAuthKey = app_yml_dzl_data[i].split('&');
+        body = app_yml_dzl_data[i].split('&');
+        time = app_yml_dzl_data[i].split('&');
+
+        console.log(ApiAuthKey[0]);
+        console.log(time[1]);
+        console.log(body[2]);
+
+        //执行某个板块
+        // await test();
+        await box();
+        await $.wait(2 * 1000);
+        // await cj();
+        // await $.wait(2 * 1000);
+
+
+    }
 
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
 
 
-//这里是要执行的代码     ====== 如果有您不需要的  请自行注释  使用 // 注释就行 ========
-async function yml() {
-    // await wyy();
-    await cq();
-
 //每日网抑云
-    function wyy(timeout = 3 * 1000) {
-        return new Promise((resolve) => {
-            let url = {
-                url: `https://keai.icu/apiwyy/api`
+function wyy(timeout = 3 * 1000) {
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://keai.icu/apiwyy/api`
+        }
+        $.get(url, async (err, resp, data) => {
+            try {
+                data = JSON.parse(data)
+                $.log(`\n【网抑云时间】: ${data.content}  by--${data.music}`);
+
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
             }
-            $.get(url, async (err, resp, data) => {
-                try {
-                    data = JSON.parse(data)
-                    $.log(`\n【网抑云时间】: ${data.content}  by--${data.music}`);
-
-                } catch (e) {
-                    $.logErr(e, resp);
-                } finally {
-                    resolve()
-                }
-            }, timeout)
-        })
-    }
-
-
-
-
-// 签到任务
-    function cq(timeout = 0) {
-        return new Promise((resolve) => {
-            let url = {
-                url: `https://api.rkturtle.com/api/task/sign`,
-                headers: {
-
-                    'token': '8NPWVht0USnO7QJS2DPZgvrz047aK8uje9nIbXM2Nt77hVUVqFjCWf9KjTR7oKrx',
-
-
-                },
-                // body: {  },
-
-            }
-
-            console.log(url);
-
-            $.post(url, async (err, resp, data) => {
-
-                try {
-
-                    console.log(`输出data开始===================`);
-                    console.log(data);
-                    console.log(`输出data结束===================`);
-
-                    result = JSON.parse(data);
-                    if (result.code === 0 ) {
-                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】状态: ${result.data.title} ✅ \n 获得${result.data.num} \n ${result.data.remark} ` )
-                        await $.wait(2 * 1000);
-
-                    }else {
-                        $.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,原因:${result.data.title} `)
-                    }
-                } catch (e) {
-                    $.logErr(e, resp);
-                } finally {
-                    resolve()
-                }
-            }, timeout)
-
-        })
-
-    }
+        }, timeout)
+    })
 }
 
 
-//固定板块，无需动
+function test() {
+
+    console.log(app_yml_dzl_data);
+
+}
+
+
+// 宝箱时间  16分钟  25分钟  15分钟
+// http://api-sport.chenglie.tech/reward/videoNotify
+// 赚赚页面 最上方宝箱 任务
+function box(timeout = 0) {
+
+    return new Promise((resolve) => {
+        let url = {
+            url: `http://${host}/reward/videoNotify`,
+            headers: {
+                /*'Content-Type': 'application/json',
+                'uuid': '0DAA69F9-39AE-4751-930C-E9E5B86283BA',
+                'version': 'v2',
+                'channel': 'appStore',
+                'idfa': '',
+                'ApiAuthKey': ApiAuthKey[0],
+                'Host': 'api-sport.chenglie.tech',
+                'versionName': '2.1.1',
+                'platform': 'ios',
+                'token': '3e25bd454d8afddd30f1bacbf1dffa66',
+                'versionCode': '4',
+                'User-Agent': 'hongbao/2.1.1 (iPhone; iOS 15.3; Scale/3.00)',
+                'ApiSourceId': '159005008400',
+                'ApiAuthTime': time[1],*/
+                'Content-Type': 'application/json',
+                'uuid': '0DAA69F9-39AE-4751-930C-E9E5B86283BA',
+                'version': 'v2',
+                'channel': 'appStore',
+                'idfa': '',
+                'ApiAuthKey': ApiAuthKey[0],
+                'Host': 'api-sport.chenglie.tech',
+                'versionName': '2.1.1',
+                'platform': 'ios',
+                'token': '3e25bd454d8afddd30f1bacbf1dffa66',
+                'versionCode': '4',
+                'User-Agent': 'hongbao/2.1.1 (iPhone; iOS 15.3; Scale/3.00)',
+                'ApiSourceId': '159005008400',
+                'ApiAuthTime': time[1]
+
+
+            },
+            // body: body[2],
+            // body: JSON.stringify(body[2]),
+            // body: body[2],
+            body: body[2],
+
+
+
+        }
+        console.log(url);
+
+        $.post(url, async (err, resp, data) => {
+
+            try {
+
+                console.log(`输出data开始===================`);
+                console.log(data);
+                console.log(`输出data结束===================`);
+
+                result = JSON.parse(data);
+                if (result.data === "126") {
+                    $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】视频宝箱领取: ${result.message} ✅ \n 获得金币 ${result.data} 枚呢! `)
+                    await $.wait(3 * 1000)
+                } else {
+                    $.log(`\n【 哎鸭 】视频宝箱领取: 失败 ❌ 了呢 ,不要灰心! `)
+                }
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+
+    })
+}
+
+
+//=================================================================固定板块，无需动=========================================================================
 function Env(t, e) {
     class s {
         constructor(t) {
