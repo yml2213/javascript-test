@@ -1,9 +1,9 @@
 /*
 cron "18 8 * * *"
 
-2-15 发布第一版  视频宝箱完成
+2-16  第一版  视频宝箱测试中
 
-入口: https://github.com/yml2213/javascript/blob/master/dzl/dzl.jpg
+入口: AppStore下载  多走路
 
 注意事项 ： 一定要仔细阅读一下内容
 =============青龙变量格式=============
