@@ -130,15 +130,16 @@ function box(timeout = 0) {
                 'Content-Type': 'application/json',
                 'version': 'v2',
                 'channel': 'appStore',
+                // 'idfa': '',
                 'ApiAuthKey': ApiAuthKey[0],
                 'Host': 'api-sport.chenglie.tech',
                 'versionName': '2.1.1',
                 'platform': 'ios',
                 'token': token[1],
                 'versionCode': '4',
-                // 'User-Agent': 'hongbao/2.1.1 (iPhone; iOS 15.3; Scale/3.00)',
+                'User-Agent': 'hongbao/2.1.1 (iPhone; iOS 15.3; Scale/3.00)',
                 'ApiSourceId': '159005008400',
-                'ApiAuthTime': time[2],
+                'ApiAuthTime': time[2]
 
 
             },
