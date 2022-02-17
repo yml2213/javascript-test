@@ -103,7 +103,7 @@ async function yml() {
                     console.log(`输出data结束===================`);
 
                     result = JSON.parse(data);
-                    if (result.code === 0 ) {
+                    if (result.data.status === 1 ) {
                         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】状态: ${result.data.title} ✅ \n 获得${result.data.num} \n ${result.data.remark} ` )
                         await $.wait(2 * 1000);
 
