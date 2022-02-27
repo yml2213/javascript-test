@@ -71,9 +71,10 @@ function Encrypt(word) {
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
+
+
+
 //数据获取
-
-
 function ddtjck() {
     if ($request.url.indexOf("index/index") > -1) {
         const ddtjtoken = JSON.stringify($request.body)
