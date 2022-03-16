@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.24.0",
+    "blueimp-md5": "^2.19.0",
     "body-parser": "^1.19.1",
     "crypto-js": "^4.0.0",
     "dateformat": "^5.0.2",
@@ -20,6 +21,7 @@
     "fs": "^0.0.1-security",
     "got": "^11.8.3",
     "http-server": "^0.12.3",
+    "js-sha1": "^0.6.0",
     "jsdom": "^17.0.0",
     "lemon-bot": "^0.6.0",
     "moment": "^2.29.1",
