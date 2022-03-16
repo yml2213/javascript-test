@@ -1,5 +1,5 @@
-// var request = require('request');
-// var options = {
+// let request = require('request');
+// let options = {
 //     'method': 'POST',
 //     'url': 'https://app.site.10yan.com.cn/index.php?s=/Api/Article/artReply/&actiontype=12&contentid=762529&reply=十堰越来越好！！&uid=452326&source=android&build=145',
 //     'headers': {
@@ -13,12 +13,17 @@
 //     // console.log(body)
 // });
 
-let uid = 452326;
 
+const axios = require("axios");
+const qs = require("qs");
 const $ = new Env('测试评论');
 // const host = 'club.biqr.cn';
 const notify = $.isNode() ? require('./sendNotify') : '';
 // let cjtoken = process.env.cjtoken;
+let uid = 452326;
+let wzid='';
+let rid;
+
 
 // https://club.biqr.cn/api/game/turntable/open
 //开始运行
@@ -34,7 +39,7 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 async function yml() {
     await wyy();
     await plid();
-    await fbpl();
+    // await fbpl();
 
 
 //每日网抑云
@@ -67,21 +72,24 @@ async function yml() {
                 headers: {},
                 // body: {},
             }
-            console.log(url);
+            // console.log(url);
             $.get(url, async (err, resp, data) => {
-                try {
-                    console.log(`输出data开始===================`);
-                    console.log(data);
-                    console.log(`输出data结束===================`);
 
+                try {
+                    // console.log(`输出data开始===================`);
+                    // console.log(data);
+                    // console.log(`输出data结束===================`);
                     result = JSON.parse(data);
 
-                    console.log(`-----  ${result}`)
-                    for (let i = 1; i < 4; i++) {
+                    for (let i = 0; i < 1; i++) {
                         wzid = result.list[i].contentid
                         console.log(wzid)
+                        await fbpl();
+                        await $.wait(5 * 1000);
+                        await hqplid();
 
                     }
+
                 } catch (e) {
                     $.logErr(e, resp);
                 } finally {
@@ -90,128 +98,88 @@ async function yml() {
             }, timeout)
 
         })
-
-        console.log(wzid)
-        /*
-
-        return new Promise((resolve) => {
-            let url = {
-                url: `https://app.site.10yan.com.cn/index.php?s=/Api/Article/artReply/&actiontype=12&contentid=${wzid}&reply=十堰越来越好！！&uid=${uid}&source=android&build=145`,
-                headers: {
-
-                },
-                // body: {},
-
-            }
-            console.log(url);
-
-            $.post(url, async (err, resp, data) => {
-
-                try {
-                    console.log(`输出data开始===================`);
-                    console.log(data);
-                    console.log(`输出data结束===================`);
-
-                    result = JSON.parse(data);
-                    if (result.code == 0) {
-                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行抽奖: ${result.msg} ✅ ,获得${result.data.name}`)
-                        await $.wait(5 * 1000);
-                        await cq();
-
-                    } else if (result.code == 500) {
-                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行抽奖: 失败 ❌ 了呢 ,可能是:${result.msg} `)
-                    }
-                    else {
-                        $.log(`\n【🎉 恭喜个屁 🎉】执行抽奖:失败 ❌ 了呢,原因未知! `)
-                    }
-                } catch (e) {
-                    $.logErr(e, resp);
-                } finally {
-                    resolve()
-                }
-            }, timeout)
-
-        })*/
-
     }
 
 
     // 发布评论
-    function plid(timeout = 0) {
-        // 获取文章id
-        return new Promise((resolve) => {
-            let url = {
-                url: `https://app.site.10yan.com.cn/index.php?s=/Api/Article/artReply/&actiontype=12&contentid=${wzid}&reply=十堰越来越好了！&uid=${uid}&source=android&build=145`,
-                headers: {},
-                // body: {},
-            }
-            console.log(url);
-            $.get(url, async (err, resp, data) => {
-                try {
-                    console.log(`输出data开始===================`);
-                    console.log(data);
-                    console.log(`输出data结束===================`);
+    function fbpl(timeout = 0) {
+        let axios = require('axios')
+        axios
+            .post(`https://app.site.10yan.com.cn/index.php?s=/Api/Article/artReply/&actiontype=12&contentid=${wzid}&reply=good!&sessionid=801cf37e86eaa651914b3cac0c756f9a&title=%%E6%%88%%91%%E5%%B8%%82%%E4%%B8%%80%%E5%%BD%%A9%%E5%%8F%%8B%%E5%%88%%AE%%E4%%B8%%AD%%E2%%80%%9C%%E5%%A5%%BD%%E8%%BF%%90%%E5%%8D%%81%%E5%%80%%8D%%E2%%80%%9D%%E5%%A4%%B4%%E5%%A5%%9640%%E4%%B8%%87&uid=${uid}&source=android&build=145`, {
+            })
+            .then(res => {
+                // console.log(res.data)
+            })
+            .catch(error => {
+                console.error(error)
+            })
+    }
 
-                    result = JSON.parse(data);
+    // 获取评论 rid  删除评论
+    function hqplid(timeout = 0) {
+        let axios = require('axios');
 
-                    console.log(`-----  ${result}`)
-                    for (let i = 1; i < 4; i++) {
-                        wzid = result.list[i].contentid
-                        console.log(wzid)
+        let config = {
+            method: 'get',
+            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Article/index/&contentid=${wzid}&page=1&uid=${uid}`,
+            headers: { }
+        };
 
+        axios(config)
+            .then(function (response) {
+                console.log(`===========`)
+                // console.log(JSON.stringify(response.data));
+                // pl_data =response.data.list
+                // console.log(pl_data)
+
+                for ( i = 0; i < response.data.list.length; i++) {
+                    usid = response.data.list[i].userid;
+                    console.log(usid)
+                    if (usid == `${uid}`) {
+                        console.log(`====111=====`)
+                        console.log(response.data.list[i].pid)
+                        console.log(`=====22=====`)
+                        // rid = response.data.list[i].pid
+                        rid = response.data.list[i].pid
+                        // console.log(`我是 rid ${rid}`)
+
+                        // 删除评论
+                        let axios = require('axios');
+                        let qs = require('qs');
+                        let data = qs.stringify({
+                            'rid': `${rid}`,
+                            'uid': `${uid}`,
+                            'source': 'android',
+                            'ver': '6.2.3',
+                            'build': '145'
+                        });
+                        let config = {
+                            method: 'post',
+                            url: 'https://app.site.10yan.com.cn/index.php?s=/Api/Article/delReply/',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            data : data
+                        };
+
+                        axios(config)
+                            .then(function (response) {
+                                console.log(JSON.stringify(response.data));
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            });
                     }
-                } catch (e) {
-                    $.logErr(e, resp);
-                } finally {
-                    resolve()
                 }
-            }, timeout)
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
 
-        })
-
-        console.log(wzid)
-        /*
-
-        return new Promise((resolve) => {
-            let url = {
-                url: `https://app.site.10yan.com.cn/index.php?s=/Api/Article/artReply/&actiontype=12&contentid=${wzid}&reply=十堰越来越好！！&uid=${uid}&source=android&build=145`,
-                headers: {
-
-                },
-                // body: {},
-
-            }
-            console.log(url);
-
-            $.post(url, async (err, resp, data) => {
-
-                try {
-                    console.log(`输出data开始===================`);
-                    console.log(data);
-                    console.log(`输出data结束===================`);
-
-                    result = JSON.parse(data);
-                    if (result.code == 0) {
-                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行抽奖: ${result.msg} ✅ ,获得${result.data.name}`)
-                        await $.wait(5 * 1000);
-                        await cq();
-
-                    } else if (result.code == 500) {
-                        $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行抽奖: 失败 ❌ 了呢 ,可能是:${result.msg} `)
-                    }
-                    else {
-                        $.log(`\n【🎉 恭喜个屁 🎉】执行抽奖:失败 ❌ 了呢,原因未知! `)
-                    }
-                } catch (e) {
-                    $.logErr(e, resp);
-                } finally {
-                    resolve()
-                }
-            }, timeout)
-
-        })*/
 
     }
+
+
 }
 
 

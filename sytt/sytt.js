@@ -24,6 +24,8 @@ export yml_sytt_data='username=手机号&password=密码'
 不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
 
 */
+const axios = require("axios");
+const qs = require("qs");
 const $ = new Env('十堰头条');
 const notify = $.isNode() ? require('./sendNotify') : '';
 // let body='';
@@ -31,9 +33,7 @@ let app_yml_sytt_data='';
 let user = '';
 let pwd = '';
 let uid;
-let wz1='';
-let wz2='';
-let wz3='';
+
 
 
 
@@ -80,8 +80,11 @@ let wz3='';
         await $.wait(2 * 1000);
         await syttqd();
         await $.wait(2 * 1000);
-        // await syttpl();
+        await plid();
         await $.wait(2 * 1000);
+        // await tzid();
+        // await $.wait(2 * 1000);
+
     }
 
 })()
@@ -113,48 +116,29 @@ function wyy(timeout = 3 * 1000) {
 
 // 登录
 function syttdl(timeout = 0) {
-
-    // let hash = MD5_Encrypt(`build=145lat=0.0lng=0.0password=${pwd}source=androidusername=${user}ver=6.2.31e0fe2ca3f23c59d1b9fa54b52ad18ceb`)
-    // console.log(hash)
-    // // sha1 加密 npm install js-sha1  需要安装下
-    // sha1 = require('js-sha1');
-    // token = sha1(hash);
-    // console.log(token)
-
     urldl = `https://app.site.10yan.com.cn/index.php?s=/Api/Loginv3/signInv3&password=${pwd}&username=${user}`
-    console.log(urldl)
-
-
-
+    // console.log(urldl)
     return new Promise((resolve) => {
         let url = {
-
             url: urldl,
             headers: { } ,
             body: '',
-
         }
-        console.log(url);
-
+        // console.log(url);
         $.post(url, async (err, resp, data) => {
-
             try {
                 console.log(`输出data开始===================`);
                 console.log(data);
                 console.log(`输出data结束===================`);
-
                 result = JSON.parse(data);
-
                 if (result.code == "200") {
                     $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】登录状态: ${result.retinfo} ✅ `)
                     // await $.wait(3 * 1000)
                 }else {
                     $.log(`\n【🎉 恭喜个屁 🎉】登录状态:${result.retinfo} `)
                 }
-
                 uid = result.data.uid
                 console.log(uid)
-
             } catch (e) {
                 $.logErr(e, resp);
             } finally {
@@ -167,23 +151,17 @@ function syttdl(timeout = 0) {
 
 // 签到
 function syttqd(timeout = 0) {
-
     return new Promise((resolve) => {
         let url = {
             url: `https://app.site.10yan.com.cn/index.php?s=/Api/Activityv1/sign&uid=${uid}`,
             headers:'',
-
         }
-        console.log(url);
-
+        // console.log(url);
         $.post(url, async (err, resp, data) => {
-
             try {
-
                 console.log(`输出data开始===================`);
                 console.log(data);
                 console.log(`输出data结束===================`);
-
                 result = JSON.parse(data);
                 if (result.code == 200) {
                     $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】签到状态:(${result.retinfo})    ✅ `)
@@ -204,290 +182,174 @@ function syttqd(timeout = 0) {
 }
 
 
+// 评论id
+function plid(timeout = 0) {
+    // 获取文章id
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Newsv4/newslist&page=1&type=reply&source=android`,
+            headers: {},
+        }
+        // console.log(url);
+        $.get(url, async (err, resp, data) => {
+            try {
+                // console.log(`输出data开始===================`);
+                // console.log(data);
+                // console.log(`输出data结束===================`);
+                result = JSON.parse(data);
+                for (let i = 0; i < 3; i++) {
+                    wzid = result.list[i].contentid
+                    console.log(wzid)
+                    await fbpl();
+                    await $.wait(5 * 1000);
+                    await hqplid();
+                }
 
-// 评论 (先评论，后删除)
-// 获取评论文章列表
-let pl = require('request');
-const request = require("request");
-let headers = { };
-let options = {
-    url: 'https://app.site.10yan.com.cn/index.php?s=/Api/Newsv4/newslist&page=1&type=reply&source=android',
-    headers: headers
-};
-function callback(error, response, body1) {
-    if (!error && response.statusCode == 200) {
-        // console.log(body);
-        let wz_data = JSON.parse(body1);
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
 
-        for (let i = 1; i < 3; i++) {
-            wzid = wz_data.list[i].contentid
-            console.log(wzid)
+    })
+}
 
-            //  开始发送评论
-            let request = require('request');
-            let headers = { };
-            let options = {
-                url: `https://app.site.10yan.com.cn/index.php?s=/Api/Article/artReply/&actiontype=12&contentid=${wzid}&reply=十堰越来越好了！&uid=${uid}&source=android&build=145`,
-                headers: headers
-            };
-            function callback(error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    console.log(body);
+// 发布评论
+function fbpl(timeout = 0) {
+    let axios = require('axios')
+    axios
+        .post(`https://app.site.10yan.com.cn/index.php?s=/Api/Article/artReply/&actiontype=12&contentid=${wzid}&reply=good!&sessionid=801cf37e86eaa651914b3cac0c756f9a&title=%%E6%%88%%91%%E5%%B8%%82%%E4%%B8%%80%%E5%%BD%%A9%%E5%%8F%%8B%%E5%%88%%AE%%E4%%B8%%AD%%E2%%80%%9C%%E5%%A5%%BD%%E8%%BF%%90%%E5%%8D%%81%%E5%%80%%8D%%E2%%80%%9D%%E5%%A4%%B4%%E5%%A5%%9640%%E4%%B8%%87&uid=${uid}&source=android&build=145`, {
+        })
+        .then(res => {
+            // console.log(res.data)
+        })
+        .catch(error => {
+            console.error(error)
+        })
+}
+
+// 获取评论 rid  删除评论
+function hqplid(timeout = 0) {
+    let axios = require('axios');
+
+    let config = {
+        method: 'get',
+        url: `https://app.site.10yan.com.cn/index.php?s=/Api/Article/index/&contentid=${wzid}&page=1&uid=${uid}`,
+        headers: { }
+    };
+
+    axios(config)
+        .then(function (response) {
+            console.log(`===========`)
+            // console.log(JSON.stringify(response.data));
+            // pl_data =response.data.list
+            // console.log(pl_data)
+
+            for ( i = 0; i < response.data.list.length; i++) {
+                usid = response.data.list[i].userid;
+                console.log(usid)
+                if (usid == `${uid}`) {
+                    console.log(`====111=====`)
+                    console.log(response.data.list[i].pid)
+                    console.log(`=====22=====`)
+                    // rid = response.data.list[i].pid
+                    rid = response.data.list[i].pid
+                    // console.log(`我是 rid ${rid}`)
+
+                    // 删除评论
+                    let axios = require('axios');
+                    let qs = require('qs');
+                    let data = qs.stringify({
+                        'rid': `${rid}`,
+                        'uid': `${uid}`,
+                        'source': 'android',
+                        'ver': '6.2.3',
+                        'build': '145'
+                    });
+                    let config = {
+                        method: 'post',
+                        url: 'https://app.site.10yan.com.cn/index.php?s=/Api/Article/delReply/',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data : data
+                    };
+
+                    axios(config)
+                        .then(function (response) {
+                            console.log(JSON.stringify(response.data));
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
                 }
             }
-            request(options, callback);
-
-            // 获取评论列表
-            let request1 = require('request');
-            let headers1 = { };
-            let options1 = {
-                url: `https://app.site.10yan.com.cn/index.php?s=/Api/Article/index/&contentid=${wzid}&page=1&uid=${uid}`,
-                headers: headers1
-            };
-            function callback(error, response, body2) {
-                if (!error && response.statusCode == 200) {
-                    // console.log(body2);
-                    var wzpl_data = JSON.parse(body2);
-                    for (let i = 0; i < wzpl_data.list.length; i++) {
-                        wzpl = wzpl_data.list[i].userid;
-                        console.log(wzpl)
-                        if (wzpl == `${uid}`) {
-                            console.log(`====111=====`)
-                            console.log(wzpl_data.list[i].pid)
-                            console.log(`=====22=====`)
-                            rid = wzpl_data.list[i].pid
-
-                            // 删除评论
-                            let request = require('request');
-                            let headers = {    };
-                            let dataString = `rid=${rid}&uid=${uid}&source=android&ver=6.2.3&build=145`;
-
-                            var options = {
-                                url: 'https://app.site.10yan.com.cn/index.php?s=/Api/Article/delReply/',
-                                method: 'POST',
-                                headers: headers,
-                                body: dataString
-                            };
-
-                            function callback(error, response, body) {
-                                if (!error && response.statusCode == 200) {
-                                    console.log(body);
-                                }
-                            }
-
-                            request(options, callback);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
 
 
 
-                        }
-                    }
-
+// 帖子id
+function tzid(timeout = 0) {
+    // 获取帖子 文章id
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Dynamic&isrecommend=1&page=1&uid=${uid}`,
+            headers: {},
+        }
+        // console.log(url);
+        $.get(url, async (err, resp, data) => {
+            try {
+                // console.log(`输出data开始===================`);
+                // console.log(data);
+                // console.log(`输出data结束===================`);
+                result = JSON.parse(data);
+                for (let i = 0; i < 3; i++) {
+                    tzid = result.data[i].id
+                    console.log(tzid)
+                    await tzpl();
+                    await $.wait(5 * 1000);
                 }
+
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
             }
-            request(options1, callback);
+        }, timeout)
 
-
-        }
-
-    }
+    })
 }
-pl(options, callback);
 
+// 帖子发布评论
+function tzpl(timeout = 0) {
+    var axios = require('axios');
+    var data = `content=十堰太美了!&pid=${tzid}&uid=${uid}`;
 
+    var config = {
+        method: 'post',
+        url: 'https://app.site.10yan.com.cn/index.php?s=/Api/Dynamic/reply',
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+        },
+        data : data
+    };
 
+    axios(config)
+        .then(function (response) {
+            console.log(JSON.stringify(response.data));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 
-
-// SHA-1 加密
-// npm install js-sha1
-//MD5加密  不用管
-function MD5_Encrypt(a) {
-    function b(a, b) {
-        return a << b | a >>> 32 - b
-    }
-
-    function c(a, b) {
-        var c, d, e, f, g;
-        return e = 2147483648 & a,
-            f = 2147483648 & b,
-            c = 1073741824 & a,
-            d = 1073741824 & b,
-            g = (1073741823 & a) + (1073741823 & b),
-            c & d ? 2147483648 ^ g ^ e ^ f : c | d ? 1073741824 & g ? 3221225472 ^ g ^ e ^ f : 1073741824 ^ g ^ e ^ f :
-                g ^ e ^ f
-    }
-
-    function d(a, b, c) {
-        return a & b | ~a & c
-    }
-
-    function e(a, b, c) {
-        return a & c | b & ~c
-    }
-
-    function f(a, b, c) {
-        return a ^ b ^ c
-    }
-
-    function g(a, b, c) {
-        return b ^ (a | ~c)
-    }
-
-    function h(a, e, f, g, h, i, j) {
-        return a = c(a, c(c(d(e, f, g), h), j)),
-            c(b(a, i), e)
-    }
-
-    function i(a, d, f, g, h, i, j) {
-        return a = c(a, c(c(e(d, f, g), h), j)),
-            c(b(a, i), d)
-    }
-
-    function j(a, d, e, g, h, i, j) {
-        return a = c(a, c(c(f(d, e, g), h), j)),
-            c(b(a, i), d)
-    }
-
-    function k(a, d, e, f, h, i, j) {
-        return a = c(a, c(c(g(d, e, f), h), j)),
-            c(b(a, i), d)
-    }
-
-    function l(a) {
-        for (var b, c = a.length, d = c + 8, e = (d - d % 64) / 64, f = 16 * (e + 1), g = new Array(f - 1), h = 0, i =
-            0; c > i;)
-            b = (i - i % 4) / 4,
-                h = i % 4 * 8,
-                g[b] = g[b] | a.charCodeAt(i) << h,
-                i++;
-        return b = (i - i % 4) / 4,
-            h = i % 4 * 8,
-            g[b] = g[b] | 128 << h,
-            g[f - 2] = c << 3,
-            g[f - 1] = c >>> 29,
-            g
-    }
-
-    function m(a) {
-        var b, c, d = "",
-            e = "";
-        for (c = 0; 3 >= c; c++)
-            b = a >>> 8 * c & 255,
-                e = "0" + b.toString(16),
-                d += e.substr(e.length - 2, 2);
-        return d
-    }
-
-    function n(a) {
-        a = a.replace(/\r\n/g, "\n");
-        for (var b = "", c = 0; c < a.length; c++) {
-            var d = a.charCodeAt(c);
-            128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(d >> 6 | 192),
-                b += String.fromCharCode(63 & d | 128)) : (b += String.fromCharCode(d >> 12 | 224),
-                b += String.fromCharCode(d >> 6 & 63 | 128),
-                b += String.fromCharCode(63 & d | 128))
-        }
-        return b
-    }
-
-    var o, p, q, r, s, t, u, v, w, x = [],
-        y = 7,
-        z = 12,
-        A = 17,
-        B = 22,
-        C = 5,
-        D = 9,
-        E = 14,
-        F = 20,
-        G = 4,
-        H = 11,
-        I = 16,
-        J = 23,
-        K = 6,
-        L = 10,
-        M = 15,
-        N = 21;
-    for (a = n(a),
-             x = l(a),
-             t = 1732584193,
-             u = 4023233417,
-             v = 2562383102,
-             w = 271733878,
-             o = 0; o < x.length; o += 16)
-        p = t,
-            q = u,
-            r = v,
-            s = w,
-            t = h(t, u, v, w, x[o + 0], y, 3614090360),
-            w = h(w, t, u, v, x[o + 1], z, 3905402710),
-            v = h(v, w, t, u, x[o + 2], A, 606105819),
-            u = h(u, v, w, t, x[o + 3], B, 3250441966),
-            t = h(t, u, v, w, x[o + 4], y, 4118548399),
-            w = h(w, t, u, v, x[o + 5], z, 1200080426),
-            v = h(v, w, t, u, x[o + 6], A, 2821735955),
-            u = h(u, v, w, t, x[o + 7], B, 4249261313),
-            t = h(t, u, v, w, x[o + 8], y, 1770035416),
-            w = h(w, t, u, v, x[o + 9], z, 2336552879),
-            v = h(v, w, t, u, x[o + 10], A, 4294925233),
-            u = h(u, v, w, t, x[o + 11], B, 2304563134),
-            t = h(t, u, v, w, x[o + 12], y, 1804603682),
-            w = h(w, t, u, v, x[o + 13], z, 4254626195),
-            v = h(v, w, t, u, x[o + 14], A, 2792965006),
-            u = h(u, v, w, t, x[o + 15], B, 1236535329),
-            t = i(t, u, v, w, x[o + 1], C, 4129170786),
-            w = i(w, t, u, v, x[o + 6], D, 3225465664),
-            v = i(v, w, t, u, x[o + 11], E, 643717713),
-            u = i(u, v, w, t, x[o + 0], F, 3921069994),
-            t = i(t, u, v, w, x[o + 5], C, 3593408605),
-            w = i(w, t, u, v, x[o + 10], D, 38016083),
-            v = i(v, w, t, u, x[o + 15], E, 3634488961),
-            u = i(u, v, w, t, x[o + 4], F, 3889429448),
-            t = i(t, u, v, w, x[o + 9], C, 568446438),
-            w = i(w, t, u, v, x[o + 14], D, 3275163606),
-            v = i(v, w, t, u, x[o + 3], E, 4107603335),
-            u = i(u, v, w, t, x[o + 8], F, 1163531501),
-            t = i(t, u, v, w, x[o + 13], C, 2850285829),
-            w = i(w, t, u, v, x[o + 2], D, 4243563512),
-            v = i(v, w, t, u, x[o + 7], E, 1735328473),
-            u = i(u, v, w, t, x[o + 12], F, 2368359562),
-            t = j(t, u, v, w, x[o + 5], G, 4294588738),
-            w = j(w, t, u, v, x[o + 8], H, 2272392833),
-            v = j(v, w, t, u, x[o + 11], I, 1839030562),
-            u = j(u, v, w, t, x[o + 14], J, 4259657740),
-            t = j(t, u, v, w, x[o + 1], G, 2763975236),
-            w = j(w, t, u, v, x[o + 4], H, 1272893353),
-            v = j(v, w, t, u, x[o + 7], I, 4139469664),
-            u = j(u, v, w, t, x[o + 10], J, 3200236656),
-            t = j(t, u, v, w, x[o + 13], G, 681279174),
-            w = j(w, t, u, v, x[o + 0], H, 3936430074),
-            v = j(v, w, t, u, x[o + 3], I, 3572445317),
-            u = j(u, v, w, t, x[o + 6], J, 76029189),
-            t = j(t, u, v, w, x[o + 9], G, 3654602809),
-            w = j(w, t, u, v, x[o + 12], H, 3873151461),
-            v = j(v, w, t, u, x[o + 15], I, 530742520),
-            u = j(u, v, w, t, x[o + 2], J, 3299628645),
-            t = k(t, u, v, w, x[o + 0], K, 4096336452),
-            w = k(w, t, u, v, x[o + 7], L, 1126891415),
-            v = k(v, w, t, u, x[o + 14], M, 2878612391),
-            u = k(u, v, w, t, x[o + 5], N, 4237533241),
-            t = k(t, u, v, w, x[o + 12], K, 1700485571),
-            w = k(w, t, u, v, x[o + 3], L, 2399980690),
-            v = k(v, w, t, u, x[o + 10], M, 4293915773),
-            u = k(u, v, w, t, x[o + 1], N, 2240044497),
-            t = k(t, u, v, w, x[o + 8], K, 1873313359),
-            w = k(w, t, u, v, x[o + 15], L, 4264355552),
-            v = k(v, w, t, u, x[o + 6], M, 2734768916),
-            u = k(u, v, w, t, x[o + 13], N, 1309151649),
-            t = k(t, u, v, w, x[o + 4], K, 4149444226),
-            w = k(w, t, u, v, x[o + 11], L, 3174756917),
-            v = k(v, w, t, u, x[o + 2], M, 718787259),
-            u = k(u, v, w, t, x[o + 9], N, 3951481745),
-            t = c(t, p),
-            u = c(u, q),
-            v = c(v, r),
-            w = c(w, s);
-    var O = m(t) + m(u) + m(v) + m(w);
-    return O.toLowerCase()
 }
+
+
 
 
 
