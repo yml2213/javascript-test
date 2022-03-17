@@ -1,18 +1,18 @@
 /*
-cron 8 7 * * * yml_javascript/sytt.js
+cron "18 8 * * *"
 
-软件名称：十堰头条
-下载地址：http://appx.10yan.com.cn/appshare/
-或者自己搜索下载
-3-17   完成签到、评论、分享、回帖 任务
-感谢所有测试人员
+npm install js-sha1
 
-自行安装  axios  qs  依赖；  自行安装 axios  qs  依赖；  自行安装  axios  qs  依赖；
-青龙直接node中安装就行
+软件名称：狸猫赚
+tom大佬邀请：下载地址：http://www.limaozhan.com/home/auth/registerr.html?i=12064
+我的邀请： 下载地址：http://www.limaozhan.com/home/auth/registerr.html?i=13849
+
+只写了签到，每天3毛，1元提现
+感谢tom大佬的项目，感谢leaf大佬指导
 
 注意事项 ： 一定要仔细阅读一下内容
 =============青龙变量格式=============
-export yml_sytt_data='手机号&密码'
+export yml_sytt_data='username=手机号&password=密码'
  多账号使用 @ 分割；
 
 =============青龙变量实例=============
@@ -28,10 +28,13 @@ const axios = require("axios");
 const qs = require("qs");
 const $ = new Env('十堰头条');
 const notify = $.isNode() ? require('./sendNotify') : '';
+// let body='';
 let app_yml_sytt_data='';
 let user = '';
 let pwd = '';
 let uid;
+
+
 
 
 !(async () => {
@@ -49,7 +52,7 @@ let uid;
     }
 
     console.log(`-------- 共 ${app_yml_sytt_data.length} 个账号 --------`)
-    // console.log(app_yml_sytt_data)
+    console.log(app_yml_sytt_data)
     console.log(
         `\n\n====== 脚本执行 - 北京时间(UTC+8)：${new Date(
             new Date().getTime() +
@@ -64,12 +67,13 @@ let uid;
         $.index = i + 1;
         console.log(`\n====== 开始【第 ${$.index} 个账号】======`)
         // console.log(`这里是分割后:${app_yml_sytt_data}`);
+
         data = app_yml_sytt_data[i].split('&');
         // console.log(`====== ${data}`)
         user = data[0]
-        // console.log(`====user==== ${user}`)
+        console.log(`====user==== ${user}`)
         pwd = data[1]
-        // console.log(`====pwd==== ${pwd}`)
+        console.log(`====pwd==== ${pwd}`)
 
         //执行任务
         await syttdl();
@@ -78,10 +82,9 @@ let uid;
         await $.wait(2 * 1000);
         await plid();
         await $.wait(2 * 1000);
-        await fxwz();
-        await $.wait(2 * 1000);
-        await tzid();
-        await $.wait(2 * 1000);
+        // await tzid();
+        // await $.wait(2 * 1000);
+
     }
 
 })()
@@ -110,6 +113,7 @@ function wyy(timeout = 3 * 1000) {
 }
 
 
+
 // 登录
 function syttdl(timeout = 0) {
     urldl = `https://app.site.10yan.com.cn/index.php?s=/Api/Loginv3/signInv3&password=${pwd}&username=${user}`
@@ -123,19 +127,18 @@ function syttdl(timeout = 0) {
         // console.log(url);
         $.post(url, async (err, resp, data) => {
             try {
-                // console.log(`输出 登录 data开始===================`);
-                // console.log(data);
-                // console.log(`输出 登录 data结束===================`);
+                console.log(`输出data开始===================`);
+                console.log(data);
+                console.log(`输出data结束===================`);
                 result = JSON.parse(data);
                 if (result.code == "200") {
-                    console.log(`登录用户： ${user}`)
                     $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】登录状态: ${result.retinfo} ✅ `)
                     // await $.wait(3 * 1000)
                 }else {
                     $.log(`\n【🎉 恭喜个屁 🎉】登录状态:${result.retinfo} `)
                 }
                 uid = result.data.uid
-                console.log(`这是你的用户id：uid=${uid}`)
+                console.log(uid)
             } catch (e) {
                 $.logErr(e, resp);
             } finally {
@@ -150,15 +153,15 @@ function syttdl(timeout = 0) {
 function syttqd(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Activityv1/sign&uid=${uid}&source=android&ver=6.2.3&build=145`,
+            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Activityv1/sign&uid=${uid}&ver=6.2.3&build=145`,
             headers:'',
         }
         // console.log(url);
-        $.get(url, async (err, resp, data) => {
+        $.post(url, async (err, resp, data) => {
             try {
-                // console.log(`========输出签到 data开始===========`);
-                // console.log(data);
-                // console.log(`========输出签到 data结束=========`);
+                console.log(`输出data开始===================`);
+                console.log(data);
+                console.log(`输出data结束===================`);
                 result = JSON.parse(data);
                 if (result.code == 200) {
                     $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】签到状态:(${result.retinfo}) ,获得 ${result.money}  ✅ `)
@@ -178,7 +181,7 @@ function syttqd(timeout = 0) {
     })
 }
 
-//  评论任务部分
+
 // 评论id
 function plid(timeout = 0) {
     // 获取文章id
@@ -190,21 +193,17 @@ function plid(timeout = 0) {
         // console.log(url);
         $.get(url, async (err, resp, data) => {
             try {
-                // console.log(`输出 data开始===================`);
+                // console.log(`输出data开始===================`);
                 // console.log(data);
                 // console.log(`输出data结束===================`);
                 result = JSON.parse(data);
-                for (let l = 0; l < 3; l++) {
-                    // console.log(`我是l===== ${l}`)
-                    wzid = result.list[l].contentid
-                    console.log(`获取评论文章id=${wzid}`)
-                    console.log(`开始发布评论`)
+                for (let i = 0; i < 3; i++) {
+                    console.log(`我是i===== ${i}`)
+                    wzid = result.list[i].contentid
+                    console.log(wzid)
                     await fbpl();
-                    console.log(`延迟5秒`)
                     await $.wait(5 * 1000);
-                    console.log(`删除评论`)
                     await hqplid();
-                    console.log(`\n`)
                 }
 
             } catch (e) {
@@ -216,6 +215,7 @@ function plid(timeout = 0) {
 
     })
 }
+
 // 发布评论
 function fbpl(timeout = 0) {
     let axios = require('axios')
@@ -229,7 +229,8 @@ function fbpl(timeout = 0) {
             console.error(error)
         })
 }
-// 获取评论 rid 并 删除评论
+
+// 获取评论 rid  删除评论
 function hqplid(timeout = 0) {
     let axios = require('axios');
     let config = {
@@ -243,16 +244,17 @@ function hqplid(timeout = 0) {
             // console.log(JSON.stringify(response.data));
             // pl_data =response.data.list
             // console.log(pl_data)
-            for ( k = 0; k < response.data.list.length; k++) {
-                usid = response.data.list[k].userid;
-                // console.log(usid)
+
+            for ( i = 0; i < response.data.list.length; i++) {
+                usid = response.data.list[i].userid;
+                console.log(usid)
                 if (usid == `${uid}`) {
-                    // console.log(`====rid 开始=====`)
-                    // console.log(response.data.list[k].pid)
-                    // console.log(`=====rid 结束=====`)
+                    console.log(`====rid 开始=====`)
+                    console.log(response.data.list[i].pid)
+                    console.log(`=====rid 结束=====`)
                     // rid = response.data.list[i].pid
-                    rid = response.data.list[k].pid
-                    // console.log(`我是 rid ${rid}`)
+                    rid = response.data.list[i].pid
+                    console.log(`我是 rid ${rid}`)
 
                     // 删除评论
                     let axios = require('axios');
@@ -275,7 +277,7 @@ function hqplid(timeout = 0) {
 
                     axios(config)
                         .then(function (response) {
-                            // console.log(JSON.stringify(response.data));
+                            console.log(JSON.stringify(response.data));
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -288,61 +290,6 @@ function hqplid(timeout = 0) {
         });
 }
 
-// 分享任务部分
-// 分享
-function fxwz(timeout = 0) {
-    // 获取分享文章列表 id
-    return new Promise((resolve) => {
-        let url = {
-            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Newsv4/newslist&page=1&type=share&ver=6.2.3`,
-            headers: {},
-        }
-        // console.log(url);
-        $.get(url, async (err, resp, data) => {
-            try {
-                // console.log(`输出 data开始===================`);
-                // console.log(data);
-                // console.log(`输出data结束===================`);
-                result = JSON.parse(data);
-                for (let m = 0; m < 3; m++) {
-                    // console.log(`我是m===== ${m}`)
-                    fxwzid = result.list[m].contentid
-                    console.log(`获取分享文章id=${fxwzid}`)
-                    console.log(`开始分享文章`)
-                    await fxwz1();
-                    console.log(`延迟5秒`)
-                    await $.wait(5 * 1000);
-                    console.log(`\n`)
-                }
-
-            } catch (e) {
-                $.logErr(e, resp);
-            } finally {
-                resolve()
-            }
-        }, timeout)
-
-    })
-}
-
-// 文章分享调用函数
-function fxwz1(timeout = 0) {
-    let axios = require('axios');
-    let config = {
-        method: 'get',
-        url: `https://app.site.10yan.com.cn/index.php?s=/Api/Activityv1/getNewsShareTask&contentid=${fxwzid}&uid=${uid}&source=android&ver=6.2.3`,
-        headers: { }
-    };
-
-    axios(config)
-        .then(function (response) {
-            console.log(JSON.stringify(response.data));
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-
-}
 
 
 // 帖子id
@@ -360,17 +307,15 @@ function tzid(timeout = 0) {
                 // console.log(data);
                 // console.log(`输出data结束===================`);
                 result = JSON.parse(data);
-                for (let n = 0; n < 3; n++) {
-                    tzid1 = result.data[n].id
-                    console.log(`开始回帖：id=${tzid1}`)
+                for (let i = 0; i < 3; i++) {
+                    tzid = result.data[i].id
+                    console.log(tzid)
                     await tzpl();
-                    console.log(`延迟5秒`)
                     await $.wait(5 * 1000);
-                    console.log(`\n`)
                 }
 
             } catch (e) {
-                // $.logErr(e, resp);
+                $.logErr(e, resp);
             } finally {
                 resolve()
             }
@@ -378,10 +323,12 @@ function tzid(timeout = 0) {
 
     })
 }
+
 // 帖子发布评论
 function tzpl(timeout = 0) {
     var axios = require('axios');
-    var data = `content=%E5%A4%AA%E6%BC%82%E4%BA%AE%E4%BA%86%E9%B8%AD&pid=${tzid1}&uid=${uid}&source=android&ver=6.2.3&build=145`
+    var data = `content=十堰太美了!&pid=${tzid}&uid=${uid}`;
+
     var config = {
         method: 'post',
         url: 'https://app.site.10yan.com.cn/index.php?s=/Api/Dynamic/reply',
@@ -393,19 +340,13 @@ function tzpl(timeout = 0) {
 
     axios(config)
         .then(function (response) {
-            // console.log(JSON.stringify(response.data));
+            console.log(JSON.stringify(response.data));
         })
         .catch(function (error) {
             console.log(error);
         });
 
 }
-
-
-
-
-
-
 
 
 
