@@ -21,11 +21,14 @@ export yml_snyg_cookie='6ac76a12-a014-4421-92a8-3d1a9a9e1c40'
 =============变量获取==========
 懒得写了，自己研究吧
 
+
+https://gameapi.suning.com/sngame-web/msign/gateway/sign.do?activityCode=ACT0000011945&detect=&deviceSessionId=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&dfpToken=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&sceneCode=&termiType=M-phone&termiSys=IOS&appType=browser&miniSource=&appVersion=&openId=&unionId=&businessSystem=SNGAME&businessChannel=01&channel=MOBILE&deviceId=&_device_session_id=&referenceURL=https%3A%2F%2Foss.suning.com%2Fsngame%2Fsngame_h5%2FGM0187%2FqianDao%2Findex.html%3FgameId%3DGM0187%26activityCode%3DACT0000011945%26wx_navbar_transparent%3Dtrue%26v%3D0124%23%2F&riskToken=9260c0dc-74ed-4eef-b8cd-63f5a6c2a0e5
+
               圈x填写格式
 ============= mimt(主机名) =============
-mimt= app.geely.com
+mimt= gameapi.suning.com
 ============= 重写 =============
-https://app.geely.com/api/v1/user/sign  url  script-request-body  https://raw.githubusercontent.com/yml2213/javascript/master/snyg/snyg.js
+https://gameapi.suning.com/sngame-web/msign/gateway  url  script-request-body  https://raw.githubusercontent.com/yml2213/javascript/master/snyg/snyg.js
 
 还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
 
@@ -111,6 +114,7 @@ let yml_snygbody = $.getdata('yml_snygbody')
 
                         await snygqd_qx()//你要执行的版块
                         await $.wait(2 * 1000); //你要延迟的时间  1000=1秒
+                        return
 
                     }
                 }
@@ -169,7 +173,7 @@ function wyy(timeout = 3 * 1000) {
 // 圈x执行
 
 function yml_snygck() {
-    if ($request.url.indexOf("sign") > -1) {
+    if ($request.url.indexOf("sign.do") > -1) {
         const yml_snygurl = $request.url
         if (yml_snygurl) $.setdata(yml_snygurl, `yml_snygurl${status}`)
         $.log(yml_snygurl)
@@ -187,28 +191,28 @@ function yml_snygck() {
     }
 }
 // 签到
-// https://app.geely.com/api/v1/user/sign/
+// https://gameapi.suning.com/sngame-web/msign/gateway/sign.do?activityCode=ACT0000011945&detect=&deviceSessionId=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&dfpToken=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&sceneCode=&termiType=M-phone&termiSys=IOS&appType=browser&miniSource=&appVersion=&openId=&unionId=&businessSystem=SNGAME&businessChannel=01&channel=MOBILE&deviceId=&_device_session_id=&referenceURL=https%3A%2F%2Foss.suning.com%2Fsngame%2Fsngame_h5%2FGM0187%2FqianDao%2Findex.html%3FgameId%3DGM0187%26activityCode%3DACT0000011945%26wx_navbar_transparent%3Dtrue%26v%3D0124%23%2F&riskToken=9260c0dc-74ed-4eef-b8cd-63f5a6c2a0e5
 function snygqd_qx(timeout = 0) {
     return new Promise((resolve) => {
 
         let url = {
-            url: `https://app.geely.com/api/v1/user/sign/`,
+            url: yml_snygurl,
             headers: JSON.parse(yml_snyghd),
-            body: yml_snygbody,
+            // body: yml_snygbody,
         }
-        $.post(url, async (err, resp, data) => {
+        console.log(`=========url=========`)
+        console.log(url)
+        $.get(url, async (err, resp, data) => {
             try {
 
                 data = JSON.parse(data)
+                console.log(data)
 
-                if (data.code == success) {
+                if (data.code == 1) {
 
-                    console.log(`【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】签到状态:签到成功  ✅ `)
+                    console.log(`【🎉🎉🎉 签到状态 🎉🎉🎉】: ${result.data.msg}`)
 
 
-                } else {
-
-                    console.log(`\n【🎉 恭喜个屁 🎉】签到转态:失败 ❌ 了呢,${data.message} `)
                 }
             } catch (e) {
 
