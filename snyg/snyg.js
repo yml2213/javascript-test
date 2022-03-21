@@ -39,7 +39,7 @@ const $ = new Env('苏宁易购');
 const notify = $.isNode() ? require('./sendNotify') : '';
 let app_yml_snyg_cookie = []
 
-// 圈x
+// 圈x声明变量
 let status;
 status = (status = ($.getval("yml_snygstatus") || "1")) > 1 ? `${status}` : "";
 const yml_snygurlArr = [], yml_snyghdArr = [], yml_snygbodyArr = [], yml_snygcount = ''
@@ -48,6 +48,7 @@ let yml_snyghd = $.getdata('yml_snyghd')
 let yml_snygbody = $.getdata('yml_snygbody')
 
 
+// 开始执行脚本
 !(async () => {
     if ($.isNode()) {
         if (!process.env.yml_snyg_cookie) {
@@ -234,13 +235,13 @@ function yml_snyg_qd(timeout = 3 * 1000) {
         let url = {
             url: `https://gameapi.suning.com/sngame-web/msign/gateway/sign.do?activityCode=ACT0000011945&detect=&deviceSessionId=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&dfpToken=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&sceneCode=&termiType=M-phone&termiSys=IOS&appType=browser&miniSource=&appVersion=&openId=&unionId=&businessSystem=SNGAME&businessChannel=01&channel=MOBILE&deviceId=&_device_session_id=&referenceURL=https%3A%2F%2Foss.suning.com%2Fsngame%2Fsngame_h5%2FGM0187%2FqianDao%2Findex.html%3FgameId%3DGM0187%26activityCode%3DACT0000011945%26wx_navbar_transparent%3Dtrue%26v%3D0124%23%2F&riskToken=9260c0dc-74ed-4eef-b8cd-63f5a6c2a0e5`,
             headers: {
-                "Cookie":yml_snyg_cookie,
+                "Cookie": yml_snyg_cookie,
             },
             // body : '',
 
         }
         // console.log(url);
-        $.get(url,async (error, response, data) => {
+        $.get(url, async (error, response, data) => {
             try {
                 // console.log(data)
                 let result = JSON.parse(data);
@@ -255,7 +256,7 @@ function yml_snyg_qd(timeout = 3 * 1000) {
             } finally {
                 resolve();
             }
-        },timeout)
+        }, timeout)
     })
 }
 
