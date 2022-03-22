@@ -237,7 +237,6 @@ function yml_snyg_qd(timeout = 3 * 1000) {
             headers: {
                 "Cookie": yml_snyg_cookie,
             },
-            // body : '',
 
         }
         // console.log(url);
