@@ -1,92 +1,116 @@
 /*
-cron 18 7 * * * yml_javascript/snyg.js
+cron 18 7 * * * yml_javascript/xlh.js
 
-软件名称：苏宁易购 app
-下载地址：应用商店自行下载
-收益: 只有积分,要很久才能换东西  自行决定跑不跑
+软件名称：骁龙会 微信小程序
+羊毛地址：微信扫码打开
+收益: 只有积分,可以换购b站会员欧   自行决定跑不跑
 
-3-20   签到任务  有效期测试中 进行双平台脚本测试,青龙加圈x
+3-22   签到任务 、 阅读5/15分钟任务 完成，商城任务暂时没写   有效期测试中 
+计划行双平台脚本测试,青龙完成  圈x还在写 
 感谢所有测试人员
 
 注意事项 ： 一定要仔细阅读一下内容
               青龙填写格式
 =============青龙变量格式=============
-export yml_snyg_cookie=''
+必填变量：  export yml_xlh_data='xxx&xxxx@xxx&xxxx'   
+可选变量    yml_xlh_UA='xxxxxx'
  多账号使用 @ 分割；
-(给小白啰嗦一句:export XXX ==> 是青龙 "配置文件" 变量格式; 如果要在 "环境变量" 中添加,不需要export)
+(再给小白啰嗦一句:export XXX ==> 是青龙 "配置文件" 变量格式; 如果要在 "环境变量" 中添加,不需要export)
 =============青龙变量实例=============
-export yml_snyg_cookie='6ac76a12-a014-4421-92a8-3d1a9a9e1c40'
+export yml_xlh_data='6ac76a12-a014-4421-92a8-3d1a9a9e1c40'
 =============变量解释==========
-只需要自己抓包一个token即可
+sessionKey&userId    抓包小程序即可  随便一个包就有相关变量
+UA是 User-Agent 的简称   自己填写自己抓包的即可，不填使用默认UA
 =============变量获取==========
 懒得写了，自己研究吧
 
-
-https://gameapi.suning.com/sngame-web/msign/gateway/sign.do?activityCode=ACT0000011945&detect=&deviceSessionId=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&dfpToken=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&sceneCode=&termiType=M-phone&termiSys=IOS&appType=browser&miniSource=&appVersion=&openId=&unionId=&businessSystem=SNGAME&businessChannel=01&channel=MOBILE&deviceId=&_device_session_id=&referenceURL=https%3A%2F%2Foss.suning.com%2Fsngame%2Fsngame_h5%2FGM0187%2FqianDao%2Findex.html%3FgameId%3DGM0187%26activityCode%3DACT0000011945%26wx_navbar_transparent%3Dtrue%26v%3D0124%23%2F&riskToken=9260c0dc-74ed-4eef-b8cd-63f5a6c2a0e5
-
-              圈x填写格式
+            
+              圈x填写格式  
 ============= mimt(主机名) =============
-mimt= gameapi.suning.com
+mimt= 
 ============= 重写 =============
-https://gameapi.suning.com/sngame-web/msign/gateway  url  script-request-body  https://raw.githubusercontent.com/yml2213/javascript/master/snyg/snyg.js
+xxxx  url  script-request-body  xxxxx
 
 还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
 
 */
 
 
-const $ = new Env('苏宁易购');
+const $ = new Env('骁龙会');
 const notify = $.isNode() ? require('./sendNotify') : '';
-let app_yml_snyg_cookie = []
+let wx_yml_xlh_data = [], yml_xlh_UA = [] , wx_yml_xlh_UA = [];
+
 
 // 圈x声明变量
 let status;
-status = (status = ($.getval("yml_snygstatus") || "1")) > 1 ? `${status}` : "";
-const yml_snygurlArr = [], yml_snyghdArr = [], yml_snygbodyArr = [], yml_snygcount = ''
-let yml_snygurl = $.getdata('yml_snygurl')
-let yml_snyghd = $.getdata('yml_snyghd')
-let yml_snygbody = $.getdata('yml_snygbody')
+status = (status = ($.getval("yml_xlhstatus") || "1")) > 1 ? `${status}` : "";
+const yml_xlhurlArr = [], yml_xlhhdArr = [], yml_xlhbodyArr = [], yml_xlhcount = ''
+let yml_xlhurl = $.getdata('yml_xlhurl')
+let yml_xlhhd = $.getdata('yml_xlhhd')
+let yml_xlhbody = $.getdata('yml_xlhbody')
 
 
 // 开始执行脚本
 !(async () => {
     if ($.isNode()) {
-        if (!process.env.yml_snyg_cookie) {
-            console.log(`\n【${$.name}】：未填写相应变量 yml_snyg_cookie`);
+        if (!process.env.yml_xlh_data) {
+            console.log(`\n【${$.name}】：未填写 必填 变量 yml_xlh_data`);
             return;
         }
-
-        if (process.env.yml_snyg_cookie && process.env.yml_snyg_cookie.indexOf('@') > -1) {
-            yml_snyg_cookie = process.env.yml_snyg_cookie.split('@');
-        } else if (process.env.yml_snyg_cookie && process.env.yml_snyg_cookie.indexOf('\n') > -1) {
-            yml_snyg_cookie = process.env.yml_snyg_cookie.split('\n');
+        // UA判断部分
+        if (!process.env.yml_xlh_UA) {
+            console.log(`\n【${$.name}】：未填写 UA 变量 yml_xlh_UA ,将默认分配一个`);
         } else {
-            yml_snyg_cookie = process.env.yml_snyg_cookie.split();
+            if (process.env.yml_xlh_UA && process.env.yml_xlh_UA.indexOf('@') > -1) {
+                yml_xlh_UA = process.env.yml_xlh_UA.split('@');
+            } else if (process.env.yml_xlh_UA && process.env.yml_xlh_UA.indexOf('\n') > -1) {
+                yml_xlh_UA = process.env.yml_xlh_UA.split('\n');
+            } else {
+                yml_xlh_UA = process.env.yml_xlh_UA.split();
+            }
         }
 
-        Object.keys(yml_snyg_cookie).forEach((item) => {
-            if (yml_snyg_cookie[item]) {
-                app_yml_snyg_cookie.push(yml_snyg_cookie[item]);
+        Object.keys(yml_xlh_UA).forEach((item) => {
+            if (yml_xlh_UA[item]) {
+                wx_yml_xlh_UA.push(yml_xlh_UA[item]);
+            }
+            ;
+        });
+
+
+
+        // 必要变量判断部分
+        if (process.env.yml_xlh_data && process.env.yml_xlh_data.indexOf('@') > -1) {
+            yml_xlh_data = process.env.yml_xlh_data.split('@');
+        } else if (process.env.yml_xlh_data && process.env.yml_xlh_data.indexOf('\n') > -1) {
+            yml_xlh_data = process.env.yml_xlh_data.split('\n');
+        } else {
+            yml_xlh_data = process.env.yml_xlh_data.split();
+        }
+
+        Object.keys(yml_xlh_data).forEach((item) => {
+            if (yml_xlh_data[item]) {
+                wx_yml_xlh_data.push(yml_xlh_data[item]);
             }
         });
 
     } else {
         if (typeof $request !== "undefined") {
 
-            yml_snygck()
+            yml_xlhck()
 
         } else {
-            yml_snygurlArr.push($.getdata('yml_snygurl'))
-            yml_snyghdArr.push($.getdata('yml_snyghd'))
-            yml_snygbodyArr.push($.getdata('yml_snygbody'))
+            yml_xlhurlArr.push($.getdata('yml_xlhurl'))
+            yml_xlhhdArr.push($.getdata('yml_xlhhd'))
+            yml_xlhbodyArr.push($.getdata('yml_xlhbody'))
 
-            let yml_snygcount = ($.getval('yml_snygcount') || '1');
+            let yml_xlhcount = ($.getval('yml_xlhcount') || '1');
 
-            for (let i = 2; i <= yml_snygcount; i++) {
+            for (let i = 2; i <= yml_xlhcount; i++) {
 
-                yml_snygurlArr.push($.getdata(`yml_snygurl${i}`))
-                yml_snyghdArr.push($.getdata(`yml_snyghd${i}`))
-                yml_snygbodyArr.push($.getdata(`yml_snygbody${i}`))
+                yml_xlhurlArr.push($.getdata(`yml_xlhurl${i}`))
+                yml_xlhhdArr.push($.getdata(`yml_xlhhd${i}`))
+                yml_xlhbodyArr.push($.getdata(`yml_xlhbody${i}`))
 
             }
 
@@ -97,23 +121,23 @@ let yml_snygbody = $.getdata('yml_snygbody')
                     8 * 60 * 60 * 1000
                 ).toLocaleString()} ===============================================\n`);
 
-            for (let i = 0; i < yml_snyghdArr.length; i++) {
+            for (let i = 0; i < yml_xlhhdArr.length; i++) {
 
-                if (yml_snyghdArr[i]) {
+                if (yml_xlhhdArr[i]) {
 
-                    yml_snygurl = yml_snygurlArr[i];
-                    yml_snyghd = yml_snyghdArr[i];
-                    yml_snygbody = yml_snygbodyArr[i];
+                    yml_xlhurl = yml_xlhurlArr[i];
+                    yml_xlhhd = yml_xlhhdArr[i];
+                    yml_xlhbody = yml_xlhbodyArr[i];
 
                     $.index = i + 1;
-                    console.log(`\n\n开始【苏宁易购${$.index}】`)
+                    console.log(`\n\n开始【骁龙会${$.index}】`)
 
 
                     //循环运行
                     for (let c = 0; c < 1; c++) {
                         $.index = c + 1
 
-                        await snygqd_qx()//你要执行的版块
+                        await xlhqd_qx()//你要执行的版块
                         await $.wait(2 * 1000); //你要延迟的时间  1000=1秒
                         return
 
@@ -123,28 +147,50 @@ let yml_snygbody = $.getdata('yml_snygbody')
         }
     }
 
-
-    console.log(
-        `\n=== 脚本执行 - 北京时间：${new Date(
-            new Date().getTime() +
-            new Date().getTimezoneOffset() * 60 * 1000 +
-            8 * 60 * 60 * 1000
-        ).toLocaleString()} ===\n`
-    );
+    // 脚本开始执行
+    console.log(`\n=== 脚本执行 - 北京时间：${new Date(new Date().getTime() + new Date().getTimezoneOffset()
+        * 60 * 1000 + 8 * 60 * 60 * 1000).toLocaleString()} ===\n`);
 
     await wyy();
 
-    console.log(`===【共 ${app_yml_snyg_cookie.length} 个账号】===\n`);
-    for (i = 0; i < app_yml_snyg_cookie.length; i++) {
-        yml_snyg_cookie = app_yml_snyg_cookie[i]
-        // console.log(yml_snyg_cookie)
+    console.log(`===【共 ${wx_yml_xlh_data.length} 个账号】===\n`);
+    for (i = 0; i < wx_yml_xlh_data.length; i++) {
+
+        yml_xlh_UA = wx_yml_xlh_UA[i]
+        if (!yml_xlh_UA) {
+            yml_xlh_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.18(0x18001239) NetType/WIFI Language/zh_CN'
+        }
+        // console.log(yml_xlh_UA);
+
+        yml_xlh_data = wx_yml_xlh_data[i].split('&');
+
+        // console.log(wx_yml_xlh_data);
+        // console.log(yml_xlh_data[0])
+        // console.log(yml_xlh_data[1])
+
+        // console.log(userId[1]);
 
         $.index = i + 1;
         console.log(`\n开始【第 ${$.index} 个账号任务】`);
 
         //执行任务
-        await yml_snyg_qd()
+        // 签到
+        await yml_xlh_sign()
         await $.wait(2 * 1000);
+
+        // 获取文章列表
+        await yml_xlh_articles()
+        await $.wait(2 * 1000);
+
+        // 阅读文章
+        await yml_xlh_enterRead()
+        await $.wait(2 * 1000);
+
+        // 停止阅读文章
+        await yml_xlh_exitRead()
+        await $.wait(2 * 1000);
+
+
     }
 
 })()
@@ -171,35 +217,35 @@ function wyy(timeout = 3 * 1000) {
         }, timeout)
     })
 }
+
 // 圈x执行
 
-function yml_snygck() {
+function yml_xlhck() {
     if ($request.url.indexOf("sign.do") > -1) {
-        const yml_snygurl = $request.url
-        if (yml_snygurl) $.setdata(yml_snygurl, `yml_snygurl${status}`)
-        $.log(yml_snygurl)
+        const yml_xlhurl = $request.url
+        if (yml_xlhurl) $.setdata(yml_xlhurl, `yml_xlhurl${status}`)
+        $.log(yml_xlhurl)
 
-        const yml_snyghd = JSON.stringify($request.headers)
-        if (yml_snyghd) $.setdata(yml_snyghd, `yml_snyghd${status}`)
-        $.log(yml_snyghd)
+        const yml_xlhhd = JSON.stringify($request.headers)
+        if (yml_xlhhd) $.setdata(yml_xlhhd, `yml_xlhhd${status}`)
+        $.log(yml_xlhhd)
 
-        const yml_snygbody = $request.body
-        if (yml_snygbody) $.setdata(yml_snygbody, `yml_snygbody${status}`)
-        $.log(yml_snygbody)
+        const yml_xlhbody = $request.body
+        if (yml_xlhbody) $.setdata(yml_xlhbody, `yml_xlhbody${status}`)
+        $.log(yml_xlhbody)
 
-        $.msg($.name, "", `苏宁易购${status}获取headers成功`)
+        $.msg($.name, "", `骁龙会${status}获取headers成功`)
 
     }
 }
 // 签到
-// https://gameapi.suning.com/sngame-web/msign/gateway/sign.do?activityCode=ACT0000011945&detect=&deviceSessionId=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&dfpToken=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&sceneCode=&termiType=M-phone&termiSys=IOS&appType=browser&miniSource=&appVersion=&openId=&unionId=&businessSystem=SNGAME&businessChannel=01&channel=MOBILE&deviceId=&_device_session_id=&referenceURL=https%3A%2F%2Foss.suning.com%2Fsngame%2Fsngame_h5%2FGM0187%2FqianDao%2Findex.html%3FgameId%3DGM0187%26activityCode%3DACT0000011945%26wx_navbar_transparent%3Dtrue%26v%3D0124%23%2F&riskToken=9260c0dc-74ed-4eef-b8cd-63f5a6c2a0e5
-function snygqd_qx(timeout = 0) {
+function xlhqd_qx(timeout = 0) {
     return new Promise((resolve) => {
 
         let url = {
-            url: yml_snygurl,
-            headers: JSON.parse(yml_snyghd),
-            // body: yml_snygbody,
+            url: yml_xlhurl,
+            headers: JSON.parse(yml_xlhhd),
+            // body: yml_xlhbody,
         }
         console.log(`=========url=========`)
         console.log(url)
@@ -229,25 +275,37 @@ function snygqd_qx(timeout = 0) {
 
 
 // 签到  ql执行
-// https://gameapi.suning.com/sngame-web/msign/gateway/sign.do?activityCode=ACT0000011945&detect=&deviceSessionId=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&dfpToken=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&sceneCode=&termiType=M-phone&termiSys=IOS&appType=browser&miniSource=&appVersion=&openId=&unionId=&businessSystem=SNGAME&businessChannel=01&channel=MOBILE&deviceId=&_device_session_id=&referenceURL=https%3A%2F%2Foss.suning.com%2Fsngame%2Fsngame_h5%2FGM0187%2FqianDao%2Findex.html%3FgameId%3DGM0187%26activityCode%3DACT0000011945%26wx_navbar_transparent%3Dtrue%26v%3D0124%23%2F&riskToken=9260c0dc-74ed-4eef-b8cd-63f5a6c2a0e5
-function yml_snyg_qd(timeout = 3 * 1000) {
+// https://qualcomm.growthideadata.com/qualcomm-app/api/user/signIn?userId=281687
+function yml_xlh_sign(timeout = 3 * 1000) {
     return new Promise((resolve, reject) => {
         let url = {
-            url: `https://gameapi.suning.com/sngame-web/msign/gateway/sign.do?activityCode=ACT0000011945&detect=&deviceSessionId=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&dfpToken=TIa9aYh6pCNDn9Z6jVzL93b4e___w7DDpsKvw7dCw60ZbMOxLmnCocOIDMOGw7BZwqPCvMOk_1&sceneCode=&termiType=M-phone&termiSys=IOS&appType=browser&miniSource=&appVersion=&openId=&unionId=&businessSystem=SNGAME&businessChannel=01&channel=MOBILE&deviceId=&_device_session_id=&referenceURL=https%3A%2F%2Foss.suning.com%2Fsngame%2Fsngame_h5%2FGM0187%2FqianDao%2Findex.html%3FgameId%3DGM0187%26activityCode%3DACT0000011945%26wx_navbar_transparent%3Dtrue%26v%3D0124%23%2F&riskToken=9260c0dc-74ed-4eef-b8cd-63f5a6c2a0e5`,
+            url: `https://qualcomm.growthideadata.com/qualcomm-app/api/user/signIn?userId=${yml_xlh_data[1]}`,
             headers: {
-                "Cookie": yml_snyg_cookie,
+
+                "userId": yml_xlh_data[1],
+                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                "Host": "qualcomm.growthideadata.com",
+                "User-Agent": yml_xlh_UA,
+                "sessionKey": yml_xlh_data[0],
+                "Referer": "https://servicewechat.com/wx026c06df6adc5d06/176/page-frame.html",
+                "Connection": "keep-alive"
             },
 
         }
+        // console.log(`===================这是请求url===================`);
         // console.log(url);
         $.get(url, async (error, response, data) => {
             try {
+                // console.log(`===================这是返回data===================`);
                 // console.log(data)
                 let result = JSON.parse(data);
-                if (result.code == 1) {
-
-                    console.log(`【🎉🎉🎉 签到状态 🎉🎉🎉】: ${result.data.msg}`)
-
+                if (result.code == 200) {
+                    console.log(`【🎉🎉🎉 签到状态 🎉🎉🎉】 ${result.message}`)
+                } else if (result.code === 1) {
+                    $.log(`\n【🎉🎉🎉 签到状态 🎉🎉🎉】 未能成功签到 ,可能是:${result.message}!\n `)
+                }
+                else {
+                    $.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,可能是被外星人偷走了!\n `)
                 }
 
             } catch (e) {
@@ -258,6 +316,180 @@ function yml_snyg_qd(timeout = 3 * 1000) {
         }, timeout)
     })
 }
+
+
+// 阅读任务部分
+// 获取文章列表,随机选择一篇文章获取 articleId 
+function yml_xlh_articles(timeout = 3 * 1000) {
+    return new Promise((resolve, reject) => {
+
+        let d = new Date();
+        let y = d.getFullYear();
+        let m = d.getMonth() + 1;
+        m = m.toString();
+        if (m.length == 1) {
+            m = `0${m}`
+        }
+        let time = `${y}-${m}`;
+        // console.log(time);
+
+        let url = {
+            url: `https://qualcomm.growthideadata.com/qualcomm-app/api/home/articles?page=1&size=20&userId=${yml_xlh_data[1]}&labelId=&searchDate=${time}&showType=0`,
+            headers: {
+
+                "userId": yml_xlh_data[1],
+                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                "Host": "qualcomm.growthideadata.com",
+                "User-Agent": yml_xlh_UA,
+                "sessionKey": yml_xlh_data[0],
+                "Referer": "https://servicewechat.com/wx026c06df6adc5d06/176/page-frame.html",
+                "Connection": "keep-alive"
+            },
+
+        }
+        // console.log(`===================这是请求url===================`);
+        // console.log(url);
+
+        $.get(url, async (error, response, data) => {
+            try {
+
+                // console.log(`===================这是返回data===================`);
+                // console.log(data)
+
+                let result = JSON.parse(data);
+                if (result.code == 200) {
+                    console.log(`【🎉🎉🎉 恭喜 🎉🎉🎉】\n 文章列表刷新成功了鸭!\n`)
+
+                    console.log(`\n 请耐心等待 5 s\n`)
+                    await $.wait(5 * 1000);
+
+                    // 随机1-10 数字
+                    let num = Math.floor(Math.random() * 10 + 1);
+                    // console.log(num);
+
+                    // 获取 articleId
+                    articleId = result.data.articleList[num].id;
+                    // console.log(articleId);
+                    // 获取 title
+                    title = result.data.articleList[num].title;
+                    // console.log(title);
+
+                }
+
+            } catch (e) {
+                console.log(error)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+
+// 开始阅读
+// https://qualcomm.growthideadata.com/qualcomm-app/api/article/enterRead?articleId=7626&userId=281687
+function yml_xlh_enterRead(timeout = 3 * 1000) {
+    return new Promise((resolve, reject) => {
+        let url = {
+            url: `https://qualcomm.growthideadata.com/qualcomm-app/api/article/enterRead?articleId=${articleId}&userId=${yml_xlh_data[1]}`,
+            headers: {
+
+                "userId": yml_xlh_data[1],
+                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                "Host": "qualcomm.growthideadata.com",
+                "User-Agent": yml_xlh_UA,
+                "sessionKey": yml_xlh_data[0],
+                "Referer": "https://servicewechat.com/wx026c06df6adc5d06/176/page-frame.html",
+                "Connection": "keep-alive"
+            },
+
+        }
+        // console.log(`===================这是请求url===================`);
+        // console.log(url);
+
+        $.get(url, async (error, response, data) => {
+            try {
+
+                // console.log(`===================这是返回data===================`);
+                // console.log(data)
+
+                let result = JSON.parse(data);
+                if (result.code == 200) {
+                    console.log(`【🎉🎉🎉 尝试阅读${result.message} 🎉🎉🎉】\n恭喜你，开始阅读文章${title}\n 请耐心等待16分钟,你可以去做别的事情了鸭!\n`)
+
+                    // await $.wait(10 * 1000);
+                    // console.log(`\n 请耐心等待16分钟,你可以去做别的事情了鸭!`)
+
+                    // await $.wait(10 * 1000);
+                    // console.log(`\n 请耐心等待16分钟,你可以去做别的事情了鸭!`)
+
+                    // await $.wait(960 * 1000);
+
+
+                }
+
+            } catch (e) {
+                console.log(error)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+
+// 停止阅读
+// https://qualcomm.growthideadata.com/qualcomm-app/api/article/enterRead?articleId=7626&userId=281687
+// https://qualcomm.growthideadata.com/qualcomm-app/api/article/exitRead?articleId=7626&userId=281687
+function yml_xlh_exitRead(timeout = 3 * 1000) {
+    return new Promise((resolve, reject) => {
+        let url = {
+            url: `https://qualcomm.growthideadata.com/qualcomm-app/api/article/exitRead?articleId=${articleId}&userId=${yml_xlh_data[1]}`,
+            headers: {
+
+                "userId": yml_xlh_data[1],
+                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                "Host": "qualcomm.growthideadata.com",
+                "User-Agent": yml_xlh_UA,
+                "sessionKey": yml_xlh_data[0],
+                "Referer": "https://servicewechat.com/wx026c06df6adc5d06/176/page-frame.html",
+                "Connection": "keep-alive"
+            },
+
+        }
+        // console.log(`===================这是请求url===================`);
+        // console.log(url);
+
+        $.get(url, async (error, response, data) => {
+            try {
+
+                // console.log(`===================这是返回data===================`);
+                // console.log(data)
+
+                let result = JSON.parse(data);
+                if (result.code == 200) {
+                    console.log(`【🎉🎉🎉 停止阅读${result.message} 🎉🎉🎉】\n恭喜你,停止阅读文章${title}\n 快去看看你的任务完成了吗!\n`)
+
+                    await $.wait(2 * 1000);
+
+                }
+
+            } catch (e) {
+                console.log(error)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+
+
+
+
+
+
+
 
 
 // 默认  不用管
