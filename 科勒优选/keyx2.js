@@ -1,31 +1,325 @@
-const $ = new Env('通知测试');
-let notify = $.isNode() ? require('./sendNotify') : '';
-///////////////////////////////////////////////////////////////////
+/*
+cron 18 7 * * * yml_javascript/klyx.js
+
+软件名称：科勒优选 微信小程序
+羊毛地址：微信扫码打开
+收益: 只有积分,可以换购实物  
+
+3-24   签到任务   token 有效期测试中 
+计划行双平台脚本测试,青龙完成  圈x自行测试，不行请@我修一下
+感谢所有测试人员
+
+注意事项 ： 一定要仔细阅读一下内容
+              青龙填写格式
+=============青龙变量格式=============
+必填变量：  export yml_keyx_data='xxx&xxxx@xxx&xxxx'   
+可选变量    yml_keyx_UA='xxxxxx'
+ 多账号使用 @ 分割；
+(再给小白啰嗦一句:export XXX ==> 是青龙 "配置文件" 变量格式; 如果要在 "环境变量" 中添加,不需要export)
+=============青龙变量实例=============
+export yml_keyx_data='9e4425abc6b4206a99b30ab2bbd84b38090f2d03705ffed07f181893f9a44009'
+=============变量解释==========
+token的值    抓包小程序即可  doSignIn 关键字   body中找到 token的值  
+UA是 User-Agent 的简称   自己填写自己抓包的即可，不填使用默认UA
+=============变量获取==========
+懒得写了，自己研究吧
+
+https://pepcoin.pepsico.com.cn/api/wxapp/doSignIn            
+              圈x填写格式  
+============= mimt(主机名) =============
+mimt= pepcoin.pepsico.com.cn
+============= 重写 =============
+https://pepcoin.pepsico.com.cn/api/wxapp/  url  script-request-body  https://raw.githubusercontent.com/yml2213/javascript/master/klyx/klyx.js
+
+还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
+
+*/
+
+
+const $ = new Env('科勒优选');
+const notify = $.isNode() ? require('./sendNotify') : '';
+let wx_yml_keyx_data = [], yml_keyx_UA = [], wx_yml_keyx_UA = [];
+
+// let  body = 'xcx_openid=otwae4pUlXAl6gax5h23F8Gs8Kwk&yml_keyx_data[1]=165&yml_keyx_data[2]=%E6%B5%8E%E5%8D%97%E5%B8%82'
+
+
+
+// 开始执行脚本
 !(async () => {
-    console.log(`通知测试111`);
-    a=12345;
-    console.log(a)
-    test1 ();
+    if ($.isNode()) {
+        if (!process.env.yml_keyx_data) {
+            console.log(`\n【${$.name}】：未填写 必填 变量 yml_keyx_data`);
+            return;
+        }
+        
+
+
+
+        // 必要变量判断部分
+        if (process.env.yml_keyx_data && process.env.yml_keyx_data.indexOf('@') > -1) {
+            yml_keyx_data = process.env.yml_keyx_data.split('@');
+        } else if (process.env.yml_keyx_data && process.env.yml_keyx_data.indexOf('\n') > -1) {
+            yml_keyx_data = process.env.yml_keyx_data.split('\n');
+        } else {
+            yml_keyx_data = process.env.yml_keyx_data.split();
+        }
+
+        Object.keys(yml_keyx_data).forEach((item) => {
+            if (yml_keyx_data[item]) {
+                wx_yml_keyx_data.push(yml_keyx_data[item]);
+            }
+        });
+
+    }
+
+
+
+    // 脚本开始执行
+    console.log(`\n=== 脚本执行 - 北京时间：${new Date(new Date().getTime() + new Date().getTimezoneOffset()
+        * 60 * 1000 + 8 * 60 * 60 * 1000).toLocaleString()} ===\n`);
+
+    await wyy();
+
+    console.log(`===【共 ${wx_yml_keyx_data.length} 个账号】===\n`);
+    for (i = 0; i < wx_yml_keyx_data.length; i++) {
+
+        // yml_keyx_UA = wx_yml_keyx_UA[i]
+        // if (!yml_keyx_UA) {
+        //     yml_keyx_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.18(0x1800123a) NetType/4G Language/zh_CN'
+        // }
+        // // console.log(yml_keyx_UA);
+
+        yml_keyx_data = wx_yml_keyx_data[i].split('&');
+
+        // console.log(wx_yml_keyx_data);
+        // console.log(yml_keyx_data[0])
+        // console.log(yml_keyx_data[1])
+
+        // console.log(userId[1]);
+
+        $.index = i + 1;
+        console.log(`\n开始【第 ${$.index} 个账号任务】`);
+
+        //执行任务
+        await finishShare()
+        await $.wait(10000)
+        await receiveAward()
+        await $.wait(1000)
+        await klyxrw()
+        await $.wait(1000)
+        await klyxtj()
+        await $.wait(1000)
+        await getReawrd()
+
+
+    }
 
 })()
     .catch((e) => $.logErr(e))
-    .finally(() => $.done())
+    .finally(() => $.done());
 
 
-//通知
-async function test1() {
+//每日网抑云
+function wyy(timeout = 3 * 1000) {
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://keai.icu/apiwyy/api`
+        }
+        $.get(url, async (err, resp, data) => {
+            try {
+                data = JSON.parse(data)
+                $.log(`\n【网抑云时间】: ${data.content}  by--${data.music}`);
 
-    if ($.isNode() && allMessage && $.ctrTemp) {
-        await notify.sendNotify(`${$.name}`, `${allMessage}`)
-    }
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+    })
 }
 
-////////////////////////////////////////////////////////////////////
+
+
+
+//任务1
+function finishShare(timeout = 0) {
+    return new Promise((resolve) => {
+        
+        let url = {
+            url: `https://kohler-mini.brandsh.cn/mini.php/fissionCustom/finishBrowse`,
+            headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
+            body: `xcx_openid=${yml_keyx_data[0]}&activeId=${yml_keyx_data[1]}&city=${yml_keyx_data[2]}`
+        }
+
+
+        // console.log(url);
+
+        $.post(url, async (err, resp, data) => {
+            try {
+                //console.log(data);
+                const result = JSON.parse(data)
+                if (result.msg == 'Success') {
+                    console.log(`\n科勒优选浏览好物执行任务`);
+                    
+
+               } else {
+
+                    console.log(`\n科勒优选浏览好物：` + result.msg);
+                }
+            } catch (e) {
+                //$.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+    })
+}
+
+//提交1
+function receiveAward(timeout = 0) {
+    return new Promise((resolve) => {
+
+        let url = {
+            url: `https://kohler-mini.brandsh.cn/mini.php/fissionCustom/receiveAward`,
+            headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
+            body: `xcx_openid=${yml_keyx_data[0]}&activeId=${yml_keyx_data[1]}&task_no=browse_page&city=${yml_keyx_data[2]}`
+        }
+        $.post(url, async (err, resp, data) => {
+            try {
+                //console.log(data);
+                const result = JSON.parse(data)
+                if (result.msg == 'Success') {
+                    console.log(`\n科勒优选浏览好物领取奖励`);
+                    
+                    
+
+               } else {
+
+                    console.log(`\n科勒优选浏览好物领取奖励` + result.msg);
+                }
+            } catch (e) {
+                //$.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+    })
+}
+//提现
+function getReawrd(timeout = 0) {
+    return new Promise((resolve) => {
+
+        let url = {
+            url: `https://kohler-mini.brandsh.cn/mini.php/fission/getReawrd`,
+            headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
+            body: `xcx_openid=${yml_keyx_data[0]}&&activeId=${yml_keyx_data[1]}`
+        }
+        $.post(url, async (err, resp, data) => {
+            try {
+                //console.log(data);
+                const result = JSON.parse(data)
+                if (result.msg == 'Success') {
+                    console.log(`\n科勒优选-提现成功`);
+                    
+                    
+
+               } else {
+
+                    console.log(`\n科勒优选提现：` + result.msg);
+                }
+            } catch (e) {
+                //$.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+    })
+}
+
+//任务2
+function klyxrw(timeout = 0) {
+    return new Promise((resolve) => {
+
+        let url = {
+            url: `https://kohler-mini.brandsh.cn/mini.php/fissionCustom/finishShare`,
+            headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
+            body: `xcx_openid=${yml_keyx_data[0]}&&activeId=${yml_keyx_data[1]}&city=${yml_keyx_data[2]}`
+        }
+        $.post(url, async (err, resp, data) => {
+            try {
+                //console.log(data);
+                const result = JSON.parse(data)
+                if (result.msg == 'Success') {
+                    console.log(`\n科勒优选-分享成功`);
+            
+               } else {
+
+                console.log(`\n科勒优选-分享失败`+result.msg);
+               }
+               
+            } catch (e) {
+                //$.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+    })
+}
+
+//提交2
+function klyxtj(timeout = 0) {
+    return new Promise((resolve) => {
+
+        let url = {
+            url: `https://kohler-mini.brandsh.cn/mini.php/fissionCustom/receiveAward`,
+            headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
+            body: `xcx_openid=${yml_keyx_data[0]}&activeId=${yml_keyx_data[1]}&task_no=share_page&city=${yml_keyx_data[2]}`
+        }
+        $.post(url, async (err, resp, data) => {
+            try {
+                //console.log(data);
+                const result = JSON.parse(data)
+                if (result.msg == 'Success') {
+                    console.log(`\n科勒优选领取分享奖励`+data);
+                    
+                    
+
+               } else {
+
+                    console.log(`\n科勒优选领取分享奖励` + result.msg);
+                }
+            } catch (e) {
+                //$.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+    })
+}
+
+
+function rand(min, max) {
+    return parseInt(Math.random() * (max - min + 1) + min, 10);
+}
+
+
+
+
+
+
+
+
+
+
+
+// 默认  不用管
 function Env(t, e) {
     class s {
         constructor(t) {
             this.env = t
         }
+
         send(t, e = "GET") {
             t = "string" == typeof t ? {
                 url: t
@@ -37,29 +331,37 @@ function Env(t, e) {
                 })
             })
         }
+
         get(t) {
             return this.send.call(this.env, t)
         }
+
         post(t) {
             return this.send.call(this.env, t, "POST")
         }
     }
+
     return new class {
         constructor(t, e) {
             this.name = t, this.http = new s(this), this.data = null, this.dataFile = "box.dat", this.logs = [], this.isMute = !1, this.isNeedRewrite = !1, this.logSeparator = "\n", this.startTime = (new Date).getTime(), Object.assign(this, e), this.log("", `\ud83d\udd14${this.name}, \u5f00\u59cb!`)
         }
+
         isNode() {
             return "undefined" != typeof module && !!module.exports
         }
+
         isQuanX() {
             return "undefined" != typeof $task
         }
+
         isSurge() {
             return "undefined" != typeof $httpClient && "undefined" == typeof $loon
         }
+
         isLoon() {
             return "undefined" != typeof $loon
         }
+
         toObj(t, e = null) {
             try {
                 return JSON.parse(t)
@@ -67,6 +369,7 @@ function Env(t, e) {
                 return e
             }
         }
+
         toStr(t, e = null) {
             try {
                 return JSON.stringify(t)
@@ -74,14 +377,17 @@ function Env(t, e) {
                 return e
             }
         }
+
         getjson(t, e) {
             let s = e;
             const i = this.getdata(t);
             if (i) try {
                 s = JSON.parse(this.getdata(t))
-            } catch {}
+            } catch {
+            }
             return s
         }
+
         setjson(t, e) {
             try {
                 return this.setdata(JSON.stringify(t), e)
@@ -89,6 +395,7 @@ function Env(t, e) {
                 return !1
             }
         }
+
         getScript(t) {
             return new Promise(e => {
                 this.get({
@@ -96,6 +403,7 @@ function Env(t, e) {
                 }, (t, s, i) => e(i))
             })
         }
+
         runScript(t, e) {
             return new Promise(s => {
                 let i = this.getdata("@chavy_boxjs_userCfgs.httpapi");
@@ -117,14 +425,17 @@ function Env(t, e) {
                 this.post(a, (t, e, i) => s(i))
             }).catch(t => this.logErr(t))
         }
+
         loaddata() {
-            if (!this.isNode()) return {}; {
+            if (!this.isNode()) return {};
+            {
                 this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path");
                 const t = this.path.resolve(this.dataFile),
                     e = this.path.resolve(process.cwd(), this.dataFile),
                     s = this.fs.existsSync(t),
                     i = !s && this.fs.existsSync(e);
-                if (!s && !i) return {}; {
+                if (!s && !i) return {};
+                {
                     const i = s ? t : e;
                     try {
                         return JSON.parse(this.fs.readFileSync(i))
@@ -134,6 +445,7 @@ function Env(t, e) {
                 }
             }
         }
+
         writedata() {
             if (this.isNode()) {
                 this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path");
@@ -145,6 +457,7 @@ function Env(t, e) {
                 s ? this.fs.writeFileSync(t, r) : i ? this.fs.writeFileSync(e, r) : this.fs.writeFileSync(t, r)
             }
         }
+
         lodash_get(t, e, s) {
             const i = e.replace(/\[(\d+)\]/g, ".$1").split(".");
             let r = t;
@@ -152,9 +465,11 @@ function Env(t, e) {
                 if (r = Object(r)[t], void 0 === r) return s;
             return r
         }
+
         lodash_set(t, e, s) {
             return Object(t) !== t ? t : (Array.isArray(e) || (e = e.toString().match(/[^.[\]]+/g) || []), e.slice(0, -1).reduce((t, s, i) => Object(t[s]) === t[s] ? t[s] : t[s] = Math.abs(e[i + 1]) >> 0 == +e[i + 1] ? [] : {}, t)[e[e.length - 1]] = s, t)
         }
+
         getdata(t) {
             let e = this.getval(t);
             if (/^@/.test(t)) {
@@ -168,10 +483,12 @@ function Env(t, e) {
             }
             return e
         }
+
         setdata(t, e) {
             let s = !1;
             if (/^@/.test(e)) {
-                const [, i, r] = /^@(.*?)\.(.*?)$/.exec(e), o = this.getval(i), h = i ? "null" === o ? null : o || "{}" : "{}";
+                const [, i, r] = /^@(.*?)\.(.*?)$/.exec(e), o = this.getval(i),
+                    h = i ? "null" === o ? null : o || "{}" : "{}";
                 try {
                     const e = JSON.parse(h);
                     this.lodash_set(e, r, t), s = this.setval(JSON.stringify(e), i)
@@ -182,16 +499,21 @@ function Env(t, e) {
             } else s = this.setval(t, e);
             return s
         }
+
         getval(t) {
             return this.isSurge() || this.isLoon() ? $persistentStore.read(t) : this.isQuanX() ? $prefs.valueForKey(t) : this.isNode() ? (this.data = this.loaddata(), this.data[t]) : this.data && this.data[t] || null
         }
+
         setval(t, e) {
             return this.isSurge() || this.isLoon() ? $persistentStore.write(t, e) : this.isQuanX() ? $prefs.setValueForKey(t, e) : this.isNode() ? (this.data = this.loaddata(), this.data[e] = t, this.writedata(), !0) : this.data && this.data[e] || null
         }
+
         initGotEnv(t) {
             this.got = this.got ? this.got : require("got"), this.cktough = this.cktough ? this.cktough : require("tough-cookie"), this.ckjar = this.ckjar ? this.ckjar : new this.cktough.CookieJar, t && (t.headers = t.headers ? t.headers : {}, void 0 === t.headers.Cookie && void 0 === t.cookieJar && (t.cookieJar = this.ckjar))
         }
-        get(t, e = (() => {})) {
+
+        get(t, e = (() => {
+        })) {
             t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {
                 "X-Surge-Skip-Scripting": !1
             })), $httpClient.get(t, (t, s, i) => {
@@ -241,7 +563,9 @@ function Env(t, e) {
                 e(s, i, i && i.body)
             }))
         }
-        post(t, e = (() => {})) {
+
+        post(t, e = (() => {
+        })) {
             if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {
                 "X-Surge-Skip-Scripting": !1
             })), $httpClient.post(t, (t, s, i) => {
@@ -291,6 +615,7 @@ function Env(t, e) {
                 })
             }
         }
+
         time(t) {
             let e = {
                 "M+": (new Date).getMonth() + 1,
@@ -305,6 +630,7 @@ function Env(t, e) {
             for (let s in e) new RegExp("(" + s + ")").test(t) && (t = t.replace(RegExp.$1, 1 == RegExp.$1.length ? e[s] : ("00" + e[s]).substr(("" + e[s]).length)));
             return t
         }
+
         msg(e = t, s = "", i = "", r) {
             const o = t => {
                 if (!t) return t;
@@ -342,16 +668,20 @@ function Env(t, e) {
             let h = ["", "==============\ud83d\udce3\u7cfb\u7edf\u901a\u77e5\ud83d\udce3=============="];
             h.push(e), s && h.push(s), i && h.push(i), console.log(h.join("\n")), this.logs = this.logs.concat(h)
         }
+
         log(...t) {
             t.length > 0 && (this.logs = [...this.logs, ...t]), console.log(t.join(this.logSeparator))
         }
+
         logErr(t, e) {
             const s = !this.isSurge() && !this.isQuanX() && !this.isLoon();
             s ? this.log("", `\u2757\ufe0f${this.name}, \u9519\u8bef!`, t.stack) : this.log("", `\u2757\ufe0f${this.name}, \u9519\u8bef!`, t)
         }
+
         wait(t) {
             return new Promise(e => setTimeout(e, t))
         }
+
         done(t = {}) {
             const e = (new Date).getTime(),
                 s = (e - this.startTime) / 1e3;

@@ -1,78 +1,78 @@
 /*
-cron 28 7 * * * yml_javascript/lxzx.js
+cron 18 7 * * * yml_javascript/bsly.js
 
-软件名称：骁龙会 微信小程序
+软件名称：百事乐元 微信小程序
 羊毛地址：微信扫码打开
-收益: 只有积分,可以换购b站会员欧   自行决定跑不跑
+收益: 只有积分,可以换购实物  
 
-3-22   签到任务 、 阅读5/15分钟任务 完成，商城任务暂时没写   有效期测试中 
-计划行双平台脚本测试,青龙完成  圈x还在写 
+3-24   签到任务   token 有效期测试中 
+计划行双平台脚本测试,青龙完成  圈x自行测试，不行请@我修一下
 感谢所有测试人员
 
 注意事项 ： 一定要仔细阅读一下内容
               青龙填写格式
 =============青龙变量格式=============
-必填变量：  export yml_lxzx_data='xxx&&xxxx@xxx&&xxxx'   
-可选变量    yml_lxzx_UA='xxxxxx'
-多账号使用 @ 分割；
+必填变量：  export yml_bsly_data='xxx&xxxx@xxx&xxxx'   
+可选变量    yml_bsly_UA='xxxxxx'
+ 多账号使用 @ 分割；
 (再给小白啰嗦一句:export XXX ==> 是青龙 "配置文件" 变量格式; 如果要在 "环境变量" 中添加,不需要export)
 =============青龙变量实例=============
-export yml_lxzx_data='xxxx'  太长了  不写了
+export yml_bsly_data='9e4425abc6b4206a99b30ab2bbd84b38090f2d03705ffed07f181893f9a44009'
 =============变量解释==========
-Cookie 和 body    抓包签到  关键字 signadd  即可   取cookie 跟 body 的值  用 && 链接 ，用 && 链接 ，用 && 链接 ，
+token的值    抓包小程序即可  doSignIn 关键字   body中找到 token的值  
 UA是 User-Agent 的简称   自己填写自己抓包的即可，不填使用默认UA
 =============变量获取==========
 懒得写了，自己研究吧
 
-// https://mclub.lenovo.com.cn/signadd
-
+https://pepcoin.pepsico.com.cn/api/wxapp/doSignIn            
               圈x填写格式  
 ============= mimt(主机名) =============
-mimt= mclub.lenovo.com.cn
+mimt= pepcoin.pepsico.com.cn
 ============= 重写 =============
-https://mclub.lenovo.com.cn  url  script-request-body  https://raw.githubusercontent.com/yml2213/javascript/master/lxzx/lxzx.js
+https://pepcoin.pepsico.com.cn/api/wxapp/  url  script-request-body  https://raw.githubusercontent.com/yml2213/javascript/master/bsly/bsly.js
 
 还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
 
 */
 
-const $ = new Env('骁龙会');
+
+const $ = new Env('百事乐元');
 const notify = $.isNode() ? require('./sendNotify') : '';
-let app_yml_lxzx_data = [], yml_lxzx_UA = [], app_yml_lxzx_UA = [];
+let wx_yml_bsly_data = [], yml_bsly_UA = [], wx_yml_bsly_UA = [];
 
 
 // 圈x声明变量
 let status;
-status = (status = ($.getval("yml_lxzxstatus") || "1")) > 1 ? `${status}` : "";
-const yml_lxzxurlArr = [], yml_lxzxhdArr = [], yml_lxzxbodyArr = [], yml_lxzxcount = ''
-let yml_lxzxurl = $.getdata('yml_lxzxurl')
-let yml_lxzxhd = $.getdata('yml_lxzxhd')
-let yml_lxzxbody = $.getdata('yml_lxzxbody')
+status = (status = ($.getval("yml_bslystatus") || "1")) > 1 ? `${status}` : "";
+const yml_bslyurlArr = [], yml_bslyhdArr = [], yml_bslybodyArr = [], yml_bslycount = ''
+let yml_bslyurl = $.getdata('yml_bslyurl')
+let yml_bslyhd = $.getdata('yml_bslyhd')
+let yml_bslybody = $.getdata('yml_bslybody')
 
 
 // 开始执行脚本
 !(async () => {
     if ($.isNode()) {
-        if (!process.env.yml_lxzx_data) {
-            console.log(`\n【${$.name}】：未填写 必填 变量 yml_lxzx_data`);
+        if (!process.env.yml_bsly_data) {
+            console.log(`\n【${$.name}】：未填写 必填 变量 yml_bsly_data`);
             return;
         }
         // UA判断部分
-        if (!process.env.yml_lxzx_UA) {
-            console.log(`\n【${$.name}】：未填写 UA 变量 yml_lxzx_UA ,将默认分配一个`);
+        if (!process.env.yml_bsly_UA) {
+            console.log(`\n【${$.name}】：未填写 UA 变量 yml_bsly_UA ,将默认分配一个`);
         } else {
-            if (process.env.yml_lxzx_UA && process.env.yml_lxzx_UA.indexOf('@') > -1) {
-                yml_lxzx_UA = process.env.yml_lxzx_UA.split('@');
-            } else if (process.env.yml_lxzx_UA && process.env.yml_lxzx_UA.indexOf('\n') > -1) {
-                yml_lxzx_UA = process.env.yml_lxzx_UA.split('\n');
+            if (process.env.yml_bsly_UA && process.env.yml_bsly_UA.indexOf('@') > -1) {
+                yml_bsly_UA = process.env.yml_bsly_UA.split('@');
+            } else if (process.env.yml_bsly_UA && process.env.yml_bsly_UA.indexOf('\n') > -1) {
+                yml_bsly_UA = process.env.yml_bsly_UA.split('\n');
             } else {
-                yml_lxzx_UA = process.env.yml_lxzx_UA.split();
+                yml_bsly_UA = process.env.yml_bsly_UA.split();
             }
         }
 
-        Object.keys(yml_lxzx_UA).forEach((item) => {
-            if (yml_lxzx_UA[item]) {
-                app_yml_lxzx_UA.push(yml_lxzx_UA[item]);
+        Object.keys(yml_bsly_UA).forEach((item) => {
+            if (yml_bsly_UA[item]) {
+                wx_yml_bsly_UA.push(yml_bsly_UA[item]);
             }
             ;
         });
@@ -80,37 +80,37 @@ let yml_lxzxbody = $.getdata('yml_lxzxbody')
 
 
         // 必要变量判断部分
-        if (process.env.yml_lxzx_data && process.env.yml_lxzx_data.indexOf('@') > -1) {
-            yml_lxzx_data = process.env.yml_lxzx_data.split('@');
-        } else if (process.env.yml_lxzx_data && process.env.yml_lxzx_data.indexOf('\n') > -1) {
-            yml_lxzx_data = process.env.yml_lxzx_data.split('\n');
+        if (process.env.yml_bsly_data && process.env.yml_bsly_data.indexOf('@') > -1) {
+            yml_bsly_data = process.env.yml_bsly_data.split('@');
+        } else if (process.env.yml_bsly_data && process.env.yml_bsly_data.indexOf('\n') > -1) {
+            yml_bsly_data = process.env.yml_bsly_data.split('\n');
         } else {
-            yml_lxzx_data = process.env.yml_lxzx_data.split();
+            yml_bsly_data = process.env.yml_bsly_data.split();
         }
 
-        Object.keys(yml_lxzx_data).forEach((item) => {
-            if (yml_lxzx_data[item]) {
-                app_yml_lxzx_data.push(yml_lxzx_data[item]);
+        Object.keys(yml_bsly_data).forEach((item) => {
+            if (yml_bsly_data[item]) {
+                wx_yml_bsly_data.push(yml_bsly_data[item]);
             }
         });
 
     } else {
         if (typeof $request !== "undefined") {
 
-            yml_lxzxck()
+            yml_bslyck()
 
         } else {
-            yml_lxzxurlArr.push($.getdata('yml_lxzxurl'))
-            yml_lxzxhdArr.push($.getdata('yml_lxzxhd'))
-            yml_lxzxbodyArr.push($.getdata('yml_lxzxbody'))
+            yml_bslyurlArr.push($.getdata('yml_bslyurl'))
+            yml_bslyhdArr.push($.getdata('yml_bslyhd'))
+            yml_bslybodyArr.push($.getdata('yml_bslybody'))
 
-            let yml_lxzxcount = ($.getval('yml_lxzxcount') || '1');
+            let yml_bslycount = ($.getval('yml_bslycount') || '1');
 
-            for (let i = 2; i <= yml_lxzxcount; i++) {
+            for (let i = 2; i <= yml_bslycount; i++) {
 
-                yml_lxzxurlArr.push($.getdata(`yml_lxzxurl${i}`))
-                yml_lxzxhdArr.push($.getdata(`yml_lxzxhd${i}`))
-                yml_lxzxbodyArr.push($.getdata(`yml_lxzxbody${i}`))
+                yml_bslyurlArr.push($.getdata(`yml_bslyurl${i}`))
+                yml_bslyhdArr.push($.getdata(`yml_bslyhd${i}`))
+                yml_bslybodyArr.push($.getdata(`yml_bslybody${i}`))
 
             }
 
@@ -121,23 +121,23 @@ let yml_lxzxbody = $.getdata('yml_lxzxbody')
                     8 * 60 * 60 * 1000
                 ).toLocaleString()} ===============================================\n`);
 
-            for (let i = 0; i < yml_lxzxhdArr.length; i++) {
+            for (let i = 0; i < yml_bslyhdArr.length; i++) {
 
-                if (yml_lxzxhdArr[i]) {
+                if (yml_bslyhdArr[i]) {
 
-                    yml_lxzxurl = yml_lxzxurlArr[i];
-                    yml_lxzxhd = yml_lxzxhdArr[i];
-                    yml_lxzxbody = yml_lxzxbodyArr[i];
+                    yml_bslyurl = yml_bslyurlArr[i];
+                    yml_bslyhd = yml_bslyhdArr[i];
+                    yml_bslybody = yml_bslybodyArr[i];
 
                     $.index = i + 1;
-                    console.log(`\n\n开始【骁龙会${$.index}】`)
+                    console.log(`\n\n开始【百事乐元${$.index}】`)
 
 
                     //循环运行
                     for (let c = 0; c < 1; c++) {
                         $.index = c + 1
 
-                        await lxzxqd_qx()//你要执行的版块
+                        await bslyqd_qx()//你要执行的版块
                         await $.wait(2 * 1000); //你要延迟的时间  1000=1秒
                         return
 
@@ -147,39 +147,50 @@ let yml_lxzxbody = $.getdata('yml_lxzxbody')
         }
     }
 
-    // ql脚本开始执行
+    // 脚本开始执行
     console.log(`\n=== 脚本执行 - 北京时间：${new Date(new Date().getTime() + new Date().getTimezoneOffset()
         * 60 * 1000 + 8 * 60 * 60 * 1000).toLocaleString()} ===\n`);
 
     await wyy();
 
-    console.log(`===【共 ${app_yml_lxzx_data.length} 个账号】===\n`);
-    for (i = 0; i < app_yml_lxzx_data.length; i++) {
+    console.log(`===【共 ${wx_yml_bsly_data.length} 个账号】===\n`);
+    for (i = 0; i < wx_yml_bsly_data.length; i++) {
 
-        yml_lxzx_UA = app_yml_lxzx_UA[i]
-        if (!yml_lxzx_UA) {
-            yml_lxzx_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148lenovoofficialapp/newversion/F4FEC3F7-EB6D-4E77-A4E5-9A8367E77540_10045530688/versioncode-320/'
+        yml_bsly_UA = wx_yml_bsly_UA[i]
+        if (!yml_bsly_UA) {
+            yml_bsly_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.18(0x1800123a) NetType/4G Language/zh_CN'
         }
-        // console.log(yml_lxzx_UA);
+        // console.log(yml_bsly_UA);
 
-        yml_lxzx_data = app_yml_lxzx_data[i].split('&&');
-        yml_lxzx_cookie = yml_lxzx_data[0];
-        yml_lxzx_body = yml_lxzx_data[1];
-        // console.log(app_yml_lxzx_data);
-        // console.log(yml_lxzx_data[0]);
-        // console.log(yml_lxzx_data[1]);
+        yml_bsly_data = wx_yml_bsly_data[i].split('&');
+
+        // console.log(wx_yml_bsly_data);
+        // console.log(yml_bsly_data[0])
+        // console.log(yml_bsly_data[1])
 
         // console.log(userId[1]);
-        console.log(yml_lxzx_cookie);
-        console.log(yml_lxzx_body);
 
         $.index = i + 1;
         console.log(`\n开始【第 ${$.index} 个账号任务】`);
 
         //执行任务
         // 签到
-        await yml_lxzx_sign()
+        await yml_bsly_sign()
         await $.wait(2 * 1000);
+
+        // // 获取文章列表
+        // await yml_bsly_articles()
+        // await $.wait(2 * 1000);
+
+        // // 阅读文章
+        // await yml_bsly_enterRead()
+        // await $.wait(2 * 1000);
+
+        // // 停止阅读文章
+        // await yml_bsly_exitRead()
+        // await $.wait(2 * 1000);
+
+
     }
 
 })()
@@ -208,57 +219,53 @@ function wyy(timeout = 3 * 1000) {
 }
 
 // 圈x执行
-// https://mclub.lenovo.com.cn/signadd
-function yml_lxzxck() {
-    if ($request.url.indexOf("signadd") > -1) {
-        const yml_lxzxurl = $request.url
-        if (yml_lxzxurl) $.setdata(yml_lxzxurl, `yml_lxzxurl${status}`)
-        $.log(yml_lxzxurl)
+// https://pepcoin.pepsico.com.cn/api/wxapp/doSignIn
+function yml_bslyck() {
+    if ($request.url.indexOf("doSignIn") > -1) {
+        const yml_bslyurl = $request.url
+        if (yml_bslyurl) $.setdata(yml_bslyurl, `yml_bslyurl${status}`)
+        $.log(yml_bslyurl)
 
-        const yml_lxzxhd = JSON.stringify($request.headers)
-        if (yml_lxzxhd) $.setdata(yml_lxzxhd, `yml_lxzxhd${status}`)
-        $.log(yml_lxzxhd)
+        const yml_bslyhd = JSON.stringify($request.headers)
+        if (yml_bslyhd) $.setdata(yml_bslyhd, `yml_bslyhd${status}`)
+        $.log(yml_bslyhd)
 
-        const yml_lxzxbody = $request.body
-        if (yml_lxzxbody) $.setdata(yml_lxzxbody, `yml_lxzxbody${status}`)
-        $.log(yml_lxzxbody)
+        const yml_bslybody = $request.body
+        if (yml_bslybody) $.setdata(yml_bslybody, `yml_bslybody${status}`)
+        $.log(yml_bslybody)
 
-        $.msg($.name, "", `联想智选${status}获取数据(headers、body)成功`)
+        $.msg($.name, "", `百事乐元${status}获取数据(headers body)成功`)
 
     }
 }
 // 签到
-// https://mclub.lenovo.com.cn/signadd
-function lxzxqd_qx(timeout = 0) {
+function bslyqd_qx(timeout = 0) {
     return new Promise((resolve) => {
 
         let url = {
-            url: yml_lxzxurl,
-            headers: JSON.parse(yml_lxzxhd),
-            body: yml_lxzxbody,
+            url: 'https://pepcoin.pepsico.com.cn/api/wxapp/doSignIn',
+            headers: JSON.parse(yml_bslyhd),
+            body: yml_bslybody,
         }
-        console.log(`=========url=========`);
+        console.log(`=========圈x url=========`)
         console.log(url)
-        $.post(url, async (err, resp, data) => {
+        $.get(url, async (err, resp, data) => {
             try {
-                console.log(`=========data=========`);
-                console.log(data);
-                let result = JSON.parse(data)
-                console.log(result)
 
-                if (result.success == true) {
+                // data = JSON.parse(data)
+                // console.log(data)
 
-                    console.log(`【🎉🎉🎉 签到状态 🎉🎉🎉】 签到成功了鸭!\n累计签到${result.continueCount} 天了呢，获得延保券 ${result.yanbaoValue} 张，获得乐豆 ${result.ledouValue} 个，获得积分 ${result.ledouValue} 个，获得现金 ${result.cashValue} \n `)
 
-                } else if (result.success == false) {
-                    $.log(`\n【🎉🎉🎉 签到状态 🎉🎉🎉】 未能成功签到 ,可能是已经签过到了，自己看下吧！\n `)
-                }
-                else {
+                let result = JSON.parse(data);
+                if (result.code == 0) {
+                    console.log(`【🎉🎉🎉 签到状态 🎉🎉🎉】 ${result.message}`)
+                } else if (result.code === 3001) {
+                    $.log(`\n【🎉🎉🎉 签到状态 🎉🎉🎉】 未能成功签到 ,可能是:${result.message}!\n `)
+                } else if (result.code === 1002) {
+                    $.log(`\n【🎉🎉🎉 签到状态 🎉🎉🎉】 未能成功签到 ,可能是:${result.message}!\n `)
+                } else {
                     $.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,可能是被外星人偷走了!\n `)
                 }
-
-                console.log(`【🎉🎉🎉 签到状态 🎉🎉🎉】: ${result.data.msg}`)
-
 
 
             } catch (e) {
@@ -275,42 +282,40 @@ function lxzxqd_qx(timeout = 0) {
 
 
 // 签到  ql执行
-// https://mclub.lenovo.com.cn/signadd
-function yml_lxzx_sign(timeout = 3 * 1000) {
+// https://pepcoin.pepsico.com.cn/api/wxapp/doSignIn
+function yml_bsly_sign(timeout = 3 * 1000) {
     return new Promise((resolve, reject) => {
         let url = {
-            url: `https://mclub.lenovo.com.cn/signadd`,
+            url: `https://pepcoin.pepsico.com.cn/api/wxapp/doSignIn`,
             headers: {
 
-                "Cookie": yml_lxzx_cookie,
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                "Origin": "https://mclub.lenovo.com.cn",
-                "X-Requested-With": "XMLHttpRequest",
-                "Host": "mclub.lenovo.com.cn",
-                "User-Agent": yml_lxzx_UA,
-                "Referer": "https://mclub.lenovo.com.cn/signlist?pmf_group=in-push&pmf_medium=app&pmf_source=Z00025783T000",
-                "Connection": "keep-alive"
-
+                "User-Agent": yml_bsly_UA,
+                "Content-Type": "application/json",
+                "Referer": "https://servicewechat.com/wx1a72addb7ee74f67/58/page-frame.html",
+                "Connection": "keep-alive",
+                "Host": "pepcoin.pepsico.com.cn"
             },
-            body: yml_lxzx_body,
+            body: JSON.stringify({
+                "token": yml_bsly_data[0]
+            }),
+
         }
-        console.log(`===================这是请求url===================`);
-        console.log(url);
+
+        // console.log(`===================这是请求url===================`);
+        // console.log(url);
+
         $.post(url, async (error, response, data) => {
             try {
-                console.log(`===================这是返回data===================`);
-                console.log(data)
-
+                // console.log(`===================这是返回data===================`)
+                // console.log(data)
                 let result = JSON.parse(data);
-
-                if (result.success == true) {
-
-                    console.log(`【🎉🎉🎉 签到状态 🎉🎉🎉】 签到成功了鸭!\n累计签到${result.continueCount} 天了呢，获得延保券 ${result.yanbaoValue} 张，获得乐豆 ${result.ledouValue} 个，获得积分 ${result.ledouValue} 个，获得现金 ${result.cashValue} \n `)
-
-                } else if (result.success == false) {
-                    $.log(`\n【🎉🎉🎉 签到状态 🎉🎉🎉】 未能成功签到 ,可能是已经签过到了，自己看下吧！\n `)
-                }
-                else {
+                if (result.code == 0) {
+                    console.log(`【🎉🎉🎉 签到状态 🎉🎉🎉】 ${result.message}`)
+                } else if (result.code === 3001) {
+                    $.log(`\n【🎉🎉🎉 签到状态 🎉🎉🎉】 未能成功签到 ,可能是:${result.message}!\n `)
+                } else if (result.code === 1002) {
+                    $.log(`\n【🎉🎉🎉 签到状态 🎉🎉🎉】 未能成功签到 ,可能是:${result.message}!\n `)
+                } else {
                     $.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,可能是被外星人偷走了!\n `)
                 }
 
@@ -323,8 +328,173 @@ function yml_lxzx_sign(timeout = 3 * 1000) {
     })
 }
 
+/*
+// 阅读任务部分
+// 获取文章列表,随机选择一篇文章获取 articleId 
+function yml_bsly_articles(timeout = 3 * 1000) {
+    return new Promise((resolve, reject) => {
+
+        let d = new Date();
+        let y = d.getFullYear();
+        let m = d.getMonth() + 1;
+        m = m.toString();
+        if (m.length == 1) {
+            m = `0${m}`
+        }
+        let time = `${y}-${m}`;
+        // console.log(time);
+
+        let url = {
+            url: `https://qualcomm.growthideadata.com/qualcomm-app/api/home/articles?page=1&size=20&userId=${yml_bsly_data[1]}&labelId=&searchDate=${time}&showType=0`,
+            headers: {
+
+                "userId": yml_bsly_data[1],
+                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                "Host": "qualcomm.growthideadata.com",
+                "User-Agent": yml_bsly_UA,
+                "sessionKey": yml_bsly_data[0],
+                "Referer": "https://servicewechat.com/wx026c06df6adc5d06/176/page-frame.html",
+                "Connection": "keep-alive"
+            },
+
+        }
+        // console.log(`===================这是请求url===================`);
+        // console.log(url);
+
+        $.get(url, async (error, response, data) => {
+            try {
+
+                // console.log(`===================这是返回data===================`);
+                // console.log(data)
+
+                let result = JSON.parse(data);
+                if (result.code == 200) {
+                    console.log(`【🎉🎉🎉 恭喜 🎉🎉🎉】\n 文章列表刷新成功了鸭!\n`)
+
+                    console.log(`\n 请耐心等待 5 s\n`)
+                    await $.wait(5 * 1000);
+
+                    // 随机1-10 数字
+                    let num = Math.floor(Math.random() * 10 + 1);
+                    // console.log(num);
+
+                    // 获取 articleId
+                    articleId = result.data.articleList[num].id;
+                    // console.log(articleId);
+                    // 获取 title
+                    title = result.data.articleList[num].title;
+                    // console.log(title);
+
+                }
+
+            } catch (e) {
+                console.log(error)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
 
 
+// 开始阅读
+// https://qualcomm.growthideadata.com/qualcomm-app/api/article/enterRead?articleId=7626&userId=281687
+function yml_bsly_enterRead(timeout = 3 * 1000) {
+    return new Promise((resolve, reject) => {
+        let url = {
+            url: `https://qualcomm.growthideadata.com/qualcomm-app/api/article/enterRead?articleId=${articleId}&userId=${yml_bsly_data[1]}`,
+            headers: {
+
+                "userId": yml_bsly_data[1],
+                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                "Host": "qualcomm.growthideadata.com",
+                "User-Agent": yml_bsly_UA,
+                "sessionKey": yml_bsly_data[0],
+                "Referer": "https://servicewechat.com/wx026c06df6adc5d06/176/page-frame.html",
+                "Connection": "keep-alive"
+            },
+
+        }
+        // console.log(`===================这是请求url===================`);
+        // console.log(url);
+
+        $.get(url, async (error, response, data) => {
+            try {
+
+                // console.log(`===================这是返回data===================`);
+                // console.log(data)
+
+                let result = JSON.parse(data);
+                if (result.code == 200) {
+                    console.log(`【🎉🎉🎉 尝试阅读${result.message} 🎉🎉🎉】\n恭喜你，开始阅读文章${title}\n 请耐心等待16分钟,你可以去做别的事情了鸭!\n`)
+
+                    await $.wait(10 * 1000);
+                    console.log(`\n 请耐心等待16分钟,你可以去做别的事情了鸭!`)
+
+                    await $.wait(10 * 1000);
+                    console.log(`\n 请耐心等待16分钟,你可以去做别的事情了鸭!`)
+
+                    await $.wait(960 * 1000);
+
+
+                }
+
+            } catch (e) {
+                console.log(error)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+
+// 停止阅读
+// https://qualcomm.growthideadata.com/qualcomm-app/api/article/enterRead?articleId=7626&userId=281687
+// https://qualcomm.growthideadata.com/qualcomm-app/api/article/exitRead?articleId=7626&userId=281687
+function yml_bsly_exitRead(timeout = 3 * 1000) {
+    return new Promise((resolve, reject) => {
+        let url = {
+            url: `https://qualcomm.growthideadata.com/qualcomm-app/api/article/exitRead?articleId=${articleId}&userId=${yml_bsly_data[1]}`,
+            headers: {
+
+                "userId": yml_bsly_data[1],
+                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                "Host": "qualcomm.growthideadata.com",
+                "User-Agent": yml_bsly_UA,
+                "sessionKey": yml_bsly_data[0],
+                "Referer": "https://servicewechat.com/wx026c06df6adc5d06/176/page-frame.html",
+                "Connection": "keep-alive"
+            },
+
+        }
+        // console.log(`===================这是请求url===================`);
+        // console.log(url);
+
+        $.get(url, async (error, response, data) => {
+            try {
+
+                // console.log(`===================这是返回data===================`);
+                // console.log(data)
+
+                let result = JSON.parse(data);
+                if (result.code == 200) {
+                    console.log(`【🎉🎉🎉 停止阅读${result.message} 🎉🎉🎉】\n恭喜你,停止阅读文章${title}\n 快去看看你的任务完成了吗!\n`)
+
+                    await $.wait(2 * 1000);
+
+                }
+
+            } catch (e) {
+                console.log(error)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+*/
 
 
 
