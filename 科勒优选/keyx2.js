@@ -1,16 +1,16 @@
 const $ = new Env('科勒优选');
 const notify = $.isNode() ? require('./sendNotify') : '';
-let wx_yml_keyx_data = [], yml_keyx_UA = [], wx_yml_keyx_UA = [];
+let wx_yml_klyx_data = [], yml_klyx_UA = [], wx_yml_klyx_UA = [];
 
-// let  body = 'xcx_openid=otwae4pUlXAl6gax5h23F8Gs8Kwk&yml_keyx_data[1]=165&yml_keyx_data[2]=%E6%B5%8E%E5%8D%97%E5%B8%82'
+// let  body = 'xcx_openid=otwae4pUlXAl6gax5h23F8Gs8Kwk&yml_klyx_data[1]=165&yml_klyx_data[2]=%E6%B5%8E%E5%8D%97%E5%B8%82'
 
 
 
 // 开始执行脚本
 !(async () => {
     if ($.isNode()) {
-        if (!process.env.yml_keyx_data) {
-            console.log(`\n【${$.name}】：未填写 必填 变量 yml_keyx_data`);
+        if (!process.env.yml_klyx_data) {
+            console.log(`\n【${$.name}】：未填写 必填 变量 yml_klyx_data`);
             return;
         }
         
@@ -18,17 +18,17 @@ let wx_yml_keyx_data = [], yml_keyx_UA = [], wx_yml_keyx_UA = [];
 
 
         // 必要变量判断部分
-        if (process.env.yml_keyx_data && process.env.yml_keyx_data.indexOf('@') > -1) {
-            yml_keyx_data = process.env.yml_keyx_data.split('@');
-        } else if (process.env.yml_keyx_data && process.env.yml_keyx_data.indexOf('\n') > -1) {
-            yml_keyx_data = process.env.yml_keyx_data.split('\n');
+        if (process.env.yml_klyx_data && process.env.yml_klyx_data.indexOf('@') > -1) {
+            yml_klyx_data = process.env.yml_klyx_data.split('@');
+        } else if (process.env.yml_klyx_data && process.env.yml_klyx_data.indexOf('\n') > -1) {
+            yml_klyx_data = process.env.yml_klyx_data.split('\n');
         } else {
-            yml_keyx_data = process.env.yml_keyx_data.split();
+            yml_klyx_data = process.env.yml_klyx_data.split();
         }
 
-        Object.keys(yml_keyx_data).forEach((item) => {
-            if (yml_keyx_data[item]) {
-                wx_yml_keyx_data.push(yml_keyx_data[item]);
+        Object.keys(yml_klyx_data).forEach((item) => {
+            if (yml_klyx_data[item]) {
+                wx_yml_klyx_data.push(yml_klyx_data[item]);
             }
         });
 
@@ -42,23 +42,14 @@ let wx_yml_keyx_data = [], yml_keyx_UA = [], wx_yml_keyx_UA = [];
 
     await wyy();
 
-    console.log(`===【共 ${wx_yml_keyx_data.length} 个账号】===\n`);
-    for (i = 0; i < wx_yml_keyx_data.length; i++) {
+    console.log(`===【共 ${wx_yml_klyx_data.length} 个账号】===\n`);
+    for (i = 0; i < wx_yml_klyx_data.length; i++) {
 
-        // yml_keyx_UA = wx_yml_keyx_UA[i]
-        // if (!yml_keyx_UA) {
-        //     yml_keyx_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.18(0x1800123a) NetType/4G Language/zh_CN'
-        // }
-        // // console.log(yml_keyx_UA);
+        
 
-        yml_keyx_data = wx_yml_keyx_data[i].split('&');
+        yml_klyx_data = wx_yml_klyx_data[i].split('&');
 
-        // console.log(wx_yml_keyx_data);
-        // console.log(yml_keyx_data[0])
-        // console.log(yml_keyx_data[1])
-
-        // console.log(userId[1]);
-
+       
         $.index = i + 1;
         console.log(`\n开始【第 ${$.index} 个账号任务】`);
 
@@ -111,15 +102,15 @@ function finishShare(timeout = 0) {
         let url = {
             url: `https://kohler-mini.brandsh.cn/mini.php/fissionCustom/finishBrowse`,
             headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
-            body: `xcx_openid=${yml_keyx_data[0]}&activeId=${yml_keyx_data[1]}&city=${yml_keyx_data[2]}`
+            body: `xcx_openid=${yml_klyx_data[0]}&activeId=${yml_klyx_data[1]}&city=${yml_klyx_data[2]}`
         }
 
 
-        // console.log(url);
+        console.log(url);
 
         $.post(url, async (err, resp, data) => {
             try {
-                //console.log(data);
+                console.log(data);
                 const result = JSON.parse(data)
                 if (result.msg == 'Success') {
                     console.log(`\n科勒优选浏览好物执行任务`);
@@ -145,7 +136,7 @@ function receiveAward(timeout = 0) {
         let url = {
             url: `https://kohler-mini.brandsh.cn/mini.php/fissionCustom/receiveAward`,
             headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
-            body: `xcx_openid=${yml_keyx_data[0]}&activeId=${yml_keyx_data[1]}&task_no=browse_page&city=${yml_keyx_data[2]}`
+            body: `xcx_openid=${yml_klyx_data[0]}&activeId=${yml_klyx_data[1]}&task_no=browse_page&city=${yml_klyx_data[2]}`
         }
         $.post(url, async (err, resp, data) => {
             try {
@@ -175,7 +166,7 @@ function getReawrd(timeout = 0) {
         let url = {
             url: `https://kohler-mini.brandsh.cn/mini.php/fission/getReawrd`,
             headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
-            body: `xcx_openid=${yml_keyx_data[0]}&&activeId=${yml_keyx_data[1]}`
+            body: `xcx_openid=${yml_klyx_data[0]}&&activeId=${yml_klyx_data[1]}`
         }
         $.post(url, async (err, resp, data) => {
             try {
@@ -206,7 +197,7 @@ function klyxrw(timeout = 0) {
         let url = {
             url: `https://kohler-mini.brandsh.cn/mini.php/fissionCustom/finishShare`,
             headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
-            body: `xcx_openid=${yml_keyx_data[0]}&&activeId=${yml_keyx_data[1]}&city=${yml_keyx_data[2]}`
+            body: `xcx_openid=${yml_klyx_data[0]}&&activeId=${yml_klyx_data[1]}&city=${yml_klyx_data[2]}`
         }
         $.post(url, async (err, resp, data) => {
             try {
@@ -236,7 +227,7 @@ function klyxtj(timeout = 0) {
         let url = {
             url: `https://kohler-mini.brandsh.cn/mini.php/fissionCustom/receiveAward`,
             headers: {"Host":"kohler-mini.brandsh.cn","Connection":"keep-alive","Content-Length":"85","content-type":"application/x-www-form-urlencoded","Accept-Encoding":"gzip,compress,br,deflate","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.17(0x1800112e) NetType/WIFI Language/zh_CN","Referer":"https://servicewechat.com/wxfae640908f0d46b5/620/page-frame.html"},
-            body: `xcx_openid=${yml_keyx_data[0]}&activeId=${yml_keyx_data[1]}&task_no=share_page&city=${yml_keyx_data[2]}`
+            body: `xcx_openid=${yml_klyx_data[0]}&activeId=${yml_klyx_data[1]}&task_no=share_page&city=${yml_klyx_data[2]}`
         }
         $.post(url, async (err, resp, data) => {
             try {

@@ -1,0 +1,3 @@
+ql repo <repourl> <path> <blacklist> <dependence> <branch>
+对应意思“库地址”“拉哪些”“不拉哪些”“依赖文件”“分支”
+ql repo http://yml-gitea.ml:3000/yml/javascript.git "" "invalid" "" "master"
