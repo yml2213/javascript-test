@@ -463,7 +463,7 @@ function touch_Duck(ck, timeout = 3 * 1000) {
 				} else if (result.status_code === "1001") {
 
 					console.log(`\n 【戳鸭子】 失败 ,可能是: ${result.message}! 可能是次数被限制了，休息一会再试试吧！\n `)
-					
+
 					console.log(`\n 请耐心等待 1 分钟，一分钟后我们再试试\n`)
 					await $.wait(60 * 1000);
 
@@ -516,9 +516,10 @@ function watering(ck, timeout = 3 * 1000) {
 
 					console.log(`\n第${watering_unm} 次浇水，${result.message} 🎉 `);
 					await $.wait(5 * 1000);
-					console.log('等待判断是否有宝箱、盒子box');
+					console.log('等待判断是否有宝箱、盒子box可以领取');
 					await polling_info(ck);
 					await $.wait(3 * 1000);
+					watering_unm++
 
 					if (result.data.kettle.water_num > 10) {
 						await watering(ck);
@@ -526,8 +527,7 @@ function watering(ck, timeout = 3 * 1000) {
 
 						console.log(`\n 【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n`)
 
-						msg+= `\n 【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n`
-						watering_unm++
+						msg += `\n 【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n`
 
 
 					}
