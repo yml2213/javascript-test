@@ -1,4 +1,4 @@
-{
+let a = {
 	"data": {
 	  "tasks": [
 	    {

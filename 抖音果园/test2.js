@@ -50,6 +50,18 @@ let result = {
 }
 
 
-console.log(result.data.red_points.box);
+console.log(result.data.red_points.green_gift);
 // console.log(result.data.progress.target);
 
+if (result.data.red_points.green_gift !== null) {
+
+  // $.log('开始 【新手彩蛋】')
+  console.log(`开始 【新手彩蛋】`);
+  // await newcomer_egg(ck);
+
+
+
+} else {
+  console.log(`已经领取过 【新手彩蛋】`);
+  
+}

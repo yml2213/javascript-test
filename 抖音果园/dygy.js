@@ -1,30 +1,35 @@
 /**
  * 抖音果园 
- * cron 18 7 * * *  yml2213_javascript_master/dygy.js
+ * cron 5 8,12,15,23 * * *  yml2213_javascript_master/dygy.js
  * 
- * 抖音果园 微信小程序 
- * 3-27   签到任务 、 新手彩蛋  点赞 完成  有效期测试中 已稳定2天 
+ * 抖音果园   入口：抖音点击"我"- "抖音商城" - "果园"   有的号可能没有 ，暂时不知道原因
+ * 3-29   签到任务、新手彩蛋、每日免费领水滴、三餐礼包、宝箱、盒子领取  初步完成   脚本刚写完，难免有bug，请及时反馈  ；ck有效期测试中 
+ * 
+ * 抓包记得先打开果园，然后再打开抓包软件，就能正常抓包了   关于抖音的任务都没网络，抓不到包
+ * 
  * 感谢所有测试人员
  * ========= 青龙 =========
- * 变量格式：  export dygyCookies='账号1 user_id的值 @ 账号2 user_id的值'  多个账号用 @分割 
- * bublysmile.com  关键词    user_id在body中   基本每个包都有变量
+ * 变量格式：  
+ * 必填变量：export dygyCookies='账号1 ck @ 账号2 ck'  多个账号用 @分割 
+ 可选变量：export dygyUA='你的UA'
  * 
- * 还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
+ * 抓 minigame.zijieapi.com  的包  浇一次水即可获取ck  
+ * 
+ * 还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg  通知：https://t.me/yml2213_tg
  */
-
-const $ = new Env("抖音果园");
+const jsname = "抖音果园";
+const $ = Env(jsname);
+// const $ = new Env("抖音果园");
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
 
 
 let dygyCookies = ($.isNode() ? process.env.dygyCookies : $.getdata('dygyCookies')) || "";
-let UA = ($.isNode() ? process.env.jrttjsbUA : $.getdata('jrttjsbUA')) || 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
+let UA = ($.isNode() ? process.env.dygyUA : $.getdata('dygyUA')) || 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
 
 let dygyCookiesArr = [];
 let msg = '';
-// let ck = '';
-
 
 
 
@@ -46,7 +51,7 @@ let msg = '';
 		await $.wait(2 * 1000);
 
 
-		$.log(`\n=================== 共找到 ${dygyCookiesArr.length} 个账号 ===================`)
+		console.log(`\n=================== 共找到 ${dygyCookiesArr.length} 个账号 ===================`)
 
 		if (debug) {
 			console.log(`【debug】 这是你的账号数组:\n ${dygyCookiesArr}`);
@@ -60,8 +65,8 @@ let msg = '';
 
 
 			let num = index + 1
-			$.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
-			msg += `\n【第 ${num} 个账号】`
+			console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
+			// msg += `\n【第 ${num} 个账号】`
 			let ck = dygyCookiesArr[index]
 
 			request_url = {
@@ -78,7 +83,6 @@ let msg = '';
 					"Referer": "https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.1",
 					"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 BytedanceWebview/d8a21c6 Aweme/19.9.0 Mobile ToutiaoMicroApp/2.44.1.0"
 				},
-				// body: ''
 			}
 
 
@@ -86,40 +90,22 @@ let msg = '';
 				console.log(`\n【debug】 这是你第 ${num} 账号信息:\n ck:${ck}\n`);
 			}
 
-			$.log('开始 【签到】')
-			await sign_in(ck);
-			await $.wait(2 * 1000);
 
-			$.log('开始 【获取任务列表】')
+			console.log('开始 【获取任务列表】');
+			console.log('开始 【获取任务列表】')
 			await tasks_list(ck);
 			await $.wait(2 * 1000);
 
 
-			let d = new Date();
-			let n = d.getHours();
-			// console.log(n);
-
-			if (n > 18 && n < 21) {
-
-				$.log('开始 【晚餐礼包】')
-				await dinner_package(ck);
-				await $.wait(2 * 1000);
-
-			} else {
-				console.log(`时间段不在18-21点, 跳过晚餐礼包任务\n`);
-			}
-
-			// $.log('开始 【新手彩蛋】')
-			// await newcomer_egg(ck);
-			// await $.wait(2 * 1000);
-
-
-			$.log('开始 【戳鸭子】')
+			console.log('开始 【戳鸭子】');
+			console.log('开始 【戳鸭子】')
 			await touch_Duck(ck);
 			await $.wait(2 * 1000);
 
 
-			$.log('开始 【浇水】')
+
+			console.log('开始 【浇水】');
+			console.log('开始 【浇水】')
 			await watering(ck);
 			await $.wait(2 * 1000);
 
@@ -144,7 +130,7 @@ async function Envs() {
 			dygyCookiesArr.push(dygyCookies);
 		}
 	} else {
-		$.log(`\n【${$.name}】：未填写变量 dygyCookies`)
+		console.log(`\n【${$.name}】：未填写变量 dygyCookies`)
 		return;
 	}
 
@@ -197,7 +183,7 @@ function wyy(timeout = 3 * 1000) {
 		$.get(url, async (err, resp, data) => {
 			try {
 				data = JSON.parse(data)
-				$.log(`\n【网抑云时间】: ${data.content}  by--${data.music}`);
+				console.log(`\n【网抑云时间】: ${data.content}  by--${data.music}`);
 
 			} catch (e) {
 				$.logErr(e, resp);
@@ -243,20 +229,27 @@ function tasks_list(ck, timeout = 3 * 1000) {
 				if (result.status_code == 0) {
 
 					console.log(`\n【获取任务列表】成功了🎉  开始任务了鸭！`)
-					msg += `\n【获取任务列表】成功了🎉  开始任务了鸭！`
-					$.msg(`\n【获取任务列表】成功了🎉  开始任务了鸭！`)
+					// msg += `\n【获取任务列表】成功了🎉  开始任务了鸭！`
+					// $.msg(`\n【获取任务列表】成功了🎉  开始任务了鸭！`)
 
 					tasksarr = result.data.tasks
 					// console.log(tasksarr);
 
 					for (let value of tasksarr) {
+						if (debug) {
+							console.log(`\n\n【debug】===============这是 遍历任务列表 的值:value ==============`);
+							console.log(value);
+						}
 
-						console.log(value);
+
+
 						// console.log(`${value.round_info.current_round}`);
 						if (value.id == 1) {
-							console.log(`\n 任务状态\n\n每日免费领水滴:已完成${value.round_info.current_round}/${value.round_info.total_round} 次 `)
-							msg += `\n 任务状态\n\n每日免费领水滴:已完成${value.round_info.current_round}/${value.round_info.total_round} 次 `
-							$.msg(`\n 【${$.name}】\n 任务状态\n\n每日免费领水滴:已完成${value.round_info.current_round}/${value.round_info.total_round} 次`)
+							console.log(`\n 任务状态\n 这是${value.name} 任务\n 已完成${value.round_info.current_round}/${value.round_info.total_round} 次 `)
+
+							// console.log(`\n 任务状态\n 这是${value.name} 任务\n 已完成${value.round_info.current_round}/${value.round_info.total_round} 次`)
+							// msg += `\n 任务状态\n 这是${value.name} 任务\n 已完成${value.round_info.current_round}/${value.round_info.total_round} 次 `
+							// $.msg(`\n 【${$.name}】\n 任务状态\n 这是${value.name} 任务\n 已完成${value.round_info.current_round}/${value.round_info.total_round} 次`)
 
 							if (value.round_info.current_round < value.round_info.total_round) {
 
@@ -266,13 +259,67 @@ function tasks_list(ck, timeout = 3 * 1000) {
 							}
 						}
 
+						// console.log(value);
+						// console.log(`${value.round_info.current_round}`);
+						if (value.id == 2) {   // 三餐任务
+
+							console.log(`\n 任务状态\n 这是${value.name} 任务\n `)
+
+							let d = new Date();
+							let n = d.getHours();
+							// console.log(n);
+
+
+							if (n > 8 && n < 9) {
+
+								console.log('开始 【早餐礼包】');
+								console.log('开始 【早餐礼包】')
+								await eat_package(ck, '早餐');
+								await $.wait(2 * 1000);
+
+
+								console.log('开始 【收集瓶子水滴】');
+								console.log('开始 【收集瓶子水滴】')
+								await sig(ck);
+								await $.wait(2 * 1000);
+
+
+
+
+							} else {
+								console.log(`时间段不在8-9点, 跳过早餐礼包任务\n`);
+							}
+
+							if (n > 12 && n < 14) {
+
+								console.log('开始 【午餐礼包】')
+								await eat_package(ck, '午餐');
+								await $.wait(2 * 1000);
+
+							} else {
+								console.log(`时间段不在12-14点, 跳过午餐礼包任务\n`);
+							}
+
+
+							if (n > 18 && n < 21) {
+
+								console.log('开始 【晚餐礼包】')
+								await eat_package(ck, '晚餐');
+								await $.wait(2 * 1000);
+
+							} else {
+								console.log(`时间段不在18-21点, 跳过晚餐礼包任务\n`);
+							}
+
+						}
+
 					}
 
 				} else {
 
-					$.log(`\n【获取任务列表】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
-					msg += `\n【获取任务列表】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
-					$.msg(`【${$.name}】 【获取任务列表】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
+					console.log(`\n【获取任务列表】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
+					// msg += `\n【获取任务列表】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
+					// $.msg(`【${$.name}】 【获取任务列表】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
 
 				}
 
@@ -288,11 +335,11 @@ function tasks_list(ck, timeout = 3 * 1000) {
 
 
 /**
- * 晚餐礼包
+ * 三餐礼包
  * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2&do_action=1&extra_ad_num=0&version=8&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
  * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2   简化后
  */
-function dinner_package(ck, timeout = 3 * 1000) {
+function eat_package(ck, name, timeout = 3 * 1000) {
 	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2'
 
 
@@ -300,14 +347,14 @@ function dinner_package(ck, timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 
 		if (debug) {
-			console.log(`\n【debug】=============== 这是 晚餐礼包 请求 url ===============`);
+			console.log(`\n【debug】=============== 这是 ${name}礼包 请求 url ===============`);
 			console.log(request_url);
 		}
 
 		$.get(request_url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n【debug】===============这是 晚餐礼包 返回data==============`);
+					console.log(`\n\n【debug】===============这是 ${name}礼包 返回data==============`);
 					console.log(data)
 					// console.log(`======`)
 					// console.log(JSON.parse(data))
@@ -315,21 +362,21 @@ function dinner_package(ck, timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.status_code == 0) {
 
-					console.log(`\n【晚餐礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`)
-					msg += `\n【晚餐礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`
-					$.msg(`\n【${$.name}】【晚餐礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`)
+					console.log(`\n【${name}礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`)
+					// msg += `\n【${name}礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`
+					// $.msg(`\n【${name}礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`)
 
 				} else if (result.status_code === "1001") {
 
-					$.log(`\n【晚餐礼包】 失败 ,可能是: ${result.message}!\n `)
-					msg += `\n【晚餐礼包】 失败 ,可能是: ${result.message}!\n`
-					$.msg(`【${$.name}】 【晚餐礼包】: ${result.message}`)
+					console.log(`\n【${name}礼包】 失败 ,可能是: ${result.message}!\n `)
+					// msg += `\n【${name}礼包】 失败 ,可能是: ${result.message}!\n`
+					// $.msg(` 【${name}礼包】: ${result.message}`)
 
 				} else {
 
-					$.log(`\n【晚餐礼包】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
-					msg += `\n【晚餐礼包】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
-					$.msg(`【${$.name}】 【晚餐礼包】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
+					console.log(`\n【${name}礼包】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
+					// msg += `\n【${name}礼包】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
+					// $.msg(` 【${name}礼包】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
 
 				}
 
@@ -371,20 +418,25 @@ function newcomer_egg(ck, timeout = 3 * 1000) {
 				if (result.status_code == 0) {
 
 					console.log(`\n【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`)
-					msg += `\n【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`
-					$.msg(`\n【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`)
+					// msg += `\n【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`
+					// $.msg(`\n【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 个水滴 !`)
+
+					console.log(`耐心等待6分钟，等下一个彩蛋孵化鸭`);
+
+					await $.wait(6 * 60 * 1000);
+
 
 				} else if (result.status_code === "1001") {
 
-					$.log(`\n【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `)
-					msg += `\n【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `
-					$.msg(`【${$.name}】 \n【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `)
+					console.log(`\n【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `)
+					// msg += `\n【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `
+					// $.msg(`【${$.name}】 \n【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `)
 
 				} else {
 
-					$.log(`\n【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
-					msg += `\n【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
-					$.msg(`【${$.name}】 【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
+					console.log(`\n【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
+					// msg += `\n【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
+					// $.msg(`【${$.name}】 【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
 
 				}
 
@@ -430,7 +482,7 @@ function touch_Duck(ck, timeout = 3 * 1000) {
 
 					console.log(`\n【戳鸭子】成功了🎉 `)
 					// msg += `\n【戳鸭子】成功了🎉  `
-					$.msg(`\n【戳鸭子】成功了🎉 `)
+					// $.msg(`\n【戳鸭子】成功了🎉 `)
 					touch_Duck_status = result.data.red_point[0].round_info.current_round
 					touch_Duck_status_max = result.data.red_point[0].round_info.total_round
 					console.log(touch_Duck_status);
@@ -449,17 +501,17 @@ function touch_Duck(ck, timeout = 3 * 1000) {
 
 				} else if (result.status_code === "1001") {
 
-					$.log(`\n【戳鸭子】 失败 ,可能是: ${result.message}! 可能是次数被限制了，休息一会再试试吧！\n `)
-					msg += `\n【戳鸭子】 失败 ,可能是: ${result.message}! 可能是次数被限制了，休息一会再试试吧！\n `
-					$.msg(`【${$.name}】 \n【戳鸭子】 失败 ,可能是: ${result.message}! 可能是次数被限制了，休息一会再试试吧！\n`)
-					console.log(`\n 请耐心等待 1 分钟，一分钟后我们再试试\n`)
-					await $.wait(60 * 1000);
+					console.log(`\n【戳鸭子】 失败 ,可能是: ${result.message}! 可能是次数被限制了，休息一会再试试吧！\n `)
+					// msg += `\n【戳鸭子】 失败 ,可能是: ${result.message}! 可能是次数被限制了，休息一会再试试吧！\n `
+					// $.msg(`【${$.name}】 \n【戳鸭子】 失败 ,可能是: ${result.message}! 可能是次数被限制了，休息一会再试试吧！\n`)
+					// console.log(`\n 请耐心等待 1 分钟，一分钟后我们再试试\n`)
+					// await $.wait(60 * 1000);
 
 				} else {
 
-					$.log(`\n【戳鸭子】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
-					msg += `\n【戳鸭子】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
-					$.msg(`【${$.name}】 【戳鸭子】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
+					console.log(`\n【戳鸭子】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
+					// msg += `\n【戳鸭子】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
+					// $.msg(`【${$.name}】 【戳鸭子】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
 
 				}
 
@@ -506,23 +558,62 @@ function watering(ck, timeout = 3 * 1000) {
 				console.log(result.status_code);
 				if (result.status_code == 0) {
 
-					console.log(`\n【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target}\n当前进度: ${JSON.stringify(result.data.show_info)} (是在不知道汉语对应啥了，将就看吧。基本就是啥 发芽、长大、开花、结果、成熟啥的)\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间: ${result.data.bottle.availiable_time} 点 \n宝箱状态:${JSON.stringify(result.data.red_points.challenge)} ,box(幸运盒子):${JSON.stringify(result.data.red_points.box)} \n`)
-					// msg += `\n【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target}\n当前进度: ${result.data.show_info} (是在不知道汉语对应啥了，将就看吧。基本就是啥 发芽、长大、开花、结果、成熟啥的)\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间: ${result.data.bottle.availiable_time} 点 \n 是否有红点提醒: challenge(挑战？):${result.data.red_points.challenge} , 宝箱状态:${result.data.red_points.green_gift} ,box(幸运盒子):${result.data.red_points.box} \n`
+
+
+					console.log(`\n【浇水】${result.message} 了🎉 `)
+
+					// msg += `\n【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级(实在不知道等级对应啥了，将就看吧。基本就是啥 发芽、长大、开花、结果、成熟啥的)\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n宝箱状态:${JSON.stringify(result.data.red_points.challenge)} ,box(幸运盒子):${JSON.stringify(result.data.red_points.box)} \n`
+
 					// $.msg(`【${$.name}】 \n【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target}\n当前进度: ${result.data.show_info} (是在不知道汉语对应啥了，将就看吧。基本就是啥 发芽、长大、开花、结果、成熟啥的)\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间: ${result.data.bottle.availiable_time} 点 \n 是否有红点提醒: challenge(挑战？):${result.data.red_points.challenge} , 宝箱状态:${result.data.red_points.green_gift} ,box(幸运盒子):${result.data.red_points.box} \n`)
 
 					await $.wait(5 * 1000);
 
 
+
+
+
+					// ==========================一天运行一次==========================
+					let num_max = 1;
+					if (num_max < 2) {
+						if (result.data.red_points.green_gift !== null) {
+
+							// console.log('开始 【新手彩蛋】')
+							console.log(`开始 【新手彩蛋】`);
+							await newcomer_egg(ck);
+							// await newcomer_egg(ck);
+
+						} else {
+							console.log(`已经领取过 【新手彩蛋】，执行【签到】`);
+							await sign_in(ck);
+							await $.wait(2 * 1000);
+
+						}
+
+						console.log(`开始 【选择金宝箱】`);
+						await choose_gold(ck);
+
+
+						// 23点执行数量变为1
+						num_max++
+						let myDate = new Date();
+						myDate.getHours();
+						Hours = myDate.getHours()
+						if (Hours > 22) {
+							num_max = 1;
+						}
+
+					}
+					// ==========================一天运行一次结束==========================
+
+
 					// 宝箱挑战 (选择金宝箱)
 					// console.log(result.data.red_points.challenge);
 
-					$.log('开始 【选择金宝箱】')
-					await choose_gold(ck);
 
-					console.log(result.data.red_points.challenge.state);
-					let challengearr = result.data.red_points.challenge
+
 
 					if (result.data.red_points.challenge.state !== 0) {
+
 
 						console.log(`time`);
 						console.log(result.data.red_points.challenge.times);
@@ -530,7 +621,8 @@ function watering(ck, timeout = 3 * 1000) {
 						if (result.data.red_points.challenge.times == 0) {
 
 
-							$.log('开始 【领取宝箱奖励】')
+							console.log(`开始 【领取宝箱奖励】`);
+							// console.log('开始 【领取宝箱奖励】')
 							await open_challenge(ck);
 							await $.wait(5 * 1000);
 
@@ -539,46 +631,18 @@ function watering(ck, timeout = 3 * 1000) {
 						}
 
 					}
-					// else {
-					// 	if (result.data.red_points.challenge.id !== 0) {
-
-					// 		if (result.data.red_points.challenge.times == 0) {
-					// 			$.log('开始 【选择金宝箱】')
-					// 			await choose_gold(ck);
-					// 		}
-					// 	}
-					// }
-
-					// if (result.data.red_points.box.state == 3) {
-
-					// 	if (result.data.red_points.box.state.times == 0) {
-
-
-					// 		$.log('开始 【选择金宝箱】')
-					// 		await open_challenge(ck);
-					// 		await $.wait(5 * 1000);
-					// 		// await watering(ck);
-
-					// 	}
-					// }
-
-
-
 
 
 					// 开盒子 box(如果可以开的话)
-					console.log(result.data.red_points.box.state);
 
 					if (result.data.red_points.box.state !== 0) {
-						console.log(result.data.red_points.box.times);
 
 						if (result.data.red_points.box.times == 0) {
 
-							$.log('开始 【领取盒子奖励】')
+							console.log(`开始 【领取盒子奖励】`);
+							// console.log('开始 【领取盒子奖励】')
 							await open_box(ck);
 							// await $.wait(5 * 1000);
-							// await watering(ck);
-
 
 						}
 
@@ -588,6 +652,14 @@ function watering(ck, timeout = 3 * 1000) {
 
 						await watering(ck);
 
+
+					} else {  // 浇水完成
+
+						console.log(`\n【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n`)
+
+						msg = msg(title = `${jsname}`, desc = `\n【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n`)
+
+
 					}
 
 
@@ -595,15 +667,18 @@ function watering(ck, timeout = 3 * 1000) {
 
 				} else if (result.status_code === 1008) {
 
-					$.log(`\n 浇水】 失败 ,可能是: ${result.message}!\n `)
-					msg += `\n【浇水】 失败 ,可能是: ${result.message}!\n`
-					$.msg(`【${$.name}】 【浇水】: ${result.message}`)
+					console.log(`\n 浇水】 失败 ,可能是: ${result.message}!\n `)
+					// msg += `\n【浇水】 失败 ,可能是: ${result.message}!\n`
+					// $.msg(`【${$.name}】 【浇水】: ${result.message}`)
+
+					console.log(`等待3分钟，再次尝试浇水！`);
+					await $.wait(3 * 60 * 1000);
 
 				} else {
 
-					$.log(`\n【浇水】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
-					msg += `\n【浇水】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
-					$.msg(`【${$.name}】 【浇水】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
+					console.log(`\n【浇水】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
+					// msg += `\n【浇水】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
+					// $.msg(`【${$.name}】 【浇水】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
 
 				}
 
@@ -630,49 +705,69 @@ function watering(ck, timeout = 3 * 1000) {
 function choose_gold(ck, timeout = 3 * 1000) {
 	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/choose?task_id=2'
 
-	return new Promise((resolve) => {
+	let choose_gold_num_max = 1;
 
-		if (debug) {
-			console.log(`\n【debug】=============== 这是 选择金宝箱 请求 url ===============`);
-			console.log(request_url);
-		}
+	if (choose_gold_num_max < 2) {
 
-		$.get(request_url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n【debug】===============这是 选择金宝箱 返回data==============`);
-					console.log(data)
-					// console.log(`======`)
-					// console.log(JSON.parse(data))
-				}
-				let result = JSON.parse(data);
-				if (result.status_code == 0) {
+		return new Promise((resolve) => {
 
-					console.log(`\n【选择金宝箱】${result.message}了鸭 🎉 `)
-					msg += `\n【选择金宝箱】${result.message}了鸭 🎉 `
-					$.msg(`\n【${$.name}】【选择金宝箱】${result.message}了鸭 🎉 `)
-
-				} else if (result.status_code === "1001") {
-
-					$.log(`\n【选择金宝箱】 失败 ,可能是: ${result.message}! \n `)
-					msg += `\n【选择金宝箱】 失败 ,可能是: ${result.message}! \n `
-					$.msg(`【${$.name}】 \n【选择金宝箱】 失败 ,可能是: ${result.message}! \n `)
-
-				} else {
-
-					$.log(`\n【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
-					msg += `\n【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
-					$.msg(`【${$.name}】 【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
-
-				}
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-				resolve();
+			if (debug) {
+				console.log(`\n【debug】=============== 这是 选择金宝箱 请求 url ===============`);
+				console.log(request_url);
 			}
-		}, timeout)
-	})
+
+			$.get(request_url, async (error, response, data) => {
+				try {
+					if (debug) {
+						console.log(`\n\n【debug】===============这是 选择金宝箱 返回data==============`);
+						console.log(data)
+						// console.log(`======`)
+						// console.log(JSON.parse(data))
+					}
+					let result = JSON.parse(data);
+					if (result.status_code == 0) {
+
+						console.log(`\n【选择金宝箱】${result.message}了鸭 🎉 `)
+						// msg += `\n【选择金宝箱】${result.message}了鸭 🎉 `
+						// $.msg(`\n【${$.name}】【选择金宝箱】${result.message}了鸭 🎉 `)
+
+					} else if (result.status_code === "1001") {
+
+						console.log(`\n【选择金宝箱】 失败 ,可能是: ${result.message}! \n `)
+						// msg += `\n【选择金宝箱】 失败 ,可能是: ${result.message}! \n `
+						// $.msg(`【${$.name}】 \n【选择金宝箱】 失败 ,可能是: ${result.message}! \n `)
+
+					} else {
+
+						console.log(`\n【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
+						// msg += `\n【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
+						// $.msg(`【${$.name}】 【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
+
+					}
+
+					// 23点执行数量变为1
+					choose_gold_num_max++
+					let myDate = new Date();
+					myDate.getHours();
+					Hours = myDate.getHours()
+					if (Hours > 22) {
+						choose_gold_num_max = 1;
+					}
+
+
+
+				} catch (e) {
+					console.log(e)
+				} finally {
+					resolve();
+				}
+			}, timeout)
+		})
+
+	}
+
+
+
 }
 
 
@@ -710,20 +805,20 @@ function open_challenge(ck, timeout = 3 * 1000) {
 					if (result.status_code == 0) {
 
 						console.log(`\n【领取宝箱奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴 `)
-						msg += `\n【领取宝箱奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴  `
-						$.msg(`\n【${$.name}】【领取宝箱奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴 `)
+						// msg += `\n【领取宝箱奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴  `
+						// $.msg(`\n【${$.name}】【领取宝箱奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴 `)
 
 					} else if (result.status_code === "1001") {
 
-						$.log(`\n【领取宝箱奖励】 失败 ,可能是: ${result.message}! \n `)
-						msg += `\n【领取宝箱奖励】 失败 ,可能是: ${result.message}! \n `
-						$.msg(`【${$.name}】 \n【领取宝箱奖励】 失败 ,可能是: ${result.message}! \n `)
+						console.log(`\n【领取宝箱奖励】 失败 ,可能是: ${result.message}! \n `)
+						// msg += `\n【领取宝箱奖励】 失败 ,可能是: ${result.message}! \n `
+						// $.msg(`【${$.name}】 \n【领取宝箱奖励】 失败 ,可能是: ${result.message}! \n `)
 
 					} else {
 
-						$.log(`\n【领取宝箱奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
-						msg += `\n【领取宝箱奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
-						$.msg(`【${$.name}】 【领取宝箱奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
+						console.log(`\n【领取宝箱奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
+						// msg += `\n【领取宝箱奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
+						// $.msg(`【${$.name}】 【领取宝箱奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
 
 					}
 
@@ -779,20 +874,20 @@ function open_box(ck, timeout = 3 * 1000) {
 				if (result.status_code == 0) {
 
 					console.log(`\n【领取盒子奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴 `)
-					msg += `\n【领取盒子奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴  `
-					$.msg(`\n【${$.name}】【领取盒子奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴 `)
+					// msg += `\n【领取盒子奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴  `
+					// $.msg(`\n【${$.name}】【领取盒子奖励】${result.message}了鸭 🎉 , 获得 ${result.data.reward_item.num} 水滴 , 领取后有 ${result.data.kettle.water_num} 水滴 `)
 
 				} else if (result.status_code === "1001") {
 
-					$.log(`\n【领取盒子奖励】 失败 ,可能是: ${result.message}! \n `)
-					msg += `\n【领取盒子奖励】 失败 ,可能是: ${result.message}! \n `
-					$.msg(`【${$.name}】 \n【领取盒子奖励】 失败 ,可能是: ${result.message}! \n `)
+					console.log(`\n【领取盒子奖励】 失败 ,可能是: ${result.message}! \n `)
+					// msg += `\n【领取盒子奖励】 失败 ,可能是: ${result.message}! \n `
+					// $.msg(`【${$.name}】 \n【领取盒子奖励】 失败 ,可能是: ${result.message}! \n `)
 
 				} else {
 
-					$.log(`\n【领取盒子奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
-					msg += `\n【领取盒子奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
-					$.msg(`【${$.name}】 【领取盒子奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
+					console.log(`\n【领取盒子奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
+					// msg += `\n【领取盒子奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
+					// $.msg(`【${$.name}】 【领取盒子奖励】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
 
 				}
 
@@ -825,7 +920,7 @@ function Daily_free_water(ck, timeout = 3 * 1000) {
 
 		$.get(request_url, async (error, response, data) => {
 			try {
-				if (true) {
+				if (debug) {
 					console.log(`\n\n【debug】===============这是 每日免费领水滴 返回data==============`);
 					console.log(data)
 					// console.log(`======`)
@@ -835,23 +930,25 @@ function Daily_free_water(ck, timeout = 3 * 1000) {
 				if (result.status_code == 0) {
 
 					console.log(`\n【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒 `)
-					msg += `\n【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒`
-					$.msg(`\n【${$.name}】【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒`)
+					// msg += `\n【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒`
+					// $.msg(`\n【${$.name}】【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒`)
 
 					console.log(`耐心等待5分钟鸭～～～`);
 					await $.wait(310 * 1000);
+					await Daily_free_water(ck);
+
 
 				} else if (result.status_code === 1001) {
 
-					$.log(`\n【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `)
-					msg += `\n【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `
-					$.msg(`【${$.name}】 \n【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `)
+					console.log(`\n【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `)
+					// msg += `\n【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `
+					// $.msg(`【${$.name}】 \n【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `)
 
 				} else {
 
-					$.log(`\n【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
-					msg += `\n【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
-					$.msg(`【${$.name}】 【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
+					console.log(`\n【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
+					// msg += `\n【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
+					// $.msg(`【${$.name}】 【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
 
 				}
 
@@ -894,20 +991,20 @@ function sign_in(ck, timeout = 3 * 1000) {
 				if (result.status_code == 0) {
 
 					console.log(`\n【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴 `)
-					msg += `\n【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`
-					$.msg(`\n【${$.name}】【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`)
+					// msg += `\n【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`
+					// $.msg(`\n【${$.name}】【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`)
 
 				} else if (result.status_code === "1001") {
 
-					$.log(`\n【签到】 失败 ,可能是: ${result.message}! \n `)
-					msg += `\n【签到】 失败 ,可能是: ${result.message}! \n `
-					$.msg(`【${$.name}】 \n【签到】 失败 ,可能是: ${result.message}! \n `)
+					console.log(`\n【签到】 失败 ,可能是: ${result.message}! \n `)
+					// msg += `\n【签到】 失败 ,可能是: ${result.message}! \n `
+					// $.msg(`【${$.name}】 \n【签到】 失败 ,可能是: ${result.message}! \n `)
 
 				} else {
 
-					$.log(`\n【签到】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
-					msg += `\n【签到】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
-					$.msg(`【${$.name}】 【签到】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
+					console.log(`\n【签到】 失败 ❌ 了呢,原因未知！\n `)
+					// msg += `\n【签到】 失败 ❌ 了呢,原因未知！\n `
+					// $.msg(`【${$.name}】 【签到】 失败 ❌ 了呢,原因未知！\n`)
 
 				}
 
@@ -920,6 +1017,61 @@ function sign_in(ck, timeout = 3 * 1000) {
 	})
 }
 
+
+
+/**
+ * 收集瓶子水滴
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward?aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
+ * 
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward?aid=1128   简化后
+ */
+function sign_in(ck, timeout = 3 * 1000) {
+	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward?aid=1128'
+
+	return new Promise((resolve) => {
+
+		if (debug) {
+			console.log(`\n【debug】=============== 这是 收集瓶子水滴 请求 url ===============`);
+			console.log(request_url);
+		}
+
+		$.get(request_url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n【debug】===============这是 收集瓶子水滴 返回data==============`);
+					console.log(data)
+					// console.log(`======`)
+					// console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.status_code == 0) {
+
+					console.log(`\n【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴 `)
+					// msg += `\n【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`
+					// $.msg(`\n【${$.name}】【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`)
+
+				} else if (result.status_code === "1001") {
+
+					console.log(`\n【签到】 失败 ,可能是: ${result.message}! \n `)
+					// msg += `\n【签到】 失败 ,可能是: ${result.message}! \n `
+					// $.msg(`【${$.name}】 \n【签到】 失败 ,可能是: ${result.message}! \n `)
+
+				} else {
+
+					console.log(`\n【签到】 失败 ❌ 了呢,原因未知！\n `)
+					// msg += `\n【签到】 失败 ❌ 了呢,原因未知！\n `
+					// $.msg(`【${$.name}】 【签到】 失败 ❌ 了呢,原因未知！\n`)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
 
 
 
