@@ -6,6 +6,7 @@
  * 3-29    签到任务、新手彩蛋、每日免费领水滴、三餐礼包、宝箱、盒子领取  初步完成   脚本刚写完，难免有bug，请及时反馈  ；ck有效期测试中 
  * 3-29-2  更改签到逻辑 ， 修复每天免费水滴bug
  * 3-30    修改整体逻辑，简化通知
+ * 3-30-2  修复时间判断bug,增加脚本版本号（一半功能）
  * 
  * 抓包记得先打开果园，然后再打开抓包软件，就能正常抓包了   关于抖音的任务都没网络，抓不到包
  * 
@@ -32,6 +33,8 @@ let UA = ($.isNode() ? process.env.dygyUA : $.getdata('dygyUA')) || 'User-Agent:
 let dygyCookiesArr = [];
 let msg = '';
 let watering_unm = 1;
+let challenge_num_max = 1;
+let choose_gold_num = 1;
 
 
 
@@ -40,6 +43,8 @@ let watering_unm = 1;
 	if (!(await Envs()))  //多账号分割 判断变量是否为空  初步处理多账号
 		return;
 	else {
+
+		console.log(`本地脚本3-20-2 , 远程脚本xxxx(等我会写了加上，哈哈哈哈，自己根据本地判断吧！)`);
 
 		console.log(
 			`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
@@ -197,6 +202,173 @@ function wyy(timeout = 3 * 1000) {
 
 
 
+/**
+ * 获取首页图标
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info?version=8&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
+ * 
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info   简化后
+ */
+function polling_info(ck, timeout = 3 * 1000) {
+	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info'
+
+	return new Promise((resolve) => {
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 获取首页图标 请求 url ===============`);
+			console.log(request_url);
+		}
+		$.get(request_url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 获取首页图标 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.status_code == 0) {
+
+					// console.log(result.data.show_info.show_green_gift);
+					// console.log(result.data.show_info.show_challenge);
+					// console.log(result.data.show_info.show_nutrient);
+					// console.log(result.data.red_points.nutrient_sign);
+					// console.log(result.data.red_points.sign);
+					// console.log(`====`);
+					// console.log(result.data.red_points.box.rounds);
+					// console.log(result.data.red_points.box.times);
+					// console.log(result.data.red_points.challenge.times);
+
+
+					if (result.data.show_info.show_green_gift) {
+						console.log(`开始 【新手彩蛋】`);
+						await newcomer_egg(ck);
+					} else if (result.data.show_info.show_challenge != true) {
+						// console.log(`选择金宝箱【宝箱挑战】`);
+						await choose_gold(ck);
+					} else if (result.data.show_info.nutrient_sign) {
+						console.log(`开始 化肥签到`);
+						await fertilizer_sign(ck);
+					} else if (result.data.show_info.sign) {
+						console.log(`开始 七日签到`);
+						await sign_in(ck);
+					} else if (result.data.red_points.box.rounds != 0 && result.data.red_points.box.times == 0) {
+						console.log(`开盒子 box `);
+						await open_box(ck);
+					} else if (0 == 0) {
+						console.log(`开宝箱`);
+						await open_challenge(ck);
+					} else if (result.data.show_info.show_nutrient) {
+						console.log(`展示 养分 牌子，化肥功能已开启`);
+						// await nutrient_sign(ck);
+						if (result.data.fertilizer.normal != 0) {
+							console.log(`使用 正常 化肥`);
+							await fertilizer_nomal(ck);
+						} else if (result.data.fertilizer.lite != 0) {
+							console.log(`使用 小袋 化肥`);
+							await fertilizer_lite(ck);
+						}
+					}
+
+
+
+
+				} else if (result.status_code === "1001") {
+
+					console.log(`\n 【获取首页图标】 失败 ,可能是: ${result.message}! \n `)
+					// msg += `\n 【获取首页图标】 失败 ,可能是: ${result.message}! \n `
+					// $.msg(`【${$.name}】 \n 【获取首页图标】 失败 ,可能是: ${result.message}! \n `)
+
+				} else {
+
+					console.log(`\n 【获取首页图标】 失败 ❌ 了呢,原因未知！\n `)
+					// msg += `\n 【获取首页图标】 失败 ❌ 了呢,原因未知！\n `
+					// $.msg(`【${$.name}】 【获取首页图标】 失败 ❌ 了呢,原因未知！\n`)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+
+/**
+ * 浇水
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water?version=8&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
+ * 
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water?aid=1128   简化
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water?aid=1128
+ */
+function watering(ck, timeout = 3 * 1000) {
+	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water?aid=1128'
+
+	return new Promise((resolve) => {
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 浇水 请求 url ===============`);
+			console.log(request_url);
+		}
+		$.get(request_url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 浇水 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				result = JSON.parse(data);
+
+				if (result.status_code == 0) {
+
+					console.log(`\n第${watering_unm} 次浇水，${result.message} 🎉 `);
+					await $.wait(5 * 1000);
+					console.log('等待判断是否有宝箱、盒子box可以领取');
+					await polling_info(ck);
+					await $.wait(3 * 1000);
+					watering_unm++
+
+					if (result.data.kettle.water_num > 10) {
+						await watering(ck);
+						// console.log(`测试使用`);
+					} else {  // 浇水完成
+
+						console.log(`\n 【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n`)
+
+						msg += `\n 【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n`
+
+
+					}
+
+				} else if (result.status_code === 1008) {
+
+					console.log(`\n 浇水】 失败 ,可能是: ${result.message}!\n `)
+					// msg += `\n 【浇水】 失败 ,可能是: ${result.message}!\n`
+					// $.msg(`【${$.name}】 【浇水】: ${result.message}`)
+
+					console.log(`等待3分钟，再次尝试浇水！`);
+					await $.wait(3 * 60 * 1000);
+
+				} else {
+
+					console.log(`\n 【浇水】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
+					// msg += `\n 【浇水】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
+					// $.msg(`【${$.name}】 【浇水】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+
+
 
 /**
  * 获取任务列表
@@ -258,9 +430,9 @@ function tasks_list(ck, timeout = 3 * 1000) {
 
 							let d = new Date();
 							let n = d.getHours();
-							// console.log(n);
+							console.log(`现在时间 ${n} 时`);
 
-							if (n > 8 && n < 9) {
+							if (n >= 8 && n <= 9) {
 								console.log('开始 【早餐礼包】');
 								await eat_package(ck, '早餐');
 								await $.wait(2 * 1000);
@@ -269,11 +441,11 @@ function tasks_list(ck, timeout = 3 * 1000) {
 								await water_bottle(ck);
 								await $.wait(2 * 1000);
 
-							} else if (n > 12 && n < 14) {
+							} else if (n >= 12 && n <= 14) {
 								console.log('开始 【午餐礼包】')
 								await eat_package(ck, '午餐');
 								await $.wait(2 * 1000);
-							} else if (n > 18 && n < 21) {
+							} else if (n >= 18 && n <= 21) {
 								console.log('开始 【晚餐礼包】')
 								await eat_package(ck, '晚餐');
 								await $.wait(2 * 1000);
@@ -296,122 +468,6 @@ function tasks_list(ck, timeout = 3 * 1000) {
 		}, timeout)
 	})
 }
-
-
-
-/**
- * 三餐礼包
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2&do_action=1&extra_ad_num=0&version=8&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2   简化后
- */
-function eat_package(ck, name, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2'
-
-	return new Promise((resolve) => {
-
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 ${name}礼包 请求 url ===============`);
-			console.log(request_url);
-		}
-
-		$.get(request_url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 ${name}礼包 返回data==============`);
-					console.log(data)
-					console.log(`=== 这是转json后的 data ===`)
-					console.log(JSON.parse(data))
-				}
-				let result = JSON.parse(data);
-				if (result.status_code == 0) {
-
-					console.log(`\n 【${name}礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`)
-					// msg += `\n 【${name}礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`
-					// $.msg(`\n 【${name}礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`)
-
-				} else if (result.status_code === "1001") {
-
-					console.log(`\n 【${name}礼包】 失败 ,可能是: ${result.message}!\n `)
-					// msg += `\n 【${name}礼包】 失败 ,可能是: ${result.message}!\n`
-					// $.msg(` 【${name}礼包】: ${result.message}`)
-
-				} else {
-
-					console.log(`\n 【${name}礼包】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
-					// msg += `\n 【${name}礼包】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
-					// $.msg(` 【${name}礼包】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
-
-				}
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-				resolve();
-			}
-		}, timeout)
-	})
-}
-
-
-/**
- * 新手彩蛋
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/green_gift/reward?aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
- * 
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/green_gift/reward?aid=1128   简化后
- */
-function newcomer_egg(ck, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/green_gift/reward?aid=1128'
-
-	return new Promise((resolve) => {
-
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 新手彩蛋 请求 url ===============`);
-			console.log(request_url);
-		}
-
-		$.get(request_url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 新手彩蛋 返回data==============`);
-					console.log(data)
-					console.log(`=== 这是转json后的 data ===`)
-					console.log(JSON.parse(data))
-				}
-				let result = JSON.parse(data);
-				if (result.status_code == 0) {
-
-					console.log(`\n 【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`)
-					// msg += `\n 【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`
-					// $.msg(`\n 【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`)
-
-					console.log(`耐心等待6分钟，等下一个彩蛋孵化鸭`);
-
-					await $.wait(6 * 60 * 1000);
-
-
-				} else if (result.status_code === "1001") {
-
-					console.log(`\n 【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `)
-					// msg += `\n 【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `
-					// $.msg(`【${$.name}】 \n 【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `)
-
-				} else {
-
-					console.log(`\n 【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
-					// msg += `\n 【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
-					// $.msg(`【${$.name}】 【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
-
-				}
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-				resolve();
-			}
-		}, timeout)
-	})
-}
-
 
 
 
@@ -486,81 +542,6 @@ function touch_Duck(ck, timeout = 3 * 1000) {
 
 
 
-
-/**
- * 浇水
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water?version=8&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
- * 
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water?aid=1128   简化
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water?aid=1128
- */
-function watering(ck, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water?aid=1128'
-
-	return new Promise((resolve) => {
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 浇水 请求 url ===============`);
-			console.log(request_url);
-		}
-		$.get(request_url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 浇水 返回data==============`);
-					console.log(data)
-					console.log(`======`)
-					console.log(JSON.parse(data))
-				}
-				result = JSON.parse(data);
-
-				if (result.status_code == 0) {
-
-					console.log(`\n第${watering_unm} 次浇水，${result.message} 🎉 `);
-					await $.wait(5 * 1000);
-					console.log('等待判断是否有宝箱、盒子box可以领取');
-					await polling_info(ck);
-					await $.wait(3 * 1000);
-					watering_unm++
-
-					if (result.data.kettle.water_num > 10) {
-						await watering(ck);
-					} else {  // 浇水完成
-
-						console.log(`\n 【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n`)
-
-						msg += `\n 【浇水】${result.message} 了🎉 \n果树等级:${result.data.status}级\n升级进度:已浇水 ${result.data.progress.current} 次，${result.data.status}级共需要浇水 ${result.data.progress.target} ,你还有 ${result.data.kettle.water_num} 水滴:\n储水瓶: 已储存 ${result.data.bottle.water_num} 滴 ,领取时间:明天 ${result.data.bottle.availiable_time} 点 \n`
-
-
-					}
-
-				} else if (result.status_code === 1008) {
-
-					console.log(`\n 浇水】 失败 ,可能是: ${result.message}!\n `)
-					// msg += `\n 【浇水】 失败 ,可能是: ${result.message}!\n`
-					// $.msg(`【${$.name}】 【浇水】: ${result.message}`)
-
-					console.log(`等待3分钟，再次尝试浇水！`);
-					await $.wait(3 * 60 * 1000);
-
-				} else {
-
-					console.log(`\n 【浇水】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
-					// msg += `\n 【浇水】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
-					// $.msg(`【${$.name}】 【浇水】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
-
-				}
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-				resolve();
-			}
-		}, timeout)
-	})
-}
-
-
-
-
 /**
  * 选择金宝箱 （默认）
  * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/choose?task_id=2&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
@@ -568,54 +549,63 @@ function watering(ck, timeout = 3 * 1000) {
  * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/choose?task_id=2   简化后
  */
 function choose_gold(ck, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/choose?task_id=2'
 
-	return new Promise((resolve) => {
+	if (choose_gold_num < 2) {
 
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 选择金宝箱 请求 url ===============`);
-			console.log(request_url);
-		}
+		request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/choose?task_id=2'
 
-		$.get(request_url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 选择金宝箱 返回data==============`);
-					console.log(data)
-					console.log(`=== 这是转json后的 data ===`)
-					console.log(JSON.parse(data))
-				}
-				let result = JSON.parse(data);
-				if (result.status_code == 0) {
+		return new Promise((resolve) => {
 
-					console.log(`\n 【选择金宝箱】${result.message}了鸭 🎉 `)
-					// msg += `\n 【选择金宝箱】${result.message}了鸭 🎉 `
-					// $.msg(`\n 【${$.name}】【选择金宝箱】${result.message}了鸭 🎉 `)
-
-				} else if (result.status_code === "1001") {
-
-					console.log(`\n 【选择金宝箱】 失败 ,可能是: ${result.message}! \n `)
-					// msg += `\n 【选择金宝箱】 失败 ,可能是: ${result.message}! \n `
-					// $.msg(`【${$.name}】 \n 【选择金宝箱】 失败 ,可能是: ${result.message}! \n `)
-
-				} else {
-
-					console.log(`\n 【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
-					// msg += `\n 【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
-					// $.msg(`【${$.name}】 【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
-
-				}
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-				resolve();
+			if (debug) {
+				console.log(`\n 【debug】=============== 这是 选择金宝箱 请求 url ===============`);
+				console.log(request_url);
 			}
-		}, timeout)
-	})
+
+			$.get(request_url, async (error, response, data) => {
+				try {
+					if (debug) {
+						console.log(`\n\n 【debug】===============这是 选择金宝箱 返回data==============`);
+						console.log(data)
+						console.log(`=== 这是转json后的 data ===`)
+						console.log(JSON.parse(data))
+					}
+					let result = JSON.parse(data);
+					if (result.status_code == 0) {
+
+						console.log(`\n 【选择金宝箱】${result.message}了鸭 🎉 `)
+						// msg += `\n 【选择金宝箱】${result.message}了鸭 🎉 `
+						// $.msg(`\n 【${$.name}】【选择金宝箱】${result.message}了鸭 🎉 `)
+
+					} else if (result.status_code === "1001") {
+
+						console.log(`\n 【选择金宝箱】 失败 ,可能是: ${result.message}! \n `)
+						// msg += `\n 【选择金宝箱】 失败 ,可能是: ${result.message}! \n `
+						// $.msg(`【${$.name}】 \n 【选择金宝箱】 失败 ,可能是: ${result.message}! \n `)
+
+					} else {
+
+						console.log(`\n 【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
+						// msg += `\n 【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
+						// $.msg(`【${$.name}】 【选择金宝箱】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
+					}
+
+					choose_gold_num++
+					let myDate = new Date();
+					myDate.getHours();
+					Hours = myDate.getHours()
+					if (Hours > 22) {
+						choose_gold_num = 1;
+					}
+
+				} catch (e) {
+					console.log(e)
+				} finally {
+					resolve();
+				}
+			}, timeout)
+		})
+	}
 }
-
-
 
 
 
@@ -626,11 +616,9 @@ function choose_gold(ck, timeout = 3 * 1000) {
  * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/reward?aid=1128   简化后
  */
 function open_challenge(ck, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/reward?aid=1128'
 
-	let challenge_num_max = 1;
 	if (challenge_num_max < 2) {
-
+		request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/reward?aid=1128'
 		return new Promise((resolve) => {
 
 			if (debug) {
@@ -691,6 +679,7 @@ function open_challenge(ck, timeout = 3 * 1000) {
 }
 
 
+
 /**
  * 领取盒子奖励 （box）
  * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/box/open?aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
@@ -747,26 +736,28 @@ function open_box(ck, timeout = 3 * 1000) {
 
 
 
+
+
 /**
- * 每日免费领水滴
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=1&do_action=0&extra_ad_num=0&version=8&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
+ * 使用小袋化肥
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/use/fertilizer?fertilizer_type=4&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
  * 
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=1   简化后
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/use/fertilizer?fertilizer_type=4   简化后
  */
-function Daily_free_water(ck, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=1'
+function fertilizer_lite(ck, timeout = 3 * 1000) {
+	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/use/fertilizer?fertilizer_type=4'
 
 	return new Promise((resolve) => {
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 每日免费领水滴 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 使用小袋化肥 请求 url ===============`);
 			console.log(request_url);
 		}
 
 		$.get(request_url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 每日免费领水滴 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 使用小袋化肥 返回data==============`);
 					console.log(data)
 					console.log(`=== 这是转json后的 data ===`)
 					console.log(JSON.parse(data))
@@ -774,26 +765,116 @@ function Daily_free_water(ck, timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.status_code == 0) {
 
-					console.log(`\n 【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒 `)
-					// msg += `\n 【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒`
-					// $.msg(`\n 【${$.name}】【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒`)
+					console.log(`\n 【使用小袋化肥】${result.message}了鸭 🎉 , 当前肥力 ${result.data.nutrient} 养分 , 剩余正常化肥 ${result.data.fertilizer.normal} 袋、小袋化肥 ${result.data.fertilizer.lite} 袋 `)
 
-					console.log(`耐心等待5分钟鸭～～～`);
-					await $.wait(310 * 1000);
-					await Daily_free_water(ck);
+				} else if (result.status_code === "1001") {
+
+					console.log(`\n 【使用小袋化肥】 失败 ,可能是: ${result.message}! \n `)
+
+				} else {
+					console.log(`\n 【使用小袋化肥】 失败 ❌ 了呢,原因未知！\n `)
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
 
 
-				} else if (result.status_code === 1001) {
+/**
+ * 收集瓶子水滴
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward?aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
+ * 
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward?aid=1128   简化后
+ */
+function water_bottle(ck, timeout = 3 * 1000) {
+	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward?aid=1128'
 
-					console.log(`\n 【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `)
-					// msg += `\n 【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `
-					// $.msg(`【${$.name}】 \n 【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `)
+	return new Promise((resolve) => {
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 收集瓶子水滴 请求 url ===============`);
+			console.log(request_url);
+		}
+
+		$.get(request_url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 收集瓶子水滴 返回data==============`);
+					console.log(data)
+					console.log(`=== 这是转json后的 data ===`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.status_code == 0) {
+
+					console.log(`\n 【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴 `)
+					// msg += `\n 【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`
+					// $.msg(`\n 【${$.name}】【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`)
+
+				} else if (result.status_code === "1001") {
+
+					console.log(`\n 【签到】 失败 ,可能是: ${result.message}! \n `)
+					// msg += `\n 【签到】 失败 ,可能是: ${result.message}! \n `
+					// $.msg(`【${$.name}】 \n 【签到】 失败 ,可能是: ${result.message}! \n `)
 
 				} else {
 
-					console.log(`\n 【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
-					// msg += `\n 【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
-					// $.msg(`【${$.name}】 【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
+					console.log(`\n 【签到】 失败 ❌ 了呢,原因未知！\n `)
+					// msg += `\n 【签到】 失败 ❌ 了呢,原因未知！\n `
+					// $.msg(`【${$.name}】 【签到】 失败 ❌ 了呢,原因未知！\n`)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+
+/**
+ * 化肥签到
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/sign_in?aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
+ * 
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/sign_in   简化后
+ */
+function fertilizer_sign(ck, timeout = 3 * 1000) {
+	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/sign_in'
+
+	return new Promise((resolve) => {
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 化肥签到 请求 url ===============`);
+			console.log(request_url);
+		}
+
+		$.get(request_url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 化肥签到 返回data==============`);
+					console.log(data)
+					console.log(`=== 这是转json后的 data ===`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.status_code == 0) {
+
+					console.log(`\n 【化肥签到】${result.message}了鸭 🎉 , 获得 ${result.sign.reward_item.name} ${result.sign.reward_item.num} 袋 `)
+				} else if (result.status_code === "1001") {
+
+					console.log(`\n 【化肥签到】 失败 ,可能是: ${result.message}! \n `)
+
+				} else {
+
+					console.log(`\n 【化肥签到】 失败 ❌ 了呢,原因未知！\n `)
 
 				}
 
@@ -863,27 +944,26 @@ function sign_in(ck, timeout = 3 * 1000) {
 }
 
 
-
 /**
- * 化肥签到
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/sign_in?aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
+ * 每日免费领水滴
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=1&do_action=0&extra_ad_num=0&version=8&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
  * 
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/sign_in   简化后
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=1   简化后
  */
-function fertilizer_sign(ck, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/sign_in'
+function Daily_free_water(ck, timeout = 3 * 1000) {
+	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=1'
 
 	return new Promise((resolve) => {
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 化肥签到 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 每日免费领水滴 请求 url ===============`);
 			console.log(request_url);
 		}
 
 		$.get(request_url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 化肥签到 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 每日免费领水滴 返回data==============`);
 					console.log(data)
 					console.log(`=== 这是转json后的 data ===`)
 					console.log(JSON.parse(data))
@@ -891,14 +971,26 @@ function fertilizer_sign(ck, timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.status_code == 0) {
 
-					console.log(`\n 【化肥签到】${result.message}了鸭 🎉 , 获得 ${result.sign.reward_item.name} ${result.sign.reward_item.num} 袋 `)
-				} else if (result.status_code === "1001") {
+					console.log(`\n 【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒 `)
+					// msg += `\n 【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒`
+					// $.msg(`\n 【${$.name}】【每日免费领水滴】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 冷却时间 ${result.data.task.reward_item.time} 秒`)
 
-					console.log(`\n 【化肥签到】 失败 ,可能是: ${result.message}! \n `)
+					console.log(`耐心等待5分钟鸭～～～`);
+					await $.wait(310 * 1000);
+					await Daily_free_water(ck);
+
+
+				} else if (result.status_code === 1001) {
+
+					console.log(`\n 【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `)
+					// msg += `\n 【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `
+					// $.msg(`【${$.name}】 \n 【每日免费领水滴】 失败 ,可能是: ${result.message}! \n `)
 
 				} else {
 
-					console.log(`\n 【化肥签到】 失败 ❌ 了呢,原因未知！\n `)
+					console.log(`\n 【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
+					// msg += `\n 【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
+					// $.msg(`【${$.name}】 【每日免费领水滴】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
 
 				}
 
@@ -915,25 +1007,25 @@ function fertilizer_sign(ck, timeout = 3 * 1000) {
 
 
 /**
- * 收集瓶子水滴
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward?aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
+ * 新手彩蛋
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/green_gift/reward?aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
  * 
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward?aid=1128   简化后
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/green_gift/reward?aid=1128   简化后
  */
-function water_bottle(ck, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward?aid=1128'
+function newcomer_egg(ck, timeout = 3 * 1000) {
+	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/green_gift/reward?aid=1128'
 
 	return new Promise((resolve) => {
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 收集瓶子水滴 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 新手彩蛋 请求 url ===============`);
 			console.log(request_url);
 		}
 
 		$.get(request_url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 收集瓶子水滴 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 新手彩蛋 返回data==============`);
 					console.log(data)
 					console.log(`=== 这是转json后的 data ===`)
 					console.log(JSON.parse(data))
@@ -941,21 +1033,26 @@ function water_bottle(ck, timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.status_code == 0) {
 
-					console.log(`\n 【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴 `)
-					// msg += `\n 【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`
-					// $.msg(`\n 【${$.name}】【签到】${result.message}了鸭 🎉 , 获得 ${result.data.task.reward_item.num} 水滴 , 签到后共有 ${result.data.kettle.water_num} 水滴`)
+					console.log(`\n 【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`)
+					// msg += `\n 【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`
+					// $.msg(`\n 【新手彩蛋】砸蛋成功了鸭🎉 ，获得水滴${result.data.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`)
+
+					console.log(`耐心等待6分钟，等下一个彩蛋孵化鸭`);
+
+					await $.wait(6 * 60 * 1000);
+
 
 				} else if (result.status_code === "1001") {
 
-					console.log(`\n 【签到】 失败 ,可能是: ${result.message}! \n `)
-					// msg += `\n 【签到】 失败 ,可能是: ${result.message}! \n `
-					// $.msg(`【${$.name}】 \n 【签到】 失败 ,可能是: ${result.message}! \n `)
+					console.log(`\n 【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `)
+					// msg += `\n 【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `
+					// $.msg(`【${$.name}】 \n 【新手彩蛋】 失败 ,可能是: ${result.message}! 已经完成的同学自行注释新手砸蛋脚本吧，暂时没做判断！\n `)
 
 				} else {
 
-					console.log(`\n 【签到】 失败 ❌ 了呢,原因未知！\n `)
-					// msg += `\n 【签到】 失败 ❌ 了呢,原因未知！\n `
-					// $.msg(`【${$.name}】 【签到】 失败 ❌ 了呢,原因未知！\n`)
+					console.log(`\n 【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n `)
+					// msg += `\n 【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!\n`
+					// $.msg(`【${$.name}】 【新手彩蛋】 失败 ❌ 了呢,可能已经分享过了或者网络被外星人抓走了!`)
 
 				}
 
@@ -968,113 +1065,25 @@ function water_bottle(ck, timeout = 3 * 1000) {
 	})
 }
 
-
-
-
 /**
- * 获取首页图标
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info?version=8&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
- * 
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info   简化后
+ * 三餐礼包
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2&do_action=1&extra_ad_num=0&version=8&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
+ * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2   简化后
  */
-function polling_info(ck, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info'
-
-	return new Promise((resolve) => {
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 获取首页图标 请求 url ===============`);
-			console.log(request_url);
-		}
-		$.get(request_url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 获取首页图标 返回data==============`);
-					console.log(data)
-					console.log(`======`)
-					console.log(JSON.parse(data))
-				}
-				let result = JSON.parse(data);
-				if (result.status_code == 0) {
-
-					if (result.data.show_info.show_green_gift) {
-						console.log(`开始 【新手彩蛋】`);
-						await newcomer_egg(ck);
-					} else if (result.data.show_info.show_challenge != true) {
-						console.log(`选择金宝箱【宝箱挑战】`);
-						await choose_gold(ck);
-					} else if (result.data.show_info.show_nutrient) {
-						console.log(`展示 养分 牌子，化肥功能已开启`);
-						// await nutrient_sign(ck);
-						if (result.data.fertilizer.normal != 0) {
-							console.log(`使用 正常 化肥`);
-							await fertilizer_nomal(ck);
-						} else if (result.data.fertilizer.lite != 0) {
-							console.log(`使用 小袋 化肥`);
-							await fertilizer_lite(ck);
-						}
-					} else if (result.data.show_info.nutrient_sign) {
-						console.log(`开始 化肥签到`);
-						await fertilizer_sign(ck);
-					} else if (result.data.show_info.sign) {
-						console.log(`开始 七日签到`);
-						await sign_in(ck);
-					} else if (result.data.red_points.box.rounds != 0 && result.data.red_points.box.times == 0) {
-						console.log(`开盒子 box `);
-						await open_box(ck);
-					} else if (result.data.red_points.challenge.times == 0) {
-						console.log(`开宝箱`);
-						await open_challenge(ck);
-					}
-
-
-
-
-				} else if (result.status_code === "1001") {
-
-					console.log(`\n 【获取首页图标】 失败 ,可能是: ${result.message}! \n `)
-					// msg += `\n 【获取首页图标】 失败 ,可能是: ${result.message}! \n `
-					// $.msg(`【${$.name}】 \n 【获取首页图标】 失败 ,可能是: ${result.message}! \n `)
-
-				} else {
-
-					console.log(`\n 【获取首页图标】 失败 ❌ 了呢,原因未知！\n `)
-					// msg += `\n 【获取首页图标】 失败 ❌ 了呢,原因未知！\n `
-					// $.msg(`【${$.name}】 【获取首页图标】 失败 ❌ 了呢,原因未知！\n`)
-
-				}
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-				resolve();
-			}
-		}, timeout)
-	})
-}
-
-
-
-
-/**
- * 使用小袋化肥
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/use/fertilizer?fertilizer_type=4&aid=1128&os_version=15.4&version_code=19.9.0&device_id=2067528404709896&iid=4033435092653599&app_name=aweme&device_platform=iphone&device_type=iPhone14,2&channel=App%20Store&version_name=&update_version_code=&appId=tte684903979bdf21a02&mpVersion=1.0.1&share_token=undefined
- * 
- * https://minigame.zijieapi.com/ttgame/game_orchard_ecom/use/fertilizer?fertilizer_type=4   简化后
- */
-function fertilizer_lite(ck, timeout = 3 * 1000) {
-	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/use/fertilizer?fertilizer_type=4'
+function eat_package(ck, name, timeout = 3 * 1000) {
+	request_url.url = 'https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2'
 
 	return new Promise((resolve) => {
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 使用小袋化肥 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 ${name}礼包 请求 url ===============`);
 			console.log(request_url);
 		}
 
 		$.get(request_url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 使用小袋化肥 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 ${name}礼包 返回data==============`);
 					console.log(data)
 					console.log(`=== 这是转json后的 data ===`)
 					console.log(JSON.parse(data))
@@ -1082,14 +1091,22 @@ function fertilizer_lite(ck, timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.status_code == 0) {
 
-					console.log(`\n 【使用小袋化肥】${result.message}了鸭 🎉 , 当前肥力 ${result.data.nutrient} 养分 , 剩余正常化肥 ${result.data.fertilizer.normal} 袋、小袋化肥 ${result.data.fertilizer.lite} 袋 `)
+					console.log(`\n 【${name}礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`)
+					// msg += `\n 【${name}礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`
+					// $.msg(`\n 【${name}礼包】领取成功了🎉 ，获得水滴${result.data.task.reward_item.num} 个 ， 领取后后共有 ${result.data.kettle.water_num} 水滴 !`)
 
 				} else if (result.status_code === "1001") {
 
-					console.log(`\n 【使用小袋化肥】 失败 ,可能是: ${result.message}! \n `)
+					console.log(`\n 【${name}礼包】 失败 ,可能是: ${result.message}!\n `)
+					// msg += `\n 【${name}礼包】 失败 ,可能是: ${result.message}!\n`
+					// $.msg(` 【${name}礼包】: ${result.message}`)
 
 				} else {
-					console.log(`\n 【使用小袋化肥】 失败 ❌ 了呢,原因未知！\n `)
+
+					console.log(`\n 【${name}礼包】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n `)
+					// msg += `\n 【${name}礼包】 失败 ❌ 了呢,可能是网络被外星人抓走了!\n`
+					// $.msg(` 【${name}礼包】: 失败 ❌ 了呢,可能是网络被外星人抓走了!`)
+
 				}
 
 			} catch (e) {
@@ -1100,11 +1117,6 @@ function fertilizer_lite(ck, timeout = 3 * 1000) {
 		}, timeout)
 	})
 }
-
-
-
-
-
 
 
 
