@@ -241,22 +241,28 @@ function polling_info(ck, timeout = 3 * 1000) {
 					if (result.data.show_info.show_green_gift) {
 						console.log(`开始 【新手彩蛋】`);
 						await newcomer_egg(ck);
-					} else if (result.data.show_info.show_challenge != true) {
+					}
+					if (result.data.show_info.show_challenge != true) {
 						// console.log(`选择金宝箱【宝箱挑战】`);
 						await choose_gold(ck);
-					} else if (result.data.show_info.nutrient_sign) {
+					}
+					if (result.data.show_info.nutrient_sign) {
 						console.log(`开始 化肥签到`);
 						await fertilizer_sign(ck);
-					} else if (result.data.show_info.sign) {
+					}
+					if (result.data.show_info.sign) {
 						console.log(`开始 七日签到`);
 						await sign_in(ck);
-					} else if (result.data.red_points.box.rounds != 0 && result.data.red_points.box.times == 0) {
+					}
+					if (result.data.red_points.box.rounds != 0 && result.data.red_points.box.times == 0) {
 						console.log(`开盒子 box `);
 						await open_box(ck);
-					} else if (0 == 0) {
+					}
+					if (result.data.red_points.challenge.times == 0) {
 						console.log(`开宝箱`);
 						await open_challenge(ck);
-					} else if (result.data.show_info.show_nutrient) {
+					}
+					if (result.data.show_info.show_nutrient) {
 						console.log(`展示 养分 牌子，化肥功能已开启`);
 						// await nutrient_sign(ck);
 						if (result.data.fertilizer.normal != 0) {
@@ -267,8 +273,6 @@ function polling_info(ck, timeout = 3 * 1000) {
 							await fertilizer_lite(ck);
 						}
 					}
-
-
 
 
 				} else if (result.status_code === "1001") {
@@ -590,12 +594,7 @@ function choose_gold(ck, timeout = 3 * 1000) {
 					}
 
 					choose_gold_num++
-					let myDate = new Date();
-					myDate.getHours();
-					Hours = myDate.getHours()
-					if (Hours > 22) {
-						choose_gold_num = 1;
-					}
+
 
 				} catch (e) {
 					console.log(e)
@@ -655,14 +654,7 @@ function open_challenge(ck, timeout = 3 * 1000) {
 
 					}
 
-
 					challenge_num_max++
-					let myDate = new Date();
-					myDate.getHours();
-					Hours = myDate.getHours()
-					if (Hours > 22) {
-						challenge_num_max = 1;
-					}
 
 				} catch (e) {
 					console.log(e)
