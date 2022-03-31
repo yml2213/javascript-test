@@ -18,13 +18,13 @@
  * 
  * 抓 minigame.zijieapi.com  的包  浇一次水即可获取ck  
  * 
- * 还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg  通知：https://t.me/yml2213_tg
+ * 还是不会的请百度或者群里求助：QQ群：1101401060  tg：https://t.me/yml_tg  通知：https://t.me/yml2213_tg
  */
 const jsname = "硬声";
 const $ = Env(jsname);
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
-const debug = 1; //0为关闭调试，1为打开调试,默认为0
+const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
 const CryptoJS = require('crypto-js');  //引用AES源码js
 const key = 'q09cRVOPCnfJzt7p';
@@ -109,20 +109,27 @@ function getAesString(data, key, iv) {//加密
 			// await video_list();
 			// await $.wait(2 * 1000);
 
-			// console.log('开始 关注任务');
-			// for (let index = 0; index < 3; index++) {
-			// 	await live_list();
-			// 	await follow();
-			// 	await $.wait(2 * 1000);
-			// }
-
 			console.log('开始 关注任务');
 			for (let index = 0; index < 1; index++) {
 				await video_list();
-				await like_video();
-				await $.wait(2 * 1000);
+				await follow();
+				await $.wait(3 * 1000);
+				await unfollow();
 			}
+			console.log('领取 关注任务硬币');
+			await receiveCoin(3,'关注');
+			await $.wait(2 * 1000);
 
+			// console.log('开始 点赞任务');
+			// for (let index = 0; index < 4; index++) {
+			// 	await video_list();
+			// 	await like_video();
+			// 	await $.wait(2 * 1000);
+			// 	await like_video();
+			// }
+			console.log('领取 点赞任务硬币');
+			await receiveCoin(4,'点赞');
+			await $.wait(2 * 1000);
 
 			// console.log('开始 每日任务列表');
 			// await task_list();
@@ -132,7 +139,7 @@ function getAesString(data, key, iv) {//加密
 			// await receiveCoin();
 			// await $.wait(2 * 1000);
 
-			
+
 
 
 			await SendMsg(msg);
@@ -268,7 +275,7 @@ function login(timeout = 3 * 1000) {
 				if (result.code == 0) {
 					console.log(`\n 登录:${result.message}  🎉 \n`);
 					AZ = result.data.Authorization;
-				} else if (result.code === 1001) {
+				} else if (result.code === 1101) {
 					console.log(`\n 登录:${result.message} \n `)
 				} else {
 					console.log(`\n 登录:  失败 ❌ 了呢,原因未知！\n result \n `)
@@ -286,12 +293,8 @@ function login(timeout = 3 * 1000) {
 
 
 
-
-
-
-
 /**
- * 每日任务列表
+ * 每日任务列表 完成 ✅
  * https://yingsheng.elecfans.com/webapi/wapi/activity/task/dailyList
  */
 function task_list(timeout = 3 * 1000) {
@@ -340,7 +343,7 @@ function task_list(timeout = 3 * 1000) {
 					console.log(`\n 每日任务列表:${result.message}, 获得硬币 ${result.data.coins} 枚 \n`);
 
 
-				} else if (result.code === 1001) {
+				} else if (result.code === 1101) {
 
 					console.log(`\n 每日任务列表:${result.message} \n `)
 
@@ -363,15 +366,16 @@ function task_list(timeout = 3 * 1000) {
 
 
 /**
- * 关注
+ * 关注  完成 ✅
  * https://ysapi.elecfans.com/api/member/follow 
  */
 function follow(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
-
+		// const key = 'q09cRVOPCnfJzt7p';
+		// const iv = 'cnry8k3o4WdCGU1T';
 		console.log(user_id);
-		let params_follow = `Authorization=${AZ}&platform=android&timestamp=${ts}&type=1&user_id=${user_id}cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p`
-		let sign_follow = sha1(`cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p${sha1(params_follow)}${AZ}`)
+		let params_follow = `Authorization=${AZ}&platform=android&timestamp=${ts}&type=1&user_id=${user_id}${iv}${key}`
+		let sign_follow = sha1(`${iv}${key}${sha1(params_follow)}${AZ}`)
 		let url = {
 			url: 'https://ysapi.elecfans.com/api/member/follow',
 			headers: {
@@ -381,7 +385,6 @@ function follow(timeout = 3 * 1000) {
 				"timestamp": ts,
 				"sign": sign_follow,
 				"platform": "android",
-				"model": "MI 6",
 				"version": "2.3.1",
 				"content-type": "application/x-www-form-urlencoded",
 
@@ -404,7 +407,7 @@ function follow(timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.code == 0) {
 
-					console.log(`\n 关注:${result.message}, 获得硬币 ${result.data.coins} 枚 \n`);
+					console.log(`\n 关注:${result.message}  \n`);
 
 
 				} else if (result.code == 5000) {
@@ -412,13 +415,82 @@ function follow(timeout = 3 * 1000) {
 					console.log(`\n 关注:${result.message}\n`);
 
 
-				} else if (result.code === 1001) {
+				} else if (result.code === 5001) {
 
 					console.log(`\n 关注:${result.message} \n `)
 
 				} else {
 
-					console.log(`\n 关注:  失败 ❌ 了呢,原因未知！\n result \n `)
+					console.log(`\n 关注:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+/**
+ * 取消关注  完成 ✅
+ * https://ysapi.elecfans.com/api/member/follow 
+ */
+function unfollow(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		// const key = 'q09cRVOPCnfJzt7p';
+		// const iv = 'cnry8k3o4WdCGU1T';
+		console.log(user_id);
+		let params_follow = `Authorization=${AZ}&platform=android&timestamp=${ts}&type=2&user_id=${user_id}${iv}${key}`
+		let sign_follow = sha1(`${iv}${key}${sha1(params_follow)}${AZ}`)
+		let url = {
+			url: 'https://ysapi.elecfans.com/api/member/follow',
+			headers: {
+
+				"Host": "ysapi.elecfans.com",
+				"authorization": AZ,
+				"timestamp": ts,
+				"sign": sign_follow,
+				"platform": "android",
+				"version": "2.3.1",
+				"content-type": "application/x-www-form-urlencoded",
+
+			},
+			body: `type=2&user_id=${user_id}`,
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 取消关注 请求 url ===============`);
+			console.log(url);
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 取消关注 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.code == 0) {
+
+					console.log(`\n 取消关注:${result.message}  \n`);
+
+
+				} else if (result.code == 5000) {
+
+					console.log(`\n 取消关注:${result.message}\n`);
+
+
+				} else if (result.code === 5001) {
+
+					console.log(`\n 取消关注:${result.message} \n `)
+
+				} else {
+
+					console.log(`\n 取消关注:  失败 ❌ 了呢,原因 \n ${result} \n `)
 
 				}
 
@@ -490,7 +562,7 @@ function follow1(timeout = 3 * 1000) {
 					console.log(`\n 关注:${result.message}\n`);
 
 
-				} else if (result.code === 1001) {
+				} else if (result.code === 1101) {
 
 					console.log(`\n 关注:${result.message} \n `)
 
@@ -515,10 +587,10 @@ function follow1(timeout = 3 * 1000) {
 
 
 /**
- * 观看作品赚硬币   第一个 2金币   id1 
+ * 观看作品赚硬币   第一个 2硬币   id1 
  * https://yingsheng.elecfans.com/webapi/wapi/activity/task/receiveCoin
  */
-function receiveCoin(timeout = 3 * 1000) {
+function receiveCoin11(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 
 		// Authorization=566e7559a26bc0879cfa215b2ac51c4c3dc067dc4a9dca8b9733f64f2988e309&platform=h5&timestamp=1648699448&type=1
@@ -569,7 +641,7 @@ function receiveCoin(timeout = 3 * 1000) {
 					console.log(`\n 观看作品赚硬币:${result.message}\n`);
 
 
-				} else if (result.code === 1001) {
+				} else if (result.code === 1101) {
 
 					console.log(`\n 观看作品赚硬币:${result.message} \n `)
 
@@ -591,80 +663,6 @@ function receiveCoin(timeout = 3 * 1000) {
 
 
 
-
-/**
- * 获取直播列表-取用户id
- * https://ysapi.elecfans.com/api/live/list?limit=14&page=1
- * https://ysapi.elecfans.com/api/live/list?limit=20&page=1
-//  */
-// function live_list(timeout = 3 * 1000) {
-// 	return new Promise((resolve) => {
-// 		num = randomInt(1, 3)
-// 		// console.log(num);
-// 		console.log(AZ);
-// 		// let ys_data = '24ddf227f382f68654f06d0e01704049d06fe76f0ad9b8ffcd36883dd0b4ca73'
-// 		let params_live = `Authorization=${AZ}&limit=20&page=${num}&platform=android&timestamp=${ts}cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p`
-// 		console.log(params_live);
-// 		let sign_live = sha1(`cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p${sha1(params_live)}${AZ}`)
-
-// 		let url = {
-// 			url: `https://ysapi.elecfans.com/api/live/list?limit=20&page=${num}`,
-// 			headers: {
-
-// 				"Host": "ysapi.elecfans.com",
-// 				"authorization": AZ,
-// 				"timestamp": ts,
-// 				"sign": sign_live,
-// 				"platform": "android",
-// 				"model": "MI 6",
-// 				"version": "2.3.1",
-// 				"user-agent": "okhttp/3.12.3",
-// 			},
-// 		}
-
-// 		if (debug) {
-// 			console.log(`\n 【debug】=============== 这是 获取直播列表 请求 url ===============`);
-// 			console.log(url);
-// 		}
-// 		$.get(url, async (error, response, data) => {
-// 			try {
-// 				if (debug) {
-// 					console.log(`\n\n 【debug】===============这是 获取直播列表 返回data==============`);
-// 					// console.log(data)
-// 					console.log(`======`)
-// 					console.log(JSON.parse(data))
-// 				}
-// 				let result = JSON.parse(data);
-// 				if (result.code == 0) {
-// 					id_num = randomInt(1, 20)
-// 					console.log(id_num);
-// 					user_id = result.data.data[id_num].user_id
-// 					console.log(user_id);
-// 					return user_id;
-
-// 				} else if (result.code === 1001) { //签名错误
-
-// 					console.log(`\n 获取直播列表:${result.message} \n `)
-
-// 				} else {
-
-// 					console.log(`\n 获取直播列表:  失败 ❌ 了呢,原因未知！\n result \n\n `)
-
-// 				}
-
-
-// 				console.log(user_id);
-
-// 			} catch (e) {
-// 				console.log(e)
-// 			} finally {
-// 				resolve();
-// 			}
-// 		}, timeout)
-// 	})
-// }
-
-
 /**
  * 推荐视频列表 - 取用户id  视频id等信息
  * https://ysapi.elecfans.com/api/video/index
@@ -674,7 +672,6 @@ function video_list(timeout = 3 * 1000) {
 		// const key = 'q09cRVOPCnfJzt7p';
 		// const iv = 'cnry8k3o4WdCGU1T';
 		let params_video_list = `Authorization=${AZ}&platform=android&timestamp=${ts}${iv}${key}`
-		console.log(params_video_list);
 		let sign_video_list = sha1(`${iv}${key}${sha1(params_video_list)}${AZ}`)
 
 		let url = {
@@ -700,7 +697,7 @@ function video_list(timeout = 3 * 1000) {
 			try {
 				if (debug) {
 					console.log(`\n\n 【debug】===============这是 推荐视频列表 返回data==============`);
-					console.log(data)
+					// console.log(data)
 					console.log(`======`)
 					console.log(JSON.parse(data))
 				}
@@ -709,11 +706,12 @@ function video_list(timeout = 3 * 1000) {
 					id_num = randomInt(1, 9)
 					// console.log(id_num);
 					user_id = result.data.data[id_num].user_id;
-					console.log(user_id);
-					return user_id;
+					// console.log(user_id);
 					audio_id = result.data.data[id_num].detail.audio_id;
+					// console.log(audio_id);
 
-				} else if (result.code === 1001) { //签名错误
+
+				} else if (result.code === 1101) { //签名错误
 
 					console.log(`\n 推荐视频列表:${result.message} \n `)
 
@@ -723,8 +721,6 @@ function video_list(timeout = 3 * 1000) {
 
 				}
 
-
-				console.log(user_id);
 
 			} catch (e) {
 				console.log(e)
@@ -739,50 +735,28 @@ function video_list(timeout = 3 * 1000) {
 
 
 /**
- * 点赞  publish/thumbsup
+ * 点赞  publish/thumbsup  完成 ✅
  * https://ysapi.elecfans.com/api/video/publish/thumbsup 
  */
 function like_video(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 
-		console.log(user_id);
-		console.log(audio_id);
-
-
-		// Authorization=46c75d22707c6ec538a5f55aaa515b6e4f9ad058538692269db98e48a05c6660&platform=android&timestamp=1648716775&video_id=12473cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p
-		// cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p e64c3021961c833f6e3fb36a94166abea8e4caa8  46c75d22707c6ec538a5f55aaa515b6e4f9ad058538692269db98e48a05c6660
-
-		// const key = 'q09cRVOPCnfJzt7p';
-		// const iv = 'cnry8k3o4WdCGU1T';
-		// let params_video_list = `Authorization=${AZ}&platform=android&timestamp=${ts}${iv}${key}`
-		// console.log(params_video_list);
-		// let sign_video_list = sha1(`${iv}${key}${sha1(params_video_list)}${AZ}`)
-
 		let params_like_video = `Authorization=${AZ}&platform=android&timestamp=${ts}&video_id=${audio_id}${iv}${key}`
 		let sign_like_video = sha1(`${iv}${key}${sha1(params_like_video)}${AZ}`)
+
 		let url = {
 			url: 'https://ysapi.elecfans.com/api/video/publish/thumbsup',
 			headers: {
 
 				"Host": "ysapi.elecfans.com",
-				// "Cookie": "acw_tc=7250bb1516486447236156267e72c01323715fd74fc0bb42bb19ec4573",
-				"lang": "zh",
-				// "user-agent": "HQHardVoice/2.3.1 (iPhone; iOS 15.4; Scale/3.00)",
-				"appplatform": "ios_phone",
-				// "callid": "1648634499120",
-				"country": "CN",
-				"sysversion": "15.4",
-				"version": "2.3.1",
-				"sign": sign_like_video,
-				"platform": "ios",
-				"timestamp": ts,
 				"authorization": AZ,
-				"cv": "2.3.1",
-				"accept-language": "zh-Hans-CN;q=1, en-CN;q=0.9",
-				"timezone": "Asia/Shanghai",
-				"model": "iPhone14,2",
-				"accept": "application/json",
-				"content-type": "application/x-www-form-urlencoded"
+				"timestamp": ts,
+				"sign": sign_like_video,
+				"platform": "android",
+				// "model": "MI 6",
+				"version": "2.3.1",
+				"content-type": "application/x-www-form-urlencoded",
+				"user-agent": "okhttp/3.12.3"
 			},
 			body: `video_id=${audio_id}`,
 		}
@@ -802,21 +776,15 @@ function like_video(timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.code == 0) {
 
-					console.log(`\n 点赞:${result.message}, 获得硬币 ${result.data.coins} 枚 \n`);
+					console.log(`\n 视频${audio_id} ${result.data.msg} \n`);
 
-
-				} else if (result.code == 5000) {
-
-					console.log(`\n 点赞:${result.message}\n`);
-
-
-				} else if (result.code === 1001) {
+				} else if (result.code === 1101) {
 
 					console.log(`\n 点赞:${result.message} \n `)
 
 				} else {
 
-					console.log(`\n 点赞:  失败 ❌ 了呢,原因未知！\n result \n `)
+					console.log(`\n 点赞:  失败 ❌ 了呢,原因未知！\n ${result}  \n `)
 
 				}
 
@@ -830,6 +798,77 @@ function like_video(timeout = 3 * 1000) {
 }
 
 
+
+
+
+
+
+
+
+/**
+ * 领取任务硬币  receiveCoin   完成 ✅
+ * https://yingsheng.elecfans.com/webapi/wapi/activity/task/receiveCoin
+ */
+ function receiveCoin(id,name,timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		let params_receiveCoin = `Authorization=${AZ}&platform=h5&timestamp=${ts}&type=4`
+		let sign_receiveCoin = sha1(`lw0270iBJzxXdJLRtePEENsauRzkHSqm${sha1(params_receiveCoin)}${AZ}`)
+		let url = {
+			url: 'https://yingsheng.elecfans.com/webapi/wapi/activity/task/receiveCoin',
+			headers: {
+				"Host": "yingsheng.elecfans.com",
+				"Accept": "application/json, text/plain, */*",
+				"Authorization": AZ,
+				"timestamp": ts,
+				"Accept-Language": "zh-CN,zh-Hans;q=0.9",
+				"platform": "h5",
+				"Content-Type": "application/json;charset=utf-8",
+				"Origin": "https://yingsheng.elecfans.com",
+				"sign": sign_receiveCoin,
+			},
+			body: `{"type":${id}}`,
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 领取${name}硬币 请求 url ===============`);
+			console.log(url);
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 领取${name}硬币 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.code == 0) {
+
+					console.log(`\n 领取${name}硬币:${result.message}, 获得硬币 ${result.data.coins} 枚 \n`);
+
+
+				} else if (result.code === 1000) {
+
+					console.log(`\n 领取${name}硬币:${result.message} \n `)
+
+				} else if (result.code === 1101) {
+
+					console.log(`\n 领取${name}硬币:${result.message} \n `)
+
+				} else {
+
+					console.log(`\n 领取${name}硬币:  失败 ❌ 了呢,原因 \n ${result} \n `)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
 
 
 
@@ -885,7 +924,7 @@ function signin(timeout = 3 * 1000) {
 					console.log(`\n 签到:${result.message}\n`);
 
 
-				} else if (result.code === 1001) {
+				} else if (result.code === 1101) {
 
 					console.log(`\n 签到:${result.message} \n `)
 

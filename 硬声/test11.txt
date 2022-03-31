@@ -1,0 +1,36 @@
+{
+	"code": 1000,
+	"message": "领取失败, 没有可以领取的硬币",
+	"data": {}
+}
+    
+关注相关 
+{
+    "code": 5001,
+    "message": "已经关注不能再关注",
+    "data": {}
+}
+{
+    "code": 0,
+    "message": "success！",
+    "data": {
+        "follow_type": 2,
+        "follow_type_text": "未关注",
+        "status": true
+    }
+}{
+    "code": 0,
+    "message": "success！",
+    "data": {
+        "follow_type": 1,
+        "follow_type_text": "已关注",
+        "status": true
+    }
+}
+
+领取任务硬币
+{
+    "code": 1000,
+    "message": "领取失败, 没有可以领取的硬币",
+    "data": {}
+}
