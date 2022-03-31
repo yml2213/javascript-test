@@ -1,14 +1,56 @@
+登录 sign
+sha1   
+Authorization=&account=15339956683&device_id=ai25ccb75e67035fd95ff293d3f9efda87&password=KUnG80mghG5rnTaUQOfVLQ%3D%3D%0A&platform=android&timestamp=1648701715cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p
+加密后   
+
+old_string":  ae37ffabce62b6befe863c06e03e2d2a27982c4f
+"new_string":"cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p   d550357f721eb0f065e0021be1eefbd62a227d45'
+new_sign":"8b0eb312218356d1ea08f90cc81a9615aa90a0df"},
+
+d550357f721eb0f065e0021be1eefbd62a227d45
 
 // 获取视频列表sign
 sha1   
 Authorization=24ddf227f382f68654f06d0e01704049d06fe76f0ad9b8ffcd36883dd0b4ca73&limit=20&page=1&platform=android&timestamp=1648659842cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p
 加密后   ef993969ce2da361ff07a7be5e6139b3f878a74d     ef993969ce2da361ff07a7be5e6139b3f878a74d
 
-二次sha1 加密后
+二次sha1 加密数据
 cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p ef993969ce2da361ff07a7be5e6139b3f878a74d 24ddf227f382f68654f06d0e01704049d06fe76f0ad9b8ffcd36883dd0b4ca73
 
 
 
+// 关注sign
+sha1   
+Authorization=b1718473f4e3121b627ba29d2a0f6a71b1015eb52952c8dbc67ec4f4afdaf668&platform=android&timestamp=1648692256&type=1&user_id=2921772cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p
+加密后   db6a48b922f65793267737e390324c9b9935ec38
+
+二次sha1 加密数据
+cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p db6a48b922f65793267737e390324c9b9935ec38 b1718473f4e3121b627ba29d2a0f6a71b1015eb52952c8dbc67ec4f4afdaf668
+
+
+// 每日任务列表sign
+sha1   
+Authorization=566e7559a26bc0879cfa215b2ac51c4c3dc067dc4a9dca8b9733f64f2988e309&platform=h5&timestamp=1648698431
+加密后   db6a48b922f65793267737e390324c9b9935ec38
+
+二次sha1 加密数据
+cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p db6a48b922f65793267737e390324c9b9935ec38 b1718473f4e3121b627ba29d2a0f6a71b1015eb52952c8dbc67ec4f4afdaf668
+
+
+
+
+
+data": {
+            "params": "Authorization=566e7559a26bc0879cfa215b2ac51c4c3dc067dc4a9dca8b9733f64f2988e309&platform=h5&timestamp=1648700085&type=1",
+            "old_string": "b5b3d02069aa746d38123326c4c46c986fe044ff",
+            "new_string": "lw0270iBJzxXdJLRtePEENsauRzkHSqm ce515d1a94f3545848ddbcae29f790ea83fb5a3a 566e7559a26bc0879cfa215b2ac51c4c3dc067dc4a9dca8b9733f64f2988e309",
+            "new_sign": "cb0e6d1537cd551462fd240fd5378be4b62333ac"
+ce515d1a94f3545848ddbcae29f790ea83fb5a3a
+
+
+
+
+lw0270iBJzxXdJLRtePEENsauRzkHSqm
 sha1   
 Authorization=24ddf227f382f68654f06d0e01704049d06fe76f0ad9b8ffcd36883dd0b4ca73&limit=20&page=8&platform=android&timestamp=1648662341cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p
 
@@ -39,3 +81,13 @@ cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7pc48614d99c8ccd27d905c04de6b8599569878f4824ddf227
 
 
 
+recommendList    1648713764
+
+
+
+Authorization=46c75d22707c6ec538a5f55aaa515b6e4f9ad058538692269db98e48a05c6660&platform=android&timestamp=1648714058cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p
+
+
+old_string: 'da8274337b6d1f176681a9b820699b5a69a5b1c0',
+      new_string: 'cnry8k3o4WdCGU1Tq09cRVOPCnfJzt7p    4e18abbec737b4f8251a7a96989763ace2a956df60cea765551b491a735b43b4093426647f427ce3fb6a0a9783e8abc42c636242',
+      new_sign: '86802885fd628ab5975b13f061040b1354c5fb33'

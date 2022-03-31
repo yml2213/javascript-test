@@ -12,7 +12,7 @@ https://step-money.quanxiangweilai.cn/api/gain_common_bonus
 
 require('dotenv').config(); 
 const $ = new Env('走财运');
-const notify = $.isNode() ? require('../sendNotify') : '';  //? 条件（三元）运算符,满足执行前边  不满足执行后边  简单版的 if
+const notify = $.isNode() ? require('../../sendNotify') : '';  //? 条件（三元）运算符,满足执行前边  不满足执行后边  简单版的 if
 let status;
 status = (status = ($.getval(`zcystatus`) || "1")) > 1 ? `${status}` : "";    // 账号扩展字符       
 let zcyhdArr = [];     //数组 Array
