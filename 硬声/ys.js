@@ -26,6 +26,7 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
+
 const CryptoJS = require('crypto-js');  //引用AES源码js
 const key = 'q09cRVOPCnfJzt7p';
 const iv = 'cnry8k3o4WdCGU1T';
@@ -39,22 +40,6 @@ let AZ = '';
 let msg = '';
 let ts = Math.round(new Date().getTime() / 1000).toString();
 
-//加密方法
-function getAesString(data, key, iv) {//加密
-	var key = CryptoJS.enc.Utf8.parse(key);
-	var iv = CryptoJS.enc.Utf8.parse(iv);
-	var encrypted = CryptoJS.AES.encrypt(data, key,
-		{
-			iv: iv,
-			mode: CryptoJS.mode.CBC,
-			padding: CryptoJS.pad.Pkcs7
-		});
-	return encrypted.toString();    //返回的是base64格式的密文
-}
-
-// aa = getAesString('yml123456789', 'q09cRVOPCnfJzt7p', 'cnry8k3o4WdCGU1T')
-// console.log(aa);
-
 
 
 
@@ -66,20 +51,16 @@ function getAesString(data, key, iv) {//加密
 
 		console.log(`本地脚本4-1 , 远程脚本xxxx(等我会写了加上，哈哈哈哈，自己根据本地判断吧！)`);
 
-		console.log(
-			`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
-				new Date().getTime() +
-				new Date().getTimezoneOffset() * 60 * 1000 +
-				8 * 60 * 60 * 1000
-			).toLocaleString()} =========================================\n`);
-
+		console.log(`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
+				new Date().getTime() +new Date().getTimezoneOffset() * 60 * 1000 +
+				8 * 60 * 60 * 1000).toLocaleString()} =========================================\n`);
 
 		await wyy();
 
 		console.log(`\n=================== 共找到 ${ys_dataArr.length} 个账号 ===================`)
 
 		if (debug) {
-			console.log(`【debug】 这是你的账号数组:\n ${ys_dataArr}`);
+			console.log(`【debug】 这是你的全部账号数组:\n ${ys_dataArr}`);
 		}
 
 
@@ -101,9 +82,9 @@ function getAesString(data, key, iv) {//加密
 			await login();
 			await $.wait(2 * 1000);
 
-			// console.log('开始 签到');
-			// await signin();
-			// await $.wait(2 * 1000);
+			console.log('开始 签到');
+			await signin();
+			await $.wait(2 * 1000);
 
 			// console.log('开始 获取推荐视频列表');
 			// await video_list();
@@ -120,13 +101,13 @@ function getAesString(data, key, iv) {//加密
 			await receiveCoin(3,'关注');
 			await $.wait(2 * 1000);
 
-			// console.log('开始 点赞任务');
-			// for (let index = 0; index < 4; index++) {
-			// 	await video_list();
-			// 	await like_video();
-			// 	await $.wait(2 * 1000);
-			// 	await like_video();
-			// }
+			console.log('开始 点赞任务');
+			for (let index = 0; index < 4; index++) {
+				await video_list();
+				await like_video();
+				await $.wait(2 * 1000);
+				await like_video();
+			}
 			console.log('领取 点赞任务硬币');
 			await receiveCoin(4,'点赞');
 			await $.wait(2 * 1000);
@@ -995,6 +976,17 @@ function sha1(s) {
 		return (e < 16 ? "0" : "") + e.toString(16);
 	}).join("");
 	return hex;
+}
+function getAesString(data, key, iv) {//加密
+	var key = CryptoJS.enc.Utf8.parse(key);
+	var iv = CryptoJS.enc.Utf8.parse(iv);
+	var encrypted = CryptoJS.AES.encrypt(data, key,
+		{
+			iv: iv,
+			mode: CryptoJS.mode.CBC,
+			padding: CryptoJS.pad.Pkcs7
+		});
+	return encrypted.toString();    //返回的是base64格式的密文
 }
 
 
