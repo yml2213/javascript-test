@@ -78,26 +78,29 @@ let msg = '';
 
 
 
-			console.log('开始 签到');
-			await signin();
-			await $.wait(2 * 1000);
+			// console.log('开始 签到');
+			// await signin();
+			// await $.wait(2 * 1000);
+
+			// console.log('开始 领金币');
+			// await coin();
+			// await $.wait(2 * 1000);
 
 			console.log('开始 开宝箱');
 			await open_box();
 			await $.wait(2 * 1000);
 
-			
-			console.log('领取 吃饭补贴');
-			await eat(3, '关注');
-			await $.wait(2 * 1000);
 
-		
-
-			console.log('开始 领金币');
-			await coin();
+			console.log('开始睡觉');
+			await start_sleep();
 			await $.wait(2 * 1000);
 
 			
+			// console.log('领取 吃饭补贴');
+			// await eat();
+			// await $.wait(2 * 1000);
+
+
 
 
 			await SendMsg(msg);
@@ -278,9 +281,9 @@ function signin(timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.data.openType == 1) {
 
-					console.log(`\n 开宝箱: 成功了🎉\n恭喜你获得金币 ${result.data.rewardNum} 枚\n现有共有金币 ${result.coin} 枚\n `);
+					console.log(`\n 开宝箱: 成功了🎉\n恭喜你获得金币 ${result.data.rewardNum} 枚`);
 
-					msg += `\n 开宝箱: 成功了🎉\n恭喜你获得金币 ${result.data.rewardNum} 枚\n现有共有金币 ${result.coin} 枚\n `
+					msg += `\n 开宝箱: 成功了🎉\n恭喜你获得金币 ${result.data.rewardNum} 枚`
 
 
 				} else if (result.data.openType == 0) {
@@ -305,6 +308,68 @@ function signin(timeout = 3 * 1000) {
 
 
 
+
+
+/**
+ * 睡觉补贴
+ * https://activity.baidu.com/incentive/sleep/sleep?productid=2&zid=n2lYTmmGfgOrZQa0_bu1KekOF0QM8t7wOCCBsYLwfHPF6wXGCz4aSOLD-s8pGlwNRlcezifvyjfmcPxC2eKnaGg&callback=jsonpCB_1649252348237_100
+ */
+ function start_sleep(timeout = 3 * 1000) {
+
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://activity.baidu.com/incentive/sleep/sleep?${data[3]}`,
+			headers: {
+				"Cookie": data[0],
+			},
+			// body: data[2],
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 睡觉补贴 请求 url ===============`);
+			console.log(url);
+		}
+		$.get(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 睡觉补贴 返回data==============`);
+					console.log(data)
+					// console.log(`======`)
+					// console.log(JSON.parse(data))
+				}
+				// let result = JSON.parse(data);
+				console.log(`\n 睡觉补贴: ${data} \n`);
+
+				// if (result.errno == 0) {
+
+				// 	console.log(`\n 睡觉补贴: ${data} \n`);
+
+				// 	// msg += `\n 睡觉补贴: 成功了🎉\n恭喜你获得金币 ${result.data.coins} 枚\n`
+
+
+				// } else if (result.data.openType == 0) {
+
+				// 	console.log(`\n 睡觉补贴: \n`);
+
+
+				// } else {
+
+				// 	console.log(`\n 睡觉补贴:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+
+				// }
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+
+
+
 /**
  * 吃饭补贴
  * https://activity.baidu.com/incentive/eat/add?productid=2&position=eatList&type=1&zid=n2lYTmmGfgOrZQa0_bu1KekOF0QM8t7wOCCBsYLwfHPHYVUhyxHc1ZFZUrRzycIk_uINFxNvbNPg2CR-XxHjnqw&callback=jsonpCB_1649202830229_233
@@ -313,7 +378,7 @@ function signin(timeout = 3 * 1000) {
 
 	return new Promise((resolve) => {
 		let url = {
-			url: `https://activity.baidu.com/incentive/eat/add${data[3]}`,
+			url: `https://activity.baidu.com/incentive/eat/add?${data[3]}`,
 			headers: {
 				"Cookie": data[0],
 			},
@@ -382,7 +447,7 @@ function signin(timeout = 3 * 1000) {
 			console.log(`\n 【debug】=============== 这是 领金币 请求 url ===============`);
 			console.log(url);
 		}
-		$.get(url, async (error, response, data) => {
+		$.post(url, async (error, response, data) => {
 			try {
 				if (debug) {
 					console.log(`\n\n 【debug】===============这是 领金币 返回data==============`);
