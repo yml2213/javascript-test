@@ -58,7 +58,7 @@ let result = '';
 			console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
 
 
-			data = syy_dataArr[index].split('#');
+			data = syy_dataArr[index].split('@');
 
 			if (debug) {
 				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
@@ -180,7 +180,7 @@ function signin(timeout = 3 * 1000) {
 				'referer': 'https://tiaozhuan556.com/',
 				'accept-language': 'zh-CN,zh;q=0.9,fr;q=0.8,de;q=0.7,en;q=0.6'
 			},
-			body: syy_data,
+			body: data[0],
 		}
 
 		if (debug) {
