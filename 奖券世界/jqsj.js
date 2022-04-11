@@ -84,7 +84,7 @@ let msg = '';
 			// await $.wait(2 * 1000);
 
 
-			console.log('开始 购买');
+			console.log('开始 购买建筑');
 			for (let index = 0; index < 1; index++) {
 				await buy();
 				await $.wait(2 * 1000);
@@ -262,7 +262,6 @@ function buy() {
 				'User-Agent': 'com.caike.ticket/2.5.0 (iPhone; iOS 15.4.1; Scale/3.00)',
 				'token': `${data[1]}`,
 				'Content-Type': 'text/html'
-
 			},
 			body: `${data[3]}`,
 
@@ -281,15 +280,26 @@ function buy() {
 					// console.log(JSON.parse(data))
 				}
 				let result = data;
+				console.log(data.length);
 				console.log(result);
-				if (result.statecode == 1) {
+				if (data.length > 200) {
 
-					console.log(`\n 购买:${result.message},\n`);
+					console.log(`\n 购买: 购买建筑成功,尝试继续购买! \n`);
+					await $.wait(5 * 1000);
+					await buy();
 
+				} else if (data.length < 200) {
 
-				} else if (result.statecode == 20001) {
+					let result = JSON.parse(data);
+					if (result.errorCode = 400) {
 
-					console.log(`\n 购买:${result.message},\n`);
+						console.log(`\n 购买:${result.message},\n`);
+
+					} else if (result.errorCode = 401) {
+
+						console.log(`\n 购买:${result.message},\n`);
+
+					}
 
 
 				} else {

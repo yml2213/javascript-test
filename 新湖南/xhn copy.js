@@ -12,72 +12,137 @@
  * 
  * 还是不会的请百度或者群里求助：QQ群：1101401060  tg：https://t.me/yml_tg  通知：https://t.me/yml2213_tg
  */
+const jsname = "新湖南";
+const $ = Env(jsname);
+const notify = $.isNode() ? require('./sendNotify') : '';
+const Notify = 1; //0为关闭通知，1为打开通知,默认为1
+const debug = 1; //0为关闭调试，1为打开调试,默认为0
+//////////////////////
 
-const $ = new Env('新湖南');
+const CryptoJS = require('crypto-js');  //引用AES源码js
+// const key = 'q09cRVOPCnfJzt7p';
+// const iv = 'cnry8k3o4WdCGU1T';
+const salt = 'hHacFKN5DxR5sPwyc1ns52M168rdoe3AGrWaseN3zYd2XoKaxYhYQTqDXvCtMkwz'
+// const SHA1 = require('crypto-js/sha1');
 let xhn_data = process.env.xhn_data;
+let xhn_dataArr = [];
+let user_id = '';
+let audio_id = '';
+let data = '';
+let AZ = '';
+let msg = '';
+let ts = Math.round(new Date().getTime()).toString();
 
-// var gtr
-// let ml = '', mac = ''
-// let status;
-// status = (status = ($.getval("qmwkstatus") || "1")) > 1 ? `${status}` : ""; // 账号扩展字符
-// let xhnzhArr = [], xhnmmArr = []
-
-// let all_msg = ""
-// let xhnid = '', sign = '', xhntoken = '', rwm = ''
-// let arrs = []
-// let xhnzh = ($.isNode() ? process.env.xhnzh : $.getdata('xhnzh')) || '';
-// let xhnmm = ($.isNode() ? process.env.xhnmm : $.getdata('xhnmm')) || '';
-// let acckey = $.isNode() ? (process.env.cdkey ? process.env.cdkey : "") : ($.getdata('cdkey') ? $.getdata('cdkey') : "")
-
+console.log(ts);
 
 
 
 !(async () => {
 
-	console.log(`本地脚本4-10 )`);
+	if (!(await Envs()))  //多账号分割 判断变量是否为空  初步处理多账号
+		return;
+	else {
 
-	console.log(`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
-		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
-		8 * 60 * 60 * 1000).toLocaleString()} =========================================\n`);
+		console.log(`本地脚本4-10 )`);
 
-	await wyy();
+		console.log(`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
+			new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
+			8 * 60 * 60 * 1000).toLocaleString()} =========================================\n`);
 
+		await wyy();
 
-	console.log(`\n=================== 共找到 ${xhn_dataArr.length} 个账号 ===================`)
+		console.log(`\n=================== 共找到 ${xhn_dataArr.length} 个账号 ===================`)
 
-
-	for (let index = 0; index < xhn_dataArr.length; index++) {
-
-
-		let num = index + 1
-		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
-
-		data = xhn_dataArr[index].split('&');
+		if (debug) {
+			console.log(`【debug】 这是你的全部账号数组:\n ${xhn_dataArr}`);
+		}
 
 
-		console.log(`\n开始【新湖南${$.index}】`)
-
-		await xhndl()
-		await xhnxx()
-		await xhnlb()
-
-		await $.wait(3000)
+		for (let index = 0; index < xhn_dataArr.length; index++) {
 
 
+			let num = index + 1
+			console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
+
+			data = xhn_dataArr[index].split('&');
+
+			if (debug) {
+				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
+			}
+
+
+
+			console.log('开始 登录');
+			await login();
+			await $.wait(2 * 1000);
+
+			console.log('开始 签到');
+			await signin();
+			await $.wait(2 * 1000);
+
+			// console.log('开始 获取推荐视频列表');
+			// await video_list();
+			// await $.wait(2 * 1000);
+
+			// console.log('开始 关注任务');
+			// for (let index = 0; index < 1; index++) {
+			// 	await video_list();
+			// 	await follow();
+			// 	await $.wait(3 * 1000);
+			// 	await unfollow();
+			// }
+			// console.log('领取 关注任务硬币');
+			// await receiveCoin(3, '关注');
+			// await $.wait(2 * 1000);
+
+			// console.log('开始 点赞任务');
+			// for (let index = 0; index < 4; index++) {
+			// 	await video_list();
+			// 	await like_video();
+			// 	await $.wait(2 * 1000);
+			// 	await like_video();
+			// }
+			// console.log('领取 点赞任务硬币');
+			// await receiveCoin(4, '点赞');
+			// await $.wait(2 * 1000);
+
+			// console.log('开始 每日任务列表');
+			// await task_list();
+			// await $.wait(2 * 1000);
+
+			// console.log('开始 观看作品赚硬币');
+			// await receiveCoin();
+			// await $.wait(2 * 1000);
+
+
+
+
+			await SendMsg(msg);
+		}
 	}
-
-
-	
 
 })()
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done())
 
-
-
-//#region 固定代码1
+//#region 固定代码
 // ============================================变量检查============================================ \\
+async function Envs() {
+	if (xhn_data) {
+		if (xhn_data.indexOf("@") != -1) {
+			xhn_data.split("@").forEach((item) => {
+				xhn_dataArr.push(item);
+			});
+		} else {
+			xhn_dataArr.push(xhn_data);
+		}
+	} else {
+		console.log(`\n 【${$.name}】：未填写变量 xhn_data`)
+		return;
+	}
 
+	return true;
+}
 
 // ============================================发送消息============================================ \\
 async function SendMsg(message) {
@@ -139,7 +204,55 @@ function wyy(timeout = 3 * 1000) {
 //#endregion
 
 
+/**
+ * 登录
+ * https://cgi.voc.com.cn/app/mobile/bbsapi/wxhn_login.php
+ */
+function login(timeout = 3 * 1000) {
 
+	return new Promise((resolve) => {
+		let url = {
+			url: 'https://cgi.voc.com.cn/app/mobile/bbsapi/wxhn_login.php',
+			headers: {
+
+				'Host': 'cgi.voc.com.cn',
+				'oauth-token': '',
+				'content-type': 'application/x-www-form-urlencoded',
+				'content-length': '141',
+				'accept-encoding': 'gzip',
+				// 'user-agent': 'okhttp/4.9.1'
+			},
+			body: `password=${data[1]}&logintype=1&RegistrationID=${data[2]}&appid=9&type=0&version=9.0.11&username=${data[0]}`,
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 登录 请求 url ===============`);
+			console.log(url);
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 登录 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.statecode == 1) {
+					console.log(`\n 登录:${result.message}  🎉 \n`);
+					// AZ = result.data.Authorization;
+				} else {
+					console.log(`\n 登录:  失败 ❌ 了呢,原因未知！\n result \n `)
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
 
 
 //登录
@@ -148,9 +261,8 @@ function xhndl(timeout = 0) {
 		let url = {
 			url: `https://cgi.voc.com.cn/app/mobile/bbsapi/wxhn_login.php`,
 			headers: { "oauth-token": "", "Content-Type": "application/x-www-form-urlencoded", "Content-Length": "142", "Host": "cgi.voc.com.cn", "Connection": "Keep-Alive", "Accept-Encoding": "gzip", "User-Agent": "okhttp/4.9.1" },
-			body: `password=${data[1]}&logintype=1&RegistrationID=Au13k8PHjCfqQM0EiXpgHNbqldngiCb_eAuoWh8upHPB&appid=9&type=0&version=9.0.11&username=${data[0]}`
+			body: `password=${xhnmm}&logintype=1&RegistrationID=Au13k8PHjCfqQM0EiXpgHNbqldngiCb_eAuoWh8upHPB&appid=9&type=0&version=9.0.11&username=${xhnzh}`
 		}
-		console.log(url);
 		$.post(url, async (err, resp, data) => {
 			try {
 				const result = JSON.parse(data)
@@ -243,6 +355,71 @@ function xhnrw(timeout = 0) {
 
 
 
+
+/**
+ * 签到
+ * https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/sign?oauth_token=4283969f37f946ace827e385d1f9ea85&appid=9
+ */
+function signin() {
+
+	nonce_ = randomInt(1, 9)
+	nonce = `${nonce_}00000`
+	console.log(nonce);
+
+	let signature = sha1(`${ts}${nonce}${salt}`)
+
+	// console.log(sign_signin);
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/sign?oauth_token=${data[3]}&appid=9`,
+			headers: {
+
+				'Host': 'usergrow-xhncloud.voc.com.cn',
+				'time': ts,
+				'nonce': nonce,
+				'signature': signature,
+				'accept-encoding': 'gzip',
+				'user-agent': 'okhttp/4.9.1'
+			},
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
+			console.log(url);
+		}
+		$.get(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.statecode == 1) {
+
+					console.log(`\n 签到:${result.message},\n`);
+
+
+				} else if (result.statecode == 20001) {
+
+					console.log(`\n 签到:${result.message},\n`);
+
+
+				} else {
+
+					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		})
+	})
+}
 
 
 
@@ -341,7 +518,6 @@ function xhnxx(timeout = 0) {
 		}, timeout)
 	})
 }
-
 function encodeUTF8(s) {
 	var i, r = [], c, x;
 	for (i = 0; i < s.length; i++)
