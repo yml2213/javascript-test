@@ -1,39 +1,46 @@
 /**
- * 新湖南 
- * cron 10 8,12,17,23 * * *  yml2213_javascript_master/xhn.js
+ * 奖券世界 
+ * cron 10 8,12,17,23 * * *  yml2213_javascript_master/jqsj.js
  * 
- * 新湖南   入口：抖音点击"我"- "抖音商城" - "果园"   有的号可能没有 ，暂时不知道原因
+ * 奖券世界   入口：抖音点击"我"- "抖音商城" - "果园"   有的号可能没有 ，暂时不知道原因
  * 3-29    签到任务、新手彩蛋、每日免费领水滴、三餐礼包、宝箱、盒子领取  初步完成   脚本刚写完，难免有bug，请及时反馈  ；ck有效期测试中 
  * 
  * 感谢所有测试人员
  * ========= 青龙 =========
  * 变量格式：  
- * 必填变量：export xhn_data='手机号 & 密码 @ 手机号 & 密码 '  多个账号用 @分割 
+ * 必填变量：export jqsj_data='  uid & token & auto_combine_body & buy_body @   uid & token & auto_combine_body & buy_body '  多个账号用 @分割 
+ * 
+ * 购买一次建筑,抓取url,https://android-api.lucklyworld.com/api/index/buy?uid=xxxx&version=2.5.0,查看headers的文本body,复制下来 buy_body。
+ * 
+ * 然后点击自动合成,观看视频,看完后返回。抓取url,https://android-api.lucklyworld.com/api/privilege/combine/opened?uid=xxx&version=2.5.0,
+ * 查看headers的文本body,复制下来 auto_combine_body。
+ * 
+ * 上面两个url,随便一个查看headers,复制token,写到jqsj_token。一共3个变量。
  * 
  * 还是不会的请百度或者群里求助：QQ群：1101401060  tg：https://t.me/yml_tg  通知：https://t.me/yml2213_tg
  */
-const jsname = "新湖南";
+const jsname = "奖券世界";
 const $ = Env(jsname);
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 1; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
-
+const version = '2.5.0';
 const CryptoJS = require('crypto-js');  //引用AES源码js
 // const key = 'q09cRVOPCnfJzt7p';
 // const iv = 'cnry8k3o4WdCGU1T';
 const salt = 'hHacFKN5DxR5sPwyc1ns52M168rdoe3AGrWaseN3zYd2XoKaxYhYQTqDXvCtMkwz'
 // const SHA1 = require('crypto-js/sha1');
-let xhn_data = process.env.xhn_data;
-let xhn_dataArr = [];
+let jqsj_data = process.env.jqsj_data;
+let jqsj_dataArr = [];
 let user_id = '';
 let audio_id = '';
 let data = '';
 let AZ = '';
 let msg = '';
-let ts = Math.round(new Date().getTime() ).toString();
+// let ts = Math.round(new Date().getTime() ).toString();
 
-console.log(ts);
+// console.log(ts);
 
 
 
@@ -43,7 +50,7 @@ console.log(ts);
 		return;
 	else {
 
-		console.log(`本地脚本4-10 )`);
+		console.log(`本地脚本4-11 )`);
 
 		console.log(`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
 			new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
@@ -51,20 +58,20 @@ console.log(ts);
 
 		await wyy();
 
-		console.log(`\n=================== 共找到 ${xhn_dataArr.length} 个账号 ===================`)
+		console.log(`\n=================== 共找到 ${jqsj_dataArr.length} 个账号 ===================`)
 
 		if (debug) {
-			console.log(`【debug】 这是你的全部账号数组:\n ${xhn_dataArr}`);
+			console.log(`【debug】 这是你的全部账号数组:\n ${jqsj_dataArr}`);
 		}
 
 
-		for (let index = 0; index < xhn_dataArr.length; index++) {
+		for (let index = 0; index < jqsj_dataArr.length; index++) {
 
 
 			let num = index + 1
 			console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
 
-			data = xhn_dataArr[index].split('&');
+			data = jqsj_dataArr[index].split('&');
 
 			if (debug) {
 				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
@@ -72,47 +79,28 @@ console.log(ts);
 
 
 
-			console.log('开始 登录');
-			await login();
-			await $.wait(2 * 1000);
-
-			console.log('开始 签到');
-			await signin();
-			await $.wait(2 * 1000);
-
-			// console.log('开始 获取推荐视频列表');
-			// await video_list();
+			// console.log('开始 自动合成');
+			// await auto_combine();
 			// await $.wait(2 * 1000);
 
-			// console.log('开始 关注任务');
-			// for (let index = 0; index < 1; index++) {
-			// 	await video_list();
-			// 	await follow();
-			// 	await $.wait(3 * 1000);
-			// 	await unfollow();
-			// }
-			// console.log('领取 关注任务硬币');
-			// await receiveCoin(3, '关注');
-			// await $.wait(2 * 1000);
 
-			// console.log('开始 点赞任务');
-			// for (let index = 0; index < 4; index++) {
-			// 	await video_list();
-			// 	await like_video();
+			console.log('开始 购买');
+			for (let index = 0; index < 1; index++) {
+				await buy();
+				await $.wait(2 * 1000);
+			}
+
+
+
+
+			// console.log('开始 抽奖');
+			// for (let index = 0; index < 5; index++) {
+			// 	const element = array[index];
+			// 	await lottery();
 			// 	await $.wait(2 * 1000);
-			// 	await like_video();
 			// }
-			// console.log('领取 点赞任务硬币');
-			// await receiveCoin(4, '点赞');
-			// await $.wait(2 * 1000);
 
-			// console.log('开始 每日任务列表');
-			// await task_list();
-			// await $.wait(2 * 1000);
 
-			// console.log('开始 观看作品赚硬币');
-			// await receiveCoin();
-			// await $.wait(2 * 1000);
 
 
 
@@ -128,16 +116,16 @@ console.log(ts);
 //#region 固定代码
 // ============================================变量检查============================================ \\
 async function Envs() {
-	if (xhn_data) {
-		if (xhn_data.indexOf("@") != -1) {
-			xhn_data.split("@").forEach((item) => {
-				xhn_dataArr.push(item);
+	if (jqsj_data) {
+		if (jqsj_data.indexOf("@") != -1) {
+			jqsj_data.split("@").forEach((item) => {
+				jqsj_dataArr.push(item);
 			});
 		} else {
-			xhn_dataArr.push(xhn_data);
+			jqsj_dataArr.push(jqsj_data);
 		}
 	} else {
-		console.log(`\n 【${$.name}】：未填写变量 xhn_data`)
+		console.log(`\n 【${$.name}】：未填写变量 jqsj_data`)
 		return;
 	}
 
@@ -205,44 +193,48 @@ function wyy(timeout = 3 * 1000) {
 
 
 /**
- * 登录
- * https://cgi.voc.com.cn/app/mobile/bbsapi/wxhn_login.php
+ * 自动合成
+ * 
  */
-function login(timeout = 3 * 1000) {
+function auto_combine(timeout = 3 * 1000) {
 
 	return new Promise((resolve) => {
 		let url = {
-			url: 'https://cgi.voc.com.cn/app/mobile/bbsapi/wxhn_login.php',
+			url: `https://android-api.lucklyworld.com/api/privilege/combine/opened?uid=${data[0]}&version=${version}`,
 			headers: {
 
-				'Host': 'cgi.voc.com.cn',
-				'oauth-token': '',
-				'content-type': 'application/x-www-form-urlencoded',
-				'content-length': '141',
-				'accept-encoding': 'gzip',
-				// 'user-agent': 'okhttp/4.9.1'
+				"Channel": "official",
+				"test-encrypt": "1",
+				"Content-Type": "application/octet-stream; charset=utf-8",
+				"Accept-Encoding": "gzip",
+				"host": "android-api.lucklyworld.com",
+				"token": `${data[1]}`,
+				"Connection": "Keep-Alive",
 			},
-			body: `password=${data[1]}&logintype=1&RegistrationID=${data[2]}&appid=9&type=0&version=9.0.11&username=${data[0]}`,
+			body: `${data[2]}`,
 		}
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 登录 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 自动合成 请求 url ===============`);
 			console.log(url);
 		}
 		$.post(url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 登录 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 自动合成 返回data==============`);
 					console.log(data)
-					console.log(`======`)
-					console.log(JSON.parse(data))
+					// console.log(`======`)
+					// console.log(JSON.parse(data))
 				}
-				let result = JSON.parse(data);
-				if (result.statecode == 1) {
-					console.log(`\n 登录:${result.message}  🎉 \n`);
+				// let result = data;
+				result = requests.post(url = url, headers = headers, body = body)  // 获取响应请求头
+				console.log(`合成: ${result}`);
+				// console.log(`合成 data： ${data}`);
+				if (result.status_code == 200) {
+					console.log(`\n 自动合成: 成功🎉  持续时间 5 分钟  \n`);
 					// AZ = result.data.Authorization;
 				} else {
-					console.log(`\n 登录:  失败 ❌ 了呢,原因未知！\n result \n `)
+					console.log(`\n 自动合成:  失败 ❌ 了呢,原因未知！\n result \n `)
 				}
 
 			} catch (e) {
@@ -258,58 +250,51 @@ function login(timeout = 3 * 1000) {
 
 
 /**
- * 签到
- * https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/sign?oauth_token=4283969f37f946ace827e385d1f9ea85&appid=9
+ * 购买新建筑   -- ios
+ * https://android-api.lucklyworld.com/api/index/buy?uid=872136&version=2.5.0
  */
-function signin( ) {
-
-	nonce_ = randomInt(1, 9)
-	nonce = `${nonce_}00000`
-	console.log(nonce);
-	
-	let signature = sha1(`${ts}${nonce}${salt}`)
-
-	// console.log(sign_signin);
+function buy() {
 	return new Promise((resolve) => {
 		let url = {
-			url: `https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/sign?oauth_token=${data[3]}&appid=9`,
+			url: `https://ios-api.lucklyworld.com/api/index/buy`,
 			headers: {
 
-				'Host': 'usergrow-xhncloud.voc.com.cn',
-				'time': ts,
-				'nonce': nonce,
-				'signature': signature,
-				'accept-encoding': 'gzip',
-				'user-agent': 'okhttp/4.9.1'
+				'User-Agent': 'com.caike.ticket/2.5.0 (iPhone; iOS 15.4.1; Scale/3.00)',
+				'token': `${data[1]}`,
+				'Content-Type': 'text/html'
+
 			},
+			body: `${data[3]}`,
+
 		}
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 购买 请求 url ===============`);
 			console.log(url);
 		}
-		$.get(url, async (error, response, data) => {
+		$.post(url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 购买 返回data==============`);
 					console.log(data)
-					console.log(`======`)
-					console.log(JSON.parse(data))
+					// console.log(`======`)
+					// console.log(JSON.parse(data))
 				}
-				let result = JSON.parse(data);
+				let result = data;
+				console.log(result);
 				if (result.statecode == 1) {
 
-					console.log(`\n 签到:${result.message},\n`);
+					console.log(`\n 购买:${result.message},\n`);
 
 
 				} else if (result.statecode == 20001) {
 
-					console.log(`\n 签到:${result.message},\n`);
+					console.log(`\n 购买:${result.message},\n`);
 
 
 				} else {
 
-					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+					console.log(`\n 购买:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
 
 				}
 
@@ -321,6 +306,88 @@ function signin( ) {
 		})
 	})
 }
+
+
+
+/**
+ * 抽奖 ok
+ * https://android-api.lucklyworld.com/api/index/turntable/run?uid=872136&version=2.5.0
+ */
+function lottery() {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://android-api.lucklyworld.com/api/index/turntable/run?uid=${data[0]}&version=${version}`,
+			headers: {
+
+				'Channel': 'official',
+				'test-encrypt': '1',
+				'uid': '872136',
+				'token': `${data[1]}`,
+				'Host': 'android-api.lucklyworld.com'
+			},
+			body: '',
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 抽奖 请求 url ===============`);
+			console.log(url);
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 抽奖 返回data==============`);
+					console.log(data)
+					// console.log(`======`)
+					// console.log(JSON.parse(data))
+				}
+
+
+				let result = JSON.parse(data);
+				// console.log(result);
+				console.log(data);
+				// console.log(result);
+
+				if (result.errorCode == 400) {
+
+					console.log(`\n 抽奖:${result.message},\n`);
+					return
+
+
+				} else {
+
+					console.log(`\n 抽奖:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+
+				}
+
+
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		})
+	})
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

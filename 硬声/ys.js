@@ -52,8 +52,8 @@ let ts = Math.round(new Date().getTime() / 1000).toString();
 		console.log(`本地脚本4-1 , 远程脚本xxxx(等我会写了加上，哈哈哈哈，自己根据本地判断吧！)`);
 
 		console.log(`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
-				new Date().getTime() +new Date().getTimezoneOffset() * 60 * 1000 +
-				8 * 60 * 60 * 1000).toLocaleString()} =========================================\n`);
+			new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
+			8 * 60 * 60 * 1000).toLocaleString()} =========================================\n`);
 
 		await wyy();
 
@@ -98,7 +98,7 @@ let ts = Math.round(new Date().getTime() / 1000).toString();
 				await unfollow();
 			}
 			console.log('领取 关注任务硬币');
-			await receiveCoin(3,'关注');
+			await receiveCoin(3, '关注');
 			await $.wait(2 * 1000);
 
 			console.log('开始 点赞任务');
@@ -109,7 +109,7 @@ let ts = Math.round(new Date().getTime() / 1000).toString();
 				await like_video();
 			}
 			console.log('领取 点赞任务硬币');
-			await receiveCoin(4,'点赞');
+			await receiveCoin(4, '点赞');
 			await $.wait(2 * 1000);
 
 			// console.log('开始 每日任务列表');
@@ -790,7 +790,7 @@ function like_video(timeout = 3 * 1000) {
  * 领取任务硬币  receiveCoin   完成 ✅
  * https://yingsheng.elecfans.com/webapi/wapi/activity/task/receiveCoin
  */
- function receiveCoin(id,name,timeout = 3 * 1000) {
+function receiveCoin(id, name, timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		let params_receiveCoin = `Authorization=${AZ}&platform=h5&timestamp=${ts}&type=4`
 		let sign_receiveCoin = sha1(`lw0270iBJzxXdJLRtePEENsauRzkHSqm${sha1(params_receiveCoin)}${AZ}`)
