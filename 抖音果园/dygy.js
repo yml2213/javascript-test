@@ -31,7 +31,7 @@ const debug = 0; //0为关闭调试，1为打开调试,默认为0
 
 let dygyCookies = ($.isNode() ? process.env.dygyCookies : $.getdata('dygyCookies')) || "";
 let UA = ($.isNode() ? process.env.dygyUA : $.getdata('dygyUA')) || 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
-
+console.log(dygyCookies);
 let dygyCookiesArr = [];
 let msg = '';
 let watering_unm = 1;

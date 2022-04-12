@@ -1,73 +1,71 @@
 /**
- * 新湖南 
- * cron 10 8,12,17,23 * * *  yml2213_javascript_master/xhn.js
+ * 广汽传祺 
+ * cron 10 8,12,17,23 * * *  yml2213_javascript_master/gqcq.js
  * 
- * 新湖南   入口：抖音点击"我"- "抖音商城" - "果园"   有的号可能没有 ，暂时不知道原因
- * 3-29    签到任务、新手彩蛋、每日免费领水滴、三餐礼包、宝箱、盒子领取  初步完成   脚本刚写完，难免有bug，请及时反馈  ；ck有效期测试中 
+ * 广汽传祺   
  * 
  * 感谢所有测试人员
  * ========= 青龙 =========
- * 变量格式：  
- * 必填变量：export xhn_data='手机号 & 密码 @ 手机号 & 密码 '  多个账号用 @分割 
+ * 变量格式:   
+ * 必填变量: export gqcq_data='手机号 & 密码 @ 手机号 & 密码 '  多个账号用 @分割 
  * 
- * 还是不会的请百度或者群里求助：QQ群：1101401060  tg：https://t.me/yml_tg  通知：https://t.me/yml2213_tg
+ * 还是不会的请百度或者群里求助: QQ群: 1101401060  tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
 
-const $ = new Env('新湖南');
-let xhn_data = process.env.xhn_data;
-
-// var gtr
-// let ml = '', mac = ''
-// let status;
-// status = (status = ($.getval("qmwkstatus") || "1")) > 1 ? `${status}` : ""; // 账号扩展字符
-// let xhnzhArr = [], xhnmmArr = []
-
-// let all_msg = ""
-// let xhnid = '', sign = '', xhntoken = '', rwm = ''
-// let arrs = []
-// let xhnzh = ($.isNode() ? process.env.xhnzh : $.getdata('xhnzh')) || '';
-// let xhnmm = ($.isNode() ? process.env.xhnmm : $.getdata('xhnmm')) || '';
-// let acckey = $.isNode() ? (process.env.cdkey ? process.env.cdkey : "") : ($.getdata('cdkey') ? $.getdata('cdkey') : "")
-
-
+const jsname = "广汽传祺";
+const $ = Env(jsname);
+const notify = $.isNode() ? require('./sendNotify') : '';
+const Notify = 1; //0为关闭通知，1为打开通知,默认为1
+const debug = 1; //0为关闭调试，1为打开调试,默认为0
+//////////////////////
+const salt = '17aaf8118ffb270b766c6d6774317a133.4.0'
+let gqcq_data = process.env.gqcq_data;
+let ts = Math.round(new Date().getTime()).toString();
+let gqcq_dataArr = [];
+console.log(gqcq_data);
 
 
 !(async () => {
 
-	console.log(`本地脚本4-10 )`);
+	if (!(await Envs()))  //多账号分割 判断变量是否为空  初步处理多账号
+		return;
+	else {
 
-	console.log(`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
-		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
-		8 * 60 * 60 * 1000).toLocaleString()} =========================================\n`);
+		console.log(`本地脚本4-10 )`);
 
-	await wyy();
+		console.log(`\n\n=========================================    \n脚本执行 - 北京时间(UTC+8): ${new Date(
+			new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
+			8 * 60 * 60 * 1000).toLocaleString()} \n=========================================\n`);
 
-
-	console.log(`\n=================== 共找到 ${xhn_dataArr.length} 个账号 ===================`)
-
-
-	for (let index = 0; index < xhn_dataArr.length; index++) {
+		await wyy();
 
 
-		let num = index + 1
-		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
-
-		data = xhn_dataArr[index].split('&');
+		console.log(`\n=================== 共找到 ${gqcq_dataArr.length} 个账号 ===================`)
 
 
-		console.log(`\n开始【新湖南${$.index}】`)
+		for (let index = 0; index < gqcq_dataArr.length; index++) {
 
-		await xhndl()
-		await xhnxx()
-		await xhnlb()
 
-		await $.wait(3000)
+			let num = index + 1
+			console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
+
+			data = gqcq_dataArr[index].split('&');
+			if (debug) {
+				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
+			}
+
+
+			console.log('开始 签到');
+			await signin();
+			await $.wait(2 * 1000);
+
+			await $.wait(3000)
+
+
+		}
 
 
 	}
-
-
-	
 
 })()
 	.catch((e) => $.logErr(e))
@@ -78,44 +76,91 @@ let xhn_data = process.env.xhn_data;
 
 
 
-//登录
-function xhndl(timeout = 0) {
+/**
+ * 签到
+ * https://gsp.gacmotor.com/gateway/app-api/sign/submit
+ */
+function signin(timeout = 3 * 1000) {
+	let reqNonc = randomInt(100000,999999)
+	console.log(reqNonc);
+	let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
+
 	return new Promise((resolve) => {
 		let url = {
-			url: `https://cgi.voc.com.cn/app/mobile/bbsapi/wxhn_login.php`,
-			headers: { "oauth-token": "", "Content-Type": "application/x-www-form-urlencoded", "Content-Length": "142", "Host": "cgi.voc.com.cn", "Connection": "Keep-Alive", "Accept-Encoding": "gzip", "User-Agent": "okhttp/4.9.1" },
-			body: `password=${data[1]}&logintype=1&RegistrationID=Au13k8PHjCfqQM0EiXpgHNbqldngiCb_eAuoWh8upHPB&appid=9&type=0&version=9.0.11&username=${data[0]}`
+			url: 'https://gsp.gacmotor.com/gateway/app-api/sign/submit',
+			headers: {
+
+				'User-Agent': 'okhttp/3.10.0',
+				'token': data[0],
+				// 'channel': 'unknown',
+				// 'platformNo': 'Android',
+				// 'osVersion': '9',
+				// 'version': '3.4.0',
+				// 'imei': 'unknown',
+				// 'imsi': 'unknown',
+				// 'deviceModel': 'MI 6',
+				// 'deviceType': 'Android',
+				// 'registrationID': '140fe1da9e5c3deed66',
+				'verification': 'signature',
+				'reqTs': ts,
+				'reqNonc': reqNonc,
+				'reqSign': reqSign,
+				'Host': 'gsp.gacmotor.com',
+				'Connection': 'Keep-Alive',
+				'Accept-Encoding': 'gzip'
+			},
 		}
-		console.log(url);
-		$.post(url, async (err, resp, data) => {
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
+			console.log(url);
+		}
+		$.get(url, async (error, response, data) => {
 			try {
-				const result = JSON.parse(data)
-				if (result.statecode == 1) {
-					$.log(`\n新湖南用户:【${result.mobile}】:${result.message}`)
-					xhntoken = result.auth
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.errorCode == 200) {
+
+					console.log(`\n 签到:${result.errorMessage} 🎉 \n你已经连续签到 ${result.data.dayCount} 天;  签到获得G豆 ${result.data.operationValue} 个 \n`);
+
+
+				} else if (result.errorCode == 200015) {
+
+					console.log(`\n 签到:${result.errorMessage}\n`);
+
 
 				} else {
-					$.log(`\n新湖南登录:${result.message}`)
+
+					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n result \n `)
 
 				}
+
 			} catch (e) {
-				//$.logErr(e, resp);
+				console.log(e)
 			} finally {
-				resolve()
+				resolve();
 			}
 		}, timeout)
 	})
 }
 
 
+
+
+
 //列表
-function xhnlb(timeout = 0) {
+function gqcqlb(timeout = 0) {
 	return new Promise((resolve) => {
 		let time = new Date().getTime();//时间戳13位
 		sign = sha(`${time}200000${arrs['my']}`)
 		let url = {
-			url: `https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/appPointsInfoForH5?appid=9&oauth_token=${xhntoken}`,
-			headers: { "Host": "usergrow-xhncloud.voc.com.cn", "Connection": "keep-alive", "nonce": "200000", "time": time, "User-Agent": "xhn-9.0.7-Mozilla/5.0 (Linux; Android 10; 16s Pro Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045738 Mobile Safari/537.36", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "signature": sign, "Accept": "*/*", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" },
+			url: `https://usergrow-gqcqcloud.voc.com.cn/usergrow/api/v2/points/appPointsInfoForH5?appid=9&oauth_token=${gqcqtoken}`,
+			headers: { "Host": "usergrow-gqcqcloud.voc.com.cn", "Connection": "keep-alive", "nonce": "200000", "time": time, "User-Agent": "gqcq-9.0.7-Mozilla/5.0 (Linux; Android 10; 16s Pro Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045738 Mobile Safari/537.36", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "signature": sign, "Accept": "*/*", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" },
 
 		}
 		$.get(url, async (err, resp, data) => {
@@ -124,14 +169,14 @@ function xhnlb(timeout = 0) {
 				if (result.statecode == 1) {
 
 					for (let x = 0; x < result.data.pointsRuleBeanList.length; x++) {
-						$.log(`\n新湖南去完成:【${result.data.pointsRuleBeanList[x].ruleName}】 积分：${result.data.pointsRuleBeanList[x].points}`)
-						xhnid = result.data.pointsRuleBeanList[x].pointsRuleId
+						$.log(`\n广汽传祺去完成:【${result.data.pointsRuleBeanList[x].ruleName}】 积分: ${result.data.pointsRuleBeanList[x].points}`)
+						gqcqid = result.data.pointsRuleBeanList[x].pointsRuleId
 						rwm = result.data.pointsRuleBeanList[x].ruleName
 						await $.wait(2000)
-						await xhnrw()
+						await gqcqrw()
 					}
 				} else {
-					$.log(`\n新湖南任务:${data}`)
+					$.log(`\n广汽传祺任务:${data}`)
 
 				}
 			} catch (e) {
@@ -145,25 +190,26 @@ function xhnlb(timeout = 0) {
 
 
 //完成任务
-function xhnrw(timeout = 0) {
+function gqcqrw(timeout = 0) {
 	return new Promise((resolve) => {
 		let time = new Date().getTime();//时间戳13位
-		sign = sha(`${time}700000${arrs['my']}`)
+
+		sign = MD5Encrypt(`${time}700000${arrs['my']}`)
 
 		let url = {
-			url: `https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/`,
-			headers: { "Host": "usergrow-xhncloud.voc.com.cn", "Connection": "keep-alive", "nonce": "700000", "time": time, "User-Agent": "xhn-9.0.7-Mozilla/5.0 (Linux; Android 10; 16s Pro Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045738 Mobile Safari/537.36", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "signature": sign, "Accept": "application/json", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" },
-			body: `points_rule_id=${xhnid}&appid=9&oauth_token=${xhntoken}`
+			url: `https://usergrow-gqcqcloud.voc.com.cn/usergrow/api/v2/points/`,
+			headers: { "Host": "usergrow-gqcqcloud.voc.com.cn", "Connection": "keep-alive", "nonce": "700000", "time": time, "User-Agent": "gqcq-9.0.7-Mozilla/5.0 (Linux; Android 10; 16s Pro Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045738 Mobile Safari/537.36", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "signature": sign, "Accept": "application/json", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" },
+			body: `points_rule_id=${gqcqid}&appid=9&oauth_token=${gqcqtoken}`
 		}
 		$.post(url, async (err, resp, data) => {
 			try {
 				const result = JSON.parse(data)
 				if (result.statecode == 1) {
 					await $.wait(2000)
-					$.log(`\n新湖南${rwm}任务:${result.message}`)
+					$.log(`\n广汽传祺${rwm}任务:${result.message}`)
 
 				} else {
-					$.log(`\n新湖南${rwm}任务:${result.message}`)
+					$.log(`\n广汽传祺${rwm}任务:${result.message}`)
 
 				}
 			} catch (e) {
@@ -249,219 +295,27 @@ function getAesString(data, key, iv) {//加密
 
 
 
-//信息
-function xhnxx(timeout = 0) {
-	return new Promise((resolve) => {
-		let time = new Date().getTime();//时间戳13位
-		sign = sha(`${time}700000${arrs['my']}`)
-
-		let url = {
-			url: `https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/pointsUser?refreshUserInfo=0&appid=9&oauth_token=${xhntoken}`,
-			headers: { "Host": "usergrow-xhncloud.voc.com.cn", "Connection": "keep-alive", "nonce": "700000", "time": time, "User-Agent": "xhn-9.0.7-Mozilla/5.0 (Linux; Android 10; 16s Pro Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045738 Mobile Safari/537.36", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "signature": sign, "Accept": "application/json", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" },
-
-		}
-		$.get(url, async (err, resp, data) => {
-			try {
-				const result = JSON.parse(data)
-				if (result.statecode == 1) {
-					$.log(`\n新湖南查询积分余额:【${result.data.validPoints}】`)
-				} else {
-					$.log(`\n新湖南查询积分余额:${result.message}`)
-
-				}
-			} catch (e) {
-				//$.logErr(e, resp);
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
-}
-
-function encodeUTF8(s) {
-	var i, r = [], c, x;
-	for (i = 0; i < s.length; i++)
-		if ((c = s.charCodeAt(i)) < 0x80) r.push(c);
-		else if (c < 0x800) r.push(0xC0 + (c >> 6 & 0x1F), 0x80 + (c & 0x3F));
-		else {
-			if ((x = c ^ 0xD800) >> 10 == 0) //对四字节UTF-16转换为Unicode
-				c = (x << 10) + (s.charCodeAt(++i) ^ 0xDC00) + 0x10000,
-					r.push(0xF0 + (c >> 18 & 0x7), 0x80 + (c >> 12 & 0x3F));
-			else r.push(0xE0 + (c >> 12 & 0xF));
-			r.push(0x80 + (c >> 6 & 0x3F), 0x80 + (c & 0x3F));
-		};
-	return r;
-}
-
-function sha(s) {
-	var data = new Uint8Array(encodeUTF8(s))
-	var i, j, t;
-	var l = ((data.length + 8) >>> 6 << 4) + 16, s = new Uint8Array(l << 2);
-	s.set(new Uint8Array(data.buffer)), s = new Uint32Array(s.buffer);
-	for (t = new DataView(s.buffer), i = 0; i < l; i++)s[i] = t.getUint32(i << 2);
-	s[data.length >> 2] |= 0x80 << (24 - (data.length & 3) * 8);
-	s[l - 1] = data.length << 3;
-	var w = [], f = [
-		function () { return m[1] & m[2] | ~m[1] & m[3]; },
-		function () { return m[1] ^ m[2] ^ m[3]; },
-		function () { return m[1] & m[2] | m[1] & m[3] | m[2] & m[3]; },
-		function () { return m[1] ^ m[2] ^ m[3]; }
-	], rol = function (n, c) { return n << c | n >>> (32 - c); },
-		k = [1518500249, 1859775393, -1894007588, -899497514],
-		m = [1732584193, -271733879, null, null, -1009589776];
-	m[2] = ~m[0], m[3] = ~m[1];
-	for (i = 0; i < s.length; i += 16) {
-		var o = m.slice(0);
-		for (j = 0; j < 80; j++)
-			w[j] = j < 16 ? s[i + j] : rol(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1),
-				t = rol(m[0], 5) + f[j / 20 | 0]() + m[4] + w[j] + k[j / 20 | 0] | 0,
-				m[1] = rol(m[1], 30), m.pop(), m.unshift(t);
-		for (j = 0; j < 5; j++)m[j] = m[j] + o[j] | 0;
-	};
-	t = new DataView(new Uint32Array(m).buffer);
-	for (var i = 0; i < 5; i++)m[i] = t.getUint32(i << 2);
-
-	var hex = Array.prototype.map.call(new Uint8Array(new Uint32Array(m).buffer), function (e) {
-		return (e < 16 ? "0" : "") + e.toString(16);
-	}).join("");
-	return hex;
-}
 
 
-function hqs(num = 10) {
-	return new Promise((resolve) => {
-		let id = 2
-		let url = {
-			url: $.isNode() ? $.fwur() + `?key=${acckey}&id=${id}&ip=1&mac=${mac}&bb=1` : $.fwur() + `?key=${acckey}&id=${id}&ip=0&mac=${mac}&bb=1`,
-		}
-		$.get(url, async (err, resp, data) => {
-			try {
-				let result = JSON.parse(data);
-				if (result.code == 200) {
-					all_msg = result.msg
-					resolve(JSON.parse(result.data))
-				} else {
-					all_msg = result.msg
-					resolve(false)
-
-				}
-			} catch (e) {
-				$.logErr(e, resp);
-			}
-		}, 0)
-	})
-}
-
-
-
-function FxPCnMKLw7() {
-
-	// private property  
-	_keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-
-	// public method for encoding  
-	this.encode = function (input) {
-		var output = "";
-		var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-		var i = 0;
-		input = _utf8_encode(input);
-		while (i < input.length) {
-			chr1 = input.charCodeAt(i++);
-			chr2 = input.charCodeAt(i++);
-			chr3 = input.charCodeAt(i++);
-			enc1 = chr1 >> 2;
-			enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-			enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-			enc4 = chr3 & 63;
-			if (isNaN(chr2)) {
-				enc3 = enc4 = 64;
-			} else if (isNaN(chr3)) {
-				enc4 = 64;
-			}
-			output = output +
-				_keyStr.charAt(enc1) + _keyStr.charAt(enc2) +
-				_keyStr.charAt(enc3) + _keyStr.charAt(enc4);
-		}
-		return output;
-	}
-
-	// public method for decoding  
-	this.decode = function (input) {
-		var output = "";
-		var chr1, chr2, chr3;
-		var enc1, enc2, enc3, enc4;
-		var i = 0;
-		input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-		while (i < input.length) {
-			enc1 = _keyStr.indexOf(input.charAt(i++));
-			enc2 = _keyStr.indexOf(input.charAt(i++));
-			enc3 = _keyStr.indexOf(input.charAt(i++));
-			enc4 = _keyStr.indexOf(input.charAt(i++));
-			chr1 = (enc1 << 2) | (enc2 >> 4);
-			chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-			chr3 = ((enc3 & 3) << 6) | enc4;
-			output = output + String.fromCharCode(chr1);
-			if (enc3 != 64) {
-				output = output + String.fromCharCode(chr2);
-			}
-			if (enc4 != 64) {
-				output = output + String.fromCharCode(chr3);
-			}
-		}
-		output = _utf8_decode(output);
-		return output;
-	}
-
-	// private method for UTF-8 encoding  
-	_utf8_encode = function (string) {
-		string = string.replace(/\r\n/g, "\n");
-		var utftext = "";
-		for (var n = 0; n < string.length; n++) {
-			var c = string.charCodeAt(n);
-			if (c < 128) {
-				utftext += String.fromCharCode(c);
-			} else if ((c > 127) && (c < 2048)) {
-				utftext += String.fromCharCode((c >> 6) | 192);
-				utftext += String.fromCharCode((c & 63) | 128);
-			} else {
-				utftext += String.fromCharCode((c >> 12) | 224);
-				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-				utftext += String.fromCharCode((c & 63) | 128);
-			}
-
-		}
-		return utftext;
-	}
-
-	// private method for UTF-8 decoding  
-	_utf8_decode = function (utftext) {
-		var string = "";
-		var i = 0;
-		var c = c1 = c2 = 0;
-		while (i < utftext.length) {
-			c = utftext.charCodeAt(i);
-			if (c < 128) {
-				string += String.fromCharCode(c);
-				i++;
-			} else if ((c > 191) && (c < 224)) {
-				c2 = utftext.charCodeAt(i + 1);
-				string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
-				i += 2;
-			} else {
-				c2 = utftext.charCodeAt(i + 1);
-				c3 = utftext.charCodeAt(i + 2);
-				string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-				i += 3;
-			}
-		}
-		return string;
-	}
-}
-
-
-//#region 固定代码1
+//#region 固定代码
 // ============================================变量检查============================================ \\
+async function Envs() {
+	console.log(gqcq_data);
+	if (gqcq_data) {
+		if (gqcq_data.indexOf("@") != -1) {
+			gqcq_data.split("@").forEach((item) => {
+				gqcq_dataArr.push(item);
+			});
+		} else {
+			gqcq_dataArr.push(gqcq_data);
+		}
+	} else {
+		console.log(`\n 【${$.name}】：未填写变量 gqcq_data`)
+		return;
+	}
 
+	return true;
+}
 
 // ============================================发送消息============================================ \\
 async function SendMsg(message) {
@@ -521,7 +375,6 @@ function wyy(timeout = 3 * 1000) {
 }
 
 //#endregion
-
 
 
 

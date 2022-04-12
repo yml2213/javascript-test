@@ -39,7 +39,7 @@ let data = '';
 let AZ = '';
 let msg = '';
 let ts = Math.round(new Date().getTime() / 1000).toString();
-
+console.log(ys_data);
 
 
 
@@ -134,6 +134,7 @@ let ts = Math.round(new Date().getTime() / 1000).toString();
 //#region 固定代码
 // ============================================变量检查============================================ \\
 async function Envs() {
+	console.log(ys_data);
 	if (ys_data) {
 		if (ys_data.indexOf("@") != -1) {
 			ys_data.split("@").forEach((item) => {

@@ -1,0 +1,20 @@
+    signature 614779 1649761020795 17aaf8118ffb270b766c6d6774317a133.4.0
+
+    signature 614779 1649761020795 17aaf8118ffb270b766c6d6774317a133.4.0
+
+1649768399239
+
+
+{
+  "result": true,
+  "errorCode": "200",
+  "errorMessage": "success",
+  "data": {
+    "ruleCode": "APP_DAILY_SIGN_1",
+    "dayCount": 1,
+    "operationValue": 20,
+    "box": ""
+  },
+  "systemDate": "2022-04-12 18:57:01",
+  "systemTimeMillis": 1649761021127
+}
