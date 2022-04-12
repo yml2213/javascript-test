@@ -59,7 +59,6 @@ console.log(gqcq_data);
 			await signin();
 			await $.wait(2 * 1000);
 
-			await $.wait(3000)
 
 
 		}
