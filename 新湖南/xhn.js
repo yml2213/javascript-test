@@ -2,78 +2,77 @@
  * 新湖南 
  * cron 10 8,12,17,23 * * *  yml2213_javascript_master/xhn.js
  * 
- * 新湖南   入口：抖音点击"我"- "抖音商城" - "果园"   有的号可能没有 ，暂时不知道原因
- * 3-29    签到任务、新手彩蛋、每日免费领水滴、三餐礼包、宝箱、盒子领取  初步完成   脚本刚写完，难免有bug，请及时反馈  ；ck有效期测试中 
+ * 新湖南   新湖南app
+ * 4-12     修改自肥皂大佬的脚本，内部脚本  禁止外传  内部脚本  禁止外传   内部脚本  禁止外传    内部脚本  禁止外传
  * 
- * 感谢所有测试人员
+ * 
  * ========= 青龙 =========
  * 变量格式：  
  * 必填变量：export xhn_data='手机号 & 密码 @ 手机号 & 密码 '  多个账号用 @分割 
  * 
  * 还是不会的请百度或者群里求助：QQ群：1101401060  tg：https://t.me/yml_tg  通知：https://t.me/yml2213_tg
  */
+const jsname = "新湖南";
+const $ = Env(jsname);
+const notify = $.isNode() ? require('./sendNotify') : '';
+const Notify = 1; //0为关闭通知，1为打开通知,默认为1
+const debug = 0; //0为关闭调试，1为打开调试,默认为0
+//////////////////////
 
-const $ = new Env('新湖南');
+const salt = 'hHacFKN5DxR5sPwyc1ns52M168rdoe3AGrWaseN3zYd2XoKaxYhYQTqDXvCtMkwz'
 let xhn_data = process.env.xhn_data;
+let xhn_dataArr = [];
 
-// var gtr
-// let ml = '', mac = ''
-// let status;
-// status = (status = ($.getval("qmwkstatus") || "1")) > 1 ? `${status}` : ""; // 账号扩展字符
-// let xhnzhArr = [], xhnmmArr = []
-
-// let all_msg = ""
-// let xhnid = '', sign = '', xhntoken = '', rwm = ''
-// let arrs = []
-// let xhnzh = ($.isNode() ? process.env.xhnzh : $.getdata('xhnzh')) || '';
-// let xhnmm = ($.isNode() ? process.env.xhnmm : $.getdata('xhnmm')) || '';
-// let acckey = $.isNode() ? (process.env.cdkey ? process.env.cdkey : "") : ($.getdata('cdkey') ? $.getdata('cdkey') : "")
-
-
+let data = '';
+let msg = '';
 
 
 !(async () => {
 
-	console.log(`本地脚本4-10 )`);
+	if (!(await Envs()))  //多账号分割 判断变量是否为空  初步处理多账号
+		return;
+	else {
 
-	console.log(`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
-		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
-		8 * 60 * 60 * 1000).toLocaleString()} =========================================\n`);
+		console.log(`本地脚本4-10 )`);
+		console.log(`\n\n内部脚本  禁止外传 \n\n内部脚本  禁止外传 \n\n内部脚本  禁止外传 \n\n内部脚本  禁止外传`);
 
-	await wyy();
+		console.log(`\n\n=========================================    脚本执行 - 北京时间(UTC+8)：${new Date(
+			new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
+			8 * 60 * 60 * 1000).toLocaleString()} =========================================\n`);
 
+		await wyy();
 
-	console.log(`\n=================== 共找到 ${xhn_dataArr.length} 个账号 ===================`)
+		console.log(`\n=================== 共找到 ${xhn_dataArr.length} 个账号 ===================`)
 
-
-	for (let index = 0; index < xhn_dataArr.length; index++) {
-
-
-		let num = index + 1
-		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
-
-		data = xhn_dataArr[index].split('&');
-
-
-		console.log(`\n开始【新湖南${$.index}】`)
-
-		await xhndl()
-		await xhnxx()
-		await xhnlb()
-
-		await $.wait(3000)
+		if (debug) {
+			console.log(`【debug】 这是你的全部账号数组:\n ${xhn_dataArr}`);
+		}
 
 
+		for (let index = 0; index < xhn_dataArr.length; index++) {
+
+
+			let num = index + 1
+			console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
+
+			data = xhn_dataArr[index].split('&');
+
+			if (debug) {
+				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
+			}
+
+
+			await xhndl()
+			await xhnxx()
+			await xhnlb()
+
+			await SendMsg(msg);
+		}
 	}
-
-
-	
 
 })()
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done())
-
-
 
 
 
@@ -86,9 +85,19 @@ function xhndl(timeout = 0) {
 			headers: { "oauth-token": "", "Content-Type": "application/x-www-form-urlencoded", "Content-Length": "142", "Host": "cgi.voc.com.cn", "Connection": "Keep-Alive", "Accept-Encoding": "gzip", "User-Agent": "okhttp/4.9.1" },
 			body: `password=${data[1]}&logintype=1&RegistrationID=Au13k8PHjCfqQM0EiXpgHNbqldngiCb_eAuoWh8upHPB&appid=9&type=0&version=9.0.11&username=${data[0]}`
 		}
-		console.log(url);
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 登录 请求 url ===============`);
+			console.log(url);
+		}
 		$.post(url, async (err, resp, data) => {
+
 			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 登录 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
 				const result = JSON.parse(data)
 				if (result.statecode == 1) {
 					$.log(`\n新湖南用户:【${result.mobile}】:${result.message}`)
@@ -108,18 +117,30 @@ function xhndl(timeout = 0) {
 }
 
 
-//列表
+// 任务列表
 function xhnlb(timeout = 0) {
 	return new Promise((resolve) => {
 		let time = new Date().getTime();//时间戳13位
-		sign = sha(`${time}200000${arrs['my']}`)
+		sign = sha(`${time}200000${salt}`)
 		let url = {
 			url: `https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/appPointsInfoForH5?appid=9&oauth_token=${xhntoken}`,
 			headers: { "Host": "usergrow-xhncloud.voc.com.cn", "Connection": "keep-alive", "nonce": "200000", "time": time, "User-Agent": "xhn-9.0.7-Mozilla/5.0 (Linux; Android 10; 16s Pro Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045738 Mobile Safari/537.36", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "signature": sign, "Accept": "*/*", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" },
 
 		}
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 任务列表 请求 url ===============`);
+			console.log(url);
+		}
 		$.get(url, async (err, resp, data) => {
 			try {
+
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 任务列表 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+
 				const result = JSON.parse(data)
 				if (result.statecode == 1) {
 
@@ -144,19 +165,29 @@ function xhnlb(timeout = 0) {
 }
 
 
-//完成任务
+// 完成任务
 function xhnrw(timeout = 0) {
 	return new Promise((resolve) => {
 		let time = new Date().getTime();//时间戳13位
-		sign = sha(`${time}700000${arrs['my']}`)
+		sign = sha(`${time}700000${salt}`)
 
 		let url = {
 			url: `https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/`,
 			headers: { "Host": "usergrow-xhncloud.voc.com.cn", "Connection": "keep-alive", "nonce": "700000", "time": time, "User-Agent": "xhn-9.0.7-Mozilla/5.0 (Linux; Android 10; 16s Pro Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045738 Mobile Safari/537.36", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "signature": sign, "Accept": "application/json", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" },
 			body: `points_rule_id=${xhnid}&appid=9&oauth_token=${xhntoken}`
 		}
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 完成任务 请求 url ===============`);
+			console.log(url);
+		}
 		$.post(url, async (err, resp, data) => {
 			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 完成任务 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
 				const result = JSON.parse(data)
 				if (result.statecode == 1) {
 					await $.wait(2000)
@@ -174,9 +205,6 @@ function xhnrw(timeout = 0) {
 		}, timeout)
 	})
 }
-
-
-
 
 
 
@@ -233,17 +261,7 @@ function sha1(s) {
 	}).join("");
 	return hex;
 }
-function getAesString(data, key, iv) {//加密
-	var key = CryptoJS.enc.Utf8.parse(key);
-	var iv = CryptoJS.enc.Utf8.parse(iv);
-	var encrypted = CryptoJS.AES.encrypt(data, key,
-		{
-			iv: iv,
-			mode: CryptoJS.mode.CBC,
-			padding: CryptoJS.pad.Pkcs7
-		});
-	return encrypted.toString();    //返回的是base64格式的密文
-}
+
 
 
 
@@ -253,7 +271,7 @@ function getAesString(data, key, iv) {//加密
 function xhnxx(timeout = 0) {
 	return new Promise((resolve) => {
 		let time = new Date().getTime();//时间戳13位
-		sign = sha(`${time}700000${arrs['my']}`)
+		sign = sha(`${time}700000${salt}`)
 
 		let url = {
 			url: `https://usergrow-xhncloud.voc.com.cn/usergrow/api/v2/points/pointsUser?refreshUserInfo=0&appid=9&oauth_token=${xhntoken}`,
@@ -277,6 +295,7 @@ function xhnxx(timeout = 0) {
 		}, timeout)
 	})
 }
+
 
 function encodeUTF8(s) {
 	var i, r = [], c, x;

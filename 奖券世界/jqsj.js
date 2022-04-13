@@ -79,9 +79,9 @@ let msg = '';
 
 
 
-			// console.log('开始 自动合成');
-			// await auto_combine();
-			// await $.wait(2 * 1000);
+			console.log('开始 自动合成');
+			await auto_combine();
+			await $.wait(2 * 1000);
 
 
 			console.log('开始 购买建筑');
