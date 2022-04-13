@@ -52,3 +52,72 @@ signature 600277 1649772789516 17aaf8118ffb270b766c6d6774317a133.4.0
     { itemType: 3, finishedNum: 0, total: 2, value: 20, remind: null }
   ]
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+帖子
+
+{
+  result: true,
+  errorCode: '20000',
+  errorMessage: '操作成功',
+  data: {
+    postId: 3904581,
+    topicId: 176,
+    topicIds: '176',
+    topicNames: '那些年我们看过的电影',
+    userId: 4205045,
+    postType: 2,
+    channelInfoId: 1,
+    postTitle: '那些年我们看过的电影',
+    postContent: '[{"text":"最简单的提高观赏性的办法就是把地球故事的部分剪辑掉半小时， emo的部分剪辑掉半小时。这样剩下的90分钟我们就看看外星人，看看月球，看看灾难片大场面就不错。"}]',
+    coverImg: 'https://pic-gsp.gacmotor.com/app/42a97ad9-0bfb-4205-b838-8170ad3289e2.png',
+    columnId: 0,
+    postApplyStatus: 1,
+    publishedTime: 1649832703940,
+    isPraise: 0,
+    author: {
+      userId: 'NDIwNTA0NQ==',
+      nickname: 'cq666',
+      carTypeId: null,
+      photo: 'https://pic-gsp.gacmotor.com/app/97eee6a4-e0df-453f-afe7-07dcfe176c31.jpg',
+      status: null,
+      signature: '',
+      brandName: null,
+      praises: 0,
+      followers: 0,
+      following: 0,
+      attentions: 0,
+      haveFollower: false,
+      followEachOther: false,
+      mobile: null,
+      createDate: null,
+      personalProfile: null,
+      userIdStr: null,
+      topicNum: null,
+      attentionAllNum: null,
+      markVoList: [],
+      isHighLight: null,
+      postId: null,
+      carUser: false
+    },
+    commentCount: 0,
+    visibleStatus: 1,
+    showStatus: 0,
+    address: '',
+    isNeedApply: 0,
+    content: '最简单的提高观赏性的办法就是把地球故事的部分剪辑掉半小时， emo的部分剪辑掉半小时。这样剩下的90分钟我们就看看外星人，看看月球，看看灾难片大场面就不错。',
+    hotList: [],
+    isRewardShow: false,
+    isPostReward: true,
+    isRepeatReward: false,
+    isCollection: 0
+  }
+}
+
+ 发布帖子:操作成功 🎉 
+
+
+
+顶着叛国罪的风险无比坚信前妻，这种还会离婚？
