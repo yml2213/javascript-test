@@ -21,3 +21,34 @@
   "systemDate": "2022-04-12 18:57:01",
   "systemTimeMillis": 1649761021127
 }
+
+
+
+任务列表
+signature 600277 1649772789516 17aaf8118ffb270b766c6d6774317a133.4.0
+
+签名结果：ef8fa9d7d6a08df40571ea0f3c2d816a
+
+{
+  result: true,
+  errorCode: '20000',
+  errorMessage: '操作成功',
+  data: [
+    { itemType: 0, finishedNum: 0, total: 1, value: 0, remind: null },
+    { itemType: 1, finishedNum: 0, total: 2, value: 50, remind: 1 },
+    { itemType: 2, finishedNum: 0, total: 2, value: 20, remind: 1 },
+    { itemType: 3, finishedNum: 0, total: 2, value: 20, remind: null }
+  ]
+}
+
+{
+  result: true,
+  errorCode: '20000',
+  errorMessage: '操作成功',
+  data: [
+    { itemType: 0, finishedNum: 1, total: 1, value: 0, remind: null },
+    { itemType: 1, finishedNum: 0, total: 2, value: 50, remind: 1 },
+    { itemType: 2, finishedNum: 0, total: 2, value: 20, remind: 1 },
+    { itemType: 3, finishedNum: 0, total: 2, value: 20, remind: null }
+  ]
+}

@@ -1,13 +1,15 @@
 /**
  * 广汽传祺 
- * cron 10 8,12,17,23 * * *  yml2213_javascript_master/gqcq.js
+ * cron 10 8 * * *  yml2213_javascript_master/gqcq.js
  * 
- * 广汽传祺   
+ * 广汽传祺app  
+ * 4-13  完成签到 抽奖任务   分享任务测试中    有bug及时反馈
  * 
  * 感谢所有测试人员
  * ========= 青龙 =========
- * 变量格式:   
- * 必填变量: export gqcq_data='手机号 & 密码 @ 手机号 & 密码 '  多个账号用 @分割 
+ * 变量格式: export gqcq_data='token1 @ token2 '  多个账号用 @分割 
+ * 
+ * 抓包： 随便抓个有token的包就行了
  * 
  * 还是不会的请百度或者群里求助: QQ群: 1101401060  tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
@@ -16,13 +18,13 @@ const jsname = "广汽传祺";
 const $ = Env(jsname);
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
-const debug = 1; //0为关闭调试，1为打开调试,默认为0
+const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
 const salt = '17aaf8118ffb270b766c6d6774317a133.4.0'
+let gqcq_dataArr = [];
+let topicNames = '', postId = '';
 let gqcq_data = process.env.gqcq_data;
 let ts = Math.round(new Date().getTime()).toString();
-let gqcq_dataArr = [];
-console.log(gqcq_data);
 
 
 !(async () => {
@@ -31,7 +33,11 @@ console.log(gqcq_data);
 		return;
 	else {
 
-		console.log(`本地脚本4-10 )`);
+		console.log(`本地脚本4-13 )`);
+
+		console.log(`\n 脚本测试中,有bug及时反馈! \n`);
+		console.log(`\n 脚本测试中,有bug及时反馈! \n`);
+		console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 
 		console.log(`\n\n=========================================    \n脚本执行 - 北京时间(UTC+8): ${new Date(
 			new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
@@ -54,12 +60,9 @@ console.log(gqcq_data);
 				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
 			}
 
-
-			console.log('开始 签到');
-			await signin();
+			console.log('开始 任务列表');
+			await task_list();
 			await $.wait(2 * 1000);
-
-
 
 		}
 
@@ -72,6 +75,106 @@ console.log(gqcq_data);
 
 
 
+/**
+ * 任务列表  task_list
+ * https://gsp.gacmotor.com/gw/app/community/api/mission/getlistv1?place=1
+ */
+function task_list(timeout = 3 * 1000) {
+	let reqNonc = randomInt(100000, 999999)
+	let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
+
+	return new Promise((resolve) => {
+		let url = {
+			url: 'https://gsp.gacmotor.com/gw/app/community/api/mission/getlistv1?place=1',
+			headers: {
+
+				'User-Agent': 'okhttp/3.10.0',
+				'token': data[0],
+				'verification': 'signature',
+				'reqTs': ts,
+				'reqNonc': reqNonc,
+				'reqSign': reqSign,
+				'Host': 'gsp.gacmotor.com',
+				'Connection': 'Keep-Alive',
+				'Accept-Encoding': 'gzip',
+
+			},
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 任务列表 请求 url ===============`);
+			console.log(url);
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 任务列表 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.errorCode == 20000) {
+
+					console.log(`\n 获取任务列表:${result.errorMessage} 🎉 准备执行任务\n`);
+					if (result.data[0].finishedNum == 0) {
+
+						console.log(`\n 签到状态： 未签到，去执行签到 \n`);
+						await signin();
+						await $.wait(2 * 1000);
+
+						console.log('顺便抽个奖吧！ 开始 抽奖');
+						await lottery();
+						await $.wait(2 * 1000);
+
+					} else if (result.data[0].finishedNum == 1) {
+						console.log(`签到状态：今天已经签到过了鸭，明天再来吧！`);
+					} else {
+						console.log(`\n 获取签到状态:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+					}
+
+					if (result.data[3].finishedNum == 0) {
+
+						console.log(`\n 分享状态：${result.data[3].finishedNum} / ${result.data[3].total} \n`);
+
+						await Article_list();
+						await $.wait(2 * 1000);
+
+						await share();
+						await $.wait(2 * 1000);
+
+						await share();
+						await $.wait(2 * 1000);
+
+
+					} else if (result.data[0].finishedNum == 1) {
+						// await Article_list();
+						// await share();
+
+						console.log(`\n 今天已经分享过了鸭，明天再来吧！\n `);
+					} else {
+						console.log(`\n 获取分享状态:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+					}
+
+
+				} else {
+
+					console.log(`\n 获取任务列表:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+
+
+
 
 
 
@@ -80,8 +183,8 @@ console.log(gqcq_data);
  * https://gsp.gacmotor.com/gateway/app-api/sign/submit
  */
 function signin(timeout = 3 * 1000) {
-	let reqNonc = randomInt(100000,999999)
-	console.log(reqNonc);
+	let reqNonc = randomInt(100000, 999999)
+	// console.log(reqNonc);
 	let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
 
 	return new Promise((resolve) => {
@@ -91,15 +194,6 @@ function signin(timeout = 3 * 1000) {
 
 				'User-Agent': 'okhttp/3.10.0',
 				'token': data[0],
-				// 'channel': 'unknown',
-				// 'platformNo': 'Android',
-				// 'osVersion': '9',
-				// 'version': '3.4.0',
-				// 'imei': 'unknown',
-				// 'imsi': 'unknown',
-				// 'deviceModel': 'MI 6',
-				// 'deviceType': 'Android',
-				// 'registrationID': '140fe1da9e5c3deed66',
 				'verification': 'signature',
 				'reqTs': ts,
 				'reqNonc': reqNonc,
@@ -135,7 +229,137 @@ function signin(timeout = 3 * 1000) {
 
 				} else {
 
-					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n result \n `)
+					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+
+/**
+ * 抽奖  每天免费一次  其他50G豆一次  trunaround
+ * https://gsp.gacmotor.com/gw/app/activity/api/cge/trunaround
+ */
+function lottery(timeout = 3 * 1000) {
+
+	return new Promise((resolve) => {
+		let url = {
+			url: 'https://gsp.gacmotor.com/gw/app/activity/api/cge/trunaround',
+			headers: {
+
+				'token': data[0],
+				'Host': 'gsp.gacmotor.com',
+				// 'User-Agent': 'Mozilla/5.0 (Linux; Android 9; MI 6 Build/PKQ1.190118.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/80.0.3987.99 Mobile Safari/537.36;GACClient',
+				'Origin': 'https://gsp.gacmotor.com',
+				'Accept': 'application/json, text/plain, */*',
+				'Cache-Control': 'no-cache',
+				'Sec-Fetch-Dest': 'empty',
+				'X-Requested-With': 'com.cloudy.component',
+				'Sec-Fetch-Site': 'same-origin',
+				'Sec-Fetch-Mode': 'cors',
+				'Referer': 'https://gsp.gacmotor.com/h5/html/draw/index.html',
+				'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+				'Content-Type': 'application/x-www-form-urlencoded'
+
+			},
+			body: 'activityCode=CGE',
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 抽奖 请求 url ===============`);
+			console.log(url);
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 抽奖 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.errorCode == 20000) {
+
+					console.log(`\n 抽奖:${result.errorMessage} 🎉 \n恭喜你获得 ${result.data.medalName} 奖品为 ${result.data.medalDescription} \n`);
+
+
+				} else {
+
+					console.log(`\n 抽奖:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+
+/**
+ * 获取 文章列表  Article_list
+ * https://gsp.gacmotor.com/gw/app/community/api/post/channelPostList?current=1&size=20&channelId=&sortType=1
+ */
+function Article_list(timeout = 3 * 1000) {
+	let reqNonc = randomInt(100000, 999999)
+	// console.log(reqNonc);
+	let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
+
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://gsp.gacmotor.com/gw/app/community/api/post/channelPostList?current=1&size=40&channelId=&sortType=1`,
+			headers: {
+
+				'User-Agent': 'okhttp/3.10.0',
+				'token': data[0],
+				'verification': 'signature',
+				'reqTs': ts,
+				'reqNonc': reqNonc,
+				'reqSign': reqSign,
+				'Host': 'gsp.gacmotor.com',
+				'Connection': 'Keep-Alive',
+				'Accept-Encoding': 'gzip',
+			},
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 文章列表 请求 url ===============`);
+			console.log(url);
+		}
+		$.get(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 文章列表 返回data==============`);
+					// console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.errorCode == 20000) {
+
+					console.log(`\n 获取文章列表:${result.errorMessage} 🎉 \n`);
+					let num = randomInt(1, 39);
+					// console.log(num);
+					console.log(`分享的文章: ${result.data.records[num].topicNames}  文章ID:${result.data.records[num].postId}`);
+					postId = result.data.records[num].postId;
+					// console.log(postId);
+
+
+
+
+				} else {
+
+					console.log(`\n 获取文章列表:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
 
 				}
 
@@ -150,146 +374,65 @@ function signin(timeout = 3 * 1000) {
 
 
 
+/**
+ * 分享文章  每天两次
+ * https://gsp.gacmotor.com/gw/app/community/api/post/forward
+ */
+function share(timeout = 3 * 1000) {
+	let reqNonc = randomInt(100000, 999999)
+	let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
 
-
-//列表
-function gqcqlb(timeout = 0) {
 	return new Promise((resolve) => {
-		let time = new Date().getTime();//时间戳13位
-		sign = sha(`${time}200000${arrs['my']}`)
 		let url = {
-			url: `https://usergrow-gqcqcloud.voc.com.cn/usergrow/api/v2/points/appPointsInfoForH5?appid=9&oauth_token=${gqcqtoken}`,
-			headers: { "Host": "usergrow-gqcqcloud.voc.com.cn", "Connection": "keep-alive", "nonce": "200000", "time": time, "User-Agent": "gqcq-9.0.7-Mozilla/5.0 (Linux; Android 10; 16s Pro Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045738 Mobile Safari/537.36", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "signature": sign, "Accept": "*/*", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" },
+			url: `https://gsp.gacmotor.com/gw/app/community/api/post/forward`,
+			headers: {
 
+				'User-Agent': 'okhttp/3.10.0',
+				'token': data[0],
+				'verification': 'signature',
+				'reqTs': ts,
+				'reqNonc': reqNonc,
+				'reqSign': reqSign,
+				'Host': 'gsp.gacmotor.com',
+				'Connection': 'Keep-Alive',
+				'Accept-Encoding': 'gzip'
+
+			},
+			body: `postId=${postId}&userId=`,
 		}
-		$.get(url, async (err, resp, data) => {
-			try {
-				const result = JSON.parse(data)
-				if (result.statecode == 1) {
 
-					for (let x = 0; x < result.data.pointsRuleBeanList.length; x++) {
-						$.log(`\n广汽传祺去完成:【${result.data.pointsRuleBeanList[x].ruleName}】 积分: ${result.data.pointsRuleBeanList[x].points}`)
-						gqcqid = result.data.pointsRuleBeanList[x].pointsRuleId
-						rwm = result.data.pointsRuleBeanList[x].ruleName
-						await $.wait(2000)
-						await gqcqrw()
-					}
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 分享文章 请求 url ===============`);
+			console.log(url);
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 分享文章 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.errorCode == 20000) {
+
+					console.log(`\n 分享文章:${result.errorMessage} 🎉 \n`);
+
+
 				} else {
-					$.log(`\n广汽传祺任务:${data}`)
+
+					console.log(`\n 分享文章:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
 
 				}
+
 			} catch (e) {
-				//$.logErr(e, resp);
+				console.log(e)
 			} finally {
-				resolve()
+				resolve();
 			}
 		}, timeout)
 	})
 }
-
-
-//完成任务
-function gqcqrw(timeout = 0) {
-	return new Promise((resolve) => {
-		let time = new Date().getTime();//时间戳13位
-
-		sign = MD5Encrypt(`${time}700000${arrs['my']}`)
-
-		let url = {
-			url: `https://usergrow-gqcqcloud.voc.com.cn/usergrow/api/v2/points/`,
-			headers: { "Host": "usergrow-gqcqcloud.voc.com.cn", "Connection": "keep-alive", "nonce": "700000", "time": time, "User-Agent": "gqcq-9.0.7-Mozilla/5.0 (Linux; Android 10; 16s Pro Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045738 Mobile Safari/537.36", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "signature": sign, "Accept": "application/json", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" },
-			body: `points_rule_id=${gqcqid}&appid=9&oauth_token=${gqcqtoken}`
-		}
-		$.post(url, async (err, resp, data) => {
-			try {
-				const result = JSON.parse(data)
-				if (result.statecode == 1) {
-					await $.wait(2000)
-					$.log(`\n广汽传祺${rwm}任务:${result.message}`)
-
-				} else {
-					$.log(`\n广汽传祺${rwm}任务:${result.message}`)
-
-				}
-			} catch (e) {
-				//$.logErr(e, resp);
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
-}
-
-
-
-
-
-
-
-
-
-
-
-// ==============sha1加密==============
-function encodeUTF8(s) {
-	var i, r = [], c, x;
-	for (i = 0; i < s.length; i++)
-		if ((c = s.charCodeAt(i)) < 0x80) r.push(c);
-		else if (c < 0x800) r.push(0xC0 + (c >> 6 & 0x1F), 0x80 + (c & 0x3F));
-		else {
-			if ((x = c ^ 0xD800) >> 10 == 0) //对四字节UTF-16转换为Unicode
-				c = (x << 10) + (s.charCodeAt(++i) ^ 0xDC00) + 0x10000,
-					r.push(0xF0 + (c >> 18 & 0x7), 0x80 + (c >> 12 & 0x3F));
-			else r.push(0xE0 + (c >> 12 & 0xF));
-			r.push(0x80 + (c >> 6 & 0x3F), 0x80 + (c & 0x3F));
-		};
-	return r;
-}
-function sha1(s) {
-	var data = new Uint8Array(encodeUTF8(s))
-	var i, j, t;
-	var l = ((data.length + 8) >>> 6 << 4) + 16, s = new Uint8Array(l << 2);
-	s.set(new Uint8Array(data.buffer)), s = new Uint32Array(s.buffer);
-	for (t = new DataView(s.buffer), i = 0; i < l; i++)s[i] = t.getUint32(i << 2);
-	s[data.length >> 2] |= 0x80 << (24 - (data.length & 3) * 8);
-	s[l - 1] = data.length << 3;
-	var w = [], f = [
-		function () { return m[1] & m[2] | ~m[1] & m[3]; },
-		function () { return m[1] ^ m[2] ^ m[3]; },
-		function () { return m[1] & m[2] | m[1] & m[3] | m[2] & m[3]; },
-		function () { return m[1] ^ m[2] ^ m[3]; }
-	], rol = function (n, c) { return n << c | n >>> (32 - c); },
-		k = [1518500249, 1859775393, -1894007588, -899497514],
-		m = [1732584193, -271733879, null, null, -1009589776];
-	m[2] = ~m[0], m[3] = ~m[1];
-	for (i = 0; i < s.length; i += 16) {
-		var o = m.slice(0);
-		for (j = 0; j < 80; j++)
-			w[j] = j < 16 ? s[i + j] : rol(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1),
-				t = rol(m[0], 5) + f[j / 20 | 0]() + m[4] + w[j] + k[j / 20 | 0] | 0,
-				m[1] = rol(m[1], 30), m.pop(), m.unshift(t);
-		for (j = 0; j < 5; j++)m[j] = m[j] + o[j] | 0;
-	};
-	t = new DataView(new Uint32Array(m).buffer);
-	for (var i = 0; i < 5; i++)m[i] = t.getUint32(i << 2);
-
-	var hex = Array.prototype.map.call(new Uint8Array(new Uint32Array(m).buffer), function (e) {
-		return (e < 16 ? "0" : "") + e.toString(16);
-	}).join("");
-	return hex;
-}
-function getAesString(data, key, iv) {//加密
-	var key = CryptoJS.enc.Utf8.parse(key);
-	var iv = CryptoJS.enc.Utf8.parse(iv);
-	var encrypted = CryptoJS.AES.encrypt(data, key,
-		{
-			iv: iv,
-			mode: CryptoJS.mode.CBC,
-			padding: CryptoJS.pad.Pkcs7
-		});
-	return encrypted.toString();    //返回的是base64格式的密文
-}
-
 
 
 
