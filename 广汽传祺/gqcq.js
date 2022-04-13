@@ -19,7 +19,7 @@ const $ = new Env("广汽传祺");
 // const $ = Env(jsname);
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
-const debug = 1; //0为关闭调试，1为打开调试,默认为0
+const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
 const salt = '17aaf8118ffb270b766c6d6774317a133.4.0'
 let gqcq_dataArr = [];
@@ -155,7 +155,7 @@ function task_list(timeout = 3 * 1000) {
 						await $.wait(2 * 1000);
 
 						await delete_topic();
-						await $.wait(2 * 1000);
+						await $.wait(30 * 1000);
 
 
 						console.log(`\n 发帖：执行第二次发帖,评论，删除评论 \n`);
