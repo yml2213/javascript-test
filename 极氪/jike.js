@@ -1,29 +1,29 @@
 /**
- * 广汽传祺 
- * cron 10 8 * * *  yml2213_javascript_master/gqcq.js
+ * 极氪 
+ * cron 10 8 * * *  yml2213_javascript_master/jike.js
  * 
- * 广汽传祺 app  
+ * 极氪 app  
  * 4-13  完成签到 抽奖 分享 发帖 评论 任务   有bug及时反馈
  * 4-14  修复已知bug  恢复正常使用
  * 
  * 感谢所有测试人员
  * ========= 青龙 =========
- * 变量格式: export gqcq_data='token1 @ token2 '  多个账号用 @分割 
+ * 变量格式: export jike_data='token1 @ token2 '  多个账号用 @分割 
  * 
  * 抓包： 随便抓个有token的包就行了
  * 
  * 还是不会的请百度或者群里求助: QQ群: 1101401060  tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
 
- const $ = new Env("广汽传祺");
+ const $ = new Env("极氪");
  const notify = $.isNode() ? require('./sendNotify') : '';
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 1; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
  const salt = '17aaf8118ffb270b766c6d6774317a133.4.0'
- let gqcq_dataArr = [];
+ let jike_dataArr = [];
  let topicNames = '', postId = '';
- let gqcq_data = process.env.gqcq_data;
+ let jike_data = process.env.jike_data;
  let ts = Math.round(new Date().getTime()).toString();
  
  /////////////////////////////////////////////////////////
@@ -54,19 +54,19 @@
 		 await wyy();
  
  
-		 console.log(`\n=================== 共找到 ${gqcq_dataArr.length} 个账号 ===================`)
+		 console.log(`\n=================== 共找到 ${jike_dataArr.length} 个账号 ===================`)
 		 if (debug) {
-			console.log(`【debug】 这是你的账号数组:\n ${gqcq_dataArr}`);
+			console.log(`【debug】 这是你的账号数组:\n ${jike_dataArr}`);
 		}
 
  
-		 for (let index = 0; index < gqcq_dataArr.length; index++) {
+		 for (let index = 0; index < jike_dataArr.length; index++) {
  
  
 			 let num = index + 1
 			 console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
  
-			 data = gqcq_dataArr[index].split('&');
+			 data = jike_dataArr[index].split('&');
 			 if (debug) {
 				 console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
 			 }
@@ -706,16 +706,16 @@
  //#region 固定代码
  // ============================================变量检查============================================ \\
  async function Envs() {
-	 if (gqcq_data) {
-		 if (gqcq_data.indexOf("@") != -1) {
-			 gqcq_data.split("@").forEach((item) => {
-				 gqcq_dataArr.push(item);
+	 if (jike_data) {
+		 if (jike_data.indexOf("@") != -1) {
+			 jike_data.split("@").forEach((item) => {
+				 jike_dataArr.push(item);
 			 });
 		 } else {
-			 gqcq_dataArr.push(gqcq_data);
+			 jike_dataArr.push(jike_data);
 		 }
 	 } else {
-		 console.log(`\n 【${$.name}】：未填写变量 gqcq_data`)
+		 console.log(`\n 【${$.name}】：未填写变量 jike_data`)
 		 return;
 	 }
  
