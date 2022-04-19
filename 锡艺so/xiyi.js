@@ -66,7 +66,7 @@ let xiyi_data = process.env.xiyi_data;
 			for (let index = 0; index < 10; index++) {
 				console.log('开始 签到');
 				await SignIn();
-				await $.wait(2 * 1000);
+				await $.wait(40 * 1000);
 			}
 
 
