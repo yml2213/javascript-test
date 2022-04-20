@@ -67,9 +67,9 @@ let msg = '';
 				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
 			}
 
-			// console.log('开始 获取任务列表');
-			// await task_list();
-			// await $.wait(2 * 1000);
+			console.log('开始 获取任务列表');
+			await task_list();
+			await $.wait(2 * 1000);
 
 			console.log('开始 查询余额');
 			await user_info();
