@@ -4,8 +4,10 @@
  * 
  * 夜贝网 app  
  * 4-19  完成  任务    签到有空写 有bug及时反馈
+ * 4-20  增加签到  查询积分  通知功能
  * 
- * 据说: 目前系统限制每小时能做25个任务，每天能做120个任务，根据实际情况后续后做出调整
+ * 
+ * 据说: 目前系统限制每小时能做25个任务，每天能做120个任务，根据实际情况后续后做出调整 ,AZ有效期可能是一天 还在测试
  * 暂时定时 一小时一次
  * 
  * 感谢群友提供
@@ -26,6 +28,7 @@ const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
 let ybw_dataArr = [];
 let ybw_data = process.env.ybw_data;
+let msg = '';
 
 
 !(async () => {
@@ -64,9 +67,26 @@ let ybw_data = process.env.ybw_data;
 				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
 			}
 
-			console.log('开始 获取任务列表');
-			await task_list();
+			// console.log('开始 获取任务列表');
+			// await task_list();
+			// await $.wait(2 * 1000);
+
+			console.log('开始 查询余额');
+			await user_info();
 			await $.wait(2 * 1000);
+
+			let myDate = new Date();
+			h = myDate.getHours();
+			// console.log(h);
+			if (h == 8) {
+				console.log('开始 签到');
+				await signIn();
+				await $.wait(2 * 1000);
+			}
+
+
+
+			await SendMsg(msg);
 
 
 		}
@@ -346,57 +366,49 @@ function submit(timeout = 3 * 1000) {
 
 
 /**
- * 签到   get
- * https://gsp.gacmotor.com/gateway/app-api/sign/submit
+ * 查询余额  get
+ * http://back.h5.yebeiwang.com/apis/user/details
  */
-function signin(timeout = 3 * 1000) {
-	let reqNonc = randomInt(100000, 999999)
-	// console.log(reqNonc);
-	let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
+function user_info(timeout = 3 * 1000) {
 
 	return new Promise((resolve) => {
 		let url = {
-			url: 'https://gsp.gacmotor.com/gateway/app-api/sign/submit',
+			url: `http://back.h5.yebeiwang.com/apis/user/details`,
 			headers: {
 
-				'User-Agent': 'okhttp/3.10.0',
-				'token': data[0],
-				'verification': 'signature',
-				'reqTs': ts,
-				'reqNonc': reqNonc,
-				'reqSign': reqSign,
-				'Host': 'gsp.gacmotor.com',
-				'Connection': 'Keep-Alive',
-				'Accept-Encoding': 'gzip'
+				'Host': 'back.h5.yebeiwang.com',
+				'Accept': '*/*',
+				'Authorization': data,
+				'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+				'Content-Type': 'application/json',
+				'Origin': 'http://h8.yebeiwang.com',
+				'Referer': 'http://h8.yebeiwang.com/',
+
 			},
 		}
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 查询余额 请求 url ===============`);
 			console.log(url);
 		}
 		$.get(url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 查询余额 返回data==============`);
 					console.log(data)
 					console.log(`======`)
 					console.log(JSON.parse(data))
 				}
 				let result = JSON.parse(data);
-				if (result.errorCode == 200) {
+				if (result.code == 200) {
 
-					console.log(`\n 签到:${result.errorMessage} 🎉 \n你已经连续签到 ${result.data.dayCount} 天;  签到获得G豆 ${result.data.operationValue} 个 \n`);
+					console.log(`\n 查询余额成功 🎉 \n你现在有 ${result.data.balance} 积分,折算人民币 ${result.data.balance / 1000} 元 \n 预计AZ过期时间:  ${result.data.lastUpdateTime}`);
 
-
-				} else if (result.errorCode == 200015) {
-
-					console.log(`\n 签到:${result.errorMessage}\n`);
-
+					msg += `\n 查询余额成功 🎉 \n你现在有 ${result.data.balance} 积分,折算人民币 ${result.data.balance / 1000} 元 \n 预计AZ过期时间:  ${result.data.lastUpdateTime}`
 
 				} else {
 
-					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+					console.log(`\n 查询余额:  失败 ❌ 了呢,原因未知！\n ${data} \n `)
 
 				}
 
@@ -408,6 +420,67 @@ function signin(timeout = 3 * 1000) {
 		}, timeout)
 	})
 }
+
+
+/**
+ * 签到  post
+ * http://back.h5.yebeiwang.com/apis/user/signIn
+ */
+function signIn(timeout = 3 * 1000) {
+
+	return new Promise((resolve) => {
+		let url = {
+			url: `http://back.h5.yebeiwang.com/apis/user/signIn`,
+			headers: {
+
+				'Host': 'back.h5.yebeiwang.com',
+				'Accept': '*/*',
+				'Authorization': data,
+				'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+				'Content-Type': 'application/json',
+				'Origin': 'http://h8.yebeiwang.com',
+				'Referer': 'http://h8.yebeiwang.com/',
+
+			},
+			body: '',
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
+			console.log(url);
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.code == 200) {
+					console.log(`\n 签到: 成功 🎉  获得金币 ${result.data.money} 个\n`);
+
+				} else if (result.code == 342) {
+					console.log(`\n 签到: ${result.msg} \n`);
+
+				} else {
+
+					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${data} \n `)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+
+
 
 
 
