@@ -1,0 +1,52 @@
+https://dict.youdao.com/dictusertask/withdraw/redpacket?pointParam=product,appVersion,keyfrom,mid,screen,keyid,mysticTime,isFinished,bzkro,network,abtest,yduuid,vendor,client,imei,model,newImei,oaid,gdidcwesspvu&
+yduuid=ebd03285b7d6f3ef&
+sign=8108fe30ae9fc1217d6ebce3dafb47e6&
+keyid=dict-usertask-key&
+mysticTime=1650701557324&
+isFinished=1&
+gdidcwesspvu=uxtohgsdbldsqbvok&
+bzkro=pnmeanwemrbkdcso&
+product=mdict&
+appVersion=9.2.4&
+keyfrom=mdict.9.2.4.android&
+mid=9&
+screen=1080x1920&
+ssid=&
+network=wifi&
+abtest=2&
+vendor=xiaomi&
+client=android&
+imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&
+model=MI_6&
+newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%253D&
+oaid=ebd03285b7d6f3ef
+
+
+签名类型：MD5
+
+签名数据（文本）：abtest=2&appVersion=9.2.4&bzkro=pnmeanwemrbkdcso&client=android&gdidcwesspvu=uxtohgsdbldsqbvok&imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&isFinished=1&keyfrom=mdict.9.2.4.android&keyid=dict-usertask-key&mid=9&model=MI_6&mysticTime=1650701557324&network=wifi&newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%3D&oaid=ebd03285b7d6f3ef&product=mdict&screen=1080x1920&vendor=xiaomi&yduuid=ebd03285b7d6f3ef&key=ttfMFaa7tiPyAc3DanKeIMzEejm
+
+签名结果：8108fe30ae9fc1217d6ebce3dafb47e6
+
+
+https://dict.youdao.com/dictusertask/withdraw/redpacket?pointParam=product,appVersion,keyfrom,mid,screen,keyid,mysticTime,isFinished,bzkro,network,abtest,yduuid,vendor,client,imei,model,newImei,oaid,gdidcwesspvu&yduuid=ebd03285b7d6f3ef&sign=8108fe30ae9fc1217d6ebce3dafb47e6&keyid=dict-usertask-key&mysticTime=${ts}&isFinished=1&gdidcwesspvu=uxtohgsdbldsqbvok&bzkro=pnmeanwemrbkdcso&product=mdict&appVersion=9.2.4&keyfrom=mdict.9.2.4.android&mid=9&screen=1080x1920&ssid=&network=wifi&abtest=2&vendor=xiaomi&client=android&imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&model=MI_6&newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%253D&oaid=ebd03285b7d6f3ef
+
+
+DICT_FORCE=true; DICT_LOGIN=5||1650700505725; DICT_SESS=v2|mLTbropV4VeL6L6Bn4eL0YWRLQ4kfzGRzm0fwFkMpy0g4hHQBnHeS06LhHYERfOGR6z0fq46MJB0pLRMUEnLOA0JBhHqZOfgyR
+
+
+幸运礼盒
+{
+	"data": {
+		"debrisInfo": {
+			"userDebris": 1,
+			"num": 1,
+			"goodsName": "价值1.5元超级会员月卡碎片",
+			"goodsPicture": "https://ydlunacommon-cdn.nosdn.127.net/0c01f380d5e29a44a5ac67c107e37595.jpg",
+			"goodsDesc": "集齐10张即可合成音乐、视频会员"
+		},
+		"goodsType": 3
+	},
+	"code": 0,
+	"msg": "OK"
+}
