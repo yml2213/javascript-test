@@ -63,17 +63,17 @@ let ts = Math.round(new Date().getTime()).toString();
 			}
 
 
-			// console.log('开始 领红包');
-			// await receive_redpacket();
-			// await $.wait(2 * 1000);
+			console.log('开始 领红包');
+			await receive_redpacket();
+			await $.wait(2 * 1000);
 
 			console.log('开始 幸运礼盒');
 			await box_info();
 			await $.wait(2 * 1000);
 
-			console.log('开始 签到');
-			await sign();
-			await $.wait(2 * 1000);
+			// console.log('开始 签到');
+			// await sign();
+			// await $.wait(2 * 1000);
 
 
 			await SendMsg(msg);
