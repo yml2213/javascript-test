@@ -59,3 +59,8 @@ Cookie: DICT_LOGIN=3||1650726885239; DICT_SESS=v2|ohunjnL14VYf0fPBRHw40pKO4OGRHk
 
 礼盒sign
 abtest=2&appVersion=9.2.4&client=android&imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&keyfrom=mdict.9.2.4.android&keyid=dict-usertask-key&mid=9&model=MI_6&mysticTime=1650727535059&network=wifi&newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%3D&oaid=ebd03285b7d6f3ef&product=mdict&pxkbxktiymxbjzynl=jsqlp&screen=1080x1920&vendor=xiaomi&xrwnrrpokxcswmkycn=cuaueflzuoauwne&yduuid=ebd03285b7d6f3ef&key=ttfMFaa7tiPyAc3DanKeIMzEejm
+
+
+开礼盒 sign  签名类型：MD5
+
+abtest=2&appVersion=9.2.4&client=android&imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&jjoetkn=erywktadrclyuqfpo&keyfrom=mdict.9.2.4.android&keyid=dict-usertask-key&lotteryType=0&mid=9&model=MI_6&mysticTime=1650756674094&network=wifi&newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%3D&oaid=ebd03285b7d6f3ef&product=mdict&screen=1080x1920&vendor=xiaomi&yduuid=ebd03285b7d6f3ef&ygikhjmv=vcrbqzkib&key=ttfMFaa7tiPyAc3DanKeIMzEejm

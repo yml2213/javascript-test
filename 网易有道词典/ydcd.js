@@ -17,7 +17,7 @@
 const $ = new Env("有道词典");
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
-const debug = 0; //0为关闭调试，1为打开调试,默认为0
+const debug = 1; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
 let ydcd_dataArr = [];
 let ydcd_data = process.env.ydcd_data;
@@ -63,14 +63,17 @@ let ts = Math.round(new Date().getTime()).toString();
 			}
 
 
-			console.log('开始 领红包');
-			await receive_redpacket();
-			await $.wait(2 * 1000);
+			// console.log('开始 领红包');
+			// await receive_redpacket();
+			// await $.wait(2 * 1000);
 
-			console.log('开始 幸运宝箱');
+			console.log('开始 幸运礼盒');
 			await box_info();
 			await $.wait(2 * 1000);
 
+			console.log('开始 签到');
+			await sign();
+			await $.wait(2 * 1000);
 
 
 			await SendMsg(msg);
@@ -207,7 +210,8 @@ function receive_redpacket(timeout = 3 * 1000) {
  * https://dict.youdao.com/dictusertask/lottery/execute
  */
 function open_box(timeout = 3 * 1000) {
-
+	let _sign = `abtest=2&appVersion=9.2.4&client=android&imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&jjoetkn=erywktadrclyuqfpo&keyfrom=mdict.9.2.4.android&keyid=dict-usertask-key&lotteryType=0&mid=9&model=MI_6&mysticTime=${ts}&network=wifi&newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%3D&oaid=ebd03285b7d6f3ef&product=mdict&screen=1080x1920&vendor=xiaomi&yduuid=ebd03285b7d6f3ef&ygikhjmv=vcrbqzkib&key=ttfMFaa7tiPyAc3DanKeIMzEejm`
+	let sign = MD5Encrypt(_sign)
 	return new Promise((resolve) => {
 		let url = {
 			url: `https://dict.youdao.com/dictusertask/lottery/execute`,
@@ -217,7 +221,7 @@ function open_box(timeout = 3 * 1000) {
 				'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
 				'Cookie': data,
 			},
-			body: 'abtest=4&add_param_s_g_0=05D871E9-CD1B-41EB-A12B-5AF14DC8028E&add_param_s_g_1=98DA70D3-DA35-4702-BB8B-240CD33DC204&appVersion=9.2.6&client=iphonepro&idfa=&imei=7e516737dbd22e41f942c7760501306f&keyfrom=mdict.9.2.6.iphonepro&keyid=dict-usertask-key&lotteryType=0&mid=15.4.1&model=iPhone14%2C2&mysticTime=1650715754532&network=wifi&pointParam=add_param_s_g_0%2Cadd_param_s_g_1%2CmysticTime&product=mdict&screen=390x844&sign=E17479740AF560BE5707603DBA699829&vendor=AppStore&yduuid=00000000-0000-0000-0000-000000000000',
+			body: `pointParam=product,appVersion,jjoetkn,keyfrom,mid,screen,keyid,ygikhjmv,mysticTime,lotteryType,network,abtest,yduuid,vendor,client,imei,model,newImei,oaid&jjoetkn=erywktadrclyuqfpo&yduuid=ebd03285b7d6f3ef&sign=${sign}&keyid=dict-usertask-key&ygikhjmv=vcrbqzkib&mysticTime=${ts}&lotteryType=0`,
 		}
 
 		if (debug) {
@@ -260,6 +264,60 @@ function open_box(timeout = 3 * 1000) {
 
 
 
+/**
+ * 签到  get
+ * https://dict.youdao.com/dictusertask/cheese/collect?mysticTime=1650730647002&ebhwaaj=xnbuuylbbidxfqtfwne&sign=4de296444b9328448a526534c45cd5bd&keyid=dict-usertask-key&vdxqjnirjqlttfs=nhdtuygvjmxqjml&yduuid=10e04df06aa7b9f865a645f0e2b34005&missionId=8888&pointParam=ssid,screen,mid,keyid,vdxqjnirjqlttfs,yduuid,missionId,newImei,ebhwaaj,mysticTime,network,appVersion,imei,keyfrom,client,abtest,vendor,product,model&network=wifi&ssid=wireless&screen=720x1280&appVersion=9.1.18&imei=10e04df06aa7b9f865a645f0e2b34005&mid=5.1.1&keyfrom=mdict.9.1.18.android&client=android&abtest=0&vendor=tencent&newImei=010306024494030&model=TAS-AN00&product=mdict
+ */
+ function sign(timeout = 3 * 1000) {
+	let _sign = `abtest=0&appVersion=9.1.18&client=android&ebhwaaj=xnbuuylbbidxfqtfwne&imei=10e04df06aa7b9f865a645f0e2b34005&keyfrom=mdict.9.1.18.android&keyid=dict-usertask-key&mid=5.1.1&missionId=8888&model=TAS-AN00&mysticTime=${ts}&network=wifi&newImei=010306024494030&product=mdict&screen=720x1280&ssid=wireless&vdxqjnirjqlttfs=nhdtuygvjmxqjml&vendor=tencent&yduuid=10e04df06aa7b9f865a645f0e2b34005&key=ttfMFaa7tiPyAc3DanKeIMzEejm`
+	let sign = MD5Encrypt(_sign)
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://dict.youdao.com/dictusertask/cheese/collect?mysticTime=${ts}&ebhwaaj=xnbuuylbbidxfqtfwne&sign=${sign}&keyid=dict-usertask-key&vdxqjnirjqlttfs=nhdtuygvjmxqjml&yduuid=10e04df06aa7b9f865a645f0e2b34005&missionId=8888&pointParam=ssid,screen,mid,keyid,vdxqjnirjqlttfs,yduuid,missionId,newImei,ebhwaaj,mysticTime,network,appVersion,imei,keyfrom,client,abtest,vendor,product,model&network=wifi&ssid=wireless&screen=720x1280&appVersion=9.1.18&imei=10e04df06aa7b9f865a645f0e2b34005&mid=5.1.1&keyfrom=mdict.9.1.18.android&client=android&abtest=0&vendor=tencent&newImei=010306024494030&model=TAS-AN00&product=mdict`,
+			headers: {
+				'Host': 'dict.youdao.com',
+				'Cookie': data,
+			},
+		}
+
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
+			console.log(url);
+		}
+		$.get(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data);
+				if (result.code == 0) {
+
+					console.log(`\n 签到 成功 🎉 `);
+					if (result.data.lotteryInfo.freeTimes !== 0) {
+
+						console.log(`\n 你可以开幸运礼盒 ${result.data.lotteryInfo.freeTimes} 次`);
+						await $.wait(2 * 1000);
+						await open_box();
+
+					}
+
+				} else {
+
+					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${data} \n `)
+
+				}
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
 
 
 
