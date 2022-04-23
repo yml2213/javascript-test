@@ -207,6 +207,9 @@ function receive_redpacket(timeout = 3 * 1000) {
 
 /**
  * 开幸运礼盒  post
+ * 
+ * https://dict.youdao.com/dictusertask/lottery/execute?product=mdict&appVersion=9.2.4&keyfrom=mdict.9.2.4.android&mid=9&screen=1080x1920&ssid=&network=wifi&abtest=2&vendor=xiaomi&client=android&imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&model=MI_6&newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%253D&oaid=ebd03285b7d6f3ef
+ * 
  * https://dict.youdao.com/dictusertask/lottery/execute
  */
 function open_box(timeout = 3 * 1000) {
@@ -214,7 +217,7 @@ function open_box(timeout = 3 * 1000) {
 	let sign = MD5Encrypt(_sign)
 	return new Promise((resolve) => {
 		let url = {
-			url: `https://dict.youdao.com/dictusertask/lottery/execute`,
+			url: `https://dict.youdao.com/dictusertask/lottery/execute?product=mdict&appVersion=9.2.4&keyfrom=mdict.9.2.4.android&mid=9&screen=1080x1920&ssid=&network=wifi&abtest=2&vendor=xiaomi&client=android&imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&model=MI_6&newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%253D&oaid=ebd03285b7d6f3ef`,
 			headers: {
 
 				'Host': 'dict.youdao.com',
