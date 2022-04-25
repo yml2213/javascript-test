@@ -1,33 +1,27 @@
 /**
- * 柚子计步 app   安卓,需要从抖音下载 
- * cron 0-59/15 6-22 * * *  yml2213_javascript_master/yzjb.js
- * 
- * 进去先提现0.3 元 ， 提现不了就放弃吧
- * 最近很火的,写了 签到 , 开宝箱 , 大转盘 , 摇红包 等任务 ; 领现金没抓到包 
- * 
- * 先跑着吧,慢慢完善
- * 
- * 4-25 完成签到  任务   有bug及时反馈
+ * 火云邪神 小程序 
+ * cron 0-59/15 6-22 * * *  yml2213_javascript_master/hyxs.js
  * 
  * 
- * 感谢投稿人员,感谢所有测试人员
+ * 4-25 改 tom 大佬的脚本,做青龙适配    有bug及时反馈
+ * 感谢 tom 大佬脚本   感谢 tom 大佬脚本   感谢 tom 大佬脚本
+ * 
  * ========= 青龙 =========
- * 变量格式: export yzjb_data=' AZ 1 @ AZ 2 '  多个账号用 @分割 
- * 应该是随便一个 huyitool.jidiandian.cn 域名的  AZ 就行(authorization) 
+ * 变量格式: export hyxs_data=' token1 @ token2 '  多个账号用 @分割 
  * 
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
 
 
-const $ = new Env("柚子计步");
+const $ = new Env("火云邪神");
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let yzjb_dataArr = [];
+let hyxs_dataArr = [];
 let msg = '';
 let ck = '';
-let yzjb_data = process.env.yzjb_data;
+let hyxs_data = process.env.hyxs_data;
 /////////////////////////////////////////////////////////
 
 !(async () => {
@@ -49,44 +43,39 @@ let yzjb_data = process.env.yzjb_data;
 		await wyy();
 
 
-		console.log(`\n=================== 共找到 ${yzjb_dataArr.length} 个账号 ===================`)
+		console.log(`\n=================== 共找到 ${hyxs_dataArr.length} 个账号 ===================`)
 		if (debug) {
-			console.log(`【debug】 这是你的账号数组:\n ${yzjb_dataArr}`);
+			console.log(`【debug】 这是你的账号数组:\n ${hyxs_dataArr}`);
 		}
 
 
-		for (let index = 0; index < yzjb_dataArr.length; index++) {
+		for (let index = 0; index < hyxs_dataArr.length; index++) {
 
 
 			let num = index + 1
 			console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
 
-			data = yzjb_dataArr[index].split('&');
+			data = hyxs_dataArr[index].split('&');
 			if (debug) {
 				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
 			}
 
 
-			let myDate = new Date();
-			h = myDate.getHours();
-			// console.log(h);
-			if (h == 6) {
-				console.log('开始 签到');
-				await signin();
-				await $.wait(2 * 1000);
-			}
 
-
-			console.log('开始 开宝箱');
-			await open_box();
+			console.log('开始 签到');
+			await hyxssign();
 			await $.wait(2 * 1000);
 
-			console.log('开始 大转盘');
-			await turntable();
+			console.log('开始 用户信息');
+			await hyxsusers();
 			await $.wait(2 * 1000);
 
-			console.log('开始 摇红包');
-			await redpackage();
+			console.log('开始 土地状态');
+			await hyxsland();
+			await $.wait(2 * 1000);
+
+			console.log('开始 背包库存');
+			await hyxspage();
 			await $.wait(2 * 1000);
 
 			await SendMsg(msg);
@@ -99,6 +88,363 @@ let yzjb_data = process.env.yzjb_data;
 })()
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done())
+
+
+
+
+
+
+
+
+
+
+
+function hyxsusers(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/users`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+		}
+		$.get(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.status == `true`) {
+					console.log('\n用户名：' + data.users.nickname)
+					$.message += '\n【用户名】：' + data.users.nickname
+				} else {
+					console.log('\n' + data.message)
+					$.message += '\n' + data.message
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+
+function hyxssign(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/excitation/browse`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+			body: `{ "type": "signin", "mark": "" }`
+		}
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
+			console.log(url);
+		}
+		$.post(url, async (err, resp, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				data = JSON.parse(data)
+
+				if (data.status == `true`) {
+					console.log('\n签到成功')
+					// $.message += '\n【用户名】：' + data.users.nickname
+					for (let c = 0; c < 6; c++) {
+						$.index = c + 1
+						await hyxsbrowse()
+						await $.wait(DD)
+					}
+				} else {
+					console.log('\n签到' + data.message)
+					// $.message += '\n签到' + data.message
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+
+function hyxsbrowse(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/excitation/browse`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+			body: `{ "type":"sunlight","mark":"" }`
+		}
+		$.post(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.status == `true`) {
+					console.log('\n观看视频成功')
+					// $.message += '\n【用户名】：' + data.users.nickname
+				} else {
+					console.log('\n观看视频：' + data.message)
+					// $.message += '\n签到' + data.message
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+
+function hyxsland(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/land`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+			body: ``,
+		}
+		$.post(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.status == `true`) {
+					console.log(`开始检测土地状态`)
+					for (let i = -1; i < data.land.length; i++) {
+						mark = data.land[i + 1].mark
+						if (data.land[i + 1].status == 3) {
+							console.log(`监测到${mark}号土地需要施肥，即将为您施肥`)
+
+							await hyxsone()
+							await $.wait(3000)
+						}
+
+						if (data.land[i + 1].number >= 1) {
+							console.log(`当前${mark}号土地果实数量：${data.land[i + 1].number}`)
+							//console.log(`\n准备收取果实`)
+
+							await hyxscollect()
+							await $.wait(3000)
+						}
+					}
+
+				} else {
+					console.log(`\n收获果实：当前果实未成熟`)
+
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+function hyxsone(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/land/one`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+			body: `{ "mark":${mark} }`
+		}
+		$.post(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.status == `true`) {
+					console.log(`\n${mark}号土地施肥成功`)
+					await $.wait(3000)
+				} else {
+					console.log(`\n${mark}号土地施肥失败`)
+
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+function hyxscollect(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/collect`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+			body: `{ "land":"${mark}" }`
+		}
+		$.post(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.status == `true`) {
+					console.log(`\n收获${mark}号土地果实成功`)
+					await $.wait(3000)
+				} else {
+					console.log(`\n收获${mark}号土地果实成功`)
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+
+function hyxspage(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/backpack?page=1`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+			// body : ``,
+		}
+		$.get(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.backpack.data) {
+					for (let i = 0; i < data.backpack.data.length; i++) {
+						console.log(`当前背包库存：${data.backpack.data[i].shop_name}:${data.backpack.data[i].number}`);
+						if (data.backpack.data[i].shop_name == `新鲜椰子` && data.backpack.data[i].number >= 10) {
+
+							await hyxssubmit()
+						}
+						if (data.backpack.data[i].shop_name == `肥料` && data.backpack.data[i].number <= 1) {
+							await hyxsbuy()
+						}
+					}
+					await hyxsmachining()
+				} else {
+					console.log('\n背包库存获取失败')
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+
+function hyxsbuy(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/shop/buy`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+			body: `{ "id":1003,"amount":1 }`
+		}
+		$.post(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.status == `true`) {
+					console.log(data.message)
+
+				} else {
+					console.log('\n购买失败，阳光不足')
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+function hyxssubmit(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/machining/submit`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+			body: `{ "amount":10 }`,
+		}
+		$.post(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.status == `true`) {
+					console.log('\n' + data.message)
+					$.message += data.message
+
+				} else {
+					console.log('\n' + data.message)
+
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+
+function hyxsmachining(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/machining`,
+			headers: JSON.parse($.getdata('hyxshd'))
+			//body : `{"amount":10}`,
+		}
+		$.get(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.status == `true`) {
+					console.log(`当前共有${data.machining.length}个产品正在加工`)
+					for (let i = 0; i < data.machining.length; i++) {
+						id = data.machining[i].id
+						// console.log(id);
+						output = data.machining[i].output
+						// console.log(output);
+						await hyxstakeout()
+					}
+					// $.message += data.message
+				} else {
+					console.log('\n' + data.machining)
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+
+function hyxstakeout(timeout = 0) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://yezi.jiaaisi.cn/machining/takeout`,
+			headers: {
+				'token': data,
+				'Content-Type': 'application/json'
+			},
+			body: `{ "id":${id} }`,
+		}
+		$.post(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				if (data.status == `true`) {
+					console.log(`存入${output}ml椰汁成功`)
+					// $.message += data.message
+				} else {
+					// console.log('\n'+data.message)
+				}
+			} catch (e) {
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
+}
+
 
 
 
@@ -450,16 +796,16 @@ function user_info(timeout = 3 * 1000) {
 //#region 固定代码
 // ============================================变量检查============================================ \\
 async function Envs() {
-	if (yzjb_data) {
-		if (yzjb_data.indexOf("@") != -1) {
-			yzjb_data.split("@").forEach((item) => {
-				yzjb_dataArr.push(item);
+	if (hyxs_data) {
+		if (hyxs_data.indexOf("@") != -1) {
+			hyxs_data.split("@").forEach((item) => {
+				hyxs_dataArr.push(item);
 			});
 		} else {
-			yzjb_dataArr.push(yzjb_data);
+			hyxs_dataArr.push(hyxs_data);
 		}
 	} else {
-		console.log(`\n 【${$.name}】：未填写变量 yzjb_data`)
+		console.log(`\n 【${$.name}】：未填写变量 hyxs_data`)
 		return;
 	}
 

@@ -1,33 +1,30 @@
 /**
- * 柚子计步 app   安卓,需要从抖音下载 
- * cron 0-59/15 6-22 * * *  yml2213_javascript_master/yzjb.js
+ * 疯狂水晶 app (链接带邀请)  谢谢填写  
+ * 下载地址: http://mmwk.mmwl.fun/download/9570691cce3dc93a?user=17803  
+ * cron 10 8 * * *  yml2213_javascript_master/fksj.js
  * 
- * 进去先提现0.3 元 ， 提现不了就放弃吧
- * 最近很火的,写了 签到 , 开宝箱 , 大转盘 , 摇红包 等任务 ; 领现金没抓到包 
+ * 疯狂水晶 app  
+ * 4-26 完成 签到 , 观看视频 , 京喜红包 任务   有bug及时反馈
+ * 回帖容易封号,不打算写了
  * 
- * 先跑着吧,慢慢完善
- * 
- * 4-25 完成签到  任务   有bug及时反馈
- * 
- * 
- * 感谢投稿人员,感谢所有测试人员
+ * 感谢所有测试人员
  * ========= 青龙 =========
- * 变量格式: export yzjb_data=' AZ 1 @ AZ 2 '  多个账号用 @分割 
- * 应该是随便一个 huyitool.jidiandian.cn 域名的  AZ 就行(authorization) 
+ * 变量格式: export fksj_data=' 签到 # 观看视频 # 京喜红包 @ 签到 # 观看视频 # 京喜红包 '  多个账号用 @分割 
+ * 抓  mmwk.zhilaiw.cn/index.php/Api/Index/index? 抓什么就把抓到的包 ? 后面的写到变量里,这个 md5 实在是解密不了  没办法
  * 
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
 
 
-const $ = new Env("柚子计步");
+const $ = new Env("疯狂水晶");
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let yzjb_dataArr = [];
+let fksj_dataArr = [];
 let msg = '';
 let ck = '';
-let yzjb_data = process.env.yzjb_data;
+let fksj_data = process.env.fksj_data;
 /////////////////////////////////////////////////////////
 
 !(async () => {
@@ -36,7 +33,7 @@ let yzjb_data = process.env.yzjb_data;
 		return;
 	else {
 
-		console.log(`\n本地脚本4-25`);
+		console.log(`\n本地脚本4-26`);
 
 		// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
 		console.log(`\n 脚本测试中,有bug及时反馈! \n`);
@@ -49,44 +46,35 @@ let yzjb_data = process.env.yzjb_data;
 		await wyy();
 
 
-		console.log(`\n=================== 共找到 ${yzjb_dataArr.length} 个账号 ===================`)
+		console.log(`\n=================== 共找到 ${fksj_dataArr.length} 个账号 ===================`)
 		if (debug) {
-			console.log(`【debug】 这是你的账号数组:\n ${yzjb_dataArr}`);
+			console.log(`【debug】 这是你的账号数组:\n ${fksj_dataArr}`);
 		}
 
 
-		for (let index = 0; index < yzjb_dataArr.length; index++) {
+		for (let index = 0; index < fksj_dataArr.length; index++) {
 
 
 			let num = index + 1
 			console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
 
-			data = yzjb_dataArr[index].split('&');
+			data = fksj_dataArr[index].split('#');
 			if (debug) {
 				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
 			}
 
-
-			let myDate = new Date();
-			h = myDate.getHours();
-			// console.log(h);
-			if (h == 6) {
-				console.log('开始 签到');
-				await signin();
-				await $.wait(2 * 1000);
-			}
-
-
-			console.log('开始 开宝箱');
-			await open_box();
+			console.log('开始 签到');
+			await signin();
 			await $.wait(2 * 1000);
 
-			console.log('开始 大转盘');
-			await turntable();
+			console.log('开始 观看视频');
+			await ad_video();
 			await $.wait(2 * 1000);
 
-			console.log('开始 摇红包');
-			await redpackage();
+
+
+			console.log('开始 京喜红包');
+			await gold_ad_video();
 			await $.wait(2 * 1000);
 
 			await SendMsg(msg);
@@ -106,18 +94,20 @@ let yzjb_data = process.env.yzjb_data;
 
 
 /**
- * 签到   post
- * https://huyitool.jidiandian.cn/innovate-step-service/api/sign/signIn
+ * 签到   get
+ * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=42d86c74b19f06cd07b4e6ac737a9911&m=skai_tooln_c&dopost=make_sign&userid=17803
  */
 function signin(timeout = 3 * 1000) {
+
 	return new Promise((resolve) => {
 		let url = {
-			url: 'https://huyitool.jidiandian.cn/innovate-step-service/api/sign/signIn',
+			url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${data[0]}`,
 			headers: {
-				'authorization': data,
-				'Content-Type': 'application/json'
+
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Host': 'mmwk.zhilaiw.cn'
+
 			},
-			body: '{ "data": { "activityType": "COMMON_SIGN", "phead": {} }, "shandle": "0", "handle": "0" }',
 
 		}
 
@@ -125,7 +115,7 @@ function signin(timeout = 3 * 1000) {
 			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
 			console.log(url);
 		}
-		$.post(url, async (error, response, data) => {
+		$.get(url, async (error, response, data) => {
 			try {
 				if (debug) {
 					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
@@ -134,12 +124,13 @@ function signin(timeout = 3 * 1000) {
 					console.log(JSON.parse(data))
 				}
 				let result = JSON.parse(data);
-				if (result.code == 0) {
+				if (result.result == 'success') {
 
-					console.log(`\n 签到:${result.msg} 🎉 \n`);
-					msg += `\n 签到:${result.msg} 🎉 \n`
+					console.log(`\n 签到:成功 🎉  您已经连续签到 ${result.sign_total} 天\n签到获得 能量 ${result.addpower} ,累计能量 ${result.power}\n`);
 
-				} else if (result.code == 10033) {
+					// msg += `\n 签到:成功 🎉  您已经连续签到 ${result.sign_total} 天\n签到获得 能量 ${result.addpower} ,累计能量 ${result.power}\n`
+
+				} else if (result.result == 'fail') {
 
 					console.log(`\n 签到:${result.msg}\n`);
 
@@ -161,45 +152,55 @@ function signin(timeout = 3 * 1000) {
 
 
 /**
- * 开宝箱   post
- * https://huyitool.jidiandian.cn/innovate-step-service/api/videoaward/awardVideoCoin
+ * 观看视频   get
+ * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=4ca5032b2f0f16e2423880292792e5fa&m=skai_tooln_c&dopost=get_some_power_ad_video&userid=17803
  */
-function open_box(timeout = 3 * 1000) {
+function ad_video(timeout = 3 * 1000) {
+
 	return new Promise((resolve) => {
 		let url = {
-			url: 'https://huyitool.jidiandian.cn/innovate-step-service/api/videoaward/awardVideoCoin',
+			url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${data[1]}`,
 			headers: {
-				'authorization': data,
-				'Content-Type': 'application/json'
+
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Host': 'mmwk.zhilaiw.cn'
+
 			},
-			body: '{"data": {"type": 3}}',
+
 		}
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 开宝箱 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 观看视频 请求 url ===============`);
 			console.log(url);
 		}
-		$.post(url, async (error, response, data) => {
+		$.get(url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 开宝箱 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 观看视频 返回data==============`);
 					console.log(data)
 					console.log(`======`)
 					console.log(JSON.parse(data))
 				}
 				let result = JSON.parse(data);
-				if (result.code == 0) {
+				if (result.result == 'success') {
 
-					console.log(`\n 开宝箱:${result.msg} 🎉  , 获得金币 ${result.data.awardCoin} 枚 \n\n`);
-					// msg += `\n 开宝箱:${result.msg} 🎉 \n`
+					console.log(`\n 观看视频:成功 🎉  您今天已看: ${result.userdata.ad_video_num}/7 次, \n 观看视频 获得 能量 ${result.addpower} ,累计有能量 ${result.power}\n`);
 
-				} else if (result.code == -1) {
+					if (result.userdata.ad_video_num < 7) {
 
-					console.log(`\n 开宝箱:${result.msg} \n`);
+						console.log(`\n 等待40s后,继续观看视频\n`);
+						await $.wait(40 * 1000);
+						console.log('开始 观看视频');
+						await ad_video();
+					}
+
+				} else if (result.result == 'fail') {
+
+					console.log(`\n 观看视频:${result.msg}\n`);
 
 				} else {
 
-					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+					console.log(`\n 观看视频:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
 
 				}
 
@@ -211,66 +212,59 @@ function open_box(timeout = 3 * 1000) {
 		}, timeout)
 	})
 }
-
 
 
 
 /**
- * 大转盘    post
- * https://ibestfanli.com/scenead_core_service/api/turntable
+ * 京喜红包   get
+ * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=13a6d7f8418c39085c261a91e9da665a&m=skai_tooln_c&dopost=get_some_gold_ad_video_full&userid=17803
  */
-function turntable(timeout = 3 * 1000) {
+function gold_ad_video(timeout = 3 * 1000) {
+
 	return new Promise((resolve) => {
 		let url = {
-			url: 'https://ibestfanli.com/scenead_core_service/api/turntable',
+			url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${data[2]}`,
 			headers: {
-				'authorization': data,
-				'Content-Type': 'application/json'
+
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Host': 'mmwk.zhilaiw.cn'
+
 			},
-			body: '{"data": {}}',
+
 		}
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 大转盘 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 京喜红包 请求 url ===============`);
 			console.log(url);
 		}
-		$.post(url, async (error, response, data) => {
+		$.get(url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 大转盘 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 京喜红包 返回data==============`);
 					console.log(data)
 					console.log(`======`)
 					console.log(JSON.parse(data))
 				}
 				let result = JSON.parse(data);
-				if (result.code == 0) {
+				if (result.result == 'success') {
 
-					console.log(`\n 大转盘:${result.msg} 🎉  \n`);
-					if (result.data.indexResponse.remainCount > 0) {
-						console.log(`\n 大转盘已运行 ${result.data.indexResponse.useCount} 次 ,剩余 ${result.data.indexResponse.remainCount} 次 , 继续运行 ing!冲冲冲!`);
+					console.log(`\n 京喜红包:成功 🎉  您今天已看: ${result.userdata.ad_videob_num}/5 次 \n 京喜红包 获得 金币 ${result.addgold} ,累计有 金币 ${result.gold} \n 京喜红包 获得 能量 ${result.addpower} ,累计有能量 ${result.power}\n`);
 
-						// console.log('开始 大转盘');
-						let num = randomInt(20, 30)
-						await $.wait(num * 1000);
-						await turntable();
+					if (result.userdata.ad_videob_num < 5) {
+
+						console.log(`\n 等待 5 s后,继续京喜红包\n`);
+						await $.wait(5 * 1000);
+						console.log('开始 京喜红包');
+						await gold_ad_video();
 					}
 
+				} else if (result.result == 'fail') {
 
-				} else if (result.code == 10000) {
-
-					console.log(`\n 大转盘:${result.msg} \n`);
-
-				} else if (result.code == 10001) {
-
-					console.log(`\n 大转盘:${result.msg} \n`);
-
-				} else if (result.code == -1) {
-
-					console.log(`\n 大转盘:${result.msg} \n`);
+					console.log(`\n 京喜红包:${result.msg}\n`);
 
 				} else {
 
-					console.log(`\n 大转盘:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+					console.log(`\n 京喜红包:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
 
 				}
 
@@ -283,67 +277,6 @@ function turntable(timeout = 3 * 1000) {
 	})
 }
 
-
-
-
-
-/**
- * 摇红包     post
- * https://huyitool.jidiandian.cn/tool-activity-service/api/shark/redpackage/receiveAward
- */
-function redpackage(timeout = 3 * 1000) {
-	return new Promise((resolve) => {
-		let url = {
-			url: 'https://huyitool.jidiandian.cn/tool-activity-service/api/shark/redpackage/receiveAward',
-			headers: {
-				'authorization': data,
-				'Content-Type': 'application/json'
-			},
-			body: '{"data": {"type": 2}}',
-		}
-
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 摇红包 请求 url ===============`);
-			console.log(url);
-		}
-		$.post(url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 摇红包 返回data==============`);
-					console.log(data)
-					console.log(`======`)
-					console.log(JSON.parse(data))
-				}
-				let result = JSON.parse(data);
-				if (result.code == 0) {
-
-					console.log(`\n 摇红包:${result.msg} 🎉  \n`);
-					if (result.data.cashAmount < 100) {
-						console.log(`\n本次获得 ${result.data.awardAmount} 元 ,累计有 ${result.data.cashAmount} 元`);
-						let num = randomInt(65, 75)
-						await $.wait(num * 1000);
-						await redpackage();
-					}
-
-
-				} else if (result.code == -1) {
-
-					console.log(`\n 摇红包:${result.msg} \n`);
-
-				} else {
-
-					console.log(`\n 摇红包:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-
-				}
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-				resolve();
-			}
-		}, timeout)
-	})
-}
 
 
 
@@ -384,7 +317,7 @@ function user_info(timeout = 3 * 1000) {
 				if (result.status == 0) {
 
 					console.log(`\n 查询金币:成功 🎉 \n用户:${result.userName} id:${result.userId} , 现在有金币 ${result.goldCount} 枚\n`);
-					msg += `\n 查询金币:成功 🎉 \n用户 ${result.userName} id ${result.userId} 现在有金币 ${result.goldCount} 枚\n`
+					// msg += `\n 查询金币:成功 🎉 \n用户 ${result.userName} id ${result.userId} 现在有金币 ${result.goldCount} 枚\n`
 
 				} else {
 
@@ -450,16 +383,16 @@ function user_info(timeout = 3 * 1000) {
 //#region 固定代码
 // ============================================变量检查============================================ \\
 async function Envs() {
-	if (yzjb_data) {
-		if (yzjb_data.indexOf("@") != -1) {
-			yzjb_data.split("@").forEach((item) => {
-				yzjb_dataArr.push(item);
+	if (fksj_data) {
+		if (fksj_data.indexOf("@") != -1) {
+			fksj_data.split("@").forEach((item) => {
+				fksj_dataArr.push(item);
 			});
 		} else {
-			yzjb_dataArr.push(yzjb_data);
+			fksj_dataArr.push(fksj_data);
 		}
 	} else {
-		console.log(`\n 【${$.name}】：未填写变量 yzjb_data`)
+		console.log(`\n 【${$.name}】：未填写变量 fksj_data`)
 		return;
 	}
 
