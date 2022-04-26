@@ -1,28 +1,22 @@
 /**
- * 金粉俱乐部 app   安卓,需要从抖音下载 
- * cron 0-59/15 6-22 * * *  yml2213_javascript_master/jfjlb.js
+ * 金粉俱乐部 小程序
+ * cron 10 7 * * *  yml2213_javascript_master/jfjlb.js
  * 
- * 进去先提现0.3 元 ， 提现不了就放弃吧!
- * 最近很火的,写了 签到 , 开宝箱 , 大转盘 , 摇红包 等任务 ; 领现金没抓到包 
- * 
- * 先跑着吧,慢慢完善
- * 
- * 4-25 完成签到  任务   有bug及时反馈
- * 
+ * 4-26 完成签到 任务   有bug及时反馈
  * 
  * 感谢投稿人员,感谢所有测试人员
  * ========= 青龙 =========
- * 变量格式: export jfjlb_data=' AZ 1 @ AZ 2 '  多个账号用 @分割 
- * 应该是随便一个 huyitool.jidiandian.cn 域名的  AZ 就行(authorization) 
+ * 变量格式: export jfjlb_data=' jscode & token @ jscode & token '  多个账号用 @分割 
+ * 签到包的  member-api/memberApplet/signLog  url链接中的 "jscode" 跟 hd 中的 token  
  * 
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
 
 
 const $ = new Env("金粉俱乐部")
-const notify = $.isNode() ? require('../金粉俱乐部/sendNotify') : ''
+const notify = $.isNode() ? require('./sendNotify') : ''
 const Notify = 1 	//0为关闭通知，1为打开通知,默认为1
-const debug = 0 	//0为关闭调试，1为打开调试,默认为0
+const debug = 0 	//0为关闭调试，1为打开调试,默认为0; 求助前请打开运行一次,再发日志求助
 //////////////////////
 
 let msg = ''
@@ -32,8 +26,9 @@ let ckStr = process.env.jfjlb_data
 
 
 async function tips(ckArr) {
-	console.log(`\n本地脚本4-25`)
+	console.log(`\n本地脚本4-26`)
 	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
+	console.log(`\n 求助前请打开 19 行左右的 debug 运行一次,再发日志求助 \n`)
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`)
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`)
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`)
@@ -59,15 +54,13 @@ async function tips(ckArr) {
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
 
 
-		let ck = ckArr[index].split('&');
+		ck = ckArr[index].split('&');
 		if (debug) {
-
 			console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${ck}\n`)
 		}
-
-		await start(ck)
-
-
+		console.log(ck[0]);
+		console.log(ck[1]);
+		await start()
 
 	}
 
@@ -78,30 +71,22 @@ async function tips(ckArr) {
 
 
 
-async function start(ck) {
-	let myDate = new Date()
+async function start() {
 
-	h = myDate.getHours()
-	// console.log(h);
+	// let myDate = new Date()
+	// h = myDate.getHours()
+	// // console.log(h);
+	// if (h == 6) {
+	// 	console.log('开始 签到')
+	// 	await signin(ck)
+	// 	await $.wait(2 * 1000)
+	// }
 
-	if (h == 6) {
-		console.log('开始 签到')
-		await signin(ck)
-		await $.wait(2 * 1000)
-	}
 
-
-	console.log('开始 开宝箱')
-	await open_box(ck)
+	console.log('开始 签到')
+	await signin(ck[0], ck[1])
 	await $.wait(2 * 1000)
 
-	console.log('开始 大转盘')
-	await turntable(ck)
-	await $.wait(2 * 1000)
-
-	console.log('开始 摇红包')
-	await redpackage(ck)
-	await $.wait(2 * 1000)
 
 	await SendMsg(msg);
 }
@@ -109,292 +94,29 @@ async function start(ck) {
 
 
 /**
- * 签到   post
- * https://huyitool.jidiandian.cn/innovate-step-service/api/sign/signIn
+ * 签到   get
+ * https://api.baijiuyun.com/member-api/memberApplet/signLog?jscode=073UlTkl2hqT394Vfznl2BssuL2UlTkT&appid=wxad89e6496de97dab&identityId=78
  */
-async function signin(token, timeout = 3 * 1000) {
+async function signin(jscode, token, timeout = 3 * 1000) {
 	let url = {
-		url: 'https://huyitool.jidiandian.cn/innovate-step-service/api/sign/signIn',
+		url: `https://api.baijiuyun.com/member-api/memberApplet/signLog?jscode=${jscode}&appid=wxad89e6496de97dab&identityId=78`,
 		headers: {
-
-			'authorization': token,
+			'token': token,
 			'Content-Type': 'application/json'
 		},
-		body: '{ "data": { "activityType": "COMMON_SIGN", "phead": {} }, "shandle": "0", "handle": "0" }',
 
 	}
-	let result = await httpPost(url, `签到`, timeout)
-	if (result.code == 0) {
-		console.log(`\n 签到:${result.msg} 🎉 \n`);
-		msg += `\n 签到:${result.msg} 🎉 \n`
-	} else if (result.code == 10033) {
-		console.log(`\n 签到:${result.msg}\n`);
+	let result = await httpGet(url, `签到`, timeout)
+	if (result.code == 200) {
+		console.log(`\n 签到:${result.message} 🎉  您已经连续签到 ${result.message} 天! \n`);
+		msg += `\n \n 签到:${result.message} 🎉  您已经连续签到 ${result.message} 天! \n\n`
+	} else if (result.code == 400) {
+		console.log(`\n 签到:您今天签到过了呢!\n`);
 	} else {
 		console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
 	}
-
 }
 
-
-
-/**
- * 开宝箱   post
- * https://huyitool.jidiandian.cn/innovate-step-service/api/videoaward/awardVideoCoin
- */
-async function open_box(token, timeout = 3 * 1000) {
-
-	let url = {
-		url: 'https://huyitool.jidiandian.cn/innovate-step-service/api/videoaward/awardVideoCoin',
-		headers: {
-
-			'authorization': token,
-			'Content-Type': 'application/json'
-		},
-		body: '{"data": {"type": 3}}',
-	}
-
-	let tip = '开宝箱'
-
-	let result = await httpPost(url, tip, timeout)
-	if (result.code == 0) {
-
-		console.log(`\n ${tip}:${result.msg} 🎉  , 获得金币 ${result.data.awardCoin} 枚 \n\n`);
-		// msg += `\n 开宝箱:${result.msg} 🎉 \n`
-
-	} else if (result.code == -1) {
-
-		console.log(`\n ${tip}:${result.msg} \n`);
-
-	} else {
-		console.log(`\n ${tip}:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-	}
-
-}
-
-
-
-/**
- * 大转盘    post
- * https://ibestfanli.com/scenead_core_service/api/turntable
- */
-async function turntable(token, timeout = 3 * 1000) {
-
-	let url = {
-		url: 'https://ibestfanli.com/scenead_core_service/api/turntable',
-		headers: {
-
-			'authorization': token,
-			'Content-Type': 'application/json'
-		},
-		body: '{"data": {}}',
-	}
-
-	let result = await httpPost(url, "大转盘", timeout)
-	if (result.code == 0) {
-
-		console.log(`\n 大转盘:${result.msg} 🎉  \n`);
-		if (result.data.indexResponse.remainCount > 0) {
-			console.log(`\n 大转盘已运行 ${result.data.indexResponse.useCount} 次 ,剩余 ${result.data.indexResponse.remainCount} 次 , 继续运行 ing!冲冲冲!`);
-
-			// console.log('开始 大转盘');
-			let num = randomInt(11, 15)
-			await $.wait(num * 1000);
-			await turntable(token)
-		}
-
-	} else if (result.code == 10000) {
-		console.log(`\n 大转盘:${result.msg} \n`)
-	} else if (result.code == 10001) {
-		console.log(`\n 大转盘:${result.msg} \n`)
-	} else if (result.code == -1) {
-		console.log(`\n 大转盘:${result.msg} \n`)
-	} else {
-		console.log(`\n 大转盘:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-	}
-
-}
-
-
-
-
-
-/**
- * 摇红包     post
- * https://huyitool.jidiandian.cn/tool-activity-service/api/shark/redpackage/receiveAward
- */
-async function redpackage(token, timeout = 3 * 1000) {
-	let url = {
-		url: 'https://huyitool.jidiandian.cn/tool-activity-service/api/shark/redpackage/receiveAward',
-		headers: {
-
-			'authorization': token,
-			'Content-Type': 'application/json'
-		},
-		body: '{"data": {"type": 2}}',
-	}
-
-	let result = await httpPost(url, "摇红包", timeout)
-	if (result.code == 0) {
-		console.log(`\n 摇红包:${result.msg} 🎉  \n`);
-		if (result.data.cashAmount < 100) {
-			console.log(`\n本次获得 ${result.data.awardAmount} 元 ,累计有 ${result.data.cashAmount} 元`);
-			let num = randomInt(65, 75)
-			await $.wait(num * 1000);
-			await redpackage(ck);
-		}
-
-	} else if (result.code == -1) {
-		console.log(`\n 摇红包:${result.msg} \n`);
-	} else {
-		console.log(`\n 摇红包:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-	}
-
-}
-
-
-
-/**
- * 查询金币   get
- * https://mrobot.pcauto.com.cn/xsp/s/auto/info/nocache/task/getLoginUserInfo.xsp
- */
-
-function user_info(timeout = 3 * 1000) {
-
-	let reqNonc = randomInt(100000, 999999)
-	// console.log(reqNonc);
-	// let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
-
-	return new Promise((resolve) => {
-		let url = {
-			url: 'https://mrobot.pcauto.com.cn/xsp/s/auto/info/nocache/task/getLoginUserInfo.xsp',
-			headers: {
-
-				// 'Content-Type': 'text/plain',
-				'Cookie': `common_session_id=${ck}`,
-
-			},
-		}
-
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 查询金币 请求 url ===============`);
-			console.log(url);
-		}
-
-		$.get(url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 查询金币 返回data==============`);
-					console.log(data)
-					console.log(`======`)
-					console.log(JSON.parse(data))
-				}
-				let result = JSON.parse(data);
-				if (result.status == 0) {
-
-					console.log(`\n 查询金币:成功 🎉 \n用户:${result.userName} id:${result.userId} , 现在有金币 ${result.goldCount} 枚\n`);
-					msg += `\n 查询金币:成功 🎉 \n用户 ${result.userName} id ${result.userId} 现在有金币 ${result.goldCount} 枚\n`
-
-				} else {
-
-					console.log(`\n 查询金币:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-
-				}
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-
-				resolve();
-			}
-		}, timeout)
-	})
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
-	return new Promise((resolve) => {
-		let url = postUrlObject
-		if (!tip) {
-			let tmp = arguments.callee.toString()
-			let re = /function\s*(\w*)/i
-			let matches = re.exec(tmp)
-			tip = matches[1]
-		}
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
-			console.log(url);
-		}
-
-		$.post(url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-					console.log(data)
-					console.log(`======`)
-					console.log(JSON.parse(data))
-				}
-				let result = JSON.parse(data)
-				resolve(result)
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-
-				resolve();
-			}
-		}, timeout)
-	})
-}
-
-
-
-function debugLog(...args) {
-	if (debug) {
-		console.log(...args)
-	}
-}
 
 
 
@@ -488,6 +210,91 @@ function wyy(timeout = 3 * 1000) {
 		}, timeout)
 	})
 }
+
+
+
+// ============================================ get请求 ============================================ \\
+async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		let url = getUrlObject
+		if (!tip) {
+			let tmp = arguments.callee.toString()
+			let re = /function\s*(\w*)/i
+			let matches = re.exec(tmp)
+			tip = matches[1]
+		}
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
+			console.log(url);
+		}
+
+		$.get(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data)
+				resolve(result)
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+// ============================================ post请求 ============================================ \\
+async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		let url = postUrlObject
+		if (!tip) {
+			let tmp = arguments.callee.toString()
+			let re = /function\s*(\w*)/i
+			let matches = re.exec(tmp)
+			tip = matches[1]
+		}
+		if (debug) {
+			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
+			console.log(url);
+		}
+
+		$.post(url, async (error, response, data) => {
+			try {
+				if (debug) {
+					console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+					console.log(data)
+					console.log(`======`)
+					console.log(JSON.parse(data))
+				}
+				let result = JSON.parse(data)
+				resolve(result)
+
+			} catch (e) {
+				console.log(e)
+			} finally {
+
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+
+// ============================================ debug调试 ============================================ \\
+function debugLog(...args) {
+	if (debug) {
+		console.log(...args)
+	}
+}
+
+
+
 
 //#endregion
 
