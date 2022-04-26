@@ -1,6 +1,6 @@
 /**
- * 金粉俱乐部 app   安卓,需要从抖音下载 
- * cron 0-59/15 6-22 * * *  yml2213_javascript_master/jfjlb.js
+ * 柚子计步 app   安卓,需要从抖音下载 
+ * cron 0-59/15 6-22 * * *  yml2213_javascript_master/yzjb.js
  * 
  * 进去先提现0.3 元 ， 提现不了就放弃吧!
  * 最近很火的,写了 签到 , 开宝箱 , 大转盘 , 摇红包 等任务 ; 领现金没抓到包 
@@ -12,22 +12,22 @@
  * 
  * 感谢投稿人员,感谢所有测试人员
  * ========= 青龙 =========
- * 变量格式: export jfjlb_data=' AZ 1 @ AZ 2 '  多个账号用 @分割 
+ * 变量格式: export yzjb_data=' AZ 1 @ AZ 2 '  多个账号用 @分割 
  * 应该是随便一个 huyitool.jidiandian.cn 域名的  AZ 就行(authorization) 
  * 
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
 
 
-const $ = new Env("金粉俱乐部")
-const notify = $.isNode() ? require('../金粉俱乐部/sendNotify') : ''
+const $ = new Env("柚子计步")
+const notify = $.isNode() ? require('../柚子记步/sendNotify') : ''
 const Notify = 1 	//0为关闭通知，1为打开通知,默认为1
 const debug = 0 	//0为关闭调试，1为打开调试,默认为0
 //////////////////////
 
 let msg = ''
 let ck = ''
-let ckStr = process.env.jfjlb_data
+let ckStr = process.env.yzjb_data
 /////////////////////////////////////////////////////////
 
 
@@ -49,7 +49,7 @@ async function tips(ckArr) {
 
 !(async () => {
 
-	let ckArr = await getCks(ckStr, "jfjlb_data")
+	let ckArr = await getCks(ckStr, "yzjb_data")
 
 	await tips(ckArr)
 
@@ -434,7 +434,7 @@ async function SendMsg(message) {
 	if (Notify > 0) {
 		if ($.isNode()) {
 
-			var notify = require('../金粉俱乐部/sendNotify');
+			var notify = require('../柚子记步/sendNotify');
 			await notify.sendNotify($.name, message);
 		} else {
 			$.msg(message);
