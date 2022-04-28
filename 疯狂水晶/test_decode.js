@@ -197,10 +197,10 @@ console.log(end_sign)
 // 升级
 // https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=d1a53fca503869437cd14a2f0e9ab794&m=skai_tooln_c&dopost=update_grade&userid=17803
 
-var data = { m: "skai_tooln_c", dopost: "update_grade", userid: "17803" }
-end_sign = getSign(test_url, data)
+// var data = { m: "skai_tooln_c", dopost: "update_grade", userid: "17803" }
+// end_sign = getSign(test_url, data)
 
-console.log(end_sign);
+// console.log(end_sign);
 
 
 
