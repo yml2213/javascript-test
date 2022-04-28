@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -33,6 +31,7 @@
     "request": "^2.88.2",
     "tough-cookie": "^4.0.0",
     "tunnel": "0.0.6",
+    "underscore": "^1.13.3",
     "ws": "^7.4.3"
   }
 }
