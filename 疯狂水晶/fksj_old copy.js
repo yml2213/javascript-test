@@ -1,463 +1,60 @@
-/**
- * 疯狂水晶 app (链接带邀请)  谢谢填写  
- * 下载地址: http://mmwk.mmwl.fun/download/9570691cce3dc93a?user=17803  
- * cron 10 8 * * *  yml2213_javascript_master/fksj.js
- * 
- * 疯狂水晶 app  
- * 4-26 完成 签到 , 观看视频 , 京喜红包 任务   有bug及时反馈
- * 4-26 更新随机时间间隔
- * 
- * 感谢所有测试人员
- * ========= 青龙 =========
- * 变量格式: export fksj_data=' 签到 # 观看视频 # 京喜红包 @ 签到 # 观看视频 # 京喜红包 '  多个账号用 @分割 
- * 抓  mmwk.zhilaiw.cn/index.php/Api/Index/index? 抓什么就把抓到的包 ? 后面的写到变量里,这个 md5 实在是解密不了  没办法
- * 
- * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
- */
 
-
+import 'dotenv/config'
 const $ = new Env("疯狂水晶");
 const notify = $.isNode() ? require('./sendNotify') : '';
-const Notify = 1; //0为关闭通知，1为打开通知,默认为1
-const debug = 0; //0为关闭调试，1为打开调试,默认为0
-//////////////////////
-let fksj_dataArr = [];
-let msg = '';
-let ck = '';
-let fksj_data = process.env.fksj_data;
-/////////////////////////////////////////////////////////
 
-!(async () => {
+const fksj_data = process.env.fksj_data;
+console.log(fksj_data);
+// console.log(process.env);
 
-    if (!(await Envs()))  //多账号分割 判断变量是否为空  初步处理多账号
-        return;
-    else {
 
-        console.log(`\n本地脚本4-26`);
 
-        // console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-        console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-        console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-        console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 
-        console.log(`\n================================================\n脚本执行 - 北京时间(UTC+8): ${new Date(
-            new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000).toLocaleString()} \n================================================\n`);
 
-        await wyy();
 
 
-        console.log(`\n=================== 共找到 ${fksj_dataArr.length} 个账号 ===================`)
-        if (debug) {
-            console.log(`【debug】 这是你的账号数组:\n ${fksj_dataArr}`);
-        }
 
 
-        for (let index = 0; index < fksj_dataArr.length; index++) {
 
 
-            let num = index + 1
-            console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
 
-            data = fksj_dataArr[index].split('#');
-            if (debug) {
-                console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
-            }
 
-            console.log('开始 签到');
-            await signin();
-            await $.wait(2 * 1000);
 
-            console.log('开始 观看视频');
-            await ad_video();
-            await $.wait(2 * 1000);
 
 
 
-            console.log('开始 京喜红包');
-            await gold_ad_video();
-            await $.wait(2 * 1000);
 
-            await SendMsg(msg);
 
-        }
 
 
-    }
 
-})()
-    .catch((e) => $.logErr(e))
-    .finally(() => $.done())
 
 
 
 
 
 
-/**
- * 签到   get
- * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=42d86c74b19f06cd07b4e6ac737a9911&m=skai_tooln_c&dopost=make_sign&userid=17803
- */
-function signin(timeout = 3 * 1000) {
 
-    return new Promise((resolve) => {
-        let url = {
-            url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${data[0]}`,
-            headers: {
 
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Host': 'mmwk.zhilaiw.cn'
 
-            },
 
-        }
 
-        if (debug) {
-            console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
-            console.log(url);
-        }
-        $.get(url, async (error, response, data) => {
-            try {
-                if (debug) {
-                    console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
-                    console.log(data)
-                    console.log(`======`)
-                    console.log(JSON.parse(data))
-                }
-                let result = JSON.parse(data);
-                if (result.result == 'success') {
 
-                    console.log(`\n 签到:成功 🎉  您已经连续签到 ${result.sign_total} 天\n签到获得 能量 ${result.addpower} ,累计能量 ${result.power}\n`);
 
-                    // msg += `\n 签到:成功 🎉  您已经连续签到 ${result.sign_total} 天\n签到获得 能量 ${result.addpower} ,累计能量 ${result.power}\n`
 
-                } else if (result.result == 'fail') {
 
-                    console.log(`\n 签到:${result.msg}\n`);
 
-                } else {
 
-                    console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
 
-                }
 
-            } catch (e) {
-                console.log(e)
-            } finally {
-                resolve();
-            }
-        }, timeout)
-    })
-}
 
 
 
-/**
- * 观看视频   get
- * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=4ca5032b2f0f16e2423880292792e5fa&m=skai_tooln_c&dopost=get_some_power_ad_video&userid=17803
- */
-function ad_video(timeout = 3 * 1000) {
 
-    return new Promise((resolve) => {
-        let url = {
-            url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${data[1]}`,
-            headers: {
 
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Host': 'mmwk.zhilaiw.cn'
 
-            },
 
-        }
 
-        if (debug) {
-            console.log(`\n 【debug】=============== 这是 观看视频 请求 url ===============`);
-            console.log(url);
-        }
-        $.get(url, async (error, response, data) => {
-            try {
-                if (debug) {
-                    console.log(`\n\n 【debug】===============这是 观看视频 返回data==============`);
-                    console.log(data)
-                    console.log(`======`)
-                    console.log(JSON.parse(data))
-                }
-                let result = JSON.parse(data);
-                if (result.result == 'success') {
-
-                    console.log(`\n 观看视频:成功 🎉  您今天已看: ${result.userdata.ad_video_num}/7 次, \n 观看视频 获得 能量 ${result.addpower} ,累计有能量 ${result.power}\n`);
-
-                    if (result.userdata.ad_video_num < 7) {
-                        let num = randomInt(40, 50);
-                        console.log(`\n 等待 ${num} s后,继续观看视频\n`);
-                        await $.wait(num * 1000);
-                        console.log('开始 观看视频');
-                        await ad_video();
-                    }
-
-                } else if (result.result == 'fail') {
-
-                    console.log(`\n 观看视频:${result.msg}\n`);
-
-                } else {
-
-                    console.log(`\n 观看视频:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-
-                }
-
-            } catch (e) {
-                console.log(e)
-            } finally {
-                resolve();
-            }
-        }, timeout)
-    })
-}
-
-
-
-/**
- * 京喜红包   get
- * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=13a6d7f8418c39085c261a91e9da665a&m=skai_tooln_c&dopost=get_some_gold_ad_video_full&userid=17803
- */
-function gold_ad_video(timeout = 3 * 1000) {
-
-    return new Promise((resolve) => {
-        let url = {
-            url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${data[2]}`,
-            headers: {
-
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Host': 'mmwk.zhilaiw.cn'
-
-            },
-
-        }
-
-        if (debug) {
-            console.log(`\n 【debug】=============== 这是 京喜红包 请求 url ===============`);
-            console.log(url);
-        }
-        $.get(url, async (error, response, data) => {
-            try {
-                if (debug) {
-                    console.log(`\n\n 【debug】===============这是 京喜红包 返回data==============`);
-                    console.log(data)
-                    console.log(`======`)
-                    console.log(JSON.parse(data))
-                }
-                let result = JSON.parse(data);
-                if (result.result == 'success') {
-
-                    console.log(`\n 京喜红包:成功 🎉  您今天已看: ${result.userdata.ad_videob_num}/5 次 \n 京喜红包 获得 金币 ${result.addgold} ,累计有 金币 ${result.gold} \n 京喜红包 获得 能量 ${result.addpower} ,累计有能量 ${result.power}\n`);
-
-                    if (result.userdata.ad_videob_num < 5) {
-
-                        let num = randomInt(40, 50);
-                        console.log(`\n 等待 ${num} s后,继续京喜红包\n`);
-                        await $.wait(num * 1000);
-                        console.log('开始 京喜红包');
-                        await gold_ad_video();
-                    }
-
-                } else if (result.result == 'fail') {
-
-                    console.log(`\n 京喜红包:${result.msg}\n`);
-
-                } else {
-
-                    console.log(`\n 京喜红包:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-
-                }
-
-            } catch (e) {
-                console.log(e)
-            } finally {
-                resolve();
-            }
-        }, timeout)
-    })
-}
-
-
-
-
-
-/**
- * 查询金币   get
- * https://mrobot.pcauto.com.cn/xsp/s/auto/info/nocache/task/getLoginUserInfo.xsp
- */
-function user_info(timeout = 3 * 1000) {
-    let reqNonc = randomInt(100000, 999999)
-    // console.log(reqNonc);
-    // let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
-
-    return new Promise((resolve) => {
-        let url = {
-            url: 'https://mrobot.pcauto.com.cn/xsp/s/auto/info/nocache/task/getLoginUserInfo.xsp',
-            headers: {
-
-                // 'Content-Type': 'text/plain',
-                'Cookie': `common_session_id=${ck}`,
-
-            },
-        }
-
-        if (debug) {
-            console.log(`\n 【debug】=============== 这是 查询金币 请求 url ===============`);
-            console.log(url);
-        }
-        $.get(url, async (error, response, data) => {
-            try {
-                if (debug) {
-                    console.log(`\n\n 【debug】===============这是 查询金币 返回data==============`);
-                    console.log(data)
-                    console.log(`======`)
-                    console.log(JSON.parse(data))
-                }
-                let result = JSON.parse(data);
-                if (result.status == 0) {
-
-                    console.log(`\n 查询金币:成功 🎉 \n用户:${result.userName} id:${result.userId} , 现在有金币 ${result.goldCount} 枚\n`);
-                    // msg += `\n 查询金币:成功 🎉 \n用户 ${result.userName} id ${result.userId} 现在有金币 ${result.goldCount} 枚\n`
-
-                } else {
-
-                    console.log(`\n 查询金币:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-
-                }
-
-            } catch (e) {
-                console.log(e)
-            } finally {
-                resolve();
-            }
-        }, timeout)
-    })
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//#region 固定代码
-// ============================================变量检查============================================ \\
-async function Envs() {
-    if (fksj_data) {
-        if (fksj_data.indexOf("@") != -1) {
-            fksj_data.split("@").forEach((item) => {
-                fksj_dataArr.push(item);
-            });
-        } else {
-            fksj_dataArr.push(fksj_data);
-        }
-    } else {
-        console.log(`\n 【${$.name}】：未填写变量 fksj_data`)
-        return;
-    }
-
-    return true;
-}
-
-// ============================================发送消息============================================ \\
-async function SendMsg(message) {
-    if (!message)
-        return;
-
-    if (Notify > 0) {
-        if ($.isNode()) {
-            var notify = require('./sendNotify');
-            await notify.sendNotify($.name, message);
-        } else {
-            $.msg(message);
-        }
-    } else {
-        console.log(message);
-    }
-}
-
-/**
- * 随机数生成
- */
-function randomString(e) {
-    e = e || 32;
-    var t = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890",
-        a = t.length,
-        n = "";
-    for (i = 0; i < e; i++)
-        n += t.charAt(Math.floor(Math.random() * a));
-    return n
-}
-
-/**
- * 随机整数生成
- */
-function randomInt(min, max) {
-    return Math.round(Math.random() * (max - min) + min)
-}
-
-//每日网抑云
-function wyy(timeout = 3 * 1000) {
-    return new Promise((resolve) => {
-        let url = {
-            url: `https://keai.icu/apiwyy/api`
-        }
-        $.get(url, async (err, resp, data) => {
-            try {
-                data = JSON.parse(data)
-                console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
-
-            } catch (e) {
-                $.logErr(e, resp);
-            } finally {
-                resolve()
-            }
-        }, timeout)
-    })
-}
-
-//#endregion
 
 
 

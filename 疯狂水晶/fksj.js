@@ -1,39 +1,45 @@
 /**
  * 疯狂水晶 app (链接带邀请)  谢谢填写
  * 下载地址: http://mmwk.mmwl.fun/download/9570691cce3dc93a?user=17803
- * cron 10 8 * * *  yml2213_javascript_master/fksj.js
+ * cron 0 * * * *  yml2213_javascript_master/fksj.js
  *
- * 疯狂水晶 app
+ * 疯狂水晶 app(小程序也有)
  * 4-26 完成 签到 , 观看视频 , 京喜红包 任务   有bug及时反馈
  * 4-26 更新随机时间间隔
  * 4-28 感谢大佬的指导.终于解决了md5的sign,变量简化,无需抓包了
+ * 4-29 更新任务 红包雨 现在已完成的任务(签到 , 观看视频 , 京喜红包 , 红包雨 , 一键收矿石(需要开启条件))
  *
- *
- * 感谢所有测试人员
+ *一键收矿石:这个比较特殊,可能需要邀请超过30人才能开启(当然 不满足 你也可以直接试试.说不定能行),然后有两个地方,一个是跟随任务每天 8 点一次,另一个跟随 红包雨 每小时一次,请自行选择(连个默认都没开启的)
+ * 
+ * 感谢所有测试人员   感谢大佬的解密  感谢大佬的解密	感谢大佬的解密
  * ========= 青龙 =========
  * 变量格式: export fksj_data='userid1 @ userid2'  多个账号用 @分割
  *
- * userid 找不到的可以告别羊毛了  在问自杀
+ * userid  小程序(疯狂水晶) app 页面都有 , 找不到的可以告别羊毛了  在问自杀
  *
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
-
 const $ = new Env("疯狂水晶");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; //0为关闭通知，1为打开通知,默认为1
-const debug = 1; //0为关闭调试，1为打开调试,默认为0
+const Notify = 1; 		//0为关闭通知，1为打开通知,默认为1
+const debug = 0; 		//0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let fksj_data = '17803';
-// let fksj_data = process.env.fksj_data;
+let ckStr = process.env.fksj_data;
 let fksj_dataArr = [];
 let msg = "";
-let ckStr = "";
+let ck = "";
+let sign = "";
+
+
 /////////////////////////////////////////////////////////
-// console.log(process.env);
+console.log(ckStr);
 
 async function tips(ckArr) {
 	console.log(`\n本地脚本4-28`);
 	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
+	console.log(`\n 感谢大佬的解密! \n`);
+	console.log(`\n 感谢大佬的解密! \n`);
+	console.log(`\n 感谢大佬的解密! \n`);
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
@@ -46,7 +52,7 @@ async function tips(ckArr) {
 		).toLocaleString()} \n================================================\n`
 	);
 
-	await wyy();
+	// await wyy();
 
 	console.log(
 		`\n=================== 共找到 ${ckArr.length} 个账号 ===================`
@@ -75,30 +81,45 @@ async function tips(ckArr) {
 	.finally(() => $.done());
 
 async function start() {
-	console.log("开始 签到");
-	await signin();
-	await $.wait(2 * 1000);
 
-	// console.log('开始 观看视频');
-	// await ad_video();
-	// await $.wait(2 * 1000);
+	let myDate = new Date();
+	h = myDate.getHours();
+	// console.log(h);
+	console.log(`您现在的时间是 ${h} 点 ,签到,观看视频,京喜红包,升级 等任务每天 8 点开启! `);
+	if (h == 8) {
 
-	// console.log('开始 京喜红包');
-	// await gold_ad_video();
-	// await $.wait(2 * 1000);
+		console.log("开始 签到");
+		await signin();
+		await $.wait(2 * 1000);
 
-	// let myDate = new Date();
-	// h = myDate.getHours();
-	// // console.log(h);
-	// if (h == 18) {
-	// 	console.log('开始 升级');
-	// 	await Upgrade();
-	// 	await $.wait(2 * 1000);
-	// }
+		console.log('开始 观看视频');
+		await ad_video();
+		await $.wait(2 * 1000);
+
+		console.log('开始 京喜红包');
+		await gold_ad_video();
+		await $.wait(2 * 1000);
+
+		// console.log('开始 一键收矿石');
+		// await collection();
+		// await $.wait(2 * 1000);
+
+		console.log('开始 升级');
+		await Upgrade();
+		await $.wait(2 * 1000);
+	} else {
+		console.log(`您现在的时间是 ${h} 点 , 跳过其他任务,执行红包雨任务! `);
+
+	}
 
 	// console.log('开始 一键收矿石');
 	// await collection();
 	// await $.wait(2 * 1000);
+
+
+	console.log('开始 红包雨');
+	await rain_open_redbag();
+	await $.wait(2 * 1000);
 
 	await SendMsg(msg);
 }
@@ -110,19 +131,11 @@ async function start() {
  */
 async function signin(timeout = 3 * 1000) {
 
-	sign = MD5Encrypt(`a=wxapp&c=entry&do=user&dopost=make_sign&from=wxapp&i=2&m=skai_tooln_c&t=0&userid=${ck[0]}&v=1.0undefined`);
-	console.log(sign);
-
-	request_url =
-		"https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user";
-	data = { m: "skai_tooln_c", dopost: "make_sign", userid: ck[0] };
-	console.log(data);
-	end_sign = getSign(request_url, data);
-
-	console.log(end_sign);
+	let sign = MD5Encrypt(`a=wxapp&c=entry&do=user&dopost=make_sign&from=wxapp&i=2&m=skai_tooln_c&t=0&userid=${ck}&v=1.0undefined`);
+	//  console.log(sign);
 
 	let url = {
-		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=${end_sign}&m=skai_tooln_c&dopost=make_sign&userid=${ck}`,
+		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=${sign}&m=skai_tooln_c&dopost=make_sign&userid=${ck}`,
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
 			Host: "mmwk.zhilaiw.cn",
@@ -148,8 +161,11 @@ async function signin(timeout = 3 * 1000) {
  * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=4ca5032b2f0f16e2423880292792e5fa&m=skai_tooln_c&dopost=get_some_power_ad_video&userid=17803
  */
 async function ad_video(timeout = 3 * 1000) {
+	let sign = MD5Encrypt(`a=wxapp&c=entry&do=user&dopost=get_some_power_ad_video&from=wxapp&i=2&m=skai_tooln_c&t=0&userid=${ck}&v=1.0undefined`);
+	//  console.log(sign); 
+
 	let url = {
-		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${ck[1]}`,
+		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=${sign}&m=skai_tooln_c&dopost=get_some_power_ad_video&userid=${ck}`,
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
 			Host: "mmwk.zhilaiw.cn",
@@ -181,8 +197,11 @@ async function ad_video(timeout = 3 * 1000) {
  * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=13a6d7f8418c39085c261a91e9da665a&m=skai_tooln_c&dopost=get_some_gold_ad_video_full&userid=17803
  */
 async function gold_ad_video(timeout = 3 * 1000) {
+
+	let sign = MD5Encrypt(`a=wxapp&c=entry&do=user&dopost=get_some_gold_ad_video_full&from=wxapp&i=2&m=skai_tooln_c&t=0&userid=${ck}&v=1.0undefined`);
+
 	let url = {
-		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${ck[2]}`,
+		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=${sign}&m=skai_tooln_c&dopost=get_some_gold_ad_video_full&userid=${ck}`,
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
 			Host: "mmwk.zhilaiw.cn",
@@ -214,8 +233,10 @@ async function gold_ad_video(timeout = 3 * 1000) {
  * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=d1a53fca503869437cd14a2f0e9ab794&m=skai_tooln_c&dopost=update_grade&userid=17803
  */
 async function Upgrade(timeout = 3 * 1000) {
+
+	let sign = MD5Encrypt(`a=wxapp&c=entry&do=user&dopost=update_grade&from=wxapp&i=2&m=skai_tooln_c&t=0&userid=${ck}&v=1.0undefined`);
 	let url = {
-		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${ck[3]}`,
+		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=${sign}&m=skai_tooln_c&dopost=update_grade&userid=${ck}`,
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
 			Host: "mmwk.zhilaiw.cn",
@@ -237,8 +258,9 @@ async function Upgrade(timeout = 3 * 1000) {
  * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=friend&sign=5d1015991229a24dbb4f513a35db571b&m=skai_tooln_c&dopost=all_take_up&userid=17803
  */
 async function collection(timeout = 3 * 1000) {
+	let sign = MD5Encrypt(`a=wxapp&c=entry&do=friend&dopost=all_take_up&from=wxapp&i=2&m=skai_tooln_c&t=0&userid=${ck}&v=1.0undefined`);
 	let url = {
-		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${ck[4]}`,
+		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=friend&sign=${sign}&m=skai_tooln_c&dopost=all_take_up&userid=${ck}`,
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
 			Host: "mmwk.zhilaiw.cn",
@@ -248,7 +270,7 @@ async function collection(timeout = 3 * 1000) {
 	let result = await httpGet(url, `一键收矿石`, timeout);
 	if (result.result == "success") {
 		console.log(
-			`\n 一键收矿石:成功 🎉   恭喜您获得 ${result.take_up_all_stone} 矿石呢!\n`
+			`\n 一键收矿石:${result.result} 🎉   恭喜您获得 ${result.take_up_all_stone} 矿石呢!\n`
 		);
 	} else if (result.result == "fail") {
 		console.log(`\n 一键收矿石:${result.msg}!\n`);
@@ -256,6 +278,59 @@ async function collection(timeout = 3 * 1000) {
 		console.log(`\n 一键收矿石:  失败 ❌ 了呢,原因未知！\n ${result} \n `);
 	}
 }
+
+
+
+
+
+
+/**
+ * 红包雨   get
+ * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=index&sign=f85cf8026a9b813635995a143f9d3039&m=skai_tooln_c&dopost=rain_open_redbag&userid=17803&time=11
+ */
+async function rain_open_redbag(timeout = 3 * 1000) {
+	let myDate = new Date();
+	time = myDate.getHours();
+	// // console.log(h);
+	let sign = MD5Encrypt(`a=wxapp&c=entry&do=index&dopost=rain_open_redbag&from=wxapp&i=2&m=skai_tooln_c&t=0&time=${time}&userid=${ck}&v=1.0undefined`);
+
+	let url = {
+		url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=index&sign=${sign}&m=skai_tooln_c&dopost=rain_open_redbag&userid=${ck}&time=${time}`,
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+			Host: "mmwk.zhilaiw.cn",
+		},
+	};
+
+	let result = await httpGet(url, `红包雨`, timeout);
+	if (result.result == "success") {
+		console.log(
+			`\n 红包雨: ${result.result} 🎉   您在 ${time} 点红包雨 获得 金币 ${result.addmoney} \n`
+		);
+
+
+	} else if (result.result == "fail") {
+		console.log(`\n 红包雨:${result.msg}\n`);
+	} else {
+		console.log(`\n 京喜红包:  失败 ❌ 了呢,原因未知！\n ${result} \n `);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //#region 固定代码
 // ============================================变量检查============================================ \\
@@ -327,26 +402,21 @@ function randomInt(min, max) {
 function wyy(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		let url = {
-			url: `https://keai.icu/apiwyy/api`,
-		};
+			url: `https://keai.icu/apiwyy/api`
+		}
+		$.get(url, async (err, resp, data) => {
+			try {
+				data = JSON.parse(data)
+				console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
 
-		$.get(
-			url,
-			async (err, resp, data) => {
-				try {
-					data = JSON.parse(data);
-					console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
-				} catch (e) {
-					$.logErr(e, resp);
-				} finally {
-					resolve();
-				}
-			},
-			timeout
-		);
-	});
+			} catch (e) {
+				$.logErr(e, resp);
+			} finally {
+				resolve()
+			}
+		}, timeout)
+	})
 }
-
 // ============================================ get请求 ============================================ \\
 async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 	return new Promise((resolve) => {

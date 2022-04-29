@@ -1,27 +1,35 @@
 /**
- * 火云邪神 小程序 
- * cron 0-59/15 6-22 * * *  yml2213_javascript_master/hyxs.js
+ * 疯狂水晶 app (链接带邀请)  谢谢填写  
+ * 下载地址: http://mmwk.mmwl.fun/download/9570691cce3dc93a?user=17803  
+ * cron 10 8 * * *  yml2213_javascript_master/fksj.js
+ * 
+ * 疯狂水晶 app  
+ * 4-26 完成 签到 , 观看视频 , 京喜红包 任务   有bug及时反馈
+ * 4-26 更新随机时间间隔
+ * 4-28 感谢大佬的指导.终于解决了md5的sign,变量简化,无需抓包了
  * 
  * 
- * 4-25 改 tom 大佬的脚本,做青龙适配    有bug及时反馈
- * 感谢 tom 大佬脚本   感谢 tom 大佬脚本   感谢 tom 大佬脚本
- * 
+ * 感谢所有测试人员
  * ========= 青龙 =========
- * 变量格式: export hyxs_data=' token1 @ token2 '  多个账号用 @分割 
+ * 变量格式: export fksj_data='userid1 @ userid2'  多个账号用 @分割 
+ * 
+ * userid 找不到的可以告别羊毛了  在问自杀
  * 
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
 
 
-const $ = new Env("火云邪神");
+const $ = new Env("疯狂水晶");
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let hyxs_dataArr = [];
+let fksj_data = process.env.fksj_data;
+let fksj_dataArr = [];
 let msg = '';
 let ck = '';
-let hyxs_data = process.env.hyxs_data;
+let end_sign = '';
+import underscore from "underscore"
 /////////////////////////////////////////////////////////
 
 !(async () => {
@@ -30,7 +38,7 @@ let hyxs_data = process.env.hyxs_data;
 		return;
 	else {
 
-		console.log(`\n本地脚本4-25`);
+		console.log(`\n本地脚本4-28`);
 
 		// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
 		console.log(`\n 脚本测试中,有bug及时反馈! \n`);
@@ -43,40 +51,36 @@ let hyxs_data = process.env.hyxs_data;
 		await wyy();
 
 
-		console.log(`\n=================== 共找到 ${hyxs_dataArr.length} 个账号 ===================`)
+		console.log(`\n=================== 共找到 ${fksj_dataArr.length} 个账号 ===================`)
 		if (debug) {
-			console.log(`【debug】 这是你的账号数组:\n ${hyxs_dataArr}`);
+			console.log(`【debug】 这是你的账号数组:\n ${fksj_dataArr}`);
 		}
 
 
-		for (let index = 0; index < hyxs_dataArr.length; index++) {
+		for (let index = 0; index < fksj_dataArr.length; index++) {
 
 
 			let num = index + 1
 			console.log(`\n========= 开始【第 ${num} 个账号】=========\n`)
 
-			data = hyxs_dataArr[index].split('&');
+			ck_data = fksj_dataArr[index].split('&');
 			if (debug) {
-				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
+				console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${ck_data}\n`);
 			}
 
-
-
 			console.log('开始 签到');
-			await hyxssign();
+			await signin();
 			await $.wait(2 * 1000);
 
-			console.log('开始 用户信息');
-			await hyxsusers();
-			await $.wait(2 * 1000);
+			// console.log('开始 观看视频');
+			// await ad_video();
+			// await $.wait(2 * 1000);
 
-			console.log('开始 土地状态');
-			await hyxsland();
-			await $.wait(2 * 1000);
 
-			console.log('开始 背包库存');
-			await hyxspage();
-			await $.wait(2 * 1000);
+
+			// console.log('开始 京喜红包');
+			// await gold_ad_video();
+			// await $.wait(2 * 1000);
 
 			await SendMsg(msg);
 
@@ -92,359 +96,156 @@ let hyxs_data = process.env.hyxs_data;
 
 
 
-
-
-
-
-
-
-
-function hyxsusers(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/users`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-		}
-		$.get(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.status == `true`) {
-					console.log('\n用户名：' + data.users.nickname)
-					$.message += '\n【用户名】：' + data.users.nickname
-				} else {
-					console.log('\n' + data.message)
-					$.message += '\n' + data.message
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
+//============================================ 处理sign ============================================
+function i(t, e) {
+	var i = (65535 & t) + (65535 & e),
+		a = (t >> 16) + (e >> 16) + (i >> 16);
+	return a << 16 | 65535 & i
 }
 
-function hyxssign(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/excitation/browse`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-			body: `{ "type": "signin", "mark": "" }`
-		}
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
-			console.log(url);
-		}
-		$.post(url, async (err, resp, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
-					console.log(data)
-					console.log(`======`)
-					console.log(JSON.parse(data))
-				}
-				data = JSON.parse(data)
-
-				if (data.status == `true`) {
-					console.log('\n签到成功')
-					// $.message += '\n【用户名】：' + data.users.nickname
-					for (let c = 0; c < 6; c++) {
-						$.index = c + 1
-						await hyxsbrowse()
-						await $.wait(DD)
-					}
-				} else {
-					console.log('\n签到' + data.message)
-					// $.message += '\n签到' + data.message
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
+function a(t, e) {
+	return t << e | t >>> 32 - e
 }
 
-function hyxsbrowse(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/excitation/browse`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-			body: `{ "type":"sunlight","mark":"" }`
-		}
-		$.post(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.status == `true`) {
-					console.log('\n观看视频成功')
-					// $.message += '\n【用户名】：' + data.users.nickname
-				} else {
-					console.log('\n观看视频：' + data.message)
-					// $.message += '\n签到' + data.message
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
+function s(t, e, s, n, o, r) {
+	return i(a(i(i(e, t), i(n, r)), o), s)
 }
 
-function hyxsland(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/land`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-			body: ``,
-		}
-		$.post(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.status == `true`) {
-					console.log(`开始检测土地状态`)
-					for (let i = -1; i < data.land.length; i++) {
-						mark = data.land[i + 1].mark
-						if (data.land[i + 1].status == 3) {
-							console.log(`监测到${mark}号土地需要施肥，即将为您施肥`)
-
-							await hyxsone()
-							await $.wait(3000)
-						}
-
-						if (data.land[i + 1].number >= 1) {
-							console.log(`当前${mark}号土地果实数量：${data.land[i + 1].number}`)
-							//console.log(`\n准备收取果实`)
-
-							await hyxscollect()
-							await $.wait(3000)
-						}
-					}
-
-				} else {
-					console.log(`\n收获果实：当前果实未成熟`)
-
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
-}
-function hyxsone(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/land/one`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-			body: `{ "mark":${mark} }`
-		}
-		$.post(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.status == `true`) {
-					console.log(`\n${mark}号土地施肥成功`)
-					await $.wait(3000)
-				} else {
-					console.log(`\n${mark}号土地施肥失败`)
-
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
-}
-function hyxscollect(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/collect`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-			body: `{ "land":"${mark}" }`
-		}
-		$.post(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.status == `true`) {
-					console.log(`\n收获${mark}号土地果实成功`)
-					await $.wait(3000)
-				} else {
-					console.log(`\n收获${mark}号土地果实成功`)
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
+function n(t, e, i, a, n, o, r) {
+	return s(e & i | ~e & a, t, e, n, o, r)
 }
 
-function hyxspage(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/backpack?page=1`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-			// body : ``,
-		}
-		$.get(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.backpack.data) {
-					for (let i = 0; i < data.backpack.data.length; i++) {
-						console.log(`当前背包库存：${data.backpack.data[i].shop_name}:${data.backpack.data[i].number}`);
-						if (data.backpack.data[i].shop_name == `新鲜椰子` && data.backpack.data[i].number >= 10) {
-
-							await hyxssubmit()
-						}
-						if (data.backpack.data[i].shop_name == `肥料` && data.backpack.data[i].number <= 1) {
-							await hyxsbuy()
-						}
-					}
-					await hyxsmachining()
-				} else {
-					console.log('\n背包库存获取失败')
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
+function o(t, e, i, a, n, o, r) {
+	return s(e & a | i & ~a, t, e, n, o, r)
 }
 
-function hyxsbuy(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/shop/buy`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-			body: `{ "id":1003,"amount":1 }`
-		}
-		$.post(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.status == `true`) {
-					console.log(data.message)
-
-				} else {
-					console.log('\n购买失败，阳光不足')
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
-}
-function hyxssubmit(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/machining/submit`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-			body: `{ "amount":10 }`,
-		}
-		$.post(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.status == `true`) {
-					console.log('\n' + data.message)
-					$.message += data.message
-
-				} else {
-					console.log('\n' + data.message)
-
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
+function r(t, e, i, a, n, o, r) {
+	return s(e ^ i ^ a, t, e, n, o, r)
 }
 
-function hyxsmachining(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/machining`,
-			headers: JSON.parse($.getdata('hyxshd'))
-			//body : `{"amount":10}`,
-		}
-		$.get(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.status == `true`) {
-					console.log(`当前共有${data.machining.length}个产品正在加工`)
-					for (let i = 0; i < data.machining.length; i++) {
-						id = data.machining[i].id
-						// console.log(id);
-						output = data.machining[i].output
-						// console.log(output);
-						await hyxstakeout()
-					}
-					// $.message += data.message
-				} else {
-					console.log('\n' + data.machining)
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
+function c(t, e, i, a, n, o, r) {
+	return s(i ^ (e | ~a), t, e, n, o, r)
 }
 
-function hyxstakeout(timeout = 0) {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://yezi.jiaaisi.cn/machining/takeout`,
-			headers: {
-				'token': data,
-				'Content-Type': 'application/json'
-			},
-			body: `{ "id":${id} }`,
-		}
-		$.post(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data)
-				if (data.status == `true`) {
-					console.log(`存入${output}ml椰汁成功`)
-					// $.message += data.message
-				} else {
-					// console.log('\n'+data.message)
-				}
-			} catch (e) {
-			} finally {
-				resolve()
-			}
-		}, timeout)
-	})
+function l(t, e) {
+	var a, s, l, u, d;
+	t[e >> 5] |= 128 << e % 32, t[14 + (e + 64 >>> 9 << 4)] = e;
+	var f = 1732584193,
+		p = -271733879,
+		_ = -1732584194,
+		g = 271733878;
+	for (a = 0; a < t.length; a += 16) s = f, l = p, u = _, d = g, f = n(f, p, _, g, t[a], 7, -680876936), g = n(g, f, p, _, t[a + 1], 12, -389564586), _ = n(_, g, f, p, t[a + 2], 17, 606105819), p = n(p, _, g, f, t[a + 3], 22, -1044525330), f = n(f, p, _, g, t[a + 4], 7, -176418897), g = n(g, f, p, _, t[a + 5], 12, 1200080426), _ = n(_, g, f, p, t[a + 6], 17, -1473231341), p = n(p, _, g, f, t[a + 7], 22, -45705983), f = n(f, p, _, g, t[a + 8], 7, 1770035416), g = n(g, f, p, _, t[a + 9], 12, -1958414417), _ = n(_, g, f, p, t[a + 10], 17, -42063), p = n(p, _, g, f, t[a + 11], 22, -1990404162), f = n(f, p, _, g, t[a + 12], 7, 1804603682), g = n(g, f, p, _, t[a + 13], 12, -40341101), _ = n(_, g, f, p, t[a + 14], 17, -1502002290), p = n(p, _, g, f, t[a + 15], 22, 1236535329), f = o(f, p, _, g, t[a + 1], 5, -165796510), g = o(g, f, p, _, t[a + 6], 9, -1069501632), _ = o(_, g, f, p, t[a + 11], 14, 643717713), p = o(p, _, g, f, t[a], 20, -373897302), f = o(f, p, _, g, t[a + 5], 5, -701558691), g = o(g, f, p, _, t[a + 10], 9, 38016083), _ = o(_, g, f, p, t[a + 15], 14, -660478335), p = o(p, _, g, f, t[a + 4], 20, -405537848), f = o(f, p, _, g, t[a + 9], 5, 568446438), g = o(g, f, p, _, t[a + 14], 9, -1019803690), _ = o(_, g, f, p, t[a + 3], 14, -187363961), p = o(p, _, g, f, t[a + 8], 20, 1163531501), f = o(f, p, _, g, t[a + 13], 5, -1444681467), g = o(g, f, p, _, t[a + 2], 9, -51403784), _ = o(_, g, f, p, t[a + 7], 14, 1735328473), p = o(p, _, g, f, t[a + 12], 20, -1926607734), f = r(f, p, _, g, t[a + 5], 4, -378558), g = r(g, f, p, _, t[a + 8], 11, -2022574463), _ = r(_, g, f, p, t[a + 11], 16, 1839030562), p = r(p, _, g, f, t[a + 14], 23, -35309556), f = r(f, p, _, g, t[a + 1], 4, -1530992060), g = r(g, f, p, _, t[a + 4], 11, 1272893353), _ = r(_, g, f, p, t[a + 7], 16, -155497632), p = r(p, _, g, f, t[a + 10], 23, -1094730640), f = r(f, p, _, g, t[a + 13], 4, 681279174), g = r(g, f, p, _, t[a], 11, -358537222), _ = r(_, g, f, p, t[a + 3], 16, -722521979), p = r(p, _, g, f, t[a + 6], 23, 76029189), f = r(f, p, _, g, t[a + 9], 4, -640364487), g = r(g, f, p, _, t[a + 12], 11, -421815835), _ = r(_, g, f, p, t[a + 15], 16, 530742520), p = r(p, _, g, f, t[a + 2], 23, -995338651), f = c(f, p, _, g, t[a], 6, -198630844), g = c(g, f, p, _, t[a + 7], 10, 1126891415), _ = c(_, g, f, p, t[a + 14], 15, -1416354905), p = c(p, _, g, f, t[a + 5], 21, -57434055), f = c(f, p, _, g, t[a + 12], 6, 1700485571), g = c(g, f, p, _, t[a + 3], 10, -1894986606), _ = c(_, g, f, p, t[a + 10], 15, -1051523), p = c(p, _, g, f, t[a + 1], 21, -2054922799), f = c(f, p, _, g, t[a + 8], 6, 1873313359), g = c(g, f, p, _, t[a + 15], 10, -30611744), _ = c(_, g, f, p, t[a + 6], 15, -1560198380), p = c(p, _, g, f, t[a + 13], 21, 1309151649), f = c(f, p, _, g, t[a + 4], 6, -145523070), g = c(g, f, p, _, t[a + 11], 10, -1120210379), _ = c(_, g, f, p, t[a + 2], 15, 718787259), p = c(p, _, g, f, t[a + 9], 21, -343485551), f = i(f, s), p = i(p, l), _ = i(_, u), g = i(g, d);
+	return [f, p, _, g]
 }
 
+
+function u(t) {
+	var e, i = "",
+		a = 32 * t.length;
+	for (e = 0; e < a; e += 8) i += String.fromCharCode(t[e >> 5] >>> e % 32 & 255);
+	return i
+}
+
+function d(t) {
+	var e, i = [];
+	for (i[(t.length >> 2) - 1] = void 0, e = 0; e < i.length; e += 1) i[e] = 0;
+	var a = 8 * t.length;
+	for (e = 0; e < a; e += 8) i[e >> 5] |= (255 & t.charCodeAt(e / 8)) << e % 32;
+	return i
+}
+
+function f(t) {
+	return u(l(d(t), 8 * t.length))
+}
+
+function p(t, e) {
+	var i, a, s = d(t),
+		n = [],
+		o = [];
+	for (n[15] = o[15] = void 0, s.length > 16 && (s = l(s, 8 * t.length)), i = 0; i < 16; i += 1) n[i] = 909522486 ^ s[i], o[i] = 1549556828 ^ s[i];
+	return a = l(n.concat(d(e)), 512 + 8 * e.length), u(l(o.concat(a), 640))
+}
+
+function _(t) {
+	var e, i, a = "0123456789abcdef",
+		s = "";
+	for (i = 0; i < t.length; i += 1) e = t.charCodeAt(i), s += a.charAt(e >>> 4 & 15) + a.charAt(15 & e);
+	return s
+}
+
+function g(t) {
+	return unescape(encodeURIComponent(t))
+}
+
+function h(t) {
+	return f(g(t))
+}
+
+
+
+
+function md5(t) {
+	console.log("md5:" + t)
+	return _(h(t))
+}
+
+function m(t, e) {
+	return p(g(t), g(e))
+}
+
+function y(t, e) {
+	return _(m(t, e))
+}
+
+function w(t, e, i) {
+	// console.log(t)
+	return e ? i ? m(e, t) : y(e, t) : i ? h(t) : md5(t)
+}
+
+function getUrlParam(url, paramName) {
+	var i = new RegExp("(^|&)" + paramName + "=([^&]*)(&|$)"),
+		a = url.split("?")[1].match(i);
+	return null != a ? unescape(a[2]) : null
+}
+
+function getQuery(t) {
+	var e = [];
+	if (-1 != t.indexOf("?"))
+		for (var i = t.split("?")[1], a = i.split("&"), s = 0; s < a.length; s++) a[s].split("=")[0] && unescape(a[s].split("=")[1]) && (e[s] = {
+			name: a[s].split("=")[0],
+			value: unescape(a[s].split("=")[1])
+		});
+	return e
+}
+
+function getSign(url, data, i) {
+	var str = "",
+		sign = getUrlParam(url, "sign");
+	if (sign || data && data.sign) return !1;
+	if (url && (str = getQuery(url)), data) {
+		var r = [];
+		for (var c in data)
+			c && data[c] && (r = r.concat({
+				name: c,
+				value: data[c]
+			}));
+		str = str.concat(r)
+	}
+	str = underscore.sortBy(str, "name"), str = underscore.uniq(str, !0, "name");
+	// console.log(str)
+	for (var l = "", u = 0; u < str.length; u++) str[u] && str[u].name && str[u].value && (l += str[u].name + "=" + str[u].value, u < str.length - 1 && (l += "&"));
+	// console.log(l)
+
+	//md5(l) 32bit
+	var token
+	return i = i || token, sign = md5(l + i), sign
+}
+
+
+
+
+
+//============================================ 处理sign_end ============================================
 
 
 
@@ -452,18 +253,27 @@ function hyxstakeout(timeout = 0) {
 
 
 /**
- * 签到   post
- * https://huyitool.jidiandian.cn/innovate-step-service/api/sign/signIn
+ * 签到   get
+ * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=42d86c74b19f06cd07b4e6ac737a9911&m=skai_tooln_c&dopost=make_sign&userid=17803
  */
 function signin(timeout = 3 * 1000) {
+
+	var test_url = "https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user"
+	var data = { m: "skai_tooln_c", dopost: "make_sign", userid: ck_data }
+	end_sign = getSign(test_url, data)
+
+	console.log(end_sign)
+
 	return new Promise((resolve) => {
+
 		let url = {
-			url: 'https://huyitool.jidiandian.cn/innovate-step-service/api/sign/signIn',
+			url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=${end_sign}&m=skai_tooln_c&dopost=make_sign&userid=${data}`,
 			headers: {
-				'authorization': data,
-				'Content-Type': 'application/json'
+
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Host': 'mmwk.zhilaiw.cn'
+
 			},
-			body: '{ "data": { "activityType": "COMMON_SIGN", "phead": {} }, "shandle": "0", "handle": "0" }',
 
 		}
 
@@ -471,7 +281,7 @@ function signin(timeout = 3 * 1000) {
 			console.log(`\n 【debug】=============== 这是 签到 请求 url ===============`);
 			console.log(url);
 		}
-		$.post(url, async (error, response, data) => {
+		$.get(url, async (error, response, data) => {
 			try {
 				if (debug) {
 					console.log(`\n\n 【debug】===============这是 签到 返回data==============`);
@@ -480,12 +290,13 @@ function signin(timeout = 3 * 1000) {
 					console.log(JSON.parse(data))
 				}
 				let result = JSON.parse(data);
-				if (result.code == 0) {
+				if (result.result == 'success') {
 
-					console.log(`\n 签到:${result.msg} 🎉 \n`);
-					msg += `\n 签到:${result.msg} 🎉 \n`
+					console.log(`\n 签到:成功 🎉  您已经连续签到 ${result.sign_total} 天\n签到获得 能量 ${result.addpower} ,累计能量 ${result.power}\n`);
 
-				} else if (result.code == 10033) {
+					// msg += `\n 签到:成功 🎉  您已经连续签到 ${result.sign_total} 天\n签到获得 能量 ${result.addpower} ,累计能量 ${result.power}\n`
+
+				} else if (result.result == 'fail') {
 
 					console.log(`\n 签到:${result.msg}\n`);
 
@@ -507,45 +318,55 @@ function signin(timeout = 3 * 1000) {
 
 
 /**
- * 开宝箱   post
- * https://huyitool.jidiandian.cn/innovate-step-service/api/videoaward/awardVideoCoin
+ * 观看视频   get
+ * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=4ca5032b2f0f16e2423880292792e5fa&m=skai_tooln_c&dopost=get_some_power_ad_video&userid=17803
  */
-function open_box(timeout = 3 * 1000) {
+function ad_video(timeout = 3 * 1000) {
+
 	return new Promise((resolve) => {
 		let url = {
-			url: 'https://huyitool.jidiandian.cn/innovate-step-service/api/videoaward/awardVideoCoin',
+			url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${data[1]}`,
 			headers: {
-				'authorization': data,
-				'Content-Type': 'application/json'
+
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Host': 'mmwk.zhilaiw.cn'
+
 			},
-			body: '{"data": {"type": 3}}',
+
 		}
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 开宝箱 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 观看视频 请求 url ===============`);
 			console.log(url);
 		}
-		$.post(url, async (error, response, data) => {
+		$.get(url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 开宝箱 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 观看视频 返回data==============`);
 					console.log(data)
 					console.log(`======`)
 					console.log(JSON.parse(data))
 				}
 				let result = JSON.parse(data);
-				if (result.code == 0) {
+				if (result.result == 'success') {
 
-					console.log(`\n 开宝箱:${result.msg} 🎉  , 获得金币 ${result.data.awardCoin} 枚 \n\n`);
-					// msg += `\n 开宝箱:${result.msg} 🎉 \n`
+					console.log(`\n 观看视频:成功 🎉  您今天已看: ${result.userdata.ad_video_num}/7 次, \n 观看视频 获得 能量 ${result.addpower} ,累计有能量 ${result.power}\n`);
 
-				} else if (result.code == -1) {
+					if (result.userdata.ad_video_num < 7) {
+						let num = randomInt(40, 50);
+						console.log(`\n 等待 ${num} s后,继续观看视频\n`);
+						await $.wait(num * 1000);
+						console.log('开始 观看视频');
+						await ad_video();
+					}
 
-					console.log(`\n 开宝箱:${result.msg} \n`);
+				} else if (result.result == 'fail') {
+
+					console.log(`\n 观看视频:${result.msg}\n`);
 
 				} else {
 
-					console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+					console.log(`\n 观看视频:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
 
 				}
 
@@ -557,66 +378,60 @@ function open_box(timeout = 3 * 1000) {
 		}, timeout)
 	})
 }
-
 
 
 
 /**
- * 大转盘    post
- * https://ibestfanli.com/scenead_core_service/api/turntable
+ * 京喜红包   get
+ * https://mmwk.zhilaiw.cn/index.php/Api/Index/index?i=2&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=user&sign=13a6d7f8418c39085c261a91e9da665a&m=skai_tooln_c&dopost=get_some_gold_ad_video_full&userid=17803
  */
-function turntable(timeout = 3 * 1000) {
+function gold_ad_video(timeout = 3 * 1000) {
+
 	return new Promise((resolve) => {
 		let url = {
-			url: 'https://ibestfanli.com/scenead_core_service/api/turntable',
+			url: `https://mmwk.zhilaiw.cn/index.php/Api/Index/index?${data[2]}`,
 			headers: {
-				'authorization': data,
-				'Content-Type': 'application/json'
+
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Host': 'mmwk.zhilaiw.cn'
+
 			},
-			body: '{"data": {}}',
+
 		}
 
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 大转盘 请求 url ===============`);
+			console.log(`\n 【debug】=============== 这是 京喜红包 请求 url ===============`);
 			console.log(url);
 		}
-		$.post(url, async (error, response, data) => {
+		$.get(url, async (error, response, data) => {
 			try {
 				if (debug) {
-					console.log(`\n\n 【debug】===============这是 大转盘 返回data==============`);
+					console.log(`\n\n 【debug】===============这是 京喜红包 返回data==============`);
 					console.log(data)
 					console.log(`======`)
 					console.log(JSON.parse(data))
 				}
 				let result = JSON.parse(data);
-				if (result.code == 0) {
+				if (result.result == 'success') {
 
-					console.log(`\n 大转盘:${result.msg} 🎉  \n`);
-					if (result.data.indexResponse.remainCount > 0) {
-						console.log(`\n 大转盘已运行 ${result.data.indexResponse.useCount} 次 ,剩余 ${result.data.indexResponse.remainCount} 次 , 继续运行 ing!冲冲冲!`);
+					console.log(`\n 京喜红包:成功 🎉  您今天已看: ${result.userdata.ad_videob_num}/5 次 \n 京喜红包 获得 金币 ${result.addgold} ,累计有 金币 ${result.gold} \n 京喜红包 获得 能量 ${result.addpower} ,累计有能量 ${result.power}\n`);
 
-						// console.log('开始 大转盘');
-						let num = randomInt(20, 30)
+					if (result.userdata.ad_videob_num < 5) {
+
+						let num = randomInt(40, 50);
+						console.log(`\n 等待 ${num} s后,继续京喜红包\n`);
 						await $.wait(num * 1000);
-						await turntable();
+						console.log('开始 京喜红包');
+						await gold_ad_video();
 					}
 
+				} else if (result.result == 'fail') {
 
-				} else if (result.code == 10000) {
-
-					console.log(`\n 大转盘:${result.msg} \n`);
-
-				} else if (result.code == 10001) {
-
-					console.log(`\n 大转盘:${result.msg} \n`);
-
-				} else if (result.code == -1) {
-
-					console.log(`\n 大转盘:${result.msg} \n`);
+					console.log(`\n 京喜红包:${result.msg}\n`);
 
 				} else {
 
-					console.log(`\n 大转盘:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
+					console.log(`\n 京喜红包:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
 
 				}
 
@@ -629,67 +444,6 @@ function turntable(timeout = 3 * 1000) {
 	})
 }
 
-
-
-
-
-/**
- * 摇红包     post
- * https://huyitool.jidiandian.cn/tool-activity-service/api/shark/redpackage/receiveAward
- */
-function redpackage(timeout = 3 * 1000) {
-	return new Promise((resolve) => {
-		let url = {
-			url: 'https://huyitool.jidiandian.cn/tool-activity-service/api/shark/redpackage/receiveAward',
-			headers: {
-				'authorization': data,
-				'Content-Type': 'application/json'
-			},
-			body: '{"data": {"type": 2}}',
-		}
-
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 摇红包 请求 url ===============`);
-			console.log(url);
-		}
-		$.post(url, async (error, response, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 摇红包 返回data==============`);
-					console.log(data)
-					console.log(`======`)
-					console.log(JSON.parse(data))
-				}
-				let result = JSON.parse(data);
-				if (result.code == 0) {
-
-					console.log(`\n 摇红包:${result.msg} 🎉  \n`);
-					if (result.data.cashAmount < 100) {
-						console.log(`\n本次获得 ${result.data.awardAmount} 元 ,累计有 ${result.data.cashAmount} 元`);
-						let num = randomInt(65, 75)
-						await $.wait(num * 1000);
-						await redpackage();
-					}
-
-
-				} else if (result.code == -1) {
-
-					console.log(`\n 摇红包:${result.msg} \n`);
-
-				} else {
-
-					console.log(`\n 摇红包:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-
-				}
-
-			} catch (e) {
-				console.log(e)
-			} finally {
-				resolve();
-			}
-		}, timeout)
-	})
-}
 
 
 
@@ -730,7 +484,7 @@ function user_info(timeout = 3 * 1000) {
 				if (result.status == 0) {
 
 					console.log(`\n 查询金币:成功 🎉 \n用户:${result.userName} id:${result.userId} , 现在有金币 ${result.goldCount} 枚\n`);
-					msg += `\n 查询金币:成功 🎉 \n用户 ${result.userName} id ${result.userId} 现在有金币 ${result.goldCount} 枚\n`
+					// msg += `\n 查询金币:成功 🎉 \n用户 ${result.userName} id ${result.userId} 现在有金币 ${result.goldCount} 枚\n`
 
 				} else {
 
@@ -796,16 +550,16 @@ function user_info(timeout = 3 * 1000) {
 //#region 固定代码
 // ============================================变量检查============================================ \\
 async function Envs() {
-	if (hyxs_data) {
-		if (hyxs_data.indexOf("@") != -1) {
-			hyxs_data.split("@").forEach((item) => {
-				hyxs_dataArr.push(item);
+	if (fksj_data) {
+		if (fksj_data.indexOf("@") != -1) {
+			fksj_data.split("@").forEach((item) => {
+				fksj_dataArr.push(item);
 			});
 		} else {
-			hyxs_dataArr.push(hyxs_data);
+			fksj_dataArr.push(fksj_data);
 		}
 	} else {
-		console.log(`\n 【${$.name}】：未填写变量 hyxs_data`)
+		console.log(`\n 【${$.name}】：未填写变量 fksj_data`)
 		return;
 	}
 

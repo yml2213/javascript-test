@@ -18,6 +18,7 @@
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
 
+import 'dotenv/config'
 
 const $ = new Env("柚子计步")
 const notify = $.isNode() ? require('../柚子记步/sendNotify') : ''
