@@ -31,14 +31,14 @@ mimt=
 ============= 重写 =============
 xxxx  url  script-request-body  xxxxx
 
-还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
+还是不会的请百度或者群里求助：QQ群：884234287  tg：https://t.me/yml_tg
 
 */
 
 
 const $ = new Env('骁龙会');
 const notify = $.isNode() ? require('./sendNotify') : '';
-let wx_yml_xlh_data = [], yml_xlh_UA = [] , wx_yml_xlh_UA = [];
+let wx_yml_xlh_data = [], yml_xlh_UA = [], wx_yml_xlh_UA = [];
 
 
 // 圈x声明变量

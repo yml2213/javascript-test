@@ -1,37 +1,35 @@
 /**
- * 剪映 app 
+ * 超有惠 app  (链接带邀请) 感谢您走我的邀请链接,谢谢,谢谢,谢谢
+ * 下载地址: https://m.chyouhui.com/page/invite/#/?code=I92CCI7
  * 
- * cron 0 * * * *  yml2213_javascript_master/jy.js
+ * cron 30 7 * * *  yml2213_javascript_master/cyh.js
  * 
- * 4-30 完成 签到 任务
- *
+ * 4-30 完成 签到  , 日常视频 任务   
+ * 新人任务自己做做吧 很少
  * 
  * 感谢所有测试人员 
  * ========= 青龙 =========
- * 变量格式: export jy_data='x-tt-token # tdid # sign # device-time  @ x-tt-token # tdid # sign # device-time '  多个账号用 @分割
+ * 变量格式: export cyh_data='androidToken1 @ androidToken2'  多个账号用 @分割
  *
- * x-tt-token , tdid , sign , device-time  都是headers的参数
- * 关键词  game/receive_credits  然后顺序填上就行
- * 
+ * androidToken :  关键词  t-api.chyouhui.com/auth  ,headers中的一个参数
  *
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
-const $ = new Env("剪映");
+const $ = new Env("超有惠");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; //0为关闭通知，1为打开通知,默认为1
-const debug = 1; //0为关闭调试，1为打开调试,默认为0
+const Notify = 1; 		//0为关闭通知，1为打开通知,默认为1
+const debug = 1; 		//0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let ckStr = process.env.jy_data;
-let jy_dataArr = [];
+let ckStr = process.env.cyh_data;
+let cyh_dataArr = [];
 let msg = "";
 let ck = "";
-
-
+let ad_num = "";
+let ad_video_infoArr = '';
 /////////////////////////////////////////////////////////
-console.log(ckStr);
 
 async function tips(ckArr) {
-	console.log(`\n 版本: 0.1 -- 22/4/30 \n`);
+	console.log(`\n版本: 0.2 -- 22/5/1`);
 	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
@@ -54,7 +52,7 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "jy_data");
+	let ckArr = await getCks(ckStr, "cyh_data");
 
 	await tips(ckArr);
 
@@ -62,7 +60,7 @@ async function tips(ckArr) {
 		let num = index + 1;
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
 
-		ck = ckArr[index].split("#");
+		ck = ckArr[index].split("&");
 		if (debug) {
 			console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${ck}\n`);
 		}
@@ -75,53 +73,224 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("开始 签到");
-	await signin();
+	console.log("开始 用户信息");
+	await userInfo();
+	await $.wait(2 * 1000);
+
+	console.log("开始 签到状态");
+	await signin_info();
+	await $.wait(2 * 1000);
+
+	console.log("开始 检查视频状态");
+	await ad_video_info();
 	await $.wait(2 * 1000);
 
 	await SendMsg(msg);
 }
 
 
+
+/**
+ * 用户信息   get
+ * https://t-api.chyouhui.com/auth/user/my
+ */
+async function userInfo(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/user/my`,
+		headers: {
+			'androidToken': ck,
+			'Host': 't-api.chyouhui.com',
+		},
+		// body: '{}',
+	};
+
+	let result = await httpGet(url, `用户信息`, timeout);
+	if (result.code == 0) {
+		console.log(
+			`\n 用户信息:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`
+		);
+
+		msg += `\n 用户信息:成功 🎉   签到获得 积分 ${result.data} \n`
+	} else {
+		console.log(`\n 用户信息: ${result.message} \n `);
+	}
+}
+
+/**
+ * 签到状态   post
+ * https://t-api.chyouhui.com/auth/dailySignIn/data
+ */
+async function signin_info(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/dailySignIn/data`,
+		headers: {
+			'androidToken': ck,
+			'Host': 't-api.chyouhui.com',
+		},
+		body: {
+			"appid": "wxc8a4966e81ed5d22",
+			"pid": "4002654669566",
+			"source": 1,
+		},
+	};
+
+	let result = await httpPost(url, `签到状态`, timeout);
+	if (result.hasSign == 0) {
+		console.log(`\n 签到状态:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`
+		);
+
+		// msg += `\n 签到状态:成功 🎉   签到获得 积分 ${result.data} \n`
+	} else {
+		console.log(`\n 签到状态: ${result.message} \n `);
+	}
+}
+
+
+
+
 /**
  * 签到   post
- * https://lv-api.ulikecam.com/lv/v1/game/receive_credits?iid=3664013692517613&device_id=1425436420871128&ac=wifi&channel=tengxun&aid=1775&app_name=videocut&version_code=78016&version_name=7.8.0&device_platform=android&os=android&ssmix=a&device_type=TAS-AN00&device_brand=HUAWEI&language=zh&os_api=22&os_version=5.1.1&manifest_version_code=78016&resolution=720*1280&dpi=320&update_version_code=78016&_rticket=1651162232536&cdid=6a5a639c-f67b-4899-b2c8-9098c7751e49&effect_sdk_version=11.4.0
- * https://lv-api.ulikecam.com/lv/v1/game/receive_credits   简化后
+ * https://t-api.chyouhui.com/auth/dailySignIn/completed
  */
 async function signin(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://lv-api.ulikecam.com/lv/v1/game/receive_credits`,
+		url: `https://t-api.chyouhui.com/auth/dailySignIn/completed`,
 		headers: {
-
-			'pf': '0',
-			'appvr': '7.8.0',
-			'device-time': ck[3],
-			'tdid': ck[1],
-			'sign-ver': '1',
-			'sign': ck[2],
-			'sdk-version': '2',
-			'x-tt-token': ck[0],
-			'Content-Type': 'application/json'
-
+			'androidToken': ck,
+			'Host': 't-api.chyouhui.com',
 		},
-		body: '{"task_type":1}',
+		body: '{}',
 	};
 
 	let result = await httpPost(url, `签到`, timeout);
-	if (result.ret == 0) {
-		console.log(
-			`\n签到:${result.errmsg} 🎉  您已经连续签到 ${result.data.account_info.sign.continuous_days} 天 , 您已经累计签到 ${result.data.account_info.sign.total_sign_times} 天\n	今天签到获得 积分 ${result.data.account_info.credits} ,累计积分 ${result.data.account_info.accumulative_credits} \n\n以下不用管,测试用的\n ${JSON.stringify(result.data)})`
-		);
+	if (result.code == 0) {
+		if (result.data !== null) {
+			console.log(
+				`\n 签到:${result.message} 🎉   签到获得 积分 ${result.data} \n`
+			);
 
-		msg += `\n签到:${result.errmsg} 🎉  您已经连续签到 ${result.data.account_info.sign.continuous_days} 天 , 您已经累计签到 ${result.data.account_info.sign.total_sign_times} 天\n	今天签到获得 积分 ${result.data.account_info.credits} ,累计积分 ${result.data.account_info.accumulative_credits} \n`
+			msg += `\n 签到:${result.message} 🎉   签到获得 积分 ${result.data} \n`
+		} else {
+			console.log(`\n 签到: ${result.message} \n `);
+		}
 
-	} else if (result.result == "fail") {
-		console.log(`\n 签到:${result.msg}\n`);
 	} else {
 		console.log(`\n 签到:  失败 ❌ 了呢,原因未知！\n ${result} \n `);
 	}
+
+
+
 }
+
+
+/**
+ * 检查视频状态   get
+ * https://t-api.chyouhui.com/auth/watchVideo/pageData
+ */
+async function ad_video_info(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/watchVideo/pageData`,
+		headers: {
+			'androidToken': ck,
+			'Host': 't-api.chyouhui.com',
+		},
+		// body: '{}',
+	};
+
+	let result = await httpGet(url, `检查视频状态`, timeout);
+	if (result.code == 0) {
+		console.log(
+			`\n 检查视频状态:${result.message} 🎉 \n`
+		);
+		ad_video_infoArr = result.data.watchTaskList;
+		console.log(ad_video_infoArr);
+		for (const elem of ad_video_infoArr) {
+			// console.log(elem.completed);
+			if (elem.completed == 0) {
+				console.log(`开始看第 ${elem.id} 个视频`);
+				ad_num = elem.id;
+				ran_num = randomInt(60, 80)
+				await ad_video();
+				console.log(`请耐心等待 ${ran_num} 秒,再看下一个视频吧!`);
+				await $.wait(ran_num * 1000);
+			} else {
+				console.log(`视频 ${elem.id} 已经看完了鸭!`);
+
+			}
+		}
+
+	} else {
+		console.log(`\n 检查视频状态: ${result.message} \n `);
+	}
+}
+
+
+
+
+
+/**
+ * 观看视频   post
+ * https://t-api.chyouhui.com/auth/watchVideo/completed/6
+ */
+async function ad_video(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/watchVideo/completed/${ad_num}`,
+		headers: {
+			'androidToken': ck,
+			'Host': 't-api.chyouhui.com',
+		},
+	};
+
+	let result = await httpPost(url, `观看视频`, timeout);
+	if (result.code == 0) {
+		console.log(
+			`\n 观看视频:${result.message} 🎉  , 下一个视频是第 ${result.data.nextId} 个视频 \n 本次观看视频获得积分 ${result.data.integral} ,剩余未领取积分 ${result.data.surplusIntegral}\n`
+		);
+
+	} else if (result.code == -1) {
+		console.log(`\n 观看视频:${result.message} \n`);
+	} else {
+		console.log(`\n 观看视频:  失败 ❌ 了呢,原因未知！\n ${result} \n `);
+	}
+}
+
+
+
+
+/**
+ * 观看视频   post
+ * https://t-api.chyouhui.com/auth/watchVideo/completed/6
+ */
+async function ad_video1(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/watchVideo/completed/${ad_num}`,
+		headers: {
+			'androidToken': ck,
+			'Host': 't-api.chyouhui.com',
+		},
+	};
+
+	let result = await httpPost(url, `观看视频`, timeout);
+	if (result.code == 0) {
+		console.log(
+			`\n 观看视频:${result.message} 🎉  , 下一个视频是第 ${result.data.nextId} 个视频 \n 本次观看视频获得积分 ${result.data.integral} ,剩余未领取积分 ${result.data.surplusIntegral}\n`
+		);
+
+	} else if (result.code == -1) {
+		console.log(`\n 观看视频:${result.message} \n`);
+	} else {
+		console.log(`\n 观看视频:  失败 ❌ 了呢,原因未知！\n ${result} \n `);
+	}
+}
+
+
+
 
 
 
@@ -171,7 +340,7 @@ async function SendMsg(message) {
 
 	if (Notify > 0) {
 		if ($.isNode()) {
-			var notify = require("../剪映/sendNotify");
+			var notify = require("./sendNotify");
 			await notify.sendNotify($.name, message);
 		} else {
 			$.msg(message);

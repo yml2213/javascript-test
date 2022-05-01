@@ -27,7 +27,7 @@ mimt= app.geely.com
 ============= 重写 =============
 https://app.geely.com/api/v1/user/sign  url  script-request-body  https://raw.githubusercontent.com/yml2213/javascript/master/jlqc/jlqc.js
 
-还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
+还是不会的请百度或者群里求助：QQ群：884234287  tg：https://t.me/yml_tg
 
 */
 
@@ -229,13 +229,13 @@ function yml_jlqc_qd(timeout = 3 * 1000) {
         let url = {
             url: `https://app.geely.com/api/v1/user/sign/`,
             headers: {
-                "token":yml_jlqc_token,
+                "token": yml_jlqc_token,
             },
-            body : '',
+            body: '',
 
         }
         // console.log(url);
-        $.post(url,async (error, response, data) => {
+        $.post(url, async (error, response, data) => {
             try {
                 console.log(data)
                 let result = JSON.parse(data);
@@ -252,7 +252,7 @@ function yml_jlqc_qd(timeout = 3 * 1000) {
             } finally {
                 resolve();
             }
-        },timeout)
+        }, timeout)
     })
 }
 

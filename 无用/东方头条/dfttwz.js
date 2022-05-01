@@ -21,7 +21,7 @@ dfttwzbd:变量中的xxxx是你的body包数据,,可以从 关键词 read_news �
 
 =============变量获取==========
 懒得写了，自己研究吧
-不会的请百度或者群里求助：QQ群：1001401060  tg：科技玩家@我即可
+不会的请百度或者群里求助：QQ群：884234287  tg：科技玩家@我即可
 
 */
 // https://yuedu4.dftoutiao.com/index/Yuedutimer/read_news
@@ -35,7 +35,7 @@ let num = 30;   //阅读数量（默认30）
 //==================================================这里自定义阅读文章数量==================================================
 //开始运行
 !(async () => {
-    console.log(`交流群:1001401060  by-yml`);
+    console.log(`交流群:884234287  by-yml`);
     await yml()
 
 })()
@@ -55,7 +55,7 @@ async function yml() {
     }
 
 
-//每日网抑云
+    //每日网抑云
     function wyy(timeout = 3 * 1000) {
         return new Promise((resolve) => {
             let url = {
@@ -76,8 +76,8 @@ async function yml() {
     }
 
 
-// https://yuedu4.dftoutiao.com/index/Yuedutimer/read_news
-// 阅读文章任务
+    // https://yuedu4.dftoutiao.com/index/Yuedutimer/read_news
+    // 阅读文章任务
     function wz(timeout = 0) {
         return new Promise((resolve) => {
             let url = {

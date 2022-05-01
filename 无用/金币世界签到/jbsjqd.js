@@ -12,7 +12,7 @@ body: 可以从 关键词 Index/QianDao 包里找到所有变量
 
 =============变量获取=============
 懒得写了，自己研究吧
-不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
+不会的请百度或者群里求助：QQ群：884234287  tg：https://t.me/yml_tg
 
 */
 
@@ -35,7 +35,7 @@ async function yml() {
     // await wyy();
     await cq();
 
-//每日网抑云
+    //每日网抑云
     function wyy(timeout = 3 * 1000) {
         return new Promise((resolve) => {
             let url = {
@@ -58,23 +58,23 @@ async function yml() {
 
 
 
-// http://apijb.sunql.top:4002/Index/QianDao
-// 签到任务
+    // http://apijb.sunql.top:4002/Index/QianDao
+    // 签到任务
     function cq(timeout = 0) {
         return new Promise((resolve) => {
             let url = {
                 url: `http://apijb.sunql.top:4002/Index/QianDao`,
                 headers: {
-                    'Host':'apijb.sunql.top:4002',
-                    'Connection':'keep-alive',
-                    'Content-Length':'47',
-                    'Origin':'http://appjb.sunql.top:91',
-                    'custom-header':'hello',
-                    'content-type':'application/x-www-form-urlencoded',
-                    'Referer':'http://appjb.sunql.top:91/',
-                    'Accept-Encoding':'gzip, deflate',
-                    'Accept-Language':'zh-CN,en-US;q=0.8',
-                    'X-Requested-With':'plus.H575B15EF',
+                    'Host': 'apijb.sunql.top:4002',
+                    'Connection': 'keep-alive',
+                    'Content-Length': '47',
+                    'Origin': 'http://appjb.sunql.top:91',
+                    'custom-header': 'hello',
+                    'content-type': 'application/x-www-form-urlencoded',
+                    'Referer': 'http://appjb.sunql.top:91/',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Accept-Language': 'zh-CN,en-US;q=0.8',
+                    'X-Requested-With': 'plus.H575B15EF',
                 },
                 body: body,
 
@@ -95,7 +95,7 @@ async function yml() {
                         $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】状态: ${result.msg} ✅ 恭喜${result.msgc}`)
                         await $.wait(2 * 1000);
 
-                    }else {
+                    } else {
                         $.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,原因${result.msg} `)
                     }
                 } catch (e) {
@@ -119,7 +119,7 @@ function Env(t, e) {
         }
 
         send(t, e = "GET") {
-            t = "string" == typeof t ? {url: t} : t;
+            t = "string" == typeof t ? { url: t } : t;
             let s = this.get;
             return "POST" === e && (s = this.post), new Promise((e, i) => {
                 s.call(this, t, (t, s, r) => {
@@ -198,7 +198,7 @@ function Env(t, e) {
 
         getScript(t) {
             return new Promise(e => {
-                this.get({url: t}, (t, s, i) => e(i))
+                this.get({ url: t }, (t, s, i) => e(i))
             })
         }
 
@@ -210,8 +210,8 @@ function Env(t, e) {
                 r = r ? 1 * r : 20, r = e && e.timeout ? e.timeout : r;
                 const [o, h] = i.split("@"), n = {
                     url: `http://${h}/v1/scripting/evaluate`,
-                    body: {script_text: t, mock_type: "cron", timeout: r},
-                    headers: {"X-Key": o, Accept: "*/*"}
+                    body: { script_text: t, mock_type: "cron", timeout: r },
+                    headers: { "X-Key": o, Accept: "*/*" }
                 };
                 this.post(n, (t, e, i) => s(i))
             }).catch(t => this.logErr(t))
@@ -299,11 +299,11 @@ function Env(t, e) {
 
         get(t, e = (() => {
         })) {
-            if (t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {"X-Surge-Skip-Scripting": !1})), $httpClient.get(t, (t, s, i) => {
+            if (t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.get(t, (t, s, i) => {
                 !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            }); else if (this.isQuanX()) this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, {hints: !1})), $task.fetch(t).then(t => {
-                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+            }); else if (this.isQuanX()) this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
+                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
             }, t => e(t)); else if (this.isNode()) {
                 let s = require("iconv-lite");
                 this.initGotEnv(t), this.got(t).on("redirect", (t, e) => {
@@ -316,10 +316,10 @@ function Env(t, e) {
                         this.logErr(t)
                     }
                 }).then(t => {
-                    const {statusCode: i, statusCode: r, headers: o, rawBody: h} = t;
-                    e(null, {status: i, statusCode: r, headers: o, rawBody: h}, s.decode(h, this.encoding))
+                    const { statusCode: i, statusCode: r, headers: o, rawBody: h } = t;
+                    e(null, { status: i, statusCode: r, headers: o, rawBody: h }, s.decode(h, this.encoding))
                 }, t => {
-                    const {message: i, response: r} = t;
+                    const { message: i, response: r } = t;
                     e(i, r, r && s.decode(r.rawBody, this.encoding))
                 })
             }
@@ -328,20 +328,20 @@ function Env(t, e) {
         post(t, e = (() => {
         })) {
             const s = t.method ? t.method.toLocaleLowerCase() : "post";
-            if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {"X-Surge-Skip-Scripting": !1})), $httpClient[s](t, (t, s, i) => {
+            if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient[s](t, (t, s, i) => {
                 !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            }); else if (this.isQuanX()) t.method = s, this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, {hints: !1})), $task.fetch(t).then(t => {
-                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+            }); else if (this.isQuanX()) t.method = s, this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
+                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
             }, t => e(t)); else if (this.isNode()) {
                 let i = require("iconv-lite");
                 this.initGotEnv(t);
-                const {url: r, ...o} = t;
+                const { url: r, ...o } = t;
                 this.got[s](r, o).then(t => {
-                    const {statusCode: s, statusCode: r, headers: o, rawBody: h} = t;
-                    e(null, {status: s, statusCode: r, headers: o, rawBody: h}, i.decode(h, this.encoding))
+                    const { statusCode: s, statusCode: r, headers: o, rawBody: h } = t;
+                    e(null, { status: s, statusCode: r, headers: o, rawBody: h }, i.decode(h, this.encoding))
                 }, t => {
-                    const {message: s, response: r} = t;
+                    const { message: s, response: r } = t;
                     e(s, r, r && i.decode(r.rawBody, this.encoding))
                 })
             }
@@ -366,19 +366,19 @@ function Env(t, e) {
         msg(e = t, s = "", i = "", r) {
             const o = t => {
                 if (!t) return t;
-                if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? {"open-url": t} : this.isSurge() ? {url: t} : void 0;
+                if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? { "open-url": t } : this.isSurge() ? { url: t } : void 0;
                 if ("object" == typeof t) {
                     if (this.isLoon()) {
                         let e = t.openUrl || t.url || t["open-url"], s = t.mediaUrl || t["media-url"];
-                        return {openUrl: e, mediaUrl: s}
+                        return { openUrl: e, mediaUrl: s }
                     }
                     if (this.isQuanX()) {
                         let e = t["open-url"] || t.url || t.openUrl, s = t["media-url"] || t.mediaUrl;
-                        return {"open-url": e, "media-url": s}
+                        return { "open-url": e, "media-url": s }
                     }
                     if (this.isSurge()) {
                         let e = t.url || t.openUrl || t["open-url"];
-                        return {url: e}
+                        return { url: e }
                     }
                 }
             };

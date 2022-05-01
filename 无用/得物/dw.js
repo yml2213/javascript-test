@@ -17,7 +17,7 @@
  * 
  * 0 0 7 * * ? https://raw.githubusercontent.com/yml2213/javascript/master/dw/dw.js, tag=得物, enabled=true
  * 
- * 还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
+ * 还是不会的请百度或者群里求助：QQ群：884234287  tg：https://t.me/yml_tg
  */
 
 const $ = new Env("得物");
@@ -292,9 +292,9 @@ function getUsreInfo(sessionKey, userId) {
 					SendMsg(`${dwCookiesArr[index]}该CK已过期`)
 
 
-				}else {
+				} else {
 					//  $.log(results.msg)
-					 SendMsg(`${dwCookiesArr[index]}该CK出现未知问题，请检查！`)
+					SendMsg(`${dwCookiesArr[index]}该CK出现未知问题，请检查！`)
 				}
 
 			} catch (e) {

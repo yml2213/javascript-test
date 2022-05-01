@@ -21,7 +21,7 @@ dfttbxbd:变量中的xxxx是你大转盘的变量，可以从 关键词 get_zhua
 
 =============变量获取==========
 懒得写了，自己研究吧
-不会的请百度或者群里求助：QQ群：1001401060  tg：科技玩家@我即可
+不会的请百度或者群里求助：QQ群：884234287  tg：科技玩家@我即可
 
 */
 
@@ -51,7 +51,7 @@ async function yml() {
 }
 
 //每日网抑云
-function wyy(timeout = 3*1000) {
+function wyy(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		let url = {
 			url: `https://keai.icu/apiwyy/api`

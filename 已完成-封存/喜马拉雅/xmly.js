@@ -27,7 +27,7 @@ mimt= hybrid.ximalaya.com
 ============= 重写 =============
 http://hybrid.ximalaya.com/web-activity/signIn/v2  url  script-request-body  https://raw.githubusercontent.com/yml2213/javascript/master/xmly/xmly.js
 
-还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
+还是不会的请百度或者群里求助：QQ群：884234287  tg：https://t.me/yml_tg
 
 */
 
@@ -239,7 +239,7 @@ function yml_xmly_qd(timeout = 3 * 1000) {
 
         }
         console.log(url);
-        $.post(url,async (error, response, data) => {
+        $.post(url, async (error, response, data) => {
             try {
                 console.log(data)
                 let result = JSON.parse(data);
@@ -247,7 +247,7 @@ function yml_xmly_qd(timeout = 3 * 1000) {
 
                     console.log(`【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】签到状态:${result.data.msg}  ✅ `)
 
-                } else if (result.data.code == -2){
+                } else if (result.data.code == -2) {
 
                     console.log(`【🎉 恭喜个屁 🎉】签到转态:失败 ❌ 了呢,${result.data.msg} `)
 
@@ -260,7 +260,7 @@ function yml_xmly_qd(timeout = 3 * 1000) {
             } finally {
                 resolve();
             }
-        },timeout)
+        }, timeout)
     })
 }
 

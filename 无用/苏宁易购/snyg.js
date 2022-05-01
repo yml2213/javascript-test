@@ -30,7 +30,7 @@ mimt= gameapi.suning.com
 ============= 重写 =============
 https://gameapi.suning.com/sngame-web/msign/gateway  url  script-request-body  https://raw.githubusercontent.com/yml2213/javascript/master/snyg/snyg.js
 
-还是不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
+还是不会的请百度或者群里求助：QQ群：884234287  tg：https://t.me/yml_tg
 
 */
 
