@@ -78,8 +78,9 @@ let msg = '';
 
 
 
-			await SendMsg(msg);    // 与发送通知有关系
 		}
+		await SendMsg(msg);    // 与发送通知有关系
+
 	}
 
 })()

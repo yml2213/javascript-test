@@ -67,12 +67,10 @@ async function tips(ckArr) {
 			// @ts-ignore
 			console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${ck}\n`)
 		}
-
 		await start(ck)
-
-
-
 	}
+	await SendMsg(msg);
+
 
 })()
 	.catch((e) => $.logErr(e))
@@ -106,7 +104,6 @@ async function start(ck) {
 	await redpackage(ck)
 	await $.wait(2 * 1000)
 
-	await SendMsg(msg);
 }
 
 

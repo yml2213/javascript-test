@@ -71,10 +71,9 @@ let sdcc_data = process.env.sdcc_data;
 			await user_info();
 			await $.wait(2 * 1000);
 
-
-
-			await SendMsg(msg);
 		}
+		await SendMsg(msg);
+
 
 
 	}

@@ -101,12 +101,9 @@ let msg = '';
 			// }
 
 
-
-
-
-
-			await SendMsg(msg);
 		}
+		await SendMsg(msg);
+
 	}
 
 })()

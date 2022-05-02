@@ -117,8 +117,9 @@ let choose_gold_num = 1;
 			// await watering(ck);
 			// await $.wait(2 * 1000);
 
-			await SendMsg(msg);
 		}
+		await SendMsg(msg);
+
 	}
 
 })()

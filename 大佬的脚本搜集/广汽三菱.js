@@ -102,8 +102,9 @@ const QA_Arr = ['是', '没错', '百度可以找得到', '专业人士来解答
 				await $.wait(10 * 1000);
 				await Query_Balance();
 
-				await SendMsg(msg);
 			}
+			await SendMsg(msg);
+
 		}
 	}
 })()
