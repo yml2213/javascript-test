@@ -4,6 +4,7 @@
  * cron 0 * * * *  yml2213_javascript_master/jy.js
  * 
  * 4-30 完成 签到 任务
+ * 5-3  修复通知bug
  *
  * 
  * 感谢所有测试人员 
@@ -19,7 +20,7 @@
 const $ = new Env("剪映");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
-const debug = 1; //0为关闭调试，1为打开调试,默认为0
+const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
 let ckStr = process.env.jy_data;
 let jy_dataArr = [];
@@ -69,8 +70,6 @@ async function tips(ckArr) {
 
 		await start();
 	}
-	await SendMsg(msg);
-
 })()
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done());
@@ -81,6 +80,7 @@ async function start() {
 	await signin();
 	await $.wait(2 * 1000);
 
+	await SendMsg(msg);
 }
 
 
@@ -172,7 +172,7 @@ async function SendMsg(message) {
 
 	if (Notify > 0) {
 		if ($.isNode()) {
-			var notify = require("../剪映/sendNotify");
+			var notify = require("./sendNotify");
 			await notify.sendNotify($.name, message);
 		} else {
 			$.msg(message);

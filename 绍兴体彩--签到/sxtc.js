@@ -1,61 +1,54 @@
 /**
- * 地址: https://raw.githubusercontent.com/yml2213/javascript/master/read/read.js
- * 转载请留信息,谢谢
+ * 绍兴体彩  公众号 —活力体彩—个人中心  ; 有个签到
+ * 转载请留信息
  * 
- * 微信阅读毛 , 满 3000 金币提现
+ * cron 40 7 * * *  yml2213_javascript_master/sxtc.js
  * 
- * cron 35 7 * * *  yml2213_javascript_master/read.js
+ * 5-4  签到任务  
+ * 签到,讲究个日积月累   哈哈哈哈哈
  * 
- * 5-2 完成 快速阅读 任务
- * 
+ * 感谢 心雨 的投稿
  * 感谢所有测试人员 
- * ========= 青龙 ========= 
- * 变量格式: export read_data=' User-Agent & a_h_n @  User-Agent & a_h_n '  多个账号用 @分割
+ * ========= 青龙 =========
+ * 变量格式: export sxtc_data='AZ1 @ AZ2'  多个账号用 @分割
  *
- * token :  关键词  s76.yyyyy.run/api  找到 User-Agent 和 a_h_n 就行了
+ * Authori-zation :  关键词  www.shaoxingticai.com/api/front/user  ,headers中的一个参数
  *
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
-const $ = new Env("阅读");
+const $ = new Env("绍兴体彩");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; 		//0为关闭通知，1为打开通知,默认为1
 const debug = 0; 		//0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let ckStr = process.env.read_data;
+let ckStr = process.env.sxtc_data;
+let sxtc_dataArr = [];
 let msg = "";
 let ck = "";
-let read_api = '';
-let read_apiArr = ['o=http%3A%2F%2Fl.tuimhsl.cn%2F%3Fa%3Dgt%26goid%3Ditrb%26_v%3D5120&t=quick', 'o=http%3A%2F%2Fl.dwezzyey.tokyo%2F%3Fa%3Dgt%26goid%3Ditrb%26_v%3D5120&t=quick', 'o=http%3A%2F%2Fl.doctdwy.cn%2F%3Fa%3Dgt%26goid%3Ditrb%26_v%3D5120&t=quick', 'o=http%3A%2F%2Fl.ounipitx.tokyo%2F%3Fa%3Dgt%26goid%3Ditrb%26_v%3D5120&t=quick', 'o=http%3A%2F%2Fl.msgxuji.cn%2F%3Fa%3Dgt%26goid%3Ditrb%26_v%3D5120&t=quick', 'o=http%3A%2F%2Fl.e2xhf5.cn%2F%3Fa%3Dgt%26goid%3Ditrb%26_v%3D5120&t=quick'];
-
 /////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	console.log(`\n版本: 0.2 -- 22/5/3`);
+	console.log(`\n版本: 0.1 -- 22/5/4\n`);
 	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-	// msg += `\n 脚本已恢复正常状态,请及时更新! `
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
+	console.log(`\n 感谢 心雨 的投稿 \n`);
+	console.log(`\n 感谢 心雨 的投稿 \n`);
+	msg += `\n 感谢 心雨 的投稿 \n`
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 	msg += `\n 脚本测试中,有bug及时反馈! \n`
 
-	console.log(
-		`\n================================================\n脚本执行 - 北京时间(UTC+8): ${new Date(
-			new Date().getTime() +
-			new Date().getTimezoneOffset() * 60 * 1000 +
-			8 * 60 * 60 * 1000
-		).toLocaleString()} \n================================================\n`
-	);
+	console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
+		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
+	).toLocaleString()} \n==============================================\n`);
 
 	await wyy();
 
-	console.log(
-		`\n=================== 共找到 ${ckArr.length} 个账号 ===================`
-	);
+	console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "read_data");
+	let ckArr = await getCks(ckStr, "sxtc_data");
 
 	await tips(ckArr);
 
@@ -77,101 +70,85 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("开始 看文章");
-	await read_article();
+
+	console.log("开始 签到状态");
+	await signin_info();
 	await $.wait(2 * 1000);
 
 }
 
 
+
+
+
+
+
+
 /**
- * 看文章   httpPost
- * http://wxr.jjyii.com/r/get?v=9
+ * 签到状态   httpPost
+ * https://www.shaoxingticai.com/api/front/user/sign/user
  */
-async function read_article(timeout = 3 * 1000) {
-	let unm = randomInt(1, 6);
-	read_api = read_apiArr[unm]
-	// console.log(ck[0]);
-	// console.log(ck[1]);
+async function signin_info(timeout = 3 * 1000) {
+
 	let url = {
-		url: `http://wxr.jjyii.com/r/get?v=9`,
+		url: `https://www.shaoxingticai.com/api/front/user/sign/user`,
 		headers: {
-			'User-Agent': ck[0],
-			'a_h_n': ck[1],
-			'Content-Type': 'application/x-www-form-urlencoded'
+			'Authori-zation': ck[0],
+			'Host': 'www.shaoxingticai.com',
+			'Content-Type': 'application/json',
 		},
-		body: read_api,
+		body: JSON.stringify({
+			"all": 0,
+			"integral": 0,
+			"sign": 1
+		}),
 	};
 
-	let result = await httpPost(url, `看文章`, timeout);
-	if (result.data.url !== null) {
-		if (result.data.hm == 0) {
-
-			console.log(`\n 看文章: 成功  🎉 \n`);
-			msg += `\n 看文章: 成功  🎉 \n`
-
-			let unm1 = randomInt(10, 20);
-			console.log(`耐心等待 ${unm1} 秒后看下一个文章吧!`);
-			await $.wait(unm1 * 1000);
-
-			console.log("开始 查看金币");
-			await check_coins();
-			await $.wait(2 * 1000);
-
-			let unm2 = randomInt(5, 10);
-			console.log(`耐心等待 ${unm2} 秒后看下一个文章吧!`);
-			await $.wait(unm2 * 1000);
-			await read_article();
+	let result = await httpPost(url, `签到状态`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 签到状态: ${result.message} 🎉  \n`);
+		if (result.data.signNum == 0) {
+			console.log(`没有签到,去签到!`);
+			await signin();
 		} else {
-			console.log(`\n看文章:请等待 ${result.data.hs + 5} 秒在重试 !\n`);
-			msg += `\n看文章:请等待 ${result.data.hs + 5} 秒在重试 !\n`
-			await $.wait(result.data.hs + 5 * 1000);
-			await read_article();
+			console.log(`今天已经签到了,明天再来吧!`);
+			console.log(result.data);
 		}
 	} else {
-		console.log(`\n 看文章: 暂时没有可阅读文章,等会试试吧! \n `);
-		msg += `\n 看文章: 暂时没有可阅读文章,等会试试吧! \n`
+		console.log(`\n 签到状态: ${result.message} \n `);
 	}
 }
-
-
-
-
 
 
 
 /**
- * 检查金币   httpPost
- * http://wxr.jjyii.com/r/ck
+ * 签到   httpGet
+ * https://www.shaoxingticai.com/api/front/user/sign/integral
  */
-async function check_coins(timeout = 3 * 1000) {
+async function signin(timeout = 3 * 1000) {
 
 	let url = {
-		url: `http://wxr.jjyii.com/r/ck`,
+		url: `https://www.shaoxingticai.com/api/front/user/sign/integral`,
 		headers: {
-			'User-Agent': ck[0],
-			'a_h_n': ck[1],
-			'Content-Type': 'application/x-www-form-urlencoded'
+			'Authori-zation': ck[0],
+			'Host': 'www.shaoxingticai.com',
+			'Content-Type': 'application/json',
 		},
-		body: 't=quick',
+		// body: '{}',
 	};
 
-	let result = await httpPost(url, `检查金币`, timeout);
-	if (result.ret == true) {
-		console.log(`\n 检查金币: 阅读成功 🎉 , 获得 ${result.data.gold} 金币 , 已经阅读  ${result.data.count} 次 , 累计收入 ${result.data.income} 金币\n  以下测试使用 \n${JSON.parse(result.data)} `);
-		msg += `\n 检查金币: 阅读成功 🎉 , 获得 ${result.data.gold} 金币 , 已经阅读  ${result.data.count} 次 , 累计收入 ${result.data.income} 金币\n  以下测试使用 \n${JSON.parse(result.data)} `
+	let result = await httpGet(url, `签到`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 签到: ${result.message} \n连续签到 ${result.data.day} 天 , 获得积分 ${result.data.integral} ,经验  ${result.data.experience} !`);
+		console.log(`以下测试使用`);
+		console.log(result.data);
+	} else if (result.code == 500) {
+		console.log(`\n 签到: ${result.message} `);
 
-	} else if (result.ret == false) {
-		console.log(`\n 检查金币: ${result.msg} \n`);
-		msg += `\n 检查金币: ${result.msg} \n`
 	} else {
-		console.log(`\n 检查金币:   失败 ❌ 了呢,原因未知！\n ${result} \n`);
-		msg += `\n 检查金币:   失败 ❌ 了呢,原因未知！\n ${result} \n`
+		console.log(`\n 签到: 失败了呢❌  , ${result} \n `);
 	}
 }
-
-
-
 
 
 
@@ -273,7 +250,6 @@ function wyy(timeout = 3 * 1000) {
 			try {
 				data = JSON.parse(data)
 				console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
-				msg += `\n 【网抑云时间】: ${data.content}  by--${data.music}\n`
 
 			} catch (e) {
 				$.logErr(e, resp);
@@ -294,28 +270,28 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 			tip = matches[1];
 		}
 		if (debug) {
-			console.log(
-				`\n 【debug】=============== 这是 ${tip} 请求 url ===============`
-			);
+			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
 			console.log(url);
 		}
 
 		$.get(
 			url,
-			async (error, response, _data) => {
+			async (err, resp, data) => {
 				try {
-					if (debug) {
-						console.log(
-							`\n\n 【debug】===============这是 ${tip} 返回data==============`
-						);
-						console.log(_data);
+					if (err) {
+						console.log("$.name: API查询请求失败 ‼️‼️");
+						console.log(JSON.stringify(err));
+						$.logErr(err);
+					} else if (debug) {
+						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+						console.log(data);
 						console.log(`======`);
-						console.log(JSON.parse(_data));
+						console.log(JSON.parse(data));
 					}
-					let result = JSON.parse(_data);
+					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					console.log(e);
+					console.log(e, resp);
 				} finally {
 					resolve();
 				}
@@ -336,20 +312,20 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 			tip = matches[1];
 		}
 		if (debug) {
-			console.log(
-				`\n 【debug】=============== 这是 ${tip} 请求 url ===============`
-			);
+			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
 			console.log(url);
 		}
 
 		$.post(
 			url,
-			async (error, response, data) => {
+			async (err, resp, data) => {
 				try {
-					if (debug) {
-						console.log(
-							`\n\n 【debug】===============这是 ${tip} 返回data==============`
-						);
+					if (err) {
+						console.log("$.name: API查询请求失败 ‼️‼️");
+						console.log(JSON.stringify(err));
+						$.logErr(err);
+					} else if (debug) {
+						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
 						console.log(data);
 						console.log(`======`);
 						console.log(JSON.parse(data));
@@ -357,7 +333,7 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					console.log(e);
+					console.log(e, resp);
 				} finally {
 					resolve();
 				}
