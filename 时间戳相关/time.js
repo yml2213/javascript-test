@@ -18,7 +18,7 @@ if (d.length == 1) {
 	d = `0${d}`
 }
 
-console.log(y + m + d);  // 20220501
+console.log( m + '-'+ d);  // 20220501
 
 
 
