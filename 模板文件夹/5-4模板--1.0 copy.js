@@ -1,30 +1,34 @@
 /**
- * 绍兴体彩  公众号 —活力体彩—个人中心  ; 有个签到
+ * 超有惠 app  (链接带邀请) 感谢您走我的邀请链接,谢谢,谢谢,谢谢
+ * 下载地址: https://m.chyouhui.com/page/invite/#/?code=I92CCI7
  * 转载请留信息
  * 
- * cron 40 7 * * *  yml2213_javascript_master/sxtc.js
+ * cron 30 7 * * *  yml2213_javascript_master/cyh.js
  * 
- * 5-4  签到任务  
- * 签到,讲究个日积月累   哈哈哈哈哈
+ * 4-30 完成 签到  , 日常视频 任务   
+ * 5-1  更新逻辑
+ * 5-3  增加出售100积分 , 增加支付宝提现 1 元
+ * 新人任务自己做做吧 很少
  * 
- * 感谢 心雨 的投稿
  * 感谢所有测试人员 
  * ========= 青龙 =========
- * 变量格式: export sxtc_data='AZ1 @ AZ2'  多个账号用 @分割
+ * 变量格式: export cyh_data='androidToken1 @ androidToken2'  多个账号用 @分割
  *
- * Authori-zation :  关键词  www.shaoxingticai.com/api/front/user  ,headers中的一个参数
+ * androidToken :  关键词  t-api.chyouhui.com/auth  ,headers中的一个参数
  *
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
-const $ = new Env("绍兴体彩");
+const $ = new Env("超有惠");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 1 		//0为关闭调试，1为打开调试,默认为0
+const Notify = 1; 		//0为关闭通知，1为打开通知,默认为1
+const debug = 0; 		//0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let ckStr = process.env.sxtc_data;
-let sxtc_dataArr = [];
+let ckStr = process.env.cyh_data;
+let cyh_dataArr = [];
 let msg = "";
 let ck = "";
+let ad_num = "";
+let ad_video_infoArr = '';
 /////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
@@ -39,7 +43,7 @@ async function tips(ckArr) {
 
 	console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
 		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
-	).toLocaleString()} \n==============================================\n`);
+	).toLocaleString()} \n===============================================\n`);
 
 	await wyy();
 
@@ -48,10 +52,8 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "sxtc_data");
-
+	let ckArr = await getCks(ckStr, "cyh_data");
 	await tips(ckArr);
-
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
@@ -59,96 +61,171 @@ async function tips(ckArr) {
 		ck = ckArr[index].split("&");
 
 		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
-
 		await start();
 	}
 	await SendMsg(msg);
-
 })()
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done());
 
+
 async function start() {
 
+	console.log("开始 用户/积分信息");
+	await userInfo();
+	await $.wait(2 * 1000);
 
 	console.log("开始 签到状态");
 	await signin_info();
+	await $.wait(2 * 1000);
+
+	console.log("开始 检查视频状态");
+	await ad_video_info();
 	await $.wait(2 * 1000);
 
 }
 
 
 
-
-
-
-
-
 /**
- * 签到状态   httpPost
- * https://www.shaoxingticai.com/api/front/user/sign/user
+ * 用户信息   httpGet
+ * https://t-api.chyouhui.com/auth/user/my
  */
-async function signin_info(timeout = 3 * 1000) {
+async function userInfo(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://www.shaoxingticai.com/api/front/user/sign/user`,
+		url: `https://t-api.chyouhui.com/auth/user/my`,
 		headers: {
-			'Authori-zation': ck[0],
-			'Host': 'www.shaoxingticai.com',
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			"all": 0,
-			"integral": 0,
-			"sign": 1
-		}),
-	};
-
-	let result = await httpPost(url, `签到状态`, timeout);
-	if (result.code == 200) {
-		console.log(`\n 签到状态: ${result.message} 🎉  \n`);
-		if (result.data.signNum == 0) {
-			console.log(`没有签到,去签到!`);
-			await signin();
-		} else {
-			console.log(`今天已经签到了,明天再来吧!`);
-			console.log(result.data);
-		}
-	} else {
-		console.log(`\n 签到状态: ${result.message} \n `);
-	}
-}
-
-
-
-/**
- * 签到   httpGet
- * https://www.shaoxingticai.com/api/front/user/sign/integral
- */
-async function signin(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://www.shaoxingticai.com/api/front/user/sign/integral`,
-		headers: {
-			'Authori-zation': ck[0],
-			'Host': 'www.shaoxingticai.com',
-			'Content-Type': 'application/json',
+			'androidToken': ck,
+			'Host': 't-api.chyouhui.com',
 		},
 		// body: '{}',
 	};
 
-	let result = await httpGet(url, `签到`, timeout);
-	if (result.code == 200) {
-		console.log(`\n 签到: ${result.message} \n连续签到 ${result.data.day} 天 , 获得积分 ${result.data.integral} ,经验  ${result.data.experience} !`);
-		console.log(`以下测试使用`);
-		console.log(result.data);
-	} else if (result.code == 500) {
-		console.log(`\n 签到: ${result.message} `);
+	let result = await httpGet(url, `用户信息`, timeout);
+	if (result.code == 0) {
 
+		console.log(`\n 用户信息:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`);
+
+		msg += `\n 用户信息:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`
+
+		// await integral_info();
+
+	} else if (result.code == 101) {
+		console.log(`\n ${$.name}: ${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		console.log(`\n ${$.name}: ${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		msg += `\n ${$.name}: ${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
+		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
 	} else {
-		console.log(`\n 签到: 失败了呢❌  , ${result} \n `);
+		console.log(`\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`);
+		msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`
+		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
 	}
 }
+
+/**
+ * 积分信息   httpGet
+ * https://t-api.chyouhui.com/auth/sellIntegral/wallet
+ */
+async function integral_info(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/sellIntegral/wallet`,
+		headers: {
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
+		},
+		// body: '{}',
+	};
+
+	let result = await httpGet(url, `积分信息`, timeout);
+	if (result.code == 0) {
+		console.log(`\n 总积分:${result.data.myIntegral} , 可出售:${result.data.convertibleIntegral} , 可提现金额:${result.data.withdrawAmount} 元 \n 当前汇率:1:${result.data.exchangeRate} , 兑换积分比例: ${result.data.buybackRatio} `);
+		if (result.data.convertibleIntegral > 100) {
+			console.log(`\n 可出售积分:${result.data.convertibleIntegral} , 尝试出售 100 积分!\n `);
+			await Sell_points();
+			await $.wait(2 * 1000);
+		}
+		if (result.data.withdrawAmount >= 1) {
+			console.log(`\n 可提现金额:${result.data.withdrawAmount} 元 , 尝试支付宝提现 1 元 !\n `);
+			await cash();
+			await $.wait(2 * 1000);
+		}
+
+	} else {
+		console.log(`\n 积分信息: ${result.message} \n `);
+	}
+}
+
+
+
+
+
+/**
+ * 签到状态   httpGet
+ * https://t-api.chyouhui.com/auth/dailySignIn/data
+ */
+async function signin_info(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/dailySignIn/data`,
+		headers: {
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
+		},
+		// body: '',
+	};
+
+	let result = await httpGet(url, `签到状态`, timeout);
+	if (result.code == 0) {
+		console.log(`\n 签到状态: ${result.message} 🎉  \n`);
+		msg += `\n 签到状态: ${result.message} 🎉  \n`
+		if (result.data.todayState !== 'SIGN') {
+			console.log(`没有签到,去签到!`);
+			msg += `没有签到,去签到!`
+
+			await signin();
+		} else {
+			console.log(`今天已经签到了,明天再来吧!`);
+			msg += `今天已经签到了,明天再来吧!`
+
+		}
+	} else {
+		console.log(`\n 签到状态: ${result.message} \n `);
+		msg += `\n 签到状态: ${result.message} \n `
+
+	}
+}
+
+
+
+/**
+ * 签到   httpPost
+ * https://t-api.chyouhui.com/auth/dailySignIn/completed
+ */
+async function signin(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/dailySignIn/completed`,
+		headers: {
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
+		},
+		body: '{}',
+	};
+
+	let result = await httpPost(url, `签到`, timeout);
+	if (result.data !== null) {
+		console.log(`\n 签到:成功 🎉   签到获得 积分 ${result.data} \n`);
+
+		msg += `\n 签到:成功 🎉   签到获得 积分 ${result.data} \n`
+	} else {
+		console.log(`\n 签到: ${result.message} \n `);
+		msg += `\n 签到: ${result.message} \n `
+
+	}
+}
+
 
 
 
