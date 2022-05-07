@@ -1,64 +1,67 @@
 /**
- * 超有惠 app  (链接带邀请) 感谢您走我的邀请链接,谢谢,谢谢,谢谢
- * 下载地址: https://m.chyouhui.com/page/invite/#/?code=I92CCI7
+ * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/mb/mb.js
+ * 
+ * 模板 app  
+ * 下载地址: xxxxxxx
  * 转载请留信息
  * 
- * cron 30 7 * * *  yml2213_javascript_master/cyh.js
+ * cron 30 7 * * *  yml2213_javascript_master/mb.js
  * 
- * 4-30 完成 签到  , 日常视频 任务   
- * 5-1  更新逻辑
  * 5-3  增加出售100积分 , 增加支付宝提现 1 元
  * 新人任务自己做做吧 很少
  * 
  * 感谢所有测试人员 
  * ========= 青龙 =========
- * 变量格式: export cyh_data='androidToken1 @ androidToken2'  多个账号用 @分割
+ * 变量格式: export mb_data=' xxxx @ xxxxx '  多个账号用 @分割
  *
- * androidToken :  关键词  t-api.chyouhui.com/auth  ,headers中的一个参数
+ * 抓包 :  关键词  t-api.chyouhui.com/auth  , headers 中的一个参数
  *
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
-const $ = new Env("超有惠");
+const $ = new Env("模板");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; 		//0为关闭通知，1为打开通知,默认为1
-const debug = 0; 		//0为关闭调试，1为打开调试,默认为0
+const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
+const debug = 0 		//0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let ckStr = process.env.cyh_data;
-let cyh_dataArr = [];
+let ckStr = process.env.mb_data;
+let mb_dataArr = [];
 let msg = "";
 let ck = "";
-let ad_num = "";
-let ad_video_infoArr = '';
+let Version = 'yml   2022/5/5 更新 xxxxxx'
+let thank = `\n 感谢 xxx 的投稿 `
+let test = `\n 脚本测试中,有bug及时反馈! \n 脚本测试中,有bug及时反馈!`
 /////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	console.log(`\n版本: 0.1 -- 22/5/4\n`);
+	console.log(`\n${Version}\n`);
+	msg += `${Version}`
+	console.log(thank);
+	msg += `${thank}`
+	console.log(test);
 	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-	console.log(`\n 感谢 心雨 的投稿 \n`);
-	console.log(`\n 感谢 心雨 的投稿 \n`);
-	msg += `\n 感谢 心雨 的投稿 \n`
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	msg += `\n 脚本测试中,有bug及时反馈! \n`
 
 	console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
 		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
 	).toLocaleString()} \n===============================================\n`);
-
 	await wyy();
-
+	
 	console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "cyh_data");
+	let ckArr = await getCks(ckStr, "mb_data");
 	await tips(ckArr);
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
 
 		ck = ckArr[index].split("&");
+
+		mbhd = {
+			"androidToken": ck,
+			"Host": "t-api.chyouhui.com",
+		}
 
 		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
 		await start();
@@ -71,8 +74,11 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("开始 用户/积分信息");
-	await userInfo();
+
+
+
+	console.log("开始 用户信息");
+	await user_info();
 	await $.wait(2 * 1000);
 
 	console.log("开始 签到状态");
@@ -88,141 +94,78 @@ async function start() {
 
 
 /**
- * 用户信息   httpGet
+ * 用户信息   get
  * https://t-api.chyouhui.com/auth/user/my
  */
-async function userInfo(timeout = 3 * 1000) {
+async function user_info() {
 
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/user/my`,
-		headers: {
-			'androidToken': ck,
-			'Host': 't-api.chyouhui.com',
-		},
-		// body: '{}',
-	};
-
-	let result = await httpGet(url, `用户信息`, timeout);
-	if (result.code == 0) {
-
-		console.log(`\n 用户信息:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`);
-
-		msg += `\n 用户信息:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`
-
-		// await integral_info();
-
-	} else if (result.code == 101) {
-		console.log(`\n ${$.name}: ${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
-		console.log(`\n ${$.name}: ${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
-		msg += `\n ${$.name}: ${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
-	} else {
-		console.log(`\n 用户信息: ${result.message} \n `);
-		msg += `\n 用户信息: ${result.message} \n `
-	}
-}
-
-/**
- * 积分信息   httpGet
- * https://t-api.chyouhui.com/auth/sellIntegral/wallet
- */
-async function integral_info(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/sellIntegral/wallet`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		// body: '{}',
-	};
-
-	let result = await httpGet(url, `积分信息`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 总积分:${result.data.myIntegral} , 可出售:${result.data.convertibleIntegral} , 可提现金额:${result.data.withdrawAmount} 元 \n 当前汇率:1:${result.data.exchangeRate} , 兑换积分比例: ${result.data.buybackRatio} `);
-		if (result.data.convertibleIntegral > 100) {
-			console.log(`\n 可出售积分:${result.data.convertibleIntegral} , 尝试出售 100 积分!\n `);
-			await Sell_points();
-			await $.wait(2 * 1000);
-		}
-		if (result.data.withdrawAmount >= 1) {
-			console.log(`\n 可提现金额:${result.data.withdrawAmount} 元 , 尝试支付宝提现 1 元 !\n `);
-			await cash();
-			await $.wait(2 * 1000);
-		}
-
-	} else {
-		console.log(`\n 积分信息: ${result.message} \n `);
-	}
-}
-
-
-
-
-
-/**
- * 签到状态   httpGet
- * https://t-api.chyouhui.com/auth/dailySignIn/data
- */
-async function signin_info(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/dailySignIn/data`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		// body: '',
-	};
-
-	let result = await httpGet(url, `签到状态`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 签到状态: ${result.message} 🎉  \n`);
-		msg += `\n 签到状态: ${result.message} 🎉  \n`
-		if (result.data.todayState !== 'SIGN') {
-			console.log(`没有签到,去签到!`);
-			msg += `没有签到,去签到!`
-
-			await signin();
+	type_name = `用户信息`
+	if (type_name == `用户信息`) {
+		let url = {
+			url: `https://t-api.chyouhui.com/auth/user/my`,
+			headers: mbhd,
+			// body: "{}",
+		};
+		await task(get, url, type_name)
+		if (result.code == 0) {
+			console.log(`\n 用户信息:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`);
+			msg += `\n 用户信息:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`
+		} else if (result.code == 101) {
+			console.log(`\n ${$.name}: ${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+			console.log(`\n ${$.name}: ${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+			msg += `\n ${$.name}: ${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
+			throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
 		} else {
-			console.log(`今天已经签到了,明天再来吧!`);
-			msg += `今天已经签到了,明天再来吧!`
-
+			console.log(`\n 用户信息:  失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `);
+			msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `
+			throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
 		}
-	} else {
-		console.log(`\n 签到状态: ${result.message} \n `);
-		msg += `\n 签到状态: ${result.message} \n `
-
 	}
 }
+
+
 
 
 
 /**
- * 签到   httpPost
- * https://t-api.chyouhui.com/auth/dailySignIn/completed
+ * 签到状态改   post
+ * https://t-api.chyouhui.com/auth/user/my
  */
-async function signin(timeout = 3 * 1000) {
+async function signin_info() {
 
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/dailySignIn/completed`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		body: '{}',
-	};
-
-	let result = await httpPost(url, `签到`, timeout);
-	if (result.data !== null) {
-		console.log(`\n 签到:成功 🎉   签到获得 积分 ${result.data} \n`);
-
-		msg += `\n 签到:成功 🎉   签到获得 积分 ${result.data} \n`
-	} else {
-		console.log(`\n 签到: ${result.message} \n `);
-		msg += `\n 签到: ${result.message} \n `
-
+	type_name = `签到`
+	if (type_name == `签到`) {
+		let url = {
+			url: `https://t-api.chyouhui.com/auth/user/my`,
+			headers: mbhd,
+			body: JSON.stringify(
+				{ "xxx": 0, "xxx": 0, "xxx": 1 }
+			),
+		};
+		await task(post, url, type_name)
+		if (result.code == 0) {
+			console.log(`\n 签到状态: ${result.message} 🎉  \n`);
+			msg += `\n 签到状态: ${result.message} 🎉  \n`
+			if (result.data.todayState !== 'SIGN') {
+				console.log(`没有签到,去签到!`);
+				msg += `没有签到,去签到!`
+				// await signin();
+			} else {
+				console.log(`今天已经签到了,明天再来吧!`);
+				msg += `今天已经签到了,明天再来吧!`
+			}
+		} else {
+			console.log(`\n 签到状态: ${result.message} \n `);
+			msg += `\n 签到状态: ${result.message} \n `
+		}
 	}
 }
+
+
+
+
+
+
 
 
 
@@ -315,8 +258,31 @@ function randomInt(min, max) {
 	return Math.round(Math.random() * (max - min) + min);
 }
 
+
+/**
+ * 时间戳 13位
+ */
+
+function ts13() {
+	return Math.round(new Date().getTime()).toString();
+}
+
+/**
+ * 时间戳 10位
+ */
+
+function ts10() {
+	return Math.round(new Date().getTime() / 1000).toString();
+}
+
+
+
+
+
+
+
 //每日网抑云
-function wyy(timeout = 3 * 1000) {
+function wyy() {
 	return new Promise((resolve) => {
 		let url = {
 			url: `https://keai.icu/apiwyy/api`
@@ -331,9 +297,13 @@ function wyy(timeout = 3 * 1000) {
 			} finally {
 				resolve()
 			}
-		}, timeout)
+		}, timeout = 3 * 1000)
 	})
 }
+
+
+
+
 // ============================================ get请求 ============================================ \\
 async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 	return new Promise((resolve) => {
@@ -353,11 +323,7 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 			url,
 			async (err, resp, data) => {
 				try {
-					if (err) {
-						console.log("$.name: API查询请求失败 ‼️‼️");
-						console.log(JSON.stringify(err));
-						$.logErr(err);
-					} else if (debug) {
+					if (debug) {
 						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
 						console.log(data);
 						console.log(`======`);
@@ -366,7 +332,9 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					console.log(e, resp);
+					console.log(err, resp);
+					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+					msg += `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}
@@ -395,11 +363,7 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 			url,
 			async (err, resp, data) => {
 				try {
-					if (err) {
-						console.log("$.name: API查询请求失败 ‼️‼️");
-						console.log(JSON.stringify(err));
-						$.logErr(err);
-					} else if (debug) {
+					if (debug) {
 						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
 						console.log(data);
 						console.log(`======`);
@@ -408,7 +372,9 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					console.log(e, resp);
+					console.log(err, resp);
+					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+					msg += `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}
@@ -417,6 +383,10 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 		);
 	});
 }
+
+
+
+
 
 // ============================================ debug调试 ============================================ \\
 function debugLog(...args) {

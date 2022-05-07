@@ -1,70 +1,51 @@
 /**
- * 地址: https://raw.githubusercontent.com/yml2213/javascript/master/cdlm/cdlm.js
+ * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/qrxny/qrxny.js
  * 转载请留信息,谢谢
  * 
- * 吃对了嘛 小程序  
+ * 奇瑞新能源 
  * 
- * cron 35 7 * * *  yml2213_javascript_master/cdlm.js
+ * cron 35 7 * * *  yml2213_javascript_master/qrxny.js
  * 
- * 5-2  完成 签到 ,转发 , 评论 ,看视频 任务   
- * 5-2  优化失效提示,测试通知功能
- * 5-2  优化通知功能
- * 5-6	修复签到 bug
+ * 5-5	完成签到
  * 
- * 积分换实物,自己看看决定跑不跑吧
  * 
- * 感谢 心雨 的投稿
  * 感谢所有测试人员 
  * ========= 青龙 =========
- * 变量格式: export cdlm_data='token1 @ token2'  多个账号用 @分割
+ * 变量格式: export qrxny_data='Authorization1 & userid & UA @ Authorization2 & userid & UA'  多个账号用 @分割
  *
- * token :  关键词  ht.chiduilema.com  找到 token 就行了
+ * 抓包 :  关键词  qrappser.cheryev.cn/cheryev/crm/user  找到 Authorization 跟 UA 就行了 , userid 我界面 id就是
  *
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
-const $ = new Env("吃对了嘛");
+const $ = new Env("奇瑞新能源");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; 		//0为关闭通知，1为打开通知,默认为1
-const debug = 0			//0为关闭调试，1为打开调试,默认为0
+const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
+const debug = 1 		//0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let ckStr = process.env.cdlm_data;
+let ckStr = process.env.qrxny_data;
 let msg = "";
 let ck = "";
-let task_Arr = "";
-let rid = "";
-let unm = randomInt(1, 8)
-let textArr = ['6666', '学到了', '感谢分享', '很有帮助', '原来是这样', '懂了,懂了', '学习一下', '知识又增加了'];
-let text = textArr[unm];
 /////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	console.log(`\n版本: 0.2 -- 22/5/2`);
+	console.log(`\n版本: 0.1 -- 22/5/5`);
 	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-	console.log(`\n 感谢 心雨 的投稿 \n`);
-	console.log(`\n 感谢 心雨 的投稿 \n`);
-	msg += `\n 感谢 心雨 的投稿 \n`
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	msg += `\n 脚本测试中,有bug及时反馈! \n`
+	// msg += `\n 脚本已恢复正常状态,请及时更新! `
+	console.log(`\n 脚本测试中,有bug及时反馈! \n\n 脚本测试中,有bug及时反馈! \n\n 脚本测试中,有bug及时反馈! \n`);
+	msg += `\n 脚本测试中,有bug及时反馈! \n\n 脚本测试中,有bug及时反馈! \n\n 脚本测试中,有bug及时反馈! \n`
 
-	console.log(
-		`\n================================================\n脚本执行 - 北京时间(UTC+8): ${new Date(
-			new Date().getTime() +
-			new Date().getTimezoneOffset() * 60 * 1000 +
-			8 * 60 * 60 * 1000
-		).toLocaleString()} \n================================================\n`
-	);
+	console.log(`\n================================================\n脚本执行 - 北京时间(UTC+8): ${new Date(
+		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
+	).toLocaleString()} \n================================================\n`);
 
 	await wyy();
 
-	console.log(
-		`\n=================== 共找到 ${ckArr.length} 个账号 ===================`
-	);
+	console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "cdlm_data");
+	let ckArr = await getCks(ckStr, "qrxny_data");
 
 	await tips(ckArr);
 
@@ -73,6 +54,12 @@ async function tips(ckArr) {
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
 
 		ck = ckArr[index].split("&");
+
+		xyhd = {
+			"Content-Type": "application/json",
+			"Authorization": ck[0],
+			"User-Agent": ck[2],
+		}
 
 		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
 
@@ -90,265 +77,68 @@ async function start() {
 	await userInfo();
 	await $.wait(2 * 1000);
 
-	console.log("开始 任务列表");
-	await task_list();
+	console.log("开始 签到信息");
+	await sign();
 	await $.wait(2 * 1000);
-
-
 
 }
 
 
 
 /**
- * 用户信息   get
- * https://ht.chiduilema.com/user/info?token=efa38a23fb2a41edbe372914e4c2d28c
+ * 用户信息   httpPost
+ * https://qrappser.cheryev.cn/cheryev/crm/user/profile/1211519882
  */
 async function userInfo(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://ht.chiduilema.com/user/info?token=${ck}`,
-		headers: {
-			'Host': 'ht.chiduilema.com',
-			'content-type': 'application/x-www-form-urlencoded',
-			'Referer': 'https://servicewechat.com/wx4f0e9a3b052385ae/18/page-frame.html'
-		},
-		// body: '{}',
+		url: `https://qrappser.cheryev.cn/cheryev/crm/user/profile/${ck[1]}`,
+		headers: xyhd,
+		body: ``,
 	};
 
-	let result = await httpGet(url, `用户信息`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 用户信息:${result.msg} 🎉  \n欢迎光临:${result.data.baseData.nick} \n`);
-		msg += `\n 用户信息:${result.msg} 🎉  \n欢迎光临:${result.data.baseData.nick} \n`
-	} else if (result.code == 101) {
-		console.log(`\n 吃对了嘛:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
-		console.log(`\n 吃对了嘛:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
-		msg += `\n 吃对了嘛:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
+	let result = await httpPost(url, `用户信息`, timeout);
+	if (result.resultCode == 0) {
+		console.log(`\n 用户信息: ${result.resultMsg} 🎉  \n欢迎光临: ${result.data.userName} , 拥有 e币: ${result.data.totalPoints} \n`);
+		msg += `\n 用户信息: ${result.resultMsg} 🎉  \n欢迎光临: ${result.data.userName} , 拥有 e币: ${result.data.totalPoints} \n`
+	} else if (result.resultCode == 2005) {
+		console.log(`\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		console.log(`\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		msg += `\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
+		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
 	} else {
-		console.log(`\n 用户信息: ${result.message} \n `);
-	}
-}
-
-/**
- * 任务列表   get
- * https://ht.chiduilema.com/task/day?token=1cc91aac6e6f4920b94ff2dc0e40d19a
- */
-async function task_list(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://ht.chiduilema.com/task/day?token=${ck}`,
-		headers: {
-			'Host': 'ht.chiduilema.com',
-			'content-type': 'application/x-www-form-urlencoded',
-			'Referer': 'https://servicewechat.com/wx4f0e9a3b052385ae/18/page-frame.html'
-		},
-		// body: '{}',
-	};
-
-	let result = await httpGet(url, `任务列表`, timeout);
-	if (result.code == 0) {
-
-		console.log(`\n 任务列表:${result.msg} 🎉  \n`);
-		task_Arr = result.data.baseData;
-		// console.log(task_Arr);
-		if (task_Arr.sign.todayCount < task_Arr.sign.mustCount) {
-			console.log(`签到:这个月还可以签到,去签到了鸭!`);
-			await signin();
-			await $.wait(5 * 1000);
-		} else {
-			console.log(`签到:这个月不能签到了!`);
-			msg += `\n签到:这个月还不能了!\n`
-		}
-		if (task_Arr.share.todayCount < 2) {
-			console.log(`转发:${task_Arr.share.todayCount}/2`);
-			console.log(`开始 转发`);
-			await video_list();
-			await share();
-			await $.wait(5 * 1000);
-			await video_list();
-			await share();
-			await $.wait(5 * 1000);
-		} else {
-			console.log(`转发:今天已经 转发 过了!`);
-			msg += `\n转发:今天已经 转发 过了!\n`
-		}
-		if (task_Arr.comment.todayCount < 2) {
-			console.log(`评论:${task_Arr.comment.todayCount}/2`);
-			console.log(`开始 评论`);
-			await video_list();
-			await add_comment();
-			await $.wait(5 * 1000);
-			await video_list();
-			await add_comment();
-			await $.wait(5 * 1000);
-		} else {
-			console.log(`评论:今天已经 评论 过了!`);
-			msg += `\n评论:今天已经 评论 过了!\n`
-		}
-		if (task_Arr.video.todayCount < 2) {
-			console.log(`看视频:${task_Arr.video.todayCount}/2`);
-			console.log(`开始 看视频`);
-			await video_list();
-			await Watch_video();
-			await $.wait(5 * 1000);
-			await video_list();
-			await Watch_video();
-			await $.wait(5 * 1000);
-		} else {
-			console.log(`看视频:今天已经 看视频 过了!`);
-			msg += `\n看视频:今天已经 看视频 过了!\n`
-		}
-
-	} else {
-		console.log(`\n 任务列表: ${result.message} \n `);
-	}
-}
-
-
-
-
-
-/**
- * 签到   get
- * https://ht.chiduilema.com/action/action?token=1cc91aac6e6f4920b94ff2dc0e40d19a&type=7
- */
-async function signin(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://ht.chiduilema.com/action/action?token=${ck}&type=7`,
-		headers: {
-			'Host': 'ht.chiduilema.com',
-			'content-type': 'application/x-www-form-urlencoded',
-			'Referer': 'https://servicewechat.com/wx4f0e9a3b052385ae/18/page-frame.html'
-		},
-		// body: '{}',
-	};
-
-	let result = await httpGet(url, `签到`, timeout);
-
-	if (result.code == 0) {
-		console.log(`\n 签到:${result.msg} 🎉 \n`);
-		msg += `\n 签到:${result.msg} 🎉 \n`
-
-	} else if (result.code == -1) {
-		console.log(`\n 签到:${result.msg} \n`);
-		msg += `\n 签到:${result.msg} \n`
-	} else {
-		console.log(`\n 签到:   失败 ❌ 了呢,原因未知！\n ${JSON.stringify(result)} \n`);
-		msg += `\n 签到:   失败 ❌ 了呢,原因未知！\n ${JSON.stringify(result)} \n`
-	}
-}
-
-
-
-
-/**
- * 视频列表   get
- * https://ht.chiduilema.com/content/list?token=1cc91aac6e6f4920b94ff2dc0e40d19a&keyword=&page=1&pageSize=10&source=3&orderBy=1&categoryId=2
- */
-async function video_list(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://ht.chiduilema.com/content/list?token=${ck}&keyword=&page=1&pageSize=10&source=3&orderBy=1&categoryId=2`,
-		headers: {
-			'Host': 'ht.chiduilema.com',
-			'content-type': 'application/x-www-form-urlencoded',
-			'Referer': 'https://servicewechat.com/wx4f0e9a3b052385ae/18/page-frame.html'
-		},
-		// body: '{}',
-	};
-
-	let result = await httpGet(url, `视频列表`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 视频列表:${result.msg} 🎉 \n`);
-		let unm = randomInt(1, 9);
-		rid = result.data.baseData.list[unm].id;
-		console.log(`\n 转发评论视频id:${rid}\n`);
-
-	} else {
-		console.log(`\n 视频列表:   失败 ❌ 了呢,原因未知！\n ${result} \n`);
-	}
-}
-
-/**
- * 转发   get  视频  
- * https://ht.chiduilema.com/action/action?token=efa38a23fb2a41edbe372914e4c2d28c&rid=810&type=5&source=3&contentType=2
- */
-async function share(timeout = 3 * 1000) {
-	console.log(rid);
-	let url = {
-		url: `https://ht.chiduilema.com/action/action?token=${ck}&rid=${rid}&type=5&source=3&contentType=2`,
-		headers: {
-			'Host': 'ht.chiduilema.com',
-			'content-type': 'application/x-www-form-urlencoded',
-			'Referer': 'https://servicewechat.com/wx4f0e9a3b052385ae/18/page-frame.html'
-		},
-		// body: '{}',
-	};
-
-	let result = await httpGet(url, `转发`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 转发:${result.msg} 🎉 \n`);
-		msg += `\n 转发:${result.msg} 🎉 \n`
-	} else {
-		console.log(`\n 转发:   失败 ❌ 了呢,原因未知！\n ${result} \n`);
-		msg += `\n 转发:   失败 ❌ 了呢,原因未知！\n ${result} \n`
+		console.log(`\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`);
+		msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`
+		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
 	}
 }
 
 
 /**
- * 评论   get  视频  
- * https://ht.chiduilema.com/comment/comment?token=efa38a23fb2a41edbe372914e4c2d28c&content=%E5%AD%A6%E5%88%B0%E4%BA%86%20%E5%AD%A6%E5%88%B0%E4%BA%86&bodyType=3&bodyId=810
+ * 签到   httpPost
+ * https://qrappser.cheryev.cn/cheryev/crm/user/checkin
  */
-async function add_comment(timeout = 3 * 1000) {
+async function sign(timeout = 3 * 1000) {
+
 	let url = {
-		url: `https://ht.chiduilema.com/comment/comment?token=${ck}&content=${text}&bodyType=3&bodyId=${rid}`,
-		headers: {
-			'Host': 'ht.chiduilema.com',
-			'content-type': 'application/x-www-form-urlencoded',
-			'Referer': 'https://servicewechat.com/wx4f0e9a3b052385ae/18/page-frame.html'
-		},
-		// body: '{}',
+		url: `https://qrappser.cheryev.cn/cheryev/crm/user/checkin`,
+		headers: xyhd,
+		body: `{"userId":"${ck[1]}"}`,
 	};
 
-	let result = await httpGet(url, `评论`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 评论:${result.msg} 🎉 \n`);
-		msg += `\n 评论:${result.msg} 🎉 \n`
+	let result = await httpPost(url, `签到信息`, timeout);
+	if (result.resultCode == 0) {
+		console.log(`\n 签到: ${result.resultMsg} 🎉\n`);
+		msg += `\n 签到: ${result.resultMsg} 🎉\n`
+	} else if (result.resultCode == 2602) {
+		console.log(`\n 签到: ${result.resultMsg} !\n`);
+		msg += `\n 签到: ${result.resultMsg} !\n`
 	} else {
-		console.log(`\n 评论:   失败 ❌ 了呢,原因未知！\n ${result} \n`);
-		msg += `\n 评论:   失败 ❌ 了呢,原因未知！\n ${result} \n`
+		console.log(`\n 签到信息: 失败 ❌ 了呢,原因未知！\n ${result} \n `);
 	}
 }
 
 
-
-/**
- * 看视频   get  视频  
- * https://ht.chiduilema.com/action/action?token=efa38a23fb2a41edbe372914e4c2d28c&rId=809&type=8&source=3&contentType=2
- */
-async function Watch_video(timeout = 3 * 1000) {
-	let url = {
-		url: `https://ht.chiduilema.com/action/action?token=${ck}&rId=${rid}&type=8&source=3&contentType=2`,
-		headers: {
-			'Host': 'ht.chiduilema.com',
-			'content-type': 'application/x-www-form-urlencoded',
-			'Referer': 'https://servicewechat.com/wx4f0e9a3b052385ae/18/page-frame.html'
-		},
-		// body: '{}',
-	};
-
-	let result = await httpGet(url, `观看视频`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 观看视频:${result.msg} 🎉 \n`);
-		msg += `\n 观看视频:${result.msg} 🎉 \n`
-
-	} else {
-		console.log(`\n 观看视频:   失败 ❌ 了呢,原因未知！\n ${result} \n`);
-		msg += `\n 观看视频:   失败 ❌ 了呢,原因未知！\n ${result} \n`
-	}
-}
 
 
 
@@ -481,17 +271,17 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 
 		$.get(
 			url,
-			async (error, response, data) => {
+			async (error, response, _data) => {
 				try {
 					if (debug) {
 						console.log(
 							`\n\n 【debug】===============这是 ${tip} 返回data==============`
 						);
-						console.log(data);
+						console.log(_data);
 						console.log(`======`);
-						console.log(JSON.parse(data));
+						console.log(JSON.parse(_data));
 					}
-					let result = JSON.parse(data);
+					let result = JSON.parse(_data);
 					resolve(result);
 				} catch (e) {
 					console.log(e);
