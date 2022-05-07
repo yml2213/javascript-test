@@ -1,11 +1,22 @@
 aa = {
-	"error": "invalid_request_body",
-	"exception": "HttpMessageNotReadableException",
-	"timestamp": 1651755107888,
-	"duration": 1,
-	"error_description": "Request body not readable.Please check content type is correct!"
-}
-
+	"success": true,
+	"code": 100,
+	"msg": null,
+	"data": {
+	    "des": "签到成功！ +1椰币",
+	    "notice": 1,
+	    "video_open": "-1",
+	    "continue_des": "再签6天，可获得福利包",
+	    "rank": 24,
+	    "continue_day": 1,
+	    "gold": 1,
+	    "wel_package_id": 0
+	},
+	"ads": [],
+	"asyn_ask": [
+	    "https://dz.ledongt.com/source/plugin/magmobileapi/magmobileapi.php?mag_mod=member&mag_fuc=setuserlogin&uid=961&t=1651922308&k=0e3b112388b38892eb445218aab40106"
+	]
+    }
 
 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzZXJpYWxWZXJzaW9uVUlEIjoxLCJ1c2VyQ2xhc3MiOjEsIlVTRVJfQ0xBU1NfTUFOQUdFUiI6MywiVVNFUl9DTEFTU19DVVNUT01FUiI6MSwiVVNFUl9DTEFTU19FTlRFUlBSSVNFIjoyLCJwaG9uZU51bSI6IjEzNzU0NjUwODA0IiwidmluIjoiIiwiYXZhdGFyIjoiaHR0cHM6Ly9jaGVyeWV2LWFwcC5vYnMubXlodWF3ZWljbG91ZC5jb20vc3lzdGVtL2F2YXRhci9kZWZhdWx0X2F2YXRhci5wbmciLCJ1c2VyTmFtZSI6IkVWMTIxMTUxOTg4MiIsImV4cCI6MTY1MjM2MTk5MiwidXNlcklkIjoiMTIxMTUxOTg4MiIsImlhdCI6MTY1MTc1NzE5Mn0.7oQfI14Bi580_NHII17cECJTphLbMDJFwUMguaiS5xM'
 

@@ -2,9 +2,9 @@
  * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/yemai/yemai.js
  * 转载请留信息,谢谢
  * 
- * 椰麦  app
+ * 椰麦  小程序   可以的话,请扫码支持我  走我的邀请  ,谢谢
  * 
- * cron 45 7 * * *  yml2213_javascript_master/yemai.js
+ * cron 35 7 * * *  yml2213_javascript_master/yemai.js
  * 
  * 5-7	完成签到
  * 
@@ -13,7 +13,7 @@
  * ========= 青龙 =========
  * 变量格式: export yemai_data='cookie1 @ cookie2 '  多个账号用 @分割
  *
- * 抓包 :  关键词  m.ledongt.com  抓个自己的 cookie 就行了 
+ * 抓包 :  关键词  miniprogram.api.miotech.com  抓个自己的 cookie 就行了 
  *
  * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
@@ -76,12 +76,12 @@ async function tips(ckArr) {
 
 async function start() {
 
-	// console.log("开始 用户信息");
-	// await user_info();
-	// await $.wait(2 * 1000);
+	console.log("开始 用户信息");
+	await user_info();
+	await $.wait(2 * 1000);
 
-	console.log("开始 签到");
-	await signin();
+	console.log("开始 签到状态");
+	await signin_info();
 	await $.wait(2 * 1000);
 
 }
@@ -90,38 +90,114 @@ async function start() {
 
 
 
+/**
+ * 用户信息   get
+ * https://miniprogram.api.miotech.com/api/mp2c/user/profile
+ */
+async function user_info() {
+
+	type_name = `用户信息`
+	if (type_name == `用户信息`) {
+		let url = {
+			url: `https://miniprogram.api.miotech.com/api/mp2c/user/profile`,
+			headers: {
+				"Host": "miniprogram.api.miotech.com",
+				"Cookie": ck[0],
+			},
+			// body: "{}",
+		};
+		let result = await httpGet(url, type_name);
+		if (result.code == "success") {
+			console.log(`\n 用户信息: 欢迎光临 ${result.data.nickName}  🎉  \n 信息:${result.data.nickName} , 积分: ${result.data.balanceOfPoints} ,手机号: ${result.data.phoneNumber}\n`);
+			msg += `\n 用户信息: 欢迎光临 ${result.data.nickName}  🎉  \n 信息:${result.data.nickName} , 积分: ${result.data.balanceOfPoints} ,手机号: ${result.data.phoneNumber}\n`
+		} else if (result.code == "failed") {
+			console.log(`\n ${$.name}: ${result.error} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+			console.log(`\n ${$.name}: ${result.error} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+			msg += `\n ${$.name}: ${result.error} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
+			throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+		} else {
+			console.log(`\n 用户信息:  失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `);
+			msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `
+			throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+		}
+	}
+}
+
+
 
 /**
- * 签到   httpGet
- * https://m.ledongt.com/mag/sign/v1/sign/sign
+ * 签到状态   httpGet
+ * https://miniprogram.api.miotech.com/api/mp2c/checkin/info
+ */
+async function signin_info() {
+
+	type_name = `签到状态`
+	if (type_name == `签到状态`) {
+		let url = {
+			url: `https://miniprogram.api.miotech.com/api/mp2c/checkin/info`,
+			headers: {
+				"Host": "miniprogram.api.miotech.com",
+				"Cookie": ck[0],
+			},
+			// body: "{}",
+		};
+		let result = await httpGet(url, type_name);
+		if (result.code == "success") {
+
+			if (result.data.isChecked == false) {
+				console.log(`没有签到,去签到!`);
+				msg += `没有签到,去签到!`
+				await signin();
+			} else if (result.data.isChecked == true) {
+				console.log(`今天已经签到了,明天再来吧!`);
+				msg += `今天已经签到了,明天再来吧!`
+			}
+
+		} else {
+			console.log(`\n 签到状态:  失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `);
+			msg += `\n 签到状态: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `
+			// throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+		}
+	}
+}
+
+
+
+
+
+
+/**
+ * 签到   post
+ * https://miniprogram.api.miotech.com/api/mp2c/checkin/collect
  */
 async function signin() {
 
 	type_name = `签到`
 	if (type_name == `签到`) {
 		let url = {
-			url: `https://m.ledongt.com/mag/sign/v1/sign/sign`,
+			url: `https://miniprogram.api.miotech.com/api/mp2c/checkin/collect`,
 			headers: {
-				"Host": "m.ledongt.com",
+				"Host": "miniprogram.api.miotech.com",
 				"Cookie": ck[0],
-				"x-requested-with": "XMLHttpRequest"
 			},
-			// body: ``,
+			body: `https://miniprogram.api.miotech.com/api/mp2c/checkin/collect`,
 		};
-		let result = await httpGet(url, type_name);
+		let result = await httpPost(url, type_name);
 
-		if (result.success == true) {
-			console.log(`\n	签到:  成功 , ${result.data.des} , ${result.data.continue_des} , 连续签到:${result.data.continue_day}\n`);
-			msg += `\n	签到:  成功 , ${result.data.des} , ${result.data.continue_des} , 连续签到:${result.data.continue_day}\n`;
-		} else if (result.success == false) {
-			console.log(`\n	签到:  ${result.msg}\n`);
-			msg += `\n 签到:  ${result.msg}\n`;
+		if (result.code == "success") {
+			console.log(`\n	签到:  成功\n`);
+			msg += `\n 签到:  成功\n`;
+		} else if (result.code == "failed") {
+			console.log(`\n	签到:  ${result.message}\n`);
+			msg += `\n 签到:  ${result.message}\n`;
 		} else {
 			console.log(`\n 签到: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n`);
 			msg += `\n 签到: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `
 		}
 	}
 }
+
+
 
 
 
