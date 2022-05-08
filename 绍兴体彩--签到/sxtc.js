@@ -5,6 +5,9 @@
  * cron 40 7 * * *  yml2213_javascript_master/sxtc.js
  * 
  * 5-4  签到任务  
+ * 5-5	修复签到bug,推荐所有人更新
+ * 5-5	内部任务版本
+ * 5-8	优化通知
  * 签到,讲究个日积月累   哈哈哈哈哈
  * 
  * 感谢 心雨 的投稿
@@ -18,24 +21,32 @@
  */
 const $ = new Env("绍兴体彩");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; 		//0为关闭通知，1为打开通知,默认为1
-const debug = 0; 		//0为关闭调试，1为打开调试,默认为0
-//////////////////////
+const Notify = 1		//0为关闭通知，1为打开通知,默认为1
+const debug = 1 		//0为关闭调试，1为打开调试,默认为0
+/////////////////////////////////////////////////////////
 let ckStr = process.env.sxtc_data;
 let sxtc_dataArr = [];
 let msg = "";
 let ck = "";
+let task_id = "";
+/////////////////////////////////////////////////////////
+let Version = '\n yml   2022/5/8  优化通知\n'
+let thank = `\n 感谢 心雨 的投稿\n`
+let test = `\n 脚本测试中,有bug及时反馈! 内部任务版本,禁止外传!\n`
 /////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	console.log(`\n版本: 0.1 -- 22/5/4\n`);
+	console.log(`${Version}`);
+	msg += `${Version}`
+
+	// console.log(thank);
+	// msg += `${thank}`
+
+	console.log(test);
+	msg += `${test}`
+
 	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-	console.log(`\n 感谢 心雨 的投稿 \n`);
-	console.log(`\n 感谢 心雨 的投稿 \n`);
-	msg += `\n 感谢 心雨 的投稿 \n`
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	msg += `\n 脚本测试中,有bug及时反馈! \n`
+	// msg += `脚本已恢复正常状态,请及时更新`
 
 	console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
 		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
@@ -49,15 +60,17 @@ async function tips(ckArr) {
 
 !(async () => {
 	let ckArr = await getCks(ckStr, "sxtc_data");
-
 	await tips(ckArr);
-
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
 
 		ck = ckArr[index].split("&");
-
+		sxtchd = {
+			"Authori-zation": ck[0],
+			"Host": "www.shaoxingticai.com",
+			"Content-Type": "application/json",
+		}
 		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
 
 		await start();
@@ -70,16 +83,52 @@ async function tips(ckArr) {
 
 async function start() {
 
+	console.log("开始 用户信息");
+	await userInfo();
+	await $.wait(2 * 1000);
 
 	console.log("开始 签到状态");
 	await signin_info();
 	await $.wait(2 * 1000);
+
+	console.log("开始 任务状态");
+	await task_info();
+	await $.wait(2 * 1000);
+
+
+
+	
 
 }
 
 
 
 
+/**
+ * 用户信息   httpGet
+ * https://www.shaoxingticai.com/api/front/user
+ */
+async function userInfo(timeout = 3 * 1000) {
+	let url = {
+		url: `https://www.shaoxingticai.com/api/front/user`,
+		headers: sxtchd,
+		// body: "",
+	};
+
+	let result = await httpGet(url, `用户信息`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 用户信息: ${result.message} 🎉  \n欢迎光临: ${result.data.nickname} , 等级: ${result.data.level} ${result.data.vipName} , 积分: ${result.data.integral} ,经验: ${result.data.experience} \n`);
+		msg += `\n 用户信息: ${result.data.message} 🎉  \n欢迎光临: ${result.data.nickname} , 等级: ${result.data.level} ${result.data.vipName} , 积分: ${result.data.integral} ,经验: ${result.data.experience} \n`
+	} else if (result.code == 401) {
+		console.log(`\n 绍兴体彩:${result.message} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		console.log(`\n 绍兴体彩:${result.message} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		msg += `\n 绍兴体彩:${result.message} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
+	} else {
+		console.log(`\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`);
+		msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${JSON.parse(result)} \n`
+
+	}
+}
 
 
 
@@ -92,11 +141,7 @@ async function signin_info(timeout = 3 * 1000) {
 
 	let url = {
 		url: `https://www.shaoxingticai.com/api/front/user/sign/user`,
-		headers: {
-			'Authori-zation': ck[0],
-			'Host': 'www.shaoxingticai.com',
-			'Content-Type': 'application/json',
-		},
+		headers: sxtchd,
 		body: JSON.stringify({
 			"all": 0,
 			"integral": 0,
@@ -107,15 +152,20 @@ async function signin_info(timeout = 3 * 1000) {
 	let result = await httpPost(url, `签到状态`, timeout);
 	if (result.code == 200) {
 		console.log(`\n 签到状态: ${result.message} 🎉  \n`);
-		if (result.data.signNum == 0) {
-			console.log(`没有签到,去签到!`);
+		if (result.data.isDaySign == false) {
+			console.log(`\n 没有签到,去签到! \n`);
+			msg += `\n 没有签到,去签到! \n`
+
 			await signin();
 		} else {
-			console.log(`今天已经签到了,明天再来吧!`);
+			console.log(`\n天已经签到了,明天再来吧!\n`);
 			console.log(result.data);
+			msg += `\n天已经签到了,明天再来吧!\n`
+			msg += `${result.data}`
 		}
 	} else {
-		console.log(`\n 签到状态: ${result.message} \n `);
+		console.log(`\n 签到状态: 失败 ❌ 了呢,原因未知！${result.message} \n`);
+		msg += `\n 签到状态: 失败 ❌ 了呢,原因未知！${result.message} \n`
 	}
 }
 
@@ -129,24 +179,25 @@ async function signin(timeout = 3 * 1000) {
 
 	let url = {
 		url: `https://www.shaoxingticai.com/api/front/user/sign/integral`,
-		headers: {
-			'Authori-zation': ck[0],
-			'Host': 'www.shaoxingticai.com',
-			'Content-Type': 'application/json',
-		},
+		headers: sxtchd,
 		// body: '{}',
 	};
 
 	let result = await httpGet(url, `签到`, timeout);
 	if (result.code == 200) {
 		console.log(`\n 签到: ${result.message} \n连续签到 ${result.data.day} 天 , 获得积分 ${result.data.integral} ,经验  ${result.data.experience} !`);
-		console.log(`以下测试使用`);
+		console.log(`\n以下测试使用\n`);
 		console.log(result.data);
+		msg += `\n 签到: ${result.message} \n连续签到 ${result.data.day} 天 , 获得积分 ${result.data.integral} ,经验  ${result.data.experience} !`
+		msg += `\n以下测试使用\n`
+		msg += `${JSON.parse(result.data)}`
 	} else if (result.code == 500) {
-		console.log(`\n 签到: ${result.message} `);
+		console.log(`\n 签到: ${result.message}\n`);
+		msg += `\n 签到: ${result.message} \n`
 
 	} else {
-		console.log(`\n 签到: 失败了呢❌  , ${result} \n `);
+		console.log(`\n 签到: 失败了呢 ❌  , ${result}\n`);
+		msg += `\n 签到: 失败了呢 ❌  , ${JSON.parse(result)}\n`
 	}
 }
 
@@ -154,7 +205,71 @@ async function signin(timeout = 3 * 1000) {
 
 
 
+/**
+ * 任务状态   httpPost  阅读 75 活动 76 分享77
+ * https://www.shaoxingticai.com/api/front/integral/getDayAddedType
+ */
+async function task_info(timeout = 3 * 1000) {
 
+	let url = {
+		url: `https://www.shaoxingticai.com/api/front/integral/getDayAddedType`,
+		headers: sxtchd,
+		body: "{}",
+	};
+
+	let result = await httpPost(url, `任务状态`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 任务状态: ${result.message} 🎉  \n`);
+		if (result.data.length == 0) {
+			console.log(`\n今天任务还没做,去做任务了!\n`);
+			msg += `\n今天任务还没做,去做任务了!\n`
+			task_id = 75;
+			for (task_id; task_id < 78; task_id++) {
+				await task(task_id);
+				let num = randomInt(10, 15);
+				console.log(`耐心等待 ${num} 秒 , 进行下一个任务!`);
+				await $.wait(num * 1000);
+			}
+		} else {
+
+			console.log(`\n 今天任务做完了,明天再来吧!\n`);
+			msg += `\n 今天任务做完了,明天再来吧!\n`
+		}
+	} else {
+		console.log(`\n 任务状态: 失败 ❌ 了呢,原因未知！ ${result.message} \n`);
+		msg += `\n 任务状态: 失败 ❌ 了呢,原因未知！ ${result.message} \n`
+	}
+}
+
+
+
+/**
+ * 做任务   httpPost
+ * https://www.shaoxingticai.com/api/front/integral/add
+ */
+async function task(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://www.shaoxingticai.com/api/front/integral/add`,
+		headers: {
+			"Authori-zation": ck[0],
+			"Host": "www.shaoxingticai.com",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			"linkType": task_id,
+		}),
+	};
+
+	let result = await httpPost(url, `做任务`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 做任务: ${result.message} 🎉  \n`);
+		msg += `\n 做任务: ${result.message} 🎉  \n`
+	} else {
+		console.log(`\n 做任务: 失败 ❌ 了呢,原因未知！${result.message} \n`);
+		msg += `\n 做任务: 失败 ❌ 了呢,原因未知！${result.message} \n`
+	}
+}
 
 
 
