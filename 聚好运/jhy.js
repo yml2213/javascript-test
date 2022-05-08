@@ -127,7 +127,8 @@ async function task_list() {
 			for (let index = 1; index < 4; index++) {
 				console.log(`开始  第${index}次 看视频得红包`);
 				// await ad_redPacket();
-				await task_test(result.records[0].taskName,result.records[0].id);
+				await task_test(result.records[0].taskName, result.records[0].id);
+				await $.wait(330 * 1000);
 			}
 		} else {
 			console.log(`${result.records[0].taskName}: 今天已经没机会了,明天再来吧!`);
