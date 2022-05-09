@@ -44,7 +44,7 @@ async function tips(ckArr) {
 		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
 	).toLocaleString()} \n===============================================\n`);
 	await wyy();
-	
+
 	console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
@@ -275,6 +275,26 @@ function ts10() {
 	return Math.round(new Date().getTime() / 1000).toString();
 }
 
+
+/**
+ * 获取当前小时数 
+ */
+
+function local_hours() {
+	let myDate = new Date();
+	h = myDate.getHours();
+	return h;
+}
+
+/**
+ * 获取当前分钟数 
+ */
+
+function local_minutes() {
+	let myDate = new Date();
+	m = myDate.getMinutes();
+	return m;
+}
 
 
 
