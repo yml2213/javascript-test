@@ -89,13 +89,10 @@ async function start() {
 		await $.wait(5 * 1000);
 	}
 
-	let a1 = local_hours() % 2;
-	if (a1 = 1) {
-		console.log(`开始 荣誉广告`);
-		await honor_ad();
-		await $.wait(5 * 1000);
+	console.log(`开始 荣誉广告`);
+	await honor_ad();
+	await $.wait(5 * 1000);
 
-	}
 
 
 }
