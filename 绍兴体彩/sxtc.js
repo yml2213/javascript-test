@@ -1,44 +1,55 @@
 /**
- * 脚本地址: https://raw.githubusercontent.com/yemail2213/javascript/master/yemai/yemai.js
- * 转载请留信息,谢谢
+ * 绍兴体彩  公众号 —活力体彩—个人中心  ; 有个签到
+ * 转载请留信息
  * 
- * 椰麦 
+ * cron 40 7 * * *  yml2213_javascript_master/sxtc.js
  * 
- * cron 35 7 * * *  yemail2213_javascript_master/yemai.js
+ * 5-4  签到任务  
+ * 5-5	修复签到bug,推荐所有人更新
+ * 5-5	内部任务版本
+ * 5-8	优化通知
+ * 签到,讲究个日积月累   哈哈哈哈哈
  * 
- * 5-5	完成签到
- * 
- * 
+ * 感谢 心雨 的投稿
  * 感谢所有测试人员 
  * ========= 青龙 =========
- * 变量格式: export yemai_data='cokie1 @ cokie2 '  多个账号用 @分割
+ * 变量格式: export sxtc_data='AZ1 @ AZ2'  多个账号用 @分割
  *
- * 抓包 :  关键词  qrappser.cheryev.cn/cheryev/crm/user  找到 Authorization 跟 UA 就行了 , userid 我界面 id就是
+ * Authori-zation :  关键词  www.shaoxingticai.com/api/front/user  ,headers中的一个参数
  *
- * 还是不会的请百度或者群里求助: tg: https://t.me/yemail_tg  通知: https://t.me/yemail2213_tg
+ * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
  */
-const $ = new Env("椰麦");
+const $ = new Env("绍兴体彩");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
+const Notify = 1		//0为关闭通知，1为打开通知,默认为1
 const debug = 1 		//0为关闭调试，1为打开调试,默认为0
-//////////////////////
-let ckStr = process.env.yemai_data;
+/////////////////////////////////////////////////////////
+let ckStr = process.env.sxtc_data;
 let msg = "";
 let ck = "";
+let task_id = "";
+/////////////////////////////////////////////////////////
+let Version = '\n yml   2022/5/8  优化通知\n'
+let thank = `\n 感谢 心雨 的投稿\n`
+let test = `\n 脚本测试中,有bug及时反馈! 内部任务版本,禁止外传!\n`
 /////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	console.log(`\n版本: 0.1 -- 22/5/5`);
-	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-	// msg += `\n 脚本已恢复正常状态,请及时更新! `
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	msg += `\n 脚本测试中,有bug及时反馈! \n`
+	console.log(`${Version}`);
+	msg += `${Version}`
 
-	console.log(`\n================================================\n脚本执行 - 北京时间(UTC+8): ${new Date(
+	// console.log(thank);
+	// msg += `${thank}`
+
+	console.log(test);
+	msg += `${test}`
+
+	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
+	// msg += `脚本已恢复正常状态,请及时更新`
+
+	console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
 		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
-	).toLocaleString()} \n================================================\n`);
+	).toLocaleString()} \n==============================================\n`);
 
 	await wyy();
 
@@ -47,26 +58,18 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "yemai_data");
-
+	let ckArr = await getCks(ckStr, "sxtc_data");
 	await tips(ckArr);
-
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
 
 		ck = ckArr[index].split("&");
-
-		if (ck.length < 3) {
-			console.log(`你没写 ua ,将使用默认ua`);
-			ck[2] = "NewEnergy/1.0.5 (com.mychery.ev; build:094; iOS 15.4.1) Alamofire/5.4.3 version=1.0.5 buildVersion=094 systemName=iOS systemVersion=15.4.1 model=iPhone modelName=iPhone14,2"
-		}
-		xyhd = {
+		sxtchd = {
+			"Authori-zation": ck[0],
+			"Host": "www.shaoxingticai.com",
 			"Content-Type": "application/json",
-			"Authorization": ck[0],
-			"User-Agent": ck[2],
 		}
-
 		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
 
 		await start();
@@ -83,64 +86,117 @@ async function start() {
 	await userInfo();
 	await $.wait(2 * 1000);
 
-	console.log("开始 签到信息");
-	await sign();
+	console.log("开始 签到状态");
+	await signin_info();
 	await $.wait(2 * 1000);
+
+	console.log("开始 任务状态");
+	await task_info();
+	await $.wait(2 * 1000);
+
+
+
+
 
 }
 
 
 
+
 /**
- * 用户信息   httpPost
- * https://qrappser.cheryev.cn/cheryev/crm/user/profile/1211519882
+ * 用户信息   httpGet
+ * https://www.shaoxingticai.com/api/front/user
  */
 async function userInfo(timeout = 3 * 1000) {
-
 	let url = {
-		url: `https://qrappser.cheryev.cn/cheryev/crm/user/profile/${ck[1]}`,
-		headers: xyhd,
-		body: ``,
+		url: `https://www.shaoxingticai.com/api/front/user`,
+		headers: sxtchd,
+		// body: "",
 	};
 
-	let result = await httpPost(url, `用户信息`, timeout);
-	if (result.resultCode == 0) {
-		console.log(`\n 用户信息: ${result.resultMsg} 🎉  \n欢迎光临: ${result.data.userName} , 拥有 e币: ${result.data.totalPoints} \n`);
-		msg += `\n 用户信息: ${result.resultMsg} 🎉  \n欢迎光临: ${result.data.userName} , 拥有 e币: ${result.data.totalPoints} \n`
-	} else if (result.resultCode == 2005) {
-		console.log(`\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
-		console.log(`\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
-		msg += `\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
-		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+	let result = await httpGet(url, `用户信息`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 用户信息: ${result.message} 🎉  \n欢迎光临: ${result.data.nickname} , 等级: ${result.data.level} ${result.data.vipName} , 积分: ${result.data.integral} ,经验: ${result.data.experience} \n`);
+		msg += `\n 用户信息: ${result.data.message} 🎉  \n欢迎光临: ${result.data.nickname} , 等级: ${result.data.level} ${result.data.vipName} , 积分: ${result.data.integral} ,经验: ${result.data.experience} \n`
+	} else if (result.code == 401) {
+		console.log(`\n 绍兴体彩:${result.message} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		console.log(`\n 绍兴体彩:${result.message} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		msg += `\n 绍兴体彩:${result.message} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
 	} else {
 		console.log(`\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`);
 		msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`
-		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+
 	}
 }
+
+
 
 
 /**
- * 签到   httpPost
- * https://qrappser.cheryev.cn/cheryev/crm/user/checkin
+ * 签到状态   httpPost
+ * https://www.shaoxingticai.com/api/front/user/sign/user
  */
-async function sign(timeout = 3 * 1000) {
+async function signin_info(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://qrappser.cheryev.cn/cheryev/crm/user/checkin`,
-		headers: xyhd,
-		body: `{"userId":"${ck[1]}"}`,
+		url: `https://www.shaoxingticai.com/api/front/user/sign/user`,
+		headers: sxtchd,
+		body: JSON.stringify({
+			"all": 0,
+			"integral": 0,
+			"sign": 1
+		}),
 	};
 
-	let result = await httpPost(url, `签到信息`, timeout);
-	if (result.resultCode == 0) {
-		console.log(`\n 签到: ${result.resultMsg} 🎉\n`);
-		msg += `\n 签到: ${result.resultMsg} 🎉\n`
-	} else if (result.resultCode == 2602) {
-		console.log(`\n 签到: ${result.resultMsg} !\n`);
-		msg += `\n 签到: ${result.resultMsg} !\n`
+	let result = await httpPost(url, `签到状态`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 签到状态: ${result.message} 🎉  \n`);
+		if (result.data.isDaySign == false) {
+			console.log(`\n 没有签到,去签到! \n`);
+			msg += `\n 没有签到,去签到! \n`
+
+			await signin();
+		} else {
+			console.log(`\n天已经签到了,明天再来吧!\n`);
+			console.log(result.data);
+			msg += `\n天已经签到了,明天再来吧!\n`
+			msg += `${result.data}`
+		}
 	} else {
-		console.log(`\n 签到信息: 失败 ❌ 了呢,原因未知！\n ${result} \n `);
+		console.log(`\n 签到状态: 失败 ❌ 了呢,原因未知！${result.message} \n`);
+		msg += `\n 签到状态: 失败 ❌ 了呢,原因未知！${result.message} \n`
+	}
+}
+
+
+
+/**
+ * 签到   httpGet
+ * https://www.shaoxingticai.com/api/front/user/sign/integral
+ */
+async function signin(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://www.shaoxingticai.com/api/front/user/sign/integral`,
+		headers: sxtchd,
+		// body: '{}',
+	};
+
+	let result = await httpGet(url, `签到`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 签到: ${result.message} \n连续签到 ${result.data.day} 天 , 获得积分 ${result.data.integral} ,经验  ${result.data.experience} !`);
+		console.log(`\n以下测试使用\n`);
+		console.log(result.data);
+		msg += `\n 签到: ${result.message} \n连续签到 ${result.data.day} 天 , 获得积分 ${result.data.integral} ,经验  ${result.data.experience} !`
+		msg += `\n以下测试使用\n`
+		msg += `${result.data}`
+	} else if (result.code == 500) {
+		console.log(`\n 签到: ${result.message}\n`);
+		msg += `\n 签到: ${result.message} \n`
+
+	} else {
+		console.log(`\n 签到: 失败了呢 ❌  , ${result}\n`);
+		msg += `\n 签到: 失败了呢 ❌  , ${result}\n`
 	}
 }
 
@@ -148,11 +204,71 @@ async function sign(timeout = 3 * 1000) {
 
 
 
+/**
+ * 任务状态   httpPost  阅读 75 活动 76 分享77
+ * https://www.shaoxingticai.com/api/front/integral/getDayAddedType
+ */
+async function task_info(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://www.shaoxingticai.com/api/front/integral/getDayAddedType`,
+		headers: sxtchd,
+		body: "{}",
+	};
+
+	let result = await httpPost(url, `任务状态`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 任务状态: ${result.message} 🎉  \n`);
+		if (result.data.length == 0) {
+			console.log(`\n今天任务还没做,去做任务了!\n`);
+			msg += `\n今天任务还没做,去做任务了!\n`
+			task_id = 75;
+			for (task_id; task_id < 78; task_id++) {
+				await task(task_id);
+				let num = randomInt(10, 15);
+				console.log(`耐心等待 ${num} 秒 , 进行下一个任务!`);
+				await $.wait(num * 1000);
+			}
+		} else {
+
+			console.log(`\n 今天任务做完了,明天再来吧!\n`);
+			msg += `\n 今天任务做完了,明天再来吧!\n`
+		}
+	} else {
+		console.log(`\n 任务状态: 失败 ❌ 了呢,原因未知！ ${result.message} \n`);
+		msg += `\n 任务状态: 失败 ❌ 了呢,原因未知！ ${result.message} \n`
+	}
+}
 
 
 
+/**
+ * 做任务   httpPost
+ * https://www.shaoxingticai.com/api/front/integral/add
+ */
+async function task(timeout = 3 * 1000) {
 
+	let url = {
+		url: `https://www.shaoxingticai.com/api/front/integral/add`,
+		headers: {
+			"Authori-zation": ck[0],
+			"Host": "www.shaoxingticai.com",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			"linkType": task_id,
+		}),
+	};
 
+	let result = await httpPost(url, `做任务`, timeout);
+	if (result.code == 200) {
+		console.log(`\n 做任务: ${result.message} 🎉  \n`);
+		msg += `\n 做任务: ${result.message} 🎉  \n`
+	} else {
+		console.log(`\n 做任务: 失败 ❌ 了呢,原因未知！${result.message} \n`);
+		msg += `\n 做任务: 失败 ❌ 了呢,原因未知！${result.message} \n`
+	}
+}
 
 
 
@@ -248,7 +364,6 @@ function wyy(timeout = 3 * 1000) {
 			try {
 				data = JSON.parse(data)
 				console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
-				msg += `\n 【网抑云时间】: ${data.content}  by--${data.music}\n`
 
 			} catch (e) {
 				$.logErr(e, resp);
@@ -269,28 +384,28 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 			tip = matches[1];
 		}
 		if (debug) {
-			console.log(
-				`\n 【debug】=============== 这是 ${tip} 请求 url ===============`
-			);
+			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
 			console.log(url);
 		}
 
 		$.get(
 			url,
-			async (error, response, _data) => {
+			async (err, resp, data) => {
 				try {
-					if (debug) {
-						console.log(
-							`\n\n 【debug】===============这是 ${tip} 返回data==============`
-						);
-						console.log(_data);
+					if (err) {
+						console.log("$.name: API查询请求失败 ‼️‼️");
+						console.log(JSON.stringify(err));
+						$.logErr(err);
+					} else if (debug) {
+						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+						console.log(data);
 						console.log(`======`);
-						console.log(JSON.parse(_data));
+						console.log(JSON.parse(data));
 					}
-					let result = JSON.parse(_data);
+					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					console.log(e);
+					console.log(e, resp);
 				} finally {
 					resolve();
 				}
@@ -311,20 +426,20 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 			tip = matches[1];
 		}
 		if (debug) {
-			console.log(
-				`\n 【debug】=============== 这是 ${tip} 请求 url ===============`
-			);
+			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
 			console.log(url);
 		}
 
 		$.post(
 			url,
-			async (error, response, data) => {
+			async (err, resp, data) => {
 				try {
-					if (debug) {
-						console.log(
-							`\n\n 【debug】===============这是 ${tip} 返回data==============`
-						);
+					if (err) {
+						console.log("$.name: API查询请求失败 ‼️‼️");
+						console.log(JSON.stringify(err));
+						$.logErr(err);
+					} else if (debug) {
+						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
 						console.log(data);
 						console.log(`======`);
 						console.log(JSON.parse(data));
@@ -332,7 +447,7 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					console.log(e);
+					console.log(e, resp);
 				} finally {
 					resolve();
 				}

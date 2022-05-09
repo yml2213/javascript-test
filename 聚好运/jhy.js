@@ -20,7 +20,7 @@
 const $ = new Env("聚好运");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 0 		//0为关闭调试，1为打开调试,默认为0
+const debug = 1 		//0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
 let ckStr = process.env.jhy_data;
 let msg = "";
@@ -83,7 +83,6 @@ async function start() {
 	await $.wait(2 * 1000);
 
 
-
 }
 
 
@@ -96,9 +95,8 @@ async function start() {
  */
 async function task_list() {
 	let time13 = ts13(), time10 = ts10();
-	// sign_data = ;
 	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0&key=${salt}`);
-	// console.log(sign);
+	console.log(sign);
 	let url = {
 		url: `http://mmo.tapque.com/task/config/list?pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0`,
 		headers: {
@@ -115,7 +113,7 @@ async function task_list() {
 	let result = await httpGet(url, `任务列表`);
 
 	if (result.code == 6000) {
-		console.log(`\n	任务列表:  获取成功 🎉 \n`);
+		console.log(`\n 任务列表:  获取成功 🎉 \n`);
 		msg += `\n 任务列表:  获取成功 🎉 \n`;
 
 

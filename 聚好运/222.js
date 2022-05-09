@@ -1,28 +1,18 @@
-/*
-每日任务 sign md5
 
-签名数据（文本）：nonce=1651994447742&timestamp=1651994447&bizCode=reward_readpackage&pn=com.collect.goodluck.app&v=v1.0&key=YWZlZjNiMjIzNjQ5NDE4MTM1NjRiZmZjNTQ5ZDVmZTE=
-签名结果：07a0889a5f9b4e2bbdb34f4a3fda1951
-
-
-nonce
-
-
-
-
-nonce=1651994447742&timestamp=1651994447&bizCode=reward_readpackage&pn=com.collect.goodluck.app&v=v1.0&key=YWZlZjNiMjIzNjQ5NDE4MTM1NjRiZmZjNTQ5ZDVmZTE=
-签名结果：07a0889a5f9b4e2bbdb34f4a3fda1951
-
-*/
 
 salt = 'YWZlZjNiMjIzNjQ5NDE4MTM1NjRiZmZjNTQ5ZDVmZTE='
+time10 = 1652059076;
+time13 = 1652059076658;
 
-aa = `nonce=${ts13()}&timestamp=${ts10()}&bizCode=reward_readpackage&pn=com.collect.goodluck.app&v=v1.0&key=${salt}`
+
+aa = `nonce=${time13}&timestamp=${time10}&pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0&key=${salt}`
 
 console.log(aa);
 c = MD5Encrypt(aa);
 console.log(c);
 
+// 333aab27bbb831f93d2c957317a45310
+// 3e7eeeff1545dea3f733b5858fac581a
 
 /**
  * 时间戳 13位
