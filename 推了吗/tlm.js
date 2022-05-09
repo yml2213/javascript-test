@@ -293,7 +293,7 @@ async function honor_ad() {
 		form: { "article_id": article_id },
 	};
 	let result = await httpPost(url, `荣誉广告`);
-	console.log(result);
+
 	if (result.code == 0) {
 
 		console.log(`\n 荣誉广告: 成功 ,开始阅读广告: ${result.data.title} \n`);
