@@ -16,7 +16,7 @@
  *
  * 抓包 :  关键词  t-api.chyouhui.com/auth  , headers 中的一个参数
  *
- * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
+ * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 const $ = new Env("模板");
 const notify = $.isNode() ? require("./sendNotify") : "";

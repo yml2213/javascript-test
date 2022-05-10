@@ -14,7 +14,7 @@
  *
  * 抓包 :  关键词  inndoo.ytdcloud.com/activity-api/signinact/signin , 抓个自己的 都是 headers 的参数 
  *
- * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
+ * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 const $ = new Env("财资管家");
 const notify = $.isNode() ? require("./sendNotify") : "";

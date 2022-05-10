@@ -11,7 +11,7 @@
  * 变量格式: export ydcd_data=' cookie1 @ cookie12 '   多个账号用 @分割 
  * 
  * 抓包： , 抓签到包  , 找到有 cookie 的包就行了
- * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
+ * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 
 const $ = new Env("有道词典");
@@ -149,7 +149,7 @@ function receive_redpacket(timeout = 3 * 1000) {
  * 幸运礼盒查询  get
  * https://dict.youdao.com/dictusertask/lottery/info?pointParam=product,appVersion,keyfrom,pxkbxktiymxbjzynl,mid,screen,keyid,mysticTime,network,abtest,yduuid,vendor,client,imei,xrwnrrpokxcswmkycn,model,newImei,oaid&yduuid=ebd03285b7d6f3ef&pxkbxktiymxbjzynl=jsqlp&sign=83993b33018eb7a1fcf2027e22f0bf38&keyid=dict-usertask-key&xrwnrrpokxcswmkycn=cuaueflzuoauwne&mysticTime=1650727535059&product=mdict&appVersion=9.2.4&keyfrom=mdict.9.2.4.android&mid=9&screen=1080x1920&ssid=&network=wifi&abtest=2&vendor=xiaomi&client=android&imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&model=MI_6&newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%253D&oaid=ebd03285b7d6f3ef
  */
- function box_info(timeout = 3 * 1000) {
+function box_info(timeout = 3 * 1000) {
 	let _sign = `abtest=2&appVersion=9.2.4&client=android&imei=a1946f7d-b716-48cb-8112-3eb1e993a42c&keyfrom=mdict.9.2.4.android&keyid=dict-usertask-key&mid=9&model=MI_6&mysticTime=${ts}&network=wifi&newImei=CQk5YTM0ZmEzZmIxZjY5MWExCXVua25vd24%3D&oaid=ebd03285b7d6f3ef&product=mdict&pxkbxktiymxbjzynl=jsqlp&screen=1080x1920&vendor=xiaomi&xrwnrrpokxcswmkycn=cuaueflzuoauwne&yduuid=ebd03285b7d6f3ef&key=ttfMFaa7tiPyAc3DanKeIMzEejm`
 	let sign = MD5Encrypt(_sign)
 	return new Promise((resolve) => {
@@ -271,7 +271,7 @@ function open_box(timeout = 3 * 1000) {
  * 签到  get
  * https://dict.youdao.com/dictusertask/cheese/collect?mysticTime=1650730647002&ebhwaaj=xnbuuylbbidxfqtfwne&sign=4de296444b9328448a526534c45cd5bd&keyid=dict-usertask-key&vdxqjnirjqlttfs=nhdtuygvjmxqjml&yduuid=10e04df06aa7b9f865a645f0e2b34005&missionId=8888&pointParam=ssid,screen,mid,keyid,vdxqjnirjqlttfs,yduuid,missionId,newImei,ebhwaaj,mysticTime,network,appVersion,imei,keyfrom,client,abtest,vendor,product,model&network=wifi&ssid=wireless&screen=720x1280&appVersion=9.1.18&imei=10e04df06aa7b9f865a645f0e2b34005&mid=5.1.1&keyfrom=mdict.9.1.18.android&client=android&abtest=0&vendor=tencent&newImei=010306024494030&model=TAS-AN00&product=mdict
  */
- function sign(timeout = 3 * 1000) {
+function sign(timeout = 3 * 1000) {
 	let _sign = `abtest=0&appVersion=9.1.18&client=android&ebhwaaj=xnbuuylbbidxfqtfwne&imei=10e04df06aa7b9f865a645f0e2b34005&keyfrom=mdict.9.1.18.android&keyid=dict-usertask-key&mid=5.1.1&missionId=8888&model=TAS-AN00&mysticTime=${ts}&network=wifi&newImei=010306024494030&product=mdict&screen=720x1280&ssid=wireless&vdxqjnirjqlttfs=nhdtuygvjmxqjml&vendor=tencent&yduuid=10e04df06aa7b9f865a645f0e2b34005&key=ttfMFaa7tiPyAc3DanKeIMzEejm`
 	let sign = MD5Encrypt(_sign)
 	return new Promise((resolve) => {

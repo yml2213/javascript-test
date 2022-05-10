@@ -15,7 +15,7 @@
  *
  * 抓包 :  关键词  qrappser.cheryev.cn/cheryev/crm/user  找到 Authorization 跟 UA 就行了 , userid 我界面 id就是
  *
- * 还是不会的请百度或者群里求助: tg: https://t.me/yml_tg  通知: https://t.me/yml2213_tg
+ * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 const $ = new Env("奇瑞新能源");
 const notify = $.isNode() ? require("./sendNotify") : "";
