@@ -18,7 +18,7 @@ if (d.length == 1) {
 	d = `0${d}`
 }
 
-console.log( m + '-'+ d);  // 20220501
+console.log(m + '-' + d);  // 20220501
 
 
 
@@ -37,3 +37,31 @@ myDate.getMilliseconds();    //获取当前毫秒数(0-999)
 myDate.toLocaleDateString();     //获取当前日期
 var mytime = myDate.toLocaleTimeString();     //获取当前时间
 myDate.toLocaleString();        //获取日期与时间
+
+
+
+
+// 10位时间戳秒转换为标准时间 10位时间戳乘以1000
+function timestampToTime(timestamp) {
+	var date = new Date(timestamp * 1000)
+	var Y = date.getFullYear() + '-'
+	var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+	const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' '
+	const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
+	const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'
+	const s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds())
+	return Y + M + D + h + m + s
+}
+// 13位时间戳毫秒不用乘以1000
+function timestampToTimeLong(timestamp) {
+	var date = new Date(timestamp)
+	var Y = date.getFullYear() + '-'
+	var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+	const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' '
+	const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
+	const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'
+	const s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds())
+	return Y + M + D + h + m + s
+}
+
+

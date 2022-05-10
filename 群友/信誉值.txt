@@ -1,0 +1,39 @@
+{
+	"code": 0,
+	"msg": "",
+	"time": "1652109220",
+	"data": {
+		"title": "首码新项目！  玩法简单收益稳定！  简单粗暴无套路每天撸100+?  一链转换直接秒到账  平台里面有具体玩法介绍  保存图片，微信扫码即可",
+		"image": "https:\/\/tuileme-1255510114.file.myqcloud.com\/uploads\/20220509\/cafc0158da8fe38b954b2afccf2cca60.png",
+		"desc": "",
+		"view": 5,
+		"id": 124,
+		"type": 1,
+		"min": "15"
+	}
+}
+
+{
+    "code": 1,
+    "msg": "暂无插播广告，请稍后重试",
+    "time": "1652110010",
+    "data": null
+}
+
+
+领取
+{
+	"code": 1,
+	"msg": "",
+	"time": "1652109228",
+	"data": {
+		"drawNum": "0.02",
+		"min_time": "15"
+	}
+}
+{
+    "code": 0,
+    "msg": "无插播广告",
+    "time": "1652111382",
+    "data": null
+}
