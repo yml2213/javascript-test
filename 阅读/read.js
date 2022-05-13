@@ -9,7 +9,7 @@
  * 5-2 完成 快速阅读 任务
  * 
  * 感谢所有测试人员 
- * ========= 青龙 ========= 
+ * ========= 青龙--配置文件 ========= 
  * 变量格式: export read_data=' User-Agent & a_h_n @  User-Agent & a_h_n '  多个账号用 @分割
  *
  * token :  关键词  s76.yyyyy.run/api  找到 User-Agent 和 a_h_n 就行了

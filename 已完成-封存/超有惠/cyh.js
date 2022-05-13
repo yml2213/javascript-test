@@ -1,298 +1,357 @@
 /**
- * 奋进川维  
+ * 超有惠 app  (链接带邀请) 感谢您走我的邀请链接,谢谢,谢谢,谢谢
+ * 下载地址: https://m.chyouhui.com/page/invite/#/?code=I92CCI7
+ * 转载请留信息
  * 
- * cron 10 7 * * *  
+ * cron 30 7 * * *  yml2213_javascript_master/cyh.js
  * 
- * 5-10	文章阅读 评论
+ * 4-30 完成 签到  , 日常视频 任务   
+ * 5-1  更新逻辑
+ * 5-3  增加出售100积分 , 增加支付宝提现 1 元
+ * 5-4  默认关闭出售积分 ,提现 功能 ,自行决定吧
+ * 新人任务自己做做吧 很少
  * 
- * ========= 青龙 =========
- * 变量格式: export fjcw_data=' 手机号&密码 @ 手机号&密码 '  多个账号用 @分割
+ * 感谢所有测试人员 
+ * ========= 青龙--配置文件 =========
+ * 变量格式: export cyh_data='androidToken1 @ androidToken2'  多个账号用 @分割
+ *
+ * androidToken :  关键词  t-api.chyouhui.com/auth  ,headers中的一个参数
  *
  * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
-const $ = new Env("奋进川维");
+const $ = new Env("超有惠");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 1 		//0为关闭调试，1为打开调试,默认为0
-///////////////////////////////////////////////////////////////////
-let ckStr = process.env.fjcw_data;
+const Notify = 1; 		//0为关闭通知，1为打开通知,默认为1
+const debug = 0; 		//0为关闭调试，1为打开调试,默认为0
+//////////////////////
+let ckStr = process.env.cyh_data;
+let cyh_dataArr = [];
 let msg = "";
 let ck = "";
-let token = "";
-
-///////////////////////////////////////////////////////////////////
-let Version = '\n yml   2022/5/10      文章阅读 评论 \n'
-let test = `\n 脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!\n`
-///////////////////////////////////////////////////////////////////
+let ad_num = "";
+let ad_video_infoArr = '';
+/////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
+	console.log(`\n版本: 0.4 -- 22/5/3`);
+	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
+	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
+	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
+	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 
-	console.log(`${Version}`);
-	msg += `${Version}`
+	console.log(
+		`\n================================================\n脚本执行 - 北京时间(UTC+8): ${new Date(
+			new Date().getTime() +
+			new Date().getTimezoneOffset() * 60 * 1000 +
+			8 * 60 * 60 * 1000
+		).toLocaleString()} \n================================================\n`
+	);
 
-	console.log(test);
-	msg += `${test}`
-
-	console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
-		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
-	).toLocaleString()} \n===============================================\n`);
 	await wyy();
 
-	console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
+	console.log(
+		`\n=================== 共找到 ${ckArr.length} 个账号 ===================`
+	);
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "fjcw_data");
+	let ckArr = await getCks(ckStr, "cyh_data");
+
 	await tips(ckArr);
+
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
 
 		ck = ckArr[index].split("&");
+		if (debug) {
+			console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${ck}\n`);
+		}
 
-		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
 		await start();
 	}
 	await SendMsg(msg);
+
 })()
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done());
 
-
 async function start() {
 
-
-	// console.log("开始 用户信息");
-	// await user_info();
-	// await $.wait(2 * 1000);
-
-	console.log("开始 看文章--掌上新闻");
-	await watch_news();
+	console.log("开始 用户/积分信息");
+	await userInfo();
 	await $.wait(2 * 1000);
 
-	// for (let index = 1; index < 21; index++) {
-	// 	console.log(`开始 第 ${index} 次 阅读文章--领金币`);
-	// 	await start_reading();
-	// 	await $.wait(5 * 1000);
-	// }
+	console.log("开始 签到状态");
+	await signin_info();
+	await $.wait(2 * 1000);
 
-	// console.log(`开始 荣誉广告`);
-	// await honor_ad();
-	// await $.wait(5 * 1000);
+	console.log("开始 检查视频状态");
+	await ad_video_info();
+	await $.wait(2 * 1000);
+
+}
 
 
 
+/**
+ * 用户信息   get
+ * https://t-api.chyouhui.com/auth/user/my
+ */
+async function userInfo(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/user/my`,
+		headers: {
+			'androidToken': ck,
+			'Host': 't-api.chyouhui.com',
+		},
+		// body: '{}',
+	};
+
+	let result = await httpGet(url, `用户信息`, timeout);
+	if (result.code == 0) {
+		console.log(
+			`\n 用户信息:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`
+		);
+		await integral_info();
+
+	} else {
+		console.log(`\n 用户信息: ${result.message} \n `);
+	}
+}
+
+/**
+ * 积分信息   get
+ * https://t-api.chyouhui.com/auth/sellIntegral/wallet
+ */
+async function integral_info(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/sellIntegral/wallet`,
+		headers: {
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
+		},
+		// body: '{}',
+	};
+
+	let result = await httpGet(url, `积分信息`, timeout);
+	if (result.code == 0) {
+		console.log(`\n 总积分:${result.data.myIntegral} , 可出售:${result.data.convertibleIntegral} , 可提现金额:${result.data.withdrawAmount} 元 \n 当前汇率:1:${result.data.exchangeRate} , 兑换积分比例: ${result.data.buybackRatio} `);
+		// if (result.data.convertibleIntegral > 100) {
+		// 	console.log(`\n 可出售积分:${result.data.convertibleIntegral} , 尝试出售 100 积分!\n `);
+		// 	await Sell_points();
+		// 	await $.wait(2 * 1000);
+		// }
+		// if (result.data.withdrawAmount >= 1) {
+		// 	console.log(`\n 可提现金额:${result.data.withdrawAmount} 元 , 尝试支付宝提现 1 元 !\n `);
+		// 	await cash();
+		// 	await $.wait(2 * 1000);
+		// }
+
+	} else {
+		console.log(`\n 积分信息: ${result.message} \n `);
+	}
 }
 
 
 
 
 
+/**
+ * 签到状态   get
+ * https://t-api.chyouhui.com/auth/dailySignIn/data
+ */
+async function signin_info(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/dailySignIn/data`,
+		headers: {
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
+		},
+		// body: '',
+	};
+
+	let result = await httpGet(url, `签到状态`, timeout);
+	if (result.code == 0) {
+		console.log(`\n 签到状态: ${result.message} 🎉  \n`);
+		if (result.data.todayState !== 'SIGN') {
+			console.log(`没有签到,去签到!`);
+			await signin();
+		} else {
+			console.log(`今天已经签到了,明天再来吧!`);
+		}
+	} else {
+		console.log(`\n 签到状态: ${result.message} \n `);
+	}
+}
+
 
 
 /**
- * 用户信息   httpGet
- * http://fjcw.zhixiang.run/api/user/userInfo
+ * 签到   post
+ * https://t-api.chyouhui.com/auth/dailySignIn/completed
  */
-async function user_info() {
+async function signin(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://xfsh.sinopec.com/webServices/romote/homeAgentService/findNewestConfig?access_token=${ck[0]}&agentId=${ck[1]}`,
+		url: `https://t-api.chyouhui.com/auth/dailySignIn/completed`,
 		headers: {
-			"Host": "xfsh.sinopec.com",
-			"Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4"
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
 		},
+		body: '{}',
 	};
-	let result = await httpGet(url, `用户信息`);
 
-	if (result.adFlag == true) {
-		console.log(`\n 用户信息: 成功 , 积分: ${result.integral}\n`);
-		msg += `\n 用户信息: 成功 , 积分: ${result.integral}\n`
+	let result = await httpPost(url, `签到`, timeout);
+	if (result.data !== null) {
+		console.log(`\n 签到:成功 🎉   签到获得 积分 ${result.data} \n`);
+
+		msg += `\n 签到:成功 🎉   签到获得 积分 ${result.data} \n`
 	} else {
-		console.log(`\n 用户信息:  失败 ❌ 了呢,原因未知！  ${result}\n `);
-		msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！   \n `
-		throw new Error(` 用户信息: 失败 ❌ 了呢,原因未知！`);
+		console.log(`\n 签到: ${result.message} \n `);
+	}
+}
+
+
+
+/**
+ * 出售100积分   httpGet
+ * https://t-api.chyouhui.com/auth/sellIntegral/exchange/1
+ */
+async function Sell_points(timeout = 3 * 1000) {
+
+	let url = {
+		url: `https://t-api.chyouhui.com/auth/sellIntegral/exchange/1`,
+		headers: {
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
+		},
+		// body: '{}',
+	};
+
+	let result = await httpGet(url, `出售100积分`, timeout);
+	if (result.code == 0) {
+		console.log(`\n 出售100积分: ${result.message} 🎉 \n`);
+
+		msg += `\n 出售100积分: ${result.message} 🎉 \n`
+	} else if (result.code == -1) {
+		console.log(`\n 出售100积分:${result.message} \n`);
+
+		msg += `\n 出售100积分: ${result.message} \n`
+	} else {
+		console.log(`\n 出售100积分: 失败了呢: ${result} \n `);
 	}
 }
 
 
 /**
- * 看文章--掌上新闻   httpGet
- * https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=49eb6dcb4228ac1ca22df98c8bdea344&fkPlugId=224&pageSize=10&fkCateId=1589&isPart=true&pageNum=1
- * 
- * https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=49eb6dcb4228ac1ca22df98c8bdea344&fkPlugId=224&pageSize=10&fkCateId=1589&isPart=true&pageNum=1
+ * 检查视频状态   get
+ * https://t-api.chyouhui.com/auth/watchVideo/pageData
  */
-async function watch_news() {
+async function ad_video_info(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=${ck[2]}&fkPlugId=224&pageSize=10&fkCateId=1589&isPart=true&pageNum=1`,
+		url: `https://t-api.chyouhui.com/auth/watchVideo/pageData`,
 		headers: {
-			'Host': 'xfsh.sinopec.com',
-			'Content-Type': 'application/json'
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
 		},
+		// body: '{}',
 	};
-	let result = await httpGet(url, `看文章--掌上新闻`);
 
-
-
-	if (result.total !== 0) {
-		console.log(`\n 看文章--掌上新闻: 成功 \n`);
-		// newsList
-		let listArr = result.newsList
-		console.log(listArr);
-		for (let index = 0; index < listArr.length; index++) {
-
-			// 10位时间戳秒转换为标准时间 10位时间戳乘以1000
-			function timestampToTime(timestamp) {
-				var date = new Date(timestamp * 1000)
-				var Y = date.getFullYear() + '-'
-				var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
-				const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' '
-				return Y + M + D
-			}
-			// console.log(timestampToTime(1652167200));
-
-			let time = new Date();
-			let y = time.getFullYear();
-			let m = time.getMonth() + 1;
-			let d = time.getDate();
-			m = m.toString();
-			d = d.toString();
-			if (m.length == 1) {
-				m = `0${m}`
-			}
-			if (d.length == 1) {
-				d = `0${d}`
-			}
-			local_time = y + '-' + m + '-' + d
-			console.log(local_time);
-
-
-			if (timestampToTime(result.newsList[index].publishedTime) == local_time) {
-
-				console.log(`文章: ${result.newsList[index].title} 是 ${local_time}天的,开始做 阅读,评论 任务!`);
-
-				console.log(`开始 阅读${result.newsList[index].title}`);
-
-				article_id = result.newsList[index].id;
-				await start_reading();
-				await $.wait(5 * 1000);
-
-
-
-
+	let result = await httpGet(url, `检查视频状态`, timeout);
+	if (result.code == 0) {
+		console.log(
+			`\n 检查视频状态:${result.message} 🎉 \n`
+		);
+		ad_video_infoArr = result.data.watchTaskList;
+		// console.log(ad_video_infoArr);
+		for (const elem of ad_video_infoArr) {
+			// console.log(elem.completed);
+			if (elem.completed == 0) {
+				console.log(`开始看第 ${elem.id} 个视频`);
+				ad_num = elem.id;
+				ran_num = randomInt(60, 80)
+				await ad_video();
+				console.log(`请耐心等待 ${ran_num} 秒,再看下一个视频吧!`);
+				await $.wait(ran_num * 1000);
+			} else {
+				console.log(`视频 ${elem.id} 已经看完了鸭!`);
 
 			}
-
-
 		}
 
-		msg += `\n 看文章--掌上新闻: 成功 , 积分: ${result.integral}\n`
 	} else {
-		console.log(`\n 看文章--掌上新闻:  失败 ❌ 了呢,原因未知！  ${result}\n `);
-		msg += `\n 看文章--掌上新闻: 失败 ❌ 了呢,原因未知！   \n `
-		// throw new Error(` 看文章--掌上新闻: 失败 ❌ 了呢,原因未知！`);
+		console.log(`\n 检查视频状态: ${result.message} \n `);
 	}
 }
 
 
+
 /**
- * 看新闻--精彩视频   httpGet
- * https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=49eb6dcb4228ac1ca22df98c8bdea344&fkPlugId=224&pageSize=10&fkCateId=1927&isPart=true&pageNum=2
+ * 提现   httpPost
+ * https://t-api.chyouhui.com/auth/withdraw/apply
  */
-async function watch_video() {
+async function cash(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=${ck[2]}&fkPlugId=224&pageSize=10&fkCateId=1589&isPart=true&pageNum=2`,
+		url: `https://t-api.chyouhui.com/auth/withdraw/apply`,
 		headers: {
-			"Host": "xfsh.sinopec.com",
-			"Content-Type": "application/json"
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
 		},
+		body: JSON.stringify({
+			"amountId": 2,
+			"payment": "ALIPAY"
+		}),
 	};
-	let result = await httpGet(url, `看新闻--精彩视频`);
 
-
-
-	if (result.total !== 0) {
-		console.log(`\n 看新闻--精彩视频: 成功 \n`);
-		// newsList
-		let listArr = result.newsList
-		for (let index = 0; index < listArr.length; index++) {
-
-			// 10位时间戳秒转换为标准时间 10位时间戳乘以1000
-			function timestampToTime(timestamp) {
-				var date = new Date(timestamp * 1000)
-				var Y = date.getFullYear() + '-'
-				var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
-				const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' '
-				return Y + M + D
-			}
-			// console.log(timestampToTime(1652167200));
-
-			let time = new Date();
-			let y = time.getFullYear();
-			let m = time.getMonth() + 1;
-			let d = time.getDate();
-			m = m.toString();
-			d = d.toString();
-			if (m.length == 1) {
-				m = `0${m}`
-			}
-			if (d.length == 1) {
-				d = `0${d}`
-			}
-			local_time = y + '-' + m + '-' + d
-			console.log(local_time);
-
-
-			if (timestampToTime(result.newsList[index].publishedTime) == local_time) {
-
-				console.log(`文章: ${result.newsList[index].title} 是 ${local_time}天的,开始做 阅读,评论 任务!`);
-
-				console.log(`开始 阅读${result.newsList[index].title}`);
-
-				article_id = result.newsList[index].id;
-				await start_reading();
-				await $.wait(5 * 1000);
-
-			}
-
-		}
-		msg += `\n 看新闻--精彩视频: 成功 , 积分: ${result.integral}\n`
+	let result = await httpPost(url, `提现`, timeout);
+	if (result.code == 0) {
+		console.log(`\n 提现: ${result.message}  🎉 \n`);
+		msg += `\n 提现: ${result.message}  🎉 \n`
+	} else if (result.code == -1) {
+		console.log(`\n 提现:${result.message} \n`);
+		msg += `\n 提现: ${result.message} \n`
 	} else {
-		console.log(`\n 看新闻--精彩视频:  失败 ❌ 了呢,原因未知！  ${result}\n `);
-		msg += `\n 看新闻--精彩视频: 失败 ❌ 了呢,原因未知！   \n `
-		// throw new Error(` 看新闻--精彩视频: 失败 ❌ 了呢,原因未知！`);
+		console.log(`\n 提现: 提现失败 ❌ ${result} \n `);
 	}
 }
 
 
 
 
-
-
-
 /**
- * 开始阅读    httpGet
- * https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/readComplete?access_token=49eb6dcb4228ac1ca22df98c8bdea344&fkPlugId=224&id=314005
+ * 观看视频   httpPost
+ * https://t-api.chyouhui.com/auth/watchVideo/completed/6
  */
-async function start_reading() {
-
+async function ad_video(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/readComplete?access_token=${ck[2]}&fkPlugId=224&id=${article_id}`,
+		url: `https://t-api.chyouhui.com/auth/watchVideo/completed/${ad_num}`,
 		headers: {
-			"Host": "xfsh.sinopec.com",
-			"Content-Type": "application/json"
+			'androidToken': ck[0],
+			'Host': 't-api.chyouhui.com',
 		},
+		body: '',
 	};
-	let result = await httpGet(url, `开始阅读`);
+
+	let result = await httpPost(url, `观看视频`, timeout);
+	if (result.code == 0) {
+		console.log(
+			`\n 观看视频:${result.message} 🎉  , 下一个视频是第 ${result.data.nextId} 个视频 \n 本次观看视频获得积分 ${result.data.integral} ,剩余未领取积分 ${result.data.surplusIntegral}\n`
+		);
+
+	} else if (result.code == -1) {
+		console.log(`\n 观看视频:${result.message} \n`);
+	} else {
+		console.log(`\n 观看视频:  失败 ❌ 了呢,原因未知！\n ${result} \n `);
+	}
 }
-
-
-
-
 
 
 
@@ -379,50 +438,8 @@ function randomInt(min, max) {
 	return Math.round(Math.random() * (max - min) + min);
 }
 
-
-/**
- * 时间戳 13位
- */
-
-function ts13() {
-	return Math.round(new Date().getTime()).toString();
-}
-
-/**
- * 时间戳 10位
- */
-
-function ts10() {
-	return Math.round(new Date().getTime() / 1000).toString();
-}
-
-/**
- * 获取当前小时数 
- */
-
-function local_hours() {
-	let myDate = new Date();
-	h = myDate.getHours();
-	return h;
-}
-
-/**
- * 获取当前分钟数 
- */
-
-function local_minutes() {
-	let myDate = new Date();
-	m = myDate.getMinutes();
-	return m;
-}
-
-
-
-
-
-
 //每日网抑云
-function wyy() {
+function wyy(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		let url = {
 			url: `https://keai.icu/apiwyy/api`
@@ -437,11 +454,9 @@ function wyy() {
 			} finally {
 				resolve()
 			}
-		}, timeout = 3 * 1000)
+		}, timeout)
 	})
 }
-
-
 // ============================================ get请求 ============================================ \\
 async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 	return new Promise((resolve) => {
@@ -453,26 +468,28 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 			tip = matches[1];
 		}
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
+			console.log(
+				`\n 【debug】=============== 这是 ${tip} 请求 url ===============`
+			);
 			console.log(url);
 		}
 
 		$.get(
 			url,
-			async (err, resp, data) => {
+			async (error, response, _data) => {
 				try {
 					if (debug) {
-						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-						console.log(data);
+						console.log(
+							`\n\n 【debug】===============这是 ${tip} 返回data==============`
+						);
+						console.log(_data);
 						console.log(`======`);
-						console.log(JSON.parse(data));
+						console.log(JSON.parse(_data));
 					}
-					let result = JSON.parse(data);
+					let result = JSON.parse(_data);
 					resolve(result);
 				} catch (e) {
-					console.log(err, resp);
-					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg += `\n ${tip} 失败了!请稍后尝试!!`
+					console.log(e);
 				} finally {
 					resolve();
 				}
@@ -493,16 +510,20 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 			tip = matches[1];
 		}
 		if (debug) {
-			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
+			console.log(
+				`\n 【debug】=============== 这是 ${tip} 请求 url ===============`
+			);
 			console.log(url);
 		}
 
 		$.post(
 			url,
-			async (err, resp, data) => {
+			async (error, response, data) => {
 				try {
 					if (debug) {
-						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+						console.log(
+							`\n\n 【debug】===============这是 ${tip} 返回data==============`
+						);
 						console.log(data);
 						console.log(`======`);
 						console.log(JSON.parse(data));
@@ -510,9 +531,7 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					console.log(err, resp);
-					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg += `\n ${tip} 失败了!请稍后尝试!!`
+					console.log(e);
 				} finally {
 					resolve();
 				}
@@ -521,14 +540,6 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 		);
 	});
 }
-
-
-
-
-
-
-
-
 
 // ============================================ debug调试 ============================================ \\
 function debugLog(...args) {

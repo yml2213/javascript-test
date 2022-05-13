@@ -6,7 +6,7 @@
  * 3-29    签到任务、新手彩蛋、每日免费领水滴、三餐礼包、宝箱、盒子领取  初步完成   脚本刚写完，难免有bug，请及时反馈  ；ck有效期测试中 
  * 
  * 感谢所有测试人员
- * ========= 青龙 =========
+ * ========= 青龙--配置文件 =========
  * 变量格式：  
  * 必填变量：export jqsj_data='  uid & token & auto_combine_body & buy_body @   uid & token & auto_combine_body & buy_body '  多个账号用 @分割 
  * 

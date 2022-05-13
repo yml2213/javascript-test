@@ -8,7 +8,7 @@
  *
  * 
  * 感谢所有测试人员 
- * ========= 青龙 =========
+ * ========= 青龙--配置文件 =========
  * 变量格式: export jy_data='x-tt-token # tdid # sign # device-time  @ x-tt-token # tdid # sign # device-time '  多个账号用 @分割
  *
  * x-tt-token , tdid , sign , device-time  都是headers的参数

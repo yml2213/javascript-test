@@ -11,7 +11,7 @@
  * 抓包记得先打开果园，然后再打开抓包软件，就能正常抓包了   关于抖音的任务都没网络，抓不到包
  * 
  * 感谢所有测试人员
- * ========= 青龙 =========
+ * ========= 青龙--配置文件 =========
  * 变量格式：  
  * 必填变量：export bdjsb_data='账号1 ck @ 账号2 ck'  多个账号用 @分割 
  * 可选变量：export bdjsbUA='你的UA'
@@ -95,7 +95,7 @@ let msg = '';
 			await start_sleep();
 			await $.wait(2 * 1000);
 
-			
+
 			// console.log('领取 吃饭补贴');
 			// await eat();
 			// await $.wait(2 * 1000);
@@ -255,7 +255,7 @@ function signin(timeout = 3 * 1000) {
  * 开宝箱
  * https://activity.baidu.com/incentive/box/add
  */
- function open_box(timeout = 3 * 1000) {
+function open_box(timeout = 3 * 1000) {
 
 	return new Promise((resolve) => {
 		let url = {
@@ -314,7 +314,7 @@ function signin(timeout = 3 * 1000) {
  * 睡觉补贴
  * https://activity.baidu.com/incentive/sleep/sleep?productid=2&zid=n2lYTmmGfgOrZQa0_bu1KekOF0QM8t7wOCCBsYLwfHPF6wXGCz4aSOLD-s8pGlwNRlcezifvyjfmcPxC2eKnaGg&callback=jsonpCB_1649252348237_100
  */
- function start_sleep(timeout = 3 * 1000) {
+function start_sleep(timeout = 3 * 1000) {
 
 	return new Promise((resolve) => {
 		let url = {
@@ -374,7 +374,7 @@ function signin(timeout = 3 * 1000) {
  * 吃饭补贴
  * https://activity.baidu.com/incentive/eat/add?productid=2&position=eatList&type=1&zid=n2lYTmmGfgOrZQa0_bu1KekOF0QM8t7wOCCBsYLwfHPHYVUhyxHc1ZFZUrRzycIk_uINFxNvbNPg2CR-XxHjnqw&callback=jsonpCB_1649202830229_233
  */
- function eat(timeout = 3 * 1000) {
+function eat(timeout = 3 * 1000) {
 
 	return new Promise((resolve) => {
 		let url = {
@@ -432,7 +432,7 @@ function signin(timeout = 3 * 1000) {
  * 领金币
  * https://activity.baidu.com/incentive/pigBank/addBubble
  */
- function coin(timeout = 3 * 1000) {
+function coin(timeout = 3 * 1000) {
 
 	return new Promise((resolve) => {
 		let url = {

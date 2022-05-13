@@ -1,37 +1,27 @@
 /**
- * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/jhy/jhy.js
- * 转载请留信息,谢谢
+ * 奋进川维  
  * 
- * 聚好运
+ * cron 10 7 * * *  
  * 
- * cron 45 7-20 * * *  yml2213_javascript_master/jhy.js
+ * 5-10	文章阅读 评论
  * 
- * 5-8	完成 看视频得红包 ,点击转圈“全都要” ,看宝箱视频 等任务
- * 
- * 
- * 感谢所有测试人员 
- * ========= 青龙 =========
- * 变量格式: export jhy_data='AZ @ AZ '  多个账号用 @分割
- *
- * 抓包 :  关键词  inndoo.ytdcloud.com/activity-api/signinact/signin , 抓个自己的 都是 headers 的参数 
+ * ========= 青龙--配置文件 =========
+ * 变量格式: export fjcw_data=' 手机号&密码 @ 手机号&密码 '  多个账号用 @分割
  *
  * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
-const $ = new Env("聚好运");
+const $ = new Env("奋进川维");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
 const debug = 1 		//0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
-let ckStr = process.env.jhy_data;
+let ckStr = process.env.fjcw_data;
 let msg = "";
 let ck = "";
-let time13 = "";
-let time10 = "";
-let salt = 'YWZlZjNiMjIzNjQ5NDE4MTM1NjRiZmZjNTQ5ZDVmZTE='
+let token = "";
 
 ///////////////////////////////////////////////////////////////////
-let Version = '\n yml   2022/5/8  完成  看视频得红包 ,点击转圈“全都要” ,看宝箱视频 等任务\n'
-let thank = `\n 感谢 心雨 的投稿\n`
+let Version = '\n yml   2022/5/10      文章阅读 评论 \n'
 let test = `\n 脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!\n`
 ///////////////////////////////////////////////////////////////////
 
@@ -40,14 +30,8 @@ async function tips(ckArr) {
 	console.log(`${Version}`);
 	msg += `${Version}`
 
-	// console.log(thank);
-	// msg += `${thank}`
-
 	console.log(test);
 	msg += `${test}`
-
-	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-	// msg += `脚本已恢复正常状态,请及时更新`
 
 	console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
 		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
@@ -59,7 +43,7 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "jhy_data");
+	let ckArr = await getCks(ckStr, "fjcw_data");
 	await tips(ckArr);
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
@@ -78,330 +62,233 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("开始 任务列表");
-	await task_list();
+
+	// console.log("开始 用户信息");
+	// await user_info();
+	// await $.wait(2 * 1000);
+
+	console.log("开始 看文章--掌上新闻");
+	await watch_news();
 	await $.wait(2 * 1000);
 
+	// for (let index = 1; index < 21; index++) {
+	// 	console.log(`开始 第 ${index} 次 阅读文章--领金币`);
+	// 	await start_reading();
+	// 	await $.wait(5 * 1000);
+	// }
+
+	// console.log(`开始 荣誉广告`);
+	// await honor_ad();
+	// await $.wait(5 * 1000);
+
+
 
 }
 
 
 
 
+
+
+
 /**
- * 任务列表   httpGet
- * http://mmo.tapque.com/task/config/list?pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0
- * nonce=1652020290097&timestamp=1652020290&pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0&key=YWZlZjNiMjIzNjQ5NDE4MTM1NjRiZmZjNTQ5ZDVmZTE=
+ * 用户信息   httpGet
+ * http://fjcw.zhixiang.run/api/user/userInfo
  */
-async function task_list() {
-	let time13 = ts13(), time10 = ts10();
-	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0&key=${salt}`);
-	console.log(sign);
+async function user_info() {
+
 	let url = {
-		url: `http://mmo.tapque.com/task/config/list?pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0`,
+		url: `https://xfsh.sinopec.com/webServices/romote/homeAgentService/findNewestConfig?access_token=${ck[0]}&agentId=${ck[1]}`,
 		headers: {
-			"ts": time10,
-			"nc": time13,
-			// "dv": "3acfba4f30461e07",
-			"sg": sign,
-			"Authorization": ck[0],
-			"Host": "mmo.tapque.com",
-			"User-Agent": "okhttp/4.9.1",
+			"Host": "xfsh.sinopec.com",
+			"Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4"
 		},
-		// body: ``,
 	};
-	let result = await httpGet(url, `任务列表`);
+	let result = await httpGet(url, `用户信息`);
 
-	if (result.code == 6000) {
-		console.log(`\n 任务列表:  获取成功 🎉 \n`);
-		msg += `\n 任务列表:  获取成功 🎉 \n`;
+	if (result.adFlag == true) {
+		console.log(`\n 用户信息: 成功 , 积分: ${result.integral}\n`);
+		msg += `\n 用户信息: 成功 , 积分: ${result.integral}\n`
+	} else {
+		console.log(`\n 用户信息:  失败 ❌ 了呢,原因未知！  ${result}\n `);
+		msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！   \n `
+		throw new Error(` 用户信息: 失败 ❌ 了呢,原因未知！`);
+	}
+}
 
 
-		////////////////////////////////////////////////////////// 看视频得红包  ////////////////////////////////////////////////////////// 
-		if (result.records[0].taskProgress < result.records[0].limitAmount) {
-			console.log(`\n${result.records[0].taskName} 任务: ${result.records[0].taskProgress}/${result.records[0].limitAmount}\n`);
-			console.log(`开始 ${result.records[0].taskName} 任务`);
-			console.log(`每次运行执行三次 ${result.records[0].taskName} 任务`);
-			for (let index = 1; index < 4; index++) {
-				console.log(`开始  第${index}次 看视频得红包`);
-				// await ad_redPacket();
-				await task_test(result.records[0].taskName, result.records[0].id);
-				await $.wait(330 * 1000);
+/**
+ * 看文章--掌上新闻   httpGet
+ * https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=49eb6dcb4228ac1ca22df98c8bdea344&fkPlugId=224&pageSize=10&fkCateId=1589&isPart=true&pageNum=1
+ * 
+ * https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=49eb6dcb4228ac1ca22df98c8bdea344&fkPlugId=224&pageSize=10&fkCateId=1589&isPart=true&pageNum=1
+ */
+async function watch_news() {
+
+	let url = {
+		url: `https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=${ck[2]}&fkPlugId=224&pageSize=10&fkCateId=1589&isPart=true&pageNum=1`,
+		headers: {
+			'Host': 'xfsh.sinopec.com',
+			'Content-Type': 'application/json'
+		},
+	};
+	let result = await httpGet(url, `看文章--掌上新闻`);
+
+
+
+	if (result.total !== 0) {
+		console.log(`\n 看文章--掌上新闻: 成功 \n`);
+		// newsList
+		let listArr = result.newsList
+		console.log(listArr);
+		for (let index = 0; index < listArr.length; index++) {
+
+			// 10位时间戳秒转换为标准时间 10位时间戳乘以1000
+			function timestampToTime(timestamp) {
+				var date = new Date(timestamp * 1000)
+				var Y = date.getFullYear() + '-'
+				var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+				const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' '
+				return Y + M + D
 			}
-		} else {
-			console.log(`${result.records[0].taskName}: 今天已经没机会了,明天再来吧!`);
+			// console.log(timestampToTime(1652167200));
+
+			let time = new Date();
+			let y = time.getFullYear();
+			let m = time.getMonth() + 1;
+			let d = time.getDate();
+			m = m.toString();
+			d = d.toString();
+			if (m.length == 1) {
+				m = `0${m}`
+			}
+			if (d.length == 1) {
+				d = `0${d}`
+			}
+			local_time = y + '-' + m + '-' + d
+			console.log(local_time);
+
+
+			if (timestampToTime(result.newsList[index].publishedTime) == local_time) {
+
+				console.log(`文章: ${result.newsList[index].title} 是 ${local_time}天的,开始做 阅读,评论 任务!`);
+
+				console.log(`开始 阅读${result.newsList[index].title}`);
+
+				article_id = result.newsList[index].id;
+				await start_reading();
+				await $.wait(5 * 1000);
+
+
+
+
+
+			}
+
+
 		}
 
-		////////////////////////////////////////////////////////// 点击转圈“全都要”  ////////////////////////////////////////////////////////// 
-		if (result.records[2].taskProgress < result.records[2].qualifyNum) {
-			console.log(`\n${result.records[2].taskName} 任务: ${result.records[2].taskProgress}/${result.records[2].qualifyNum}\n`);
-			console.log(`开始 点击转圈“全都要”按钮1次 任务`);
-			// await videotask2_redpackage();
-			await task_test(result.records[2].taskName, result.records[2].id);
-		} else {
-			await $.wait(60 * 1000);
-			await receive_packets(result.records[2].taskName, result.records[2].id);
-			console.log(`${result.records[2].taskName}: 今天已经没机会了,明天再来吧!`);
+		msg += `\n 看文章--掌上新闻: 成功 , 积分: ${result.integral}\n`
+	} else {
+		console.log(`\n 看文章--掌上新闻:  失败 ❌ 了呢,原因未知！  ${result}\n `);
+		msg += `\n 看文章--掌上新闻: 失败 ❌ 了呢,原因未知！   \n `
+		// throw new Error(` 看文章--掌上新闻: 失败 ❌ 了呢,原因未知！`);
+	}
+}
 
-			if (result.records[5].taskProgress < result.records[5].qualifyNum) {
-				console.log(`\n${result.records[5].taskName} 任务: ${result.records[5].taskProgress}/${result.records[5].qualifyNum}\n`);
-				console.log(`开始 点击转圈“全都要”按钮3次 任务`);
-				// await videotask2_redpackage();
-				await task_test(result.records[5].taskName, result.records[5].id);
-			} else {
-				await $.wait(60 * 1000);
-				await receive_packets(result.records[5].taskName, result.records[5].id);
-				console.log(`${result.records[5].taskName}: 今天已经没机会了,明天再来吧!`);
 
-				if (result.records[8].taskProgress < result.records[8].qualifyNum) {
-					console.log(`\n${result.records[8].taskName} 任务: ${result.records[8].taskProgress}/${result.records[8].qualifyNum}\n`);
-					console.log(`开始 点击转圈“全都要”按钮5次 任务`);
-					// await videotask2_redpackage();
-					await task_test(result.records[8].taskName, result.records[8].id);
-				} else {
-					await $.wait(60 * 1000);
-					await receive_packets(result.records[8].taskName, result.records[8].id);
-					console.log(`${result.records[8].taskName}: 今天已经没机会了,明天再来吧!`);
+/**
+ * 看新闻--精彩视频   httpGet
+ * https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=49eb6dcb4228ac1ca22df98c8bdea344&fkPlugId=224&pageSize=10&fkCateId=1927&isPart=true&pageNum=2
+ */
+async function watch_video() {
 
-					if (result.records[11].taskProgress < result.records[11].qualifyNum) {
-						console.log(`\n${result.records[11].taskName} 任务: ${result.records[11].taskProgress}/${result.records[11].qualifyNum}\n`);
-						console.log(`开始 点击转圈“全都要”按钮 8 次 任务`);
-						// await videotask2_redpackage();
-						await task_test(result.records[11].taskName, result.records[11].id);
+	let url = {
+		url: `https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/list?access_token=${ck[2]}&fkPlugId=224&pageSize=10&fkCateId=1589&isPart=true&pageNum=2`,
+		headers: {
+			"Host": "xfsh.sinopec.com",
+			"Content-Type": "application/json"
+		},
+	};
+	let result = await httpGet(url, `看新闻--精彩视频`);
 
-					} else {
-						await $.wait(60 * 1000);
-						await receive_packets(result.records[11].taskName, result.records[11].id);
-						console.log(`${result.records[11].taskName}: 今天已经没机会了,明天再来吧!`);
-					}
-				}
+
+
+	if (result.total !== 0) {
+		console.log(`\n 看新闻--精彩视频: 成功 \n`);
+		// newsList
+		let listArr = result.newsList
+		for (let index = 0; index < listArr.length; index++) {
+
+			// 10位时间戳秒转换为标准时间 10位时间戳乘以1000
+			function timestampToTime(timestamp) {
+				var date = new Date(timestamp * 1000)
+				var Y = date.getFullYear() + '-'
+				var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+				const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' '
+				return Y + M + D
 			}
-		}
+			// console.log(timestampToTime(1652167200));
 
-
-		////////////////////////////////////////////////////////// 看宝箱视频  ////////////////////////////////////////////////////////// 
-		if (result.records[3].taskProgress < result.records[3].qualifyNum) {
-			console.log(`\n ${result.records[3].taskName} 任务: ${result.records[3].taskProgress}/${result.records[3].qualifyNum}\n`);
-			console.log(`开始 ${result.records[3].taskName} 任务`);
-			// await videotask2_redpackage();
-			await task_test(result.records[3].taskName, result.records[3].id);
-		} else {
-			await $.wait(60 * 1000);
-			await receive_packets(result.records[3].taskName, result.records[3].id);
-			console.log(`${result.records[3].taskName}: 今天已经没机会了,明天再来吧!`);
-
-			if (result.records[6].taskProgress < result.records[6].qualifyNum) {
-				console.log(`\n ${result.records[6].taskName} 任务: ${result.records[6].taskProgress}/${result.records[6].qualifyNum}\n`);
-				console.log(`开始 ${result.records[6].taskName}`);
-				// await videotask2_redpackage();
-				await task_test(result.records[6].taskName, result.records[6].id);
-			} else {
-				await $.wait(60 * 1000);
-				await receive_packets(result.records[6].taskName, result.records[6].id);
-				console.log(`${result.records[6].taskName}: 今天已经没机会了,明天再来吧!`);
-
-				if (result.records[9].taskProgress < result.records[9].qualifyNum) {
-					console.log(`\n ${result.records[9].taskName} 任务: ${result.records[9].taskProgress}/${result.records[9].qualifyNum}\n`);
-					console.log(`开始 ${result.records[9].taskName} 任务`);
-					// await videotask2_redpackage();
-					await task_test(result.records[9].taskName, result.records[9].id);
-				} else {
-					await $.wait(60 * 1000);
-					await receive_packets(result.records[9].taskName, result.records[9].id);
-					console.log(`${result.records[9].taskName}: 今天已经没机会了,明天再来吧!`);
-
-					if (result.records[12].taskProgress < result.records[12].qualifyNum) {
-						console.log(`\n ${result.records[12].taskName} 任务: ${result.records[12].taskProgress}/${result.records[12].qualifyNum}\n`);
-						console.log(`开始 ${result.records[12].taskName} 任务`);
-						// await videotask2_redpackage();
-						await task_test(result.records[12].taskName, result.records[12].id);
-
-					} else {
-						await $.wait(60 * 1000);
-						await receive_packets(result.records[12].taskName, result.records[12].id);
-						console.log(`${result.records[12].taskName}: 今天已经没机会了,明天再来吧!`);
-					}
-				}
+			let time = new Date();
+			let y = time.getFullYear();
+			let m = time.getMonth() + 1;
+			let d = time.getDate();
+			m = m.toString();
+			d = d.toString();
+			if (m.length == 1) {
+				m = `0${m}`
 			}
+			if (d.length == 1) {
+				d = `0${d}`
+			}
+			local_time = y + '-' + m + '-' + d
+			console.log(local_time);
+
+
+			if (timestampToTime(result.newsList[index].publishedTime) == local_time) {
+
+				console.log(`文章: ${result.newsList[index].title} 是 ${local_time}天的,开始做 阅读,评论 任务!`);
+
+				console.log(`开始 阅读${result.newsList[index].title}`);
+
+				article_id = result.newsList[index].id;
+				await start_reading();
+				await $.wait(5 * 1000);
+
+			}
+
 		}
-
-
-
-
-
-
-
-
-
-
-	} else if (result.code == 8009) {
-		console.log(`\n	任务列表:  ${result.msg}\n`);
-		msg += `\n 任务列表:  ${result.msg}\n`;
+		msg += `\n 看新闻--精彩视频: 成功 , 积分: ${result.integral}\n`
 	} else {
-		console.log(`\n 任务列表: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-		msg += `\n 任务列表: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
+		console.log(`\n 看新闻--精彩视频:  失败 ❌ 了呢,原因未知！  ${result}\n `);
+		msg += `\n 看新闻--精彩视频: 失败 ❌ 了呢,原因未知！   \n `
+		// throw new Error(` 看新闻--精彩视频: 失败 ❌ 了呢,原因未知！`);
 	}
 }
+
+
+
 
 
 
 
 /**
- * 看视频得红包   激励红包  httpGet
- * http://mmo.tapque.com/task/config/progress?id=1518432343778316290&pn=com.collect.goodluck.app&v=v1.0
+ * 开始阅读    httpGet
+ * https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/readComplete?access_token=49eb6dcb4228ac1ca22df98c8bdea344&fkPlugId=224&id=314005
  */
-async function ad_redPacket() {
-	let time13 = ts13(), time10 = ts10();
-	// sign_data = ;
-	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&id=1518432343778316290&pn=com.collect.goodluck.app&v=v1.0&key=${salt}`);
-	// console.log(sign);
+async function start_reading() {
+
+
 	let url = {
-		url: `http://mmo.tapque.com/task/config/progress?id=1518432343778316290&pn=com.collect.goodluck.app&v=v1.0`,
+		url: `https://xfsh.sinopec.com/javaComm/cap-api/rest/api/cms/news/readComplete?access_token=${ck[2]}&fkPlugId=224&id=${article_id}`,
 		headers: {
-			"ts": time10,
-			"nc": time13,
-			"sg": sign,
-			"Authorization": ck[0],
-			"Host": "mmo.tapque.com",
-			"User-Agent": "okhttp/4.9.1",
-		},
-		// body: ``,
-	};
-	let result = await httpGet(url, `看视频得红包`);
-
-	if (result.code == 6000) {
-		console.log(`\n	看视频得红包:  成功  \n`);
-		msg += `\n 看视频得红包:  成功 \n`;
-		await $.wait(330 * 1000);
-		console.log(`\n 以下测试使用\n`);
-		console.log(result);
-	} else if (result.code == 8009) {
-		console.log(`\n	看视频得红包:  ${result.msg}\n`);
-		msg += `\n 看视频得红包:  ${result.msg}\n`;
-	} else {
-		console.log(`\n 看视频得红包: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-		msg += `\n 看视频得红包: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
-	}
-}
-
-
-
-
-/**
- * 点击转圈“全都要”按钮3次    视频任务红包2    httpGet
- * http://mmo.tapque.com/task/config/progress?id=1518432343958671362&pn=com.collect.goodluck.app&v=v1.0
- */
-async function videotask2_redpackage() {
-	let time13 = ts13(), time10 = ts10();
-	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&id=1518432343958671362&pn=com.collect.goodluck.app&v=v1.0&key=${salt}`);
-	// console.log(sign);
-	let url = {
-		url: `http://mmo.tapque.com/task/config/progress?id=1518432343958671362&pn=com.collect.goodluck.app&v=v1.0`,
-		headers: {
-			"ts": time10,
-			"nc": time13,
-			// "dv": "3acfba4f30461e07",
-			"sg": sign,
-			"Authorization": ck[0],
-			"Host": "mmo.tapque.com",
-			"User-Agent": "okhttp/4.9.1",
-		},
-		// body: ``,
-	};
-	let result = await httpGet(url, `点击转圈“全都要”按钮3次`);
-
-	if (result.code == 6000) {
-		console.log(`\n	点击转圈“全都要”按钮3次:  成功  \n`);
-		msg += `\n 点击转圈“全都要”按钮3次:  成功 \n`;
-		console.log(`\n 以下测试使用\n`);
-		console.log(result);
-	} else if (result.code == 8009) {
-		console.log(`\n	点击转圈“全都要”按钮3次:  ${result.msg}\n`);
-		msg += `\n 点击转圈“全都要”按钮3次:  ${result.msg}\n`;
-	} else {
-		console.log(`\n 点击转圈“全都要”按钮3次: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-		msg += `\n 点击转圈“全都要”按钮3次: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
-	}
-}
-
-
-
-
-/**
- * task_test       httpGet
- * http://mmo.tapque.com/task/config/progress?id=1518432343958671362&pn=com.collect.goodluck.app&v=v1.0
- */
-async function task_test(task_name, task_id) {
-	let time13 = ts13(), time10 = ts10();
-	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&id=${task_id}&pn=com.collect.goodluck.app&v=v1.0&key=${salt}`);
-	// console.log(sign);
-	let url = {
-		url: `http://mmo.tapque.com/task/config/progress?id=${task_id}&pn=com.collect.goodluck.app&v=v1.0`,
-		headers: {
-			"ts": time10,
-			"nc": time13,
-			// "dv": "3acfba4f30461e07",
-			"sg": sign,
-			"Authorization": ck[0],
-			"Host": "mmo.tapque.com",
-			"User-Agent": "okhttp/4.9.1",
+			"Host": "xfsh.sinopec.com",
+			"Content-Type": "application/json"
 		},
 	};
-	let result = await httpGet(url, task_name);
-
-	if (result.code == 6000) {
-		console.log(`\n	${task_name}:  成功  \n`);
-		msg += `\n ${task_name}:  成功 \n`;
-		console.log(`\n 以下测试使用\n`);
-		console.log(result);
-	} else if (result.code == 8009) {
-		console.log(`\n	${task_name}:  ${result.msg}\n`);
-		msg += `\n ${task_name}:  ${result.msg}\n`;
-	} else {
-		console.log(`\n ${task_name}: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-		msg += `\n ${task_name}: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
-	}
+	let result = await httpGet(url, `开始阅读`);
 }
-
-
-
-
-/**
- * receive_packets   领取红包  test    httpGet
- * http://mmo.tapque.com/task/config/deal?id=1518432343832842241&pn=com.collect.goodluck.app&v=v1.0
- */
-async function receive_packets(task_name, task_id) {
-	let time13 = ts13(), time10 = ts10();
-	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&id=${task_id}&pn=com.collect.goodluck.app&v=v1.0&key=${salt}`);
-	// console.log(sign);
-	let url = {
-		url: `http://mmo.tapque.com/task/config/deal?id=${task_id}&pn=com.collect.goodluck.app&v=v1.0`,
-		headers: {
-			"ts": time10,
-			"nc": time13,
-			// "dv": "3acfba4f30461e07",
-			"sg": sign,
-			"Authorization": ck[0],
-			"Host": "mmo.tapque.com",
-			"User-Agent": "okhttp/4.9.1",
-		},
-	};
-	let result = await httpGet(url, task_name);
-
-	if (result.code == 6000) {
-		console.log(`\n	${task_name}:  成功  \n`);
-		msg += `\n ${task_name}:  成功 \n`;
-		console.log(`\n 以下测试使用\n`);
-		console.log(result);
-	} else if (result.code == 8009) {
-		console.log(`\n	${task_name}:  ${result.msg}\n`);
-		msg += `\n ${task_name}:  ${result.msg}\n`;
-	} else {
-		console.log(`\n ${task_name}: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-		msg += `\n ${task_name}: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
-	}
-}
-
 
 
 
@@ -509,6 +396,25 @@ function ts10() {
 	return Math.round(new Date().getTime() / 1000).toString();
 }
 
+/**
+ * 获取当前小时数 
+ */
+
+function local_hours() {
+	let myDate = new Date();
+	h = myDate.getHours();
+	return h;
+}
+
+/**
+ * 获取当前分钟数 
+ */
+
+function local_minutes() {
+	let myDate = new Date();
+	m = myDate.getMinutes();
+	return m;
+}
 
 
 
@@ -619,81 +525,6 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 
 
 
-async function task111(method, url, type_name) {
-
-	return new Promise(async resolve => {
-		if (!type_name) {
-			let tmp = arguments.callee.toString();
-			let re = /function\s*(\w*)/i;
-			let matches = re.exec(tmp);
-			type_name = matches[1];
-		}
-		// let timeout = '';
-		if (method = `get`) {
-			return new Promise((resolve) => {
-				if (debug) {
-					console.log(`\n 【debug】=============== 这是 ${type_name} 请求 url ===============`);
-					console.log(url);
-				}
-
-				$.get(url, async (err, resp, data) => {
-					try {
-						if (err) {
-							console.log(`${$.name}: API查询请求失败 ‼️‼️`);
-							console.log(JSON.stringify(err));
-							$.logErr(err);
-						} else if (debug) {
-							console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-							console.log(data);
-							console.log(`======`);
-							console.log(JSON.parse(data));
-						}
-						let result = JSON.parse(data);
-						resolve(result);
-					} catch (e) {
-						console.log(e, resp);
-					} finally {
-						resolve();
-					}
-				},
-				);
-			});
-		} else if (method = httppost) {
-			return new Promise((resolve) => {
-				if (debug) {
-					console.log(`\n 【debug】=============== 这是 ${type_name} 请求 url ===============`);
-					console.log(url);
-				}
-				$.post(url, async (err, resp, data) => {
-					try {
-						if (err) {
-							console.log("$.name: API查询请求失败 ‼️‼️");
-							console.log(JSON.stringify(err));
-							$.logErr(err);
-						} else if (debug) {
-							console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-							console.log(data);
-							console.log(`======`);
-							console.log(JSON.parse(data));
-						}
-						let result = JSON.parse(data);
-						resolve(result);
-					} catch (e) {
-						console.log(e, resp);
-					} finally {
-						resolve();
-					}
-				},
-					// timeout(3000)
-				);
-			});
-
-		} else {
-			console.log(`参数错误 ❌ ,请仔细检查修改后再试试吧!!`);
-		}
-
-	})
-}
 
 
 

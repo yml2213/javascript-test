@@ -5,7 +5,7 @@
  * 4-26 完成签到 任务   有bug及时反馈
  * 
  * 感谢投稿人员,感谢所有测试人员
- * ========= 青龙 =========
+ * ========= 青龙--配置文件 =========
  * 变量格式: export jfjlb_data=' jscode & token @ jscode & token '  多个账号用 @分割 
  * 签到包的  member-api/memberApplet/signLog  url链接中的 "jscode" 跟 hd 中的 token  
  * 

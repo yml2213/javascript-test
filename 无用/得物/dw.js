@@ -5,7 +5,7 @@
  * 得物 微信小程序 
  * 3-22   签到任务 、 阅读5/15分钟任务 完成，商城任务暂时没写 ，有效期测试中 
  * 感谢所有测试人员
- * ========= 青龙 =========
+ * ========= 青龙--配置文件 =========
  * 变量格式：  export dwCookies='sessionKey的值 & userId的值@sessionKey的值&userId的值'  多个账号用 @分割 
  * qualcomm.growthideadata.com  关键词的包   基本每个包都有变量
  * 

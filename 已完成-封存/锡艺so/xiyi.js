@@ -8,7 +8,7 @@
  * 
  * 感谢群友提供
  * 感谢所有测试人员
- * ========= 青龙 =========
+ * ========= 青龙--配置文件 =========
  * 变量格式: export xiyi_data='token 1 @ token2'   多个账号用 @分割 
  * 
  * 抓包： 随便抓个有token的包就行了
@@ -139,7 +139,7 @@ function SignIn(timeout = 3 * 1000) {
  * SignData  签到信息
  * https://x18.yyyyy.run/api/sign/userSignData
  */
- function SignData(timeout = 3 * 1000) {
+function SignData(timeout = 3 * 1000) {
 
 	return new Promise((resolve) => {
 		let url = {

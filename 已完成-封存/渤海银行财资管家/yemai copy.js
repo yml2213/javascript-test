@@ -1,62 +1,53 @@
 /**
- * 超有惠 app  (链接带邀请) 感谢您走我的邀请链接,谢谢,谢谢,谢谢
- * 下载地址: https://m.chyouhui.com/page/invite/#/?code=I92CCI7
- * 转载请留信息
+ * 脚本地址: https://raw.githubusercontent.com/yemail2213/javascript/master/yemai/yemai.js
+ * 转载请留信息,谢谢
  * 
- * cron 30 7 * * *  yml2213_javascript_master/cyh.js
+ * 椰麦 
  * 
- * 4-30 完成 签到  , 日常视频 任务   
- * 5-1  更新逻辑
- * 5-3  增加出售100积分 , 增加支付宝提现 1 元
- * 5-4  默认关闭出售积分 ,提现 功能 ,自行决定吧
- * 新人任务自己做做吧 很少
+ * cron 35 7 * * *  yemail2213_javascript_master/yemai.js
+ * 
+ * 5-5	完成签到
+ * 
  * 
  * 感谢所有测试人员 
- * ========= 青龙 =========
- * 变量格式: export cyh_data='androidToken1 @ androidToken2'  多个账号用 @分割
+ * ========= 青龙--配置文件 =========
+ * 变量格式: export yemai_data='cokie1 @ cokie2 '  多个账号用 @分割
  *
- * androidToken :  关键词  t-api.chyouhui.com/auth  ,headers中的一个参数
+ * 抓包 :  关键词  qrappser.cheryev.cn/cheryev/crm/user  找到 Authorization 跟 UA 就行了 , userid 我界面 id就是
  *
- * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
+ * 还是不会的请百度或者群里求助: tg: https://t.me/yemail_tg  通知: https://t.me/yemail2213_tg
  */
-const $ = new Env("超有惠");
+const $ = new Env("椰麦");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; 		//0为关闭通知，1为打开通知,默认为1
-const debug = 0; 		//0为关闭调试，1为打开调试,默认为0
+const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
+const debug = 1 		//0为关闭调试，1为打开调试,默认为0
 //////////////////////
-let ckStr = process.env.cyh_data;
-let cyh_dataArr = [];
+let ckStr = process.env.yemai_data;
 let msg = "";
 let ck = "";
-let ad_num = "";
-let ad_video_infoArr = '';
 /////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	console.log(`\n版本: 0.4 -- 22/5/3`);
+	console.log(`\n版本: 0.1 -- 22/5/5`);
 	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
+	// msg += `\n 脚本已恢复正常状态,请及时更新! `
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
 	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
+	msg += `\n 脚本测试中,有bug及时反馈! \n`
 
-	console.log(
-		`\n================================================\n脚本执行 - 北京时间(UTC+8): ${new Date(
-			new Date().getTime() +
-			new Date().getTimezoneOffset() * 60 * 1000 +
-			8 * 60 * 60 * 1000
-		).toLocaleString()} \n================================================\n`
-	);
+	console.log(`\n================================================\n脚本执行 - 北京时间(UTC+8): ${new Date(
+		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
+	).toLocaleString()} \n================================================\n`);
 
 	await wyy();
 
-	console.log(
-		`\n=================== 共找到 ${ckArr.length} 个账号 ===================`
-	);
+	console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "cyh_data");
+	let ckArr = await getCks(ckStr, "yemai_data");
 
 	await tips(ckArr);
 
@@ -65,9 +56,18 @@ async function tips(ckArr) {
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
 
 		ck = ckArr[index].split("&");
-		if (debug) {
-			console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${ck}\n`);
+
+		if (ck.length < 3) {
+			console.log(`你没写 ua ,将使用默认ua`);
+			ck[2] = "NewEnergy/1.0.5 (com.mychery.ev; build:094; iOS 15.4.1) Alamofire/5.4.3 version=1.0.5 buildVersion=094 systemName=iOS systemVersion=15.4.1 model=iPhone modelName=iPhone14,2"
 		}
+		xyhd = {
+			"Content-Type": "application/json",
+			"Authorization": ck[0],
+			"User-Agent": ck[2],
+		}
+
+		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
 
 		await start();
 	}
@@ -79,16 +79,12 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("开始 用户/积分信息");
+	console.log("开始 用户信息");
 	await userInfo();
 	await $.wait(2 * 1000);
 
-	console.log("开始 签到状态");
-	await signin_info();
-	await $.wait(2 * 1000);
-
-	console.log("开始 检查视频状态");
-	await ad_video_info();
+	console.log("开始 签到信息");
+	await sign();
 	await $.wait(2 * 1000);
 
 }
@@ -96,262 +92,66 @@ async function start() {
 
 
 /**
- * 用户信息   get
- * https://t-api.chyouhui.com/auth/user/my
+ * 用户信息   httpPost
+ * https://qrappser.cheryev.cn/cheryev/crm/user/profile/1211519882
  */
 async function userInfo(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://t-api.chyouhui.com/auth/user/my`,
-		headers: {
-			'androidToken': ck,
-			'Host': 't-api.chyouhui.com',
-		},
-		// body: '{}',
+		url: `https://qrappser.cheryev.cn/cheryev/crm/user/profile/${ck[1]}`,
+		headers: xyhd,
+		body: ``,
 	};
 
-	let result = await httpGet(url, `用户信息`, timeout);
-	if (result.code == 0) {
-		console.log(
-			`\n 用户信息:${result.message} 🎉  \n欢迎光临:${result.data.username} , 等级:${result.data.currentGrade} \n`
-		);
-		await integral_info();
-
+	let result = await httpPost(url, `用户信息`, timeout);
+	if (result.resultCode == 0) {
+		console.log(`\n 用户信息: ${result.resultMsg} 🎉  \n欢迎光临: ${result.data.userName} , 拥有 e币: ${result.data.totalPoints} \n`);
+		msg += `\n 用户信息: ${result.resultMsg} 🎉  \n欢迎光临: ${result.data.userName} , 拥有 e币: ${result.data.totalPoints} \n`
+	} else if (result.resultCode == 2005) {
+		console.log(`\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		console.log(`\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+		msg += `\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
+		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
 	} else {
-		console.log(`\n 用户信息: ${result.message} \n `);
-	}
-}
-
-/**
- * 积分信息   get
- * https://t-api.chyouhui.com/auth/sellIntegral/wallet
- */
-async function integral_info(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/sellIntegral/wallet`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		// body: '{}',
-	};
-
-	let result = await httpGet(url, `积分信息`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 总积分:${result.data.myIntegral} , 可出售:${result.data.convertibleIntegral} , 可提现金额:${result.data.withdrawAmount} 元 \n 当前汇率:1:${result.data.exchangeRate} , 兑换积分比例: ${result.data.buybackRatio} `);
-		// if (result.data.convertibleIntegral > 100) {
-		// 	console.log(`\n 可出售积分:${result.data.convertibleIntegral} , 尝试出售 100 积分!\n `);
-		// 	await Sell_points();
-		// 	await $.wait(2 * 1000);
-		// }
-		// if (result.data.withdrawAmount >= 1) {
-		// 	console.log(`\n 可提现金额:${result.data.withdrawAmount} 元 , 尝试支付宝提现 1 元 !\n `);
-		// 	await cash();
-		// 	await $.wait(2 * 1000);
-		// }
-
-	} else {
-		console.log(`\n 积分信息: ${result.message} \n `);
-	}
-}
-
-
-
-
-
-/**
- * 签到状态   get
- * https://t-api.chyouhui.com/auth/dailySignIn/data
- */
-async function signin_info(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/dailySignIn/data`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		// body: '',
-	};
-
-	let result = await httpGet(url, `签到状态`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 签到状态: ${result.message} 🎉  \n`);
-		if (result.data.todayState !== 'SIGN') {
-			console.log(`没有签到,去签到!`);
-			await signin();
-		} else {
-			console.log(`今天已经签到了,明天再来吧!`);
-		}
-	} else {
-		console.log(`\n 签到状态: ${result.message} \n `);
-	}
-}
-
-
-
-/**
- * 签到   post
- * https://t-api.chyouhui.com/auth/dailySignIn/completed
- */
-async function signin(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/dailySignIn/completed`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		body: '{}',
-	};
-
-	let result = await httpPost(url, `签到`, timeout);
-	if (result.data !== null) {
-		console.log(`\n 签到:成功 🎉   签到获得 积分 ${result.data} \n`);
-
-		msg += `\n 签到:成功 🎉   签到获得 积分 ${result.data} \n`
-	} else {
-		console.log(`\n 签到: ${result.message} \n `);
-	}
-}
-
-
-
-/**
- * 出售100积分   httpGet
- * https://t-api.chyouhui.com/auth/sellIntegral/exchange/1
- */
-async function Sell_points(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/sellIntegral/exchange/1`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		// body: '{}',
-	};
-
-	let result = await httpGet(url, `出售100积分`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 出售100积分: ${result.message} 🎉 \n`);
-
-		msg += `\n 出售100积分: ${result.message} 🎉 \n`
-	} else if (result.code == -1) {
-		console.log(`\n 出售100积分:${result.message} \n`);
-
-		msg += `\n 出售100积分: ${result.message} \n`
-	} else {
-		console.log(`\n 出售100积分: 失败了呢: ${result} \n `);
+		console.log(`\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`);
+		msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`
+		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
 	}
 }
 
 
 /**
- * 检查视频状态   get
- * https://t-api.chyouhui.com/auth/watchVideo/pageData
+ * 签到   httpPost
+ * https://qrappser.cheryev.cn/cheryev/crm/user/checkin
  */
-async function ad_video_info(timeout = 3 * 1000) {
+async function sign(timeout = 3 * 1000) {
 
 	let url = {
-		url: `https://t-api.chyouhui.com/auth/watchVideo/pageData`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		// body: '{}',
+		url: `https://qrappser.cheryev.cn/cheryev/crm/user/checkin`,
+		headers: xyhd,
+		body: `{"userId":"${ck[1]}"}`,
 	};
 
-	let result = await httpGet(url, `检查视频状态`, timeout);
-	if (result.code == 0) {
-		console.log(
-			`\n 检查视频状态:${result.message} 🎉 \n`
-		);
-		ad_video_infoArr = result.data.watchTaskList;
-		// console.log(ad_video_infoArr);
-		for (const elem of ad_video_infoArr) {
-			// console.log(elem.completed);
-			if (elem.completed == 0) {
-				console.log(`开始看第 ${elem.id} 个视频`);
-				ad_num = elem.id;
-				ran_num = randomInt(60, 80)
-				await ad_video();
-				console.log(`请耐心等待 ${ran_num} 秒,再看下一个视频吧!`);
-				await $.wait(ran_num * 1000);
-			} else {
-				console.log(`视频 ${elem.id} 已经看完了鸭!`);
-
-			}
-		}
-
+	let result = await httpPost(url, `签到信息`, timeout);
+	if (result.resultCode == 0) {
+		console.log(`\n 签到: ${result.resultMsg} 🎉\n`);
+		msg += `\n 签到: ${result.resultMsg} 🎉\n`
+	} else if (result.resultCode == 2602) {
+		console.log(`\n 签到: ${result.resultMsg} !\n`);
+		msg += `\n 签到: ${result.resultMsg} !\n`
 	} else {
-		console.log(`\n 检查视频状态: ${result.message} \n `);
-	}
-}
-
-
-
-/**
- * 提现   httpPost
- * https://t-api.chyouhui.com/auth/withdraw/apply
- */
-async function cash(timeout = 3 * 1000) {
-
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/withdraw/apply`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		body: JSON.stringify({
-			"amountId": 2,
-			"payment": "ALIPAY"
-		}),
-	};
-
-	let result = await httpPost(url, `提现`, timeout);
-	if (result.code == 0) {
-		console.log(`\n 提现: ${result.message}  🎉 \n`);
-		msg += `\n 提现: ${result.message}  🎉 \n`
-	} else if (result.code == -1) {
-		console.log(`\n 提现:${result.message} \n`);
-		msg += `\n 提现: ${result.message} \n`
-	} else {
-		console.log(`\n 提现: 提现失败 ❌ ${result} \n `);
+		console.log(`\n 签到信息: 失败 ❌ 了呢,原因未知！\n ${result} \n `);
 	}
 }
 
 
 
 
-/**
- * 观看视频   httpPost
- * https://t-api.chyouhui.com/auth/watchVideo/completed/6
- */
-async function ad_video(timeout = 3 * 1000) {
 
-	let url = {
-		url: `https://t-api.chyouhui.com/auth/watchVideo/completed/${ad_num}`,
-		headers: {
-			'androidToken': ck[0],
-			'Host': 't-api.chyouhui.com',
-		},
-		body: '',
-	};
 
-	let result = await httpPost(url, `观看视频`, timeout);
-	if (result.code == 0) {
-		console.log(
-			`\n 观看视频:${result.message} 🎉  , 下一个视频是第 ${result.data.nextId} 个视频 \n 本次观看视频获得积分 ${result.data.integral} ,剩余未领取积分 ${result.data.surplusIntegral}\n`
-		);
 
-	} else if (result.code == -1) {
-		console.log(`\n 观看视频:${result.message} \n`);
-	} else {
-		console.log(`\n 观看视频:  失败 ❌ 了呢,原因未知！\n ${result} \n `);
-	}
-}
+
+
 
 
 
@@ -448,6 +248,7 @@ function wyy(timeout = 3 * 1000) {
 			try {
 				data = JSON.parse(data)
 				console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
+				msg += `\n 【网抑云时间】: ${data.content}  by--${data.music}\n`
 
 			} catch (e) {
 				$.logErr(e, resp);

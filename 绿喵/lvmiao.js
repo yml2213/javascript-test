@@ -1,34 +1,36 @@
 /**
+ * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/lvmiao/lvmiao.js
  * 转载请留信息,谢谢
  * 
- * 财资管家  渤海银行财资管家 公众号----热门活动-----签到有礼
+ * 绿喵  小程序   可以的话,请扫码支持我  走我的邀请  ,谢谢
  * 
- * cron 45 7 * * *  yml2213_javascript_master/czgj.js
+ * cron 35 7 * * *  yml2213_javascript_master/lvmiao.js
  * 
  * 5-7	完成签到
  * 
  * 
  * 感谢所有测试人员 
- * ========= 青龙 =========
- * 变量格式: export czgj_data='accountid & UA & timestamp & sign @ accountid & UA & timestamp & sign '  多个账号用 @分割
+ * ========= 青龙--配置文件 =========
+ * 变量格式: export lvmiao_data='cookie1 @ cookie2 '  多个账号用 @分割
  *
- * 抓包 :  关键词  inndoo.ytdcloud.com/activity-api/signinact/signin , 抓个自己的 都是 headers 的参数 
+ * 抓包 :  关键词  miniprogram.api.miotech.com  抓个自己的 cookie 就行了 
  *
  * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
-const $ = new Env("财资管家");
+const $ = new Env("绿喵");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
 const debug = 0 		//0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
-let ckStr = process.env.czgj_data;
+let ckStr = process.env.lvmiao_data;
+// let lvmiao_dataArr = [];
 let msg = "";
 let ck = "";
 
 ///////////////////////////////////////////////////////////////////
-let Version = '\n yml   2022/5/8  完成签到 \n'
-let thank = `\n 感谢 心雨 的投稿\n`
-let test = `\n 脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!\n`
+let Version = '\n yml   2022/5/7  完成签到 可以的话,请扫码(我的邀请)支持我  谢谢 \n'
+let thank = `\n 感谢 xxx 的投稿\n`
+let test = `\n 脚本测试中,有bug及时反馈! 	 脚本测试中,有bug及时反馈!\n`
 ///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
@@ -36,8 +38,8 @@ async function tips(ckArr) {
 	console.log(`${Version}`);
 	msg += `${Version}`
 
-	console.log(thank);
-	msg += `${thank}`
+	// console.log(thank);
+	// msg += `${thank}`
 
 	console.log(test);
 	msg += `${test}`
@@ -55,7 +57,7 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "czgj_data");
+	let ckArr = await getCks(ckStr, "lvmiao_data");
 	await tips(ckArr);
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
@@ -74,8 +76,12 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("开始 签到");
-	await signin();
+	console.log("开始 用户信息");
+	await user_info();
+	await $.wait(2 * 1000);
+
+	console.log("开始 签到状态");
+	await signin_info();
 	await $.wait(2 * 1000);
 
 }
@@ -84,45 +90,114 @@ async function start() {
 
 
 
+/**
+ * 用户信息   get
+ * https://miniprogram.api.miotech.com/api/mp2c/user/profile
+ */
+async function user_info() {
+
+	type_name = `用户信息`
+	if (type_name == `用户信息`) {
+		let url = {
+			url: `https://miniprogram.api.miotech.com/api/mp2c/user/profile`,
+			headers: {
+				"Host": "miniprogram.api.miotech.com",
+				"Cookie": ck[0],
+			},
+			// body: "{}",
+		};
+		let result = await httpGet(url, type_name);
+		if (result.code == "success") {
+			console.log(`\n 用户信息: 欢迎光临 ${result.data.nickName}  🎉  \n 信息:${result.data.nickName} , 积分: ${result.data.balanceOfPoints} ,手机号: ${result.data.phoneNumber}\n`);
+			msg += `\n 用户信息: 欢迎光临 ${result.data.nickName}  🎉  \n 信息:${result.data.nickName} , 积分: ${result.data.balanceOfPoints} ,手机号: ${result.data.phoneNumber}\n`
+		} else if (result.code == "failed") {
+			console.log(`\n ${$.name}: ${result.error} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+			console.log(`\n ${$.name}: ${result.error} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
+			msg += `\n ${$.name}: ${result.error} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
+			throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+		} else {
+			console.log(`\n 用户信息:  失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `);
+			msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `
+			throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+		}
+	}
+}
+
+
 
 /**
- * 签到   httpGet
- * https://inndoo.ytdcloud.com/activity-api/signinact/signin
+ * 签到状态   httpGet
+ * https://miniprogram.api.miotech.com/api/mp2c/checkin/info
+ */
+async function signin_info() {
+
+	type_name = `签到状态`
+	if (type_name == `签到状态`) {
+		let url = {
+			url: `https://miniprogram.api.miotech.com/api/mp2c/checkin/info`,
+			headers: {
+				"Host": "miniprogram.api.miotech.com",
+				"Cookie": ck[0],
+			},
+			// body: "{}",
+		};
+		let result = await httpGet(url, type_name);
+		if (result.code == "success") {
+
+			if (result.data.isChecked == false) {
+				console.log(`没有签到,去签到!`);
+				msg += `没有签到,去签到!`
+				await signin();
+			} else if (result.data.isChecked == true) {
+				console.log(`今天已经签到了,明天再来吧!`);
+				msg += `今天已经签到了,明天再来吧!`
+			}
+
+		} else {
+			console.log(`\n 签到状态:  失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `);
+			msg += `\n 签到状态: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)}  \n `
+			// throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+		}
+	}
+}
+
+
+
+
+
+
+/**
+ * 签到   post
+ * https://miniprogram.api.miotech.com/api/mp2c/checkin/collect
  */
 async function signin() {
 
 	type_name = `签到`
 	if (type_name == `签到`) {
 		let url = {
-			url: `https://inndoo.ytdcloud.com/activity-api/signinact/signin`,
+			url: `https://miniprogram.api.miotech.com/api/mp2c/checkin/collect`,
 			headers: {
-				"Host": "inndoo.ytdcloud.com",
-				"accountid": ck[0],
-				"tenantid": "346911323650629632",
-				"user-agent": ck[1],
-				"wxappid": "wxf5a1bafe74b87c90",
-				"activityid": "359158268616253441",
-				"timestamp": ck[2],
-				"sign": ck[3]
+				"Host": "miniprogram.api.miotech.com",
+				"Cookie": ck[0],
 			},
-			// body: ``,
+			body: `https://miniprogram.api.miotech.com/api/mp2c/checkin/collect`,
 		};
-		let result = await httpGet(url, type_name);
+		let result = await httpPost(url, type_name);
 
-		if (result.result.success == true) {
-			console.log(`\n	签到:  成功  \n`);
-			msg += `\n	签到:  成功 \n`;
-			console.log(`\n 以下测试使用\n`);
-			console.log(result);
-		} else if (result.result.success == false) {
-			console.log(`\n	签到:  ${result.result.message}\n`);
-			msg += `\n 签到:  ${result.result.message}\n`;
+		if (result.code == "success") {
+			console.log(`\n	签到:  成功\n`);
+			msg += `\n 签到:  成功\n`;
+		} else if (result.code == "failed") {
+			console.log(`\n	签到:  ${result.message}\n`);
+			msg += `\n 签到:  ${result.message}\n`;
 		} else {
 			console.log(`\n 签到: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n`);
 			msg += `\n 签到: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `
 		}
 	}
 }
+
+
 
 
 

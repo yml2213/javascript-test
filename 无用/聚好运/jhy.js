@@ -1,38 +1,37 @@
 /**
- * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/tlm/tlm.js
+ * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/jhy/jhy.js
  * 转载请留信息,谢谢
  * 
- * 推了吗  链接带邀请  感谢走我的链接
- * 下载地址: http://tlm.zhixiang.run/index/user/wechatLogin?uid=10202     (微信打开)
+ * 聚好运
  * 
- * cron 0-59/30 6-20 * * *  yml2213_javascript_master/tlm.js
+ * cron 45 7-20 * * *  yml2213_javascript_master/jhy.js
  * 
- * 5-9	完成 看文章领金币 任务 (每次执行 20 次,尽量模拟人工操作了)
- * 5-10	完成 荣誉值任务(测试中--失败)
- * 5-10	增加随机文章数量
- * 5-10	完成 荣誉值任务2(第二版--测试中)
- * 5-11	荣誉值可用了--好像是每天只有一次
+ * 5-8	完成 看视频得红包 ,点击转圈“全都要” ,看宝箱视频 等任务
  * 
  * 
  * 感谢所有测试人员 
  * ========= 青龙--配置文件 =========
- * 变量格式: export tlm_data=' 手机号&密码 @ 手机号&密码 '  多个账号用 @分割
+ * 变量格式: export jhy_data='AZ @ AZ '  多个账号用 @分割
+ *
+ * 抓包 :  关键词  inndoo.ytdcloud.com/activity-api/signinact/signin , 抓个自己的 都是 headers 的参数 
  *
  * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
-const $ = new Env("推了吗");
+const $ = new Env("聚好运");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 0 		//0为关闭调试，1为打开调试,默认为0
+const debug = 1 		//0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
-let ckStr = process.env.tlm_data;
+let ckStr = process.env.jhy_data;
 let msg = "";
 let ck = "";
-let token = "";
+let time13 = "";
+let time10 = "";
+let salt = 'YWZlZjNiMjIzNjQ5NDE4MTM1NjRiZmZjNTQ5ZDVmZTE='
 
 ///////////////////////////////////////////////////////////////////
-let Version = '\n yml   2022/5/11      荣誉值可用了--好像是每天只有一次\n'
-let thank = `\n 感谢 xx 的投稿\n`
+let Version = '\n yml   2022/5/8  完成  看视频得红包 ,点击转圈“全都要” ,看宝箱视频 等任务\n'
+let thank = `\n 感谢 心雨 的投稿\n`
 let test = `\n 脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!\n`
 ///////////////////////////////////////////////////////////////////
 
@@ -60,7 +59,7 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "tlm_data");
+	let ckArr = await getCks(ckStr, "jhy_data");
 	await tips(ckArr);
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
@@ -79,338 +78,335 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("开始 登录");
-	await login();
+	console.log("开始 任务列表");
+	await task_list();
 	await $.wait(2 * 1000);
 
-	console.log("开始 用户信息");
-	await user_info();
-	await $.wait(2 * 1000);
-
-	for (let index = 1; index < 21; index++) {
-		console.log(`开始 第 ${index} 次 阅读文章--领金币`);
-		await start_reading();
-		await $.wait(5 * 1000);
-	}
-
-	console.log(`开始 荣誉广告`);
-	await honor_ad();
-	await $.wait(5 * 1000);
-
-
 
 }
-
 
 
 
 
 /**
- * 登录    httpPost
- * http://tlm.zhixiang.run/api/user/login
+ * 任务列表   httpGet
+ * http://mmo.tapque.com/task/config/list?pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0
+ * nonce=1652020290097&timestamp=1652020290&pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0&key=YWZlZjNiMjIzNjQ5NDE4MTM1NjRiZmZjNTQ5ZDVmZTE=
  */
-async function login() {
+async function task_list() {
+	let time13 = ts13(), time10 = ts10();
+	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0&key=${salt}`);
+	console.log(sign);
 	let url = {
-		url: `http://tlm.zhixiang.run/api/user/login`,
+		url: `http://mmo.tapque.com/task/config/list?pn=com.collect.goodluck.app&taskType=VideoTask&v=v1.0`,
 		headers: {
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
+			"ts": time10,
+			"nc": time13,
+			// "dv": "3acfba4f30461e07",
+			"sg": sign,
+			"Authorization": ck[0],
+			"Host": "mmo.tapque.com",
+			"User-Agent": "okhttp/4.9.1",
 		},
-		form: { "account": ck[0], "password": ck[1] }
+		// body: ``,
 	};
-	let result = await httpPost(url, `登录`);
+	let result = await httpGet(url, `任务列表`);
 
-	if (result.code == 1) {
+	if (result.code == 6000) {
+		console.log(`\n 任务列表:  获取成功 🎉 \n`);
+		msg += `\n 任务列表:  获取成功 🎉 \n`;
 
-		console.log(`\n 登录: 欢迎光临 ${result.data.userinfo.nickname} 🎉  , 手机号: ${result.data.userinfo.username} \n`);
-		msg += `\n 登录: 欢迎光临 ${result.data.userinfo.nickname} 🎉  , 手机号: ${result.data.userinfo.username} \n`;
 
-		token = result.data.userinfo.token;
+		////////////////////////////////////////////////////////// 看视频得红包  ////////////////////////////////////////////////////////// 
+		if (result.records[0].taskProgress < result.records[0].limitAmount) {
+			console.log(`\n${result.records[0].taskName} 任务: ${result.records[0].taskProgress}/${result.records[0].limitAmount}\n`);
+			console.log(`开始 ${result.records[0].taskName} 任务`);
+			console.log(`每次运行执行三次 ${result.records[0].taskName} 任务`);
+			for (let index = 1; index < 4; index++) {
+				console.log(`开始  第${index}次 看视频得红包`);
+				// await ad_redPacket();
+				await task_test(result.records[0].taskName, result.records[0].id);
+				await $.wait(330 * 1000);
+			}
+		} else {
+			console.log(`${result.records[0].taskName}: 今天已经没机会了,明天再来吧!`);
+		}
 
+		////////////////////////////////////////////////////////// 点击转圈“全都要”  ////////////////////////////////////////////////////////// 
+		if (result.records[2].taskProgress < result.records[2].qualifyNum) {
+			console.log(`\n${result.records[2].taskName} 任务: ${result.records[2].taskProgress}/${result.records[2].qualifyNum}\n`);
+			console.log(`开始 点击转圈“全都要”按钮1次 任务`);
+			// await videotask2_redpackage();
+			await task_test(result.records[2].taskName, result.records[2].id);
+		} else {
+			await $.wait(60 * 1000);
+			await receive_packets(result.records[2].taskName, result.records[2].id);
+			console.log(`${result.records[2].taskName}: 今天已经没机会了,明天再来吧!`);
+
+			if (result.records[5].taskProgress < result.records[5].qualifyNum) {
+				console.log(`\n${result.records[5].taskName} 任务: ${result.records[5].taskProgress}/${result.records[5].qualifyNum}\n`);
+				console.log(`开始 点击转圈“全都要”按钮3次 任务`);
+				// await videotask2_redpackage();
+				await task_test(result.records[5].taskName, result.records[5].id);
+			} else {
+				await $.wait(60 * 1000);
+				await receive_packets(result.records[5].taskName, result.records[5].id);
+				console.log(`${result.records[5].taskName}: 今天已经没机会了,明天再来吧!`);
+
+				if (result.records[8].taskProgress < result.records[8].qualifyNum) {
+					console.log(`\n${result.records[8].taskName} 任务: ${result.records[8].taskProgress}/${result.records[8].qualifyNum}\n`);
+					console.log(`开始 点击转圈“全都要”按钮5次 任务`);
+					// await videotask2_redpackage();
+					await task_test(result.records[8].taskName, result.records[8].id);
+				} else {
+					await $.wait(60 * 1000);
+					await receive_packets(result.records[8].taskName, result.records[8].id);
+					console.log(`${result.records[8].taskName}: 今天已经没机会了,明天再来吧!`);
+
+					if (result.records[11].taskProgress < result.records[11].qualifyNum) {
+						console.log(`\n${result.records[11].taskName} 任务: ${result.records[11].taskProgress}/${result.records[11].qualifyNum}\n`);
+						console.log(`开始 点击转圈“全都要”按钮 8 次 任务`);
+						// await videotask2_redpackage();
+						await task_test(result.records[11].taskName, result.records[11].id);
+
+					} else {
+						await $.wait(60 * 1000);
+						await receive_packets(result.records[11].taskName, result.records[11].id);
+						console.log(`${result.records[11].taskName}: 今天已经没机会了,明天再来吧!`);
+					}
+				}
+			}
+		}
+
+
+		////////////////////////////////////////////////////////// 看宝箱视频  ////////////////////////////////////////////////////////// 
+		if (result.records[3].taskProgress < result.records[3].qualifyNum) {
+			console.log(`\n ${result.records[3].taskName} 任务: ${result.records[3].taskProgress}/${result.records[3].qualifyNum}\n`);
+			console.log(`开始 ${result.records[3].taskName} 任务`);
+			// await videotask2_redpackage();
+			await task_test(result.records[3].taskName, result.records[3].id);
+		} else {
+			await $.wait(60 * 1000);
+			await receive_packets(result.records[3].taskName, result.records[3].id);
+			console.log(`${result.records[3].taskName}: 今天已经没机会了,明天再来吧!`);
+
+			if (result.records[6].taskProgress < result.records[6].qualifyNum) {
+				console.log(`\n ${result.records[6].taskName} 任务: ${result.records[6].taskProgress}/${result.records[6].qualifyNum}\n`);
+				console.log(`开始 ${result.records[6].taskName}`);
+				// await videotask2_redpackage();
+				await task_test(result.records[6].taskName, result.records[6].id);
+			} else {
+				await $.wait(60 * 1000);
+				await receive_packets(result.records[6].taskName, result.records[6].id);
+				console.log(`${result.records[6].taskName}: 今天已经没机会了,明天再来吧!`);
+
+				if (result.records[9].taskProgress < result.records[9].qualifyNum) {
+					console.log(`\n ${result.records[9].taskName} 任务: ${result.records[9].taskProgress}/${result.records[9].qualifyNum}\n`);
+					console.log(`开始 ${result.records[9].taskName} 任务`);
+					// await videotask2_redpackage();
+					await task_test(result.records[9].taskName, result.records[9].id);
+				} else {
+					await $.wait(60 * 1000);
+					await receive_packets(result.records[9].taskName, result.records[9].id);
+					console.log(`${result.records[9].taskName}: 今天已经没机会了,明天再来吧!`);
+
+					if (result.records[12].taskProgress < result.records[12].qualifyNum) {
+						console.log(`\n ${result.records[12].taskName} 任务: ${result.records[12].taskProgress}/${result.records[12].qualifyNum}\n`);
+						console.log(`开始 ${result.records[12].taskName} 任务`);
+						// await videotask2_redpackage();
+						await task_test(result.records[12].taskName, result.records[12].id);
+
+					} else {
+						await $.wait(60 * 1000);
+						await receive_packets(result.records[12].taskName, result.records[12].id);
+						console.log(`${result.records[12].taskName}: 今天已经没机会了,明天再来吧!`);
+					}
+				}
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+	} else if (result.code == 8009) {
+		console.log(`\n	任务列表:  ${result.msg}\n`);
+		msg += `\n 任务列表:  ${result.msg}\n`;
 	} else {
-		console.log(`\n 登录: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-		msg += `\n 登录: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
-		throw new Error(`'喂  喂 ---  登录 失败 ❌ 了呢 ,别睡了, 起来更新了喂!`);
+		console.log(`\n 任务列表: 失败 ❌ 了呢,原因未知！  ${result} \n`);
+		msg += `\n 任务列表: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
 	}
 }
-
-
-
-/**
- * 用户信息   httpPost
- * http://tlm.zhixiang.run/api/user/userInfo
- */
-async function user_info() {
-
-	let url = {
-		url: `http://tlm.zhixiang.run/api/user/userInfo`,
-		headers: {
-			"token": token,
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
-		},
-		form: {},
-	};
-	let result = await httpPost(url, `用户信息`);
-
-	if (result.code == 1) {
-		console.log(`\n 用户信息: 成功 , 等级: ${result.data.levelName}, 金币: ${result.data.coin} , 荣誉值: ${result.data.honor} \n`);
-		msg += `\n 用户信息: 成功 , 等级: ${result.data.levelName}, 金币: ${result.data.coin} , 荣誉值: ${result.data.honor} \n`
-	} else {
-		console.log(`\n 用户信息:  失败 ❌ 了呢,原因未知！  ${result}\n `);
-		msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！   \n `
-		throw new Error(` 用户信息: 失败 ❌ 了呢,原因未知！`);
-	}
-}
-
-
-
-/**
- * 文章列表    httpPost
- * http://tlm.zhixiang.run/api/article/articleList
- */
-async function article_list() {
-	page_num = randomInt(1, 14);
-	let url = {
-		url: `http://tlm.zhixiang.run/api/article/articleList`,
-		headers: {
-			"token": token,
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
-		},
-		form: { "type": "9000", "page": page_num },
-	};
-	let result = await httpPost(url, `文章列表`);
-
-	if (result.code == 1) {
-
-		console.log(`\n 文章列表: 获取成功  🎉  \n`);
-		msg += `\n 文章列表: 获取成功  🎉  \n`;
-		article_num = randomInt(1, 9);
-
-		article_id = result.data[article_num].id;
-		console.log(`阅读文章id ${article_id}`);
-
-	} else {
-		console.log(`\n 文章列表: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-		msg += `\n 文章列表: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
-		throw new Error(`'喂  喂 ---  文章列表 失败 ❌ 了呢 ,别睡了, 起来更新了喂!`);
-	}
-}
-
-
-
-
-
-
-
-
-
-
-/**
- * 开始阅读    httpPost
- * http://tlm.zhixiang.run/api/coin/articleReadCountDown
- */
-async function start_reading() {
-
-	await article_list();
-
-	let url = {
-		url: `http://tlm.zhixiang.run/api/coin/articleReadCountDown`,
-		headers: {
-			"token": token,
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
-		},
-		form: { "article_id": article_id },
-	};
-	let result = await httpPost(url, `开始阅读`);
-
-	if (result.code == 1) {
-
-		console.log(`\n 开始阅读: 成功 ,阅读预计获得金币:${result.data.drawNum} \n`);
-		msg += `\n 开始阅读: 成功 ,阅读预计获得金币:${result.data.drawNum} \n`;
-
-		await_num = randomInt(60, 65);
-		console.log(`\n 等待 ${await_num} 秒后 领取阅读奖励 \n`);
-		await $.wait(await_num * 1000);
-		console.log(`\n 开始 领取阅读奖励 \n`);
-		await article_coin();
-
-
-	} else if (result.code == 0) {
-		console.log(`\n 这篇文章读过了! 让我们跳过他!\n`);
-		await $.wait(20 * 1000);
-		await article_coin();
-
-	} else {
-		console.log(`\n 开始阅读: 失败 ❌ 了呢,原因未知！ \n`);
-		msg += `\n 开始阅读: 失败 ❌ 了呢,原因未知！\n `;
-		// throw new Error(`'喂  喂 ---  开始阅读 失败 ❌ 了呢 ,别睡了, 起来 找bug 了喂!`);
-	}
-}
-
-
-/**
- * 阅读文章--领金币    httpPost
- * http://tlm.zhixiang.run/api/coin/articleReadEnd
- */
-async function article_coin() {
-
-	let url = {
-		url: `http://tlm.zhixiang.run/api/coin/articleReadEnd`,
-		headers: {
-
-			"token": token,
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
-		},
-		form: { "article_id": article_id },
-	};
-	let result = await httpPost(url, `阅读文章--领金币`);
-
-}
-
-
-
-/**
- * 荣誉广告    httpPost
- * http://tlm.zhixiang.run/api/newtask/signSubmit
- */
-async function honor_ad() {
-
-	let url = {
-		url: `http://tlm.zhixiang.run/api/newtask/signSubmit`,
-		headers: {
-			"token": token,
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
-		},
-		form: {},
-	};
-	let result = await httpPost(url, `荣誉广告`);
-
-	if (result.code == 0) {
-
-		console.log(`\n 荣誉广告: 成功 ,开始阅读广告: ${result.data.title} \n`);
-		msg += `\n 荣誉广告: 成功 ,开始阅读广告: ${result.data.title} \n`;
-		honor_id = result.data.id;
-		let num = randomInt(20, 25);
-		console.log(`\n 等待 ${num} 秒后 领取荣誉值 \n`);
-		await $.wait(num * 1000);
-		console.log(`\n 开始 领取荣誉值 \n`);
-		await receive_honor();
-
-	} else if (result.code == 1) {
-		console.log(`\n 荣誉广告: ${result.msg}\n`);
-		msg += `\n 荣誉广告: ${result.msg}\n`;
-
-	} else {
-		console.log(`\n 荣誉广告: 失败 ❌ 了呢,原因未知！ \n`);
-		msg += `\n 荣誉广告: 失败 ❌ 了呢,原因未知！\n `;
-		// throw new Error(`'喂  喂 ---  荣誉广告 失败 ❌ 了呢 ,别睡了, 起来 找bug 了喂!`);
-	}
-}
-
 
 
 
 
 /**
- * 领取荣誉值    httpPost
- * http://tlm.zhixiang.run/api/newtask/getBannerTimer
+ * 看视频得红包   激励红包  httpGet
+ * http://mmo.tapque.com/task/config/progress?id=1518432343778316290&pn=com.collect.goodluck.app&v=v1.0
  */
-async function receive_honor() {
-
-	// 获取开始荣誉值 做判断
-	let url_start = {
-		url: `http://tlm.zhixiang.run/api/newtask/taskPageData`,
-		headers: {
-			"token": token,
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
-		},
-		form: {},
-	};
-	let result_start = await httpPost(url_start, `获取荣誉值 初始值`);
-	if (result_start.code == 1) {
-		honor_start = result_start.data.user.honor;
-	} else {
-		console.log(`\n 获取荣誉值 初始值: 失败 ❌ 了呢,原因未知！ \n`);
-		msg += `\n 获取荣誉值 初始值: 失败 ❌ 了呢,原因未知！\n `;
-		// throw new Error(`'喂  喂 ---  领取荣誉值 失败 ❌ 了呢 ,别睡了, 起来 找bug 了喂!`);
-	}
-
-
-	// 开始阅读文章
+async function ad_redPacket() {
+	let time13 = ts13(), time10 = ts10();
+	// sign_data = ;
+	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&id=1518432343778316290&pn=com.collect.goodluck.app&v=v1.0&key=${salt}`);
+	// console.log(sign);
 	let url = {
-		url: `http://tlm.zhixiang.run/api/newtask/getBannerTimer`,
+		url: `http://mmo.tapque.com/task/config/progress?id=1518432343778316290&pn=com.collect.goodluck.app&v=v1.0`,
 		headers: {
-			"token": token,
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
+			"ts": time10,
+			"nc": time13,
+			"sg": sign,
+			"Authorization": ck[0],
+			"Host": "mmo.tapque.com",
+			"User-Agent": "okhttp/4.9.1",
 		},
-		form: { "id": honor_id, "type": "1" },
+		// body: ``,
 	};
-	let result = await httpPost(url, `领取荣誉值 开始阅读`);
+	let result = await httpGet(url, `看视频得红包`);
 
-	let num = randomInt(20, 25);
-	console.log(`\n 等待 ${num} 秒后 结束阅读 \n`);
-
-	// 结束阅读文章
-	let url_read_end = {
-		url: `http://tlm.zhixiang.run/api/newtask/getBannerBack`,
-		headers: {
-			"token": token,
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
-		},
-		form: { "id": honor_id, "type": "1" },
-	};
-	let result_read_end = await httpPost(url_read_end, `领取荣誉值 结束阅读`);
-
-
-
-	// 获取结束荣誉值 做判断
-	let url_end = {
-		url: `http://tlm.zhixiang.run/api/newtask/taskPageData`,
-		headers: {
-			"token": token,
-			"Accept": "application/json",
-			"Host": "tlm.zhixiang.run",
-			"Content-Type": "application/x-www-form-urlencoded"
-		},
-		form: {},
-	};
-	let result_end = await httpPost(url_end, `获取荣誉值 结束值`);
-	if (result_end.code == 1) {
-		honor_end = result_end.data.user.honor;
+	if (result.code == 6000) {
+		console.log(`\n	看视频得红包:  成功  \n`);
+		msg += `\n 看视频得红包:  成功 \n`;
+		await $.wait(330 * 1000);
+		console.log(`\n 以下测试使用\n`);
+		console.log(result);
+	} else if (result.code == 8009) {
+		console.log(`\n	看视频得红包:  ${result.msg}\n`);
+		msg += `\n 看视频得红包:  ${result.msg}\n`;
 	} else {
-		console.log(`\n 获取荣誉值 结束值: 失败 ❌ 了呢,原因未知！ \n`);
-		msg += `\n 获取荣誉值 结束值: 失败 ❌ 了呢,原因未知！\n `;
-		// throw new Error(`'喂  喂 ---  领取荣誉值 失败 ❌ 了呢 ,别睡了, 起来 找bug 了喂!`);
-	}
-
-
-
-	if (honor_start < honor_end) {
-		console.log(`\n 领取荣誉值: 成功 ,本次获得荣誉值: ${result.data.drawNum} \n`);
-		msg += `\n 领取荣誉值: 成功 ,本次获得荣誉值: ${result.data.drawNum} \n`;
-	} else {
-		console.log(`\n 领取荣誉值: 失败 ❌ 了呢,原因未知！ \n`);
-		msg += `\n 领取荣誉值: 失败 ❌ 了呢,原因未知！\n `;
-		// throw new Error(`'喂  喂 ---  领取荣誉值 失败 ❌ 了呢 ,别睡了, 起来 找bug 了喂!`);
+		console.log(`\n 看视频得红包: 失败 ❌ 了呢,原因未知！  ${result} \n`);
+		msg += `\n 看视频得红包: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
 	}
 }
+
+
+
+
+/**
+ * 点击转圈“全都要”按钮3次    视频任务红包2    httpGet
+ * http://mmo.tapque.com/task/config/progress?id=1518432343958671362&pn=com.collect.goodluck.app&v=v1.0
+ */
+async function videotask2_redpackage() {
+	let time13 = ts13(), time10 = ts10();
+	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&id=1518432343958671362&pn=com.collect.goodluck.app&v=v1.0&key=${salt}`);
+	// console.log(sign);
+	let url = {
+		url: `http://mmo.tapque.com/task/config/progress?id=1518432343958671362&pn=com.collect.goodluck.app&v=v1.0`,
+		headers: {
+			"ts": time10,
+			"nc": time13,
+			// "dv": "3acfba4f30461e07",
+			"sg": sign,
+			"Authorization": ck[0],
+			"Host": "mmo.tapque.com",
+			"User-Agent": "okhttp/4.9.1",
+		},
+		// body: ``,
+	};
+	let result = await httpGet(url, `点击转圈“全都要”按钮3次`);
+
+	if (result.code == 6000) {
+		console.log(`\n	点击转圈“全都要”按钮3次:  成功  \n`);
+		msg += `\n 点击转圈“全都要”按钮3次:  成功 \n`;
+		console.log(`\n 以下测试使用\n`);
+		console.log(result);
+	} else if (result.code == 8009) {
+		console.log(`\n	点击转圈“全都要”按钮3次:  ${result.msg}\n`);
+		msg += `\n 点击转圈“全都要”按钮3次:  ${result.msg}\n`;
+	} else {
+		console.log(`\n 点击转圈“全都要”按钮3次: 失败 ❌ 了呢,原因未知！  ${result} \n`);
+		msg += `\n 点击转圈“全都要”按钮3次: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
+	}
+}
+
+
+
+
+/**
+ * task_test       httpGet
+ * http://mmo.tapque.com/task/config/progress?id=1518432343958671362&pn=com.collect.goodluck.app&v=v1.0
+ */
+async function task_test(task_name, task_id) {
+	let time13 = ts13(), time10 = ts10();
+	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&id=${task_id}&pn=com.collect.goodluck.app&v=v1.0&key=${salt}`);
+	// console.log(sign);
+	let url = {
+		url: `http://mmo.tapque.com/task/config/progress?id=${task_id}&pn=com.collect.goodluck.app&v=v1.0`,
+		headers: {
+			"ts": time10,
+			"nc": time13,
+			// "dv": "3acfba4f30461e07",
+			"sg": sign,
+			"Authorization": ck[0],
+			"Host": "mmo.tapque.com",
+			"User-Agent": "okhttp/4.9.1",
+		},
+	};
+	let result = await httpGet(url, task_name);
+
+	if (result.code == 6000) {
+		console.log(`\n	${task_name}:  成功  \n`);
+		msg += `\n ${task_name}:  成功 \n`;
+		console.log(`\n 以下测试使用\n`);
+		console.log(result);
+	} else if (result.code == 8009) {
+		console.log(`\n	${task_name}:  ${result.msg}\n`);
+		msg += `\n ${task_name}:  ${result.msg}\n`;
+	} else {
+		console.log(`\n ${task_name}: 失败 ❌ 了呢,原因未知！  ${result} \n`);
+		msg += `\n ${task_name}: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
+	}
+}
+
+
+
+
+/**
+ * receive_packets   领取红包  test    httpGet
+ * http://mmo.tapque.com/task/config/deal?id=1518432343832842241&pn=com.collect.goodluck.app&v=v1.0
+ */
+async function receive_packets(task_name, task_id) {
+	let time13 = ts13(), time10 = ts10();
+	let sign = MD5Encrypt(`nonce=${time13}&timestamp=${time10}&id=${task_id}&pn=com.collect.goodluck.app&v=v1.0&key=${salt}`);
+	// console.log(sign);
+	let url = {
+		url: `http://mmo.tapque.com/task/config/deal?id=${task_id}&pn=com.collect.goodluck.app&v=v1.0`,
+		headers: {
+			"ts": time10,
+			"nc": time13,
+			// "dv": "3acfba4f30461e07",
+			"sg": sign,
+			"Authorization": ck[0],
+			"Host": "mmo.tapque.com",
+			"User-Agent": "okhttp/4.9.1",
+		},
+	};
+	let result = await httpGet(url, task_name);
+
+	if (result.code == 6000) {
+		console.log(`\n	${task_name}:  成功  \n`);
+		msg += `\n ${task_name}:  成功 \n`;
+		console.log(`\n 以下测试使用\n`);
+		console.log(result);
+	} else if (result.code == 8009) {
+		console.log(`\n	${task_name}:  ${result.msg}\n`);
+		msg += `\n ${task_name}:  ${result.msg}\n`;
+	} else {
+		console.log(`\n ${task_name}: 失败 ❌ 了呢,原因未知！  ${result} \n`);
+		msg += `\n ${task_name}: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
+	}
+}
+
+
+
+
+
+
 
 
 
@@ -513,25 +509,6 @@ function ts10() {
 	return Math.round(new Date().getTime() / 1000).toString();
 }
 
-/**
- * 获取当前小时数 
- */
-
-function local_hours() {
-	let myDate = new Date();
-	h = myDate.getHours();
-	return h;
-}
-
-/**
- * 获取当前分钟数 
- */
-
-function local_minutes() {
-	let myDate = new Date();
-	m = myDate.getMinutes();
-	return m;
-}
 
 
 
@@ -587,9 +564,9 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					// console.log(err, resp);
-					// console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					// msg += `\n ${tip} 失败了!请稍后尝试!!`
+					console.log(err, resp);
+					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+					msg += `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}
@@ -627,9 +604,9 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					// console.log(err, resp);
-					// console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					// msg += `\n ${tip} 失败了!请稍后尝试!!`
+					console.log(err, resp);
+					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+					msg += `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}

@@ -10,7 +10,7 @@
  * 
  * 
  * 感谢所有测试人员 
- * ========= 青龙 =========
+ * ========= 青龙--配置文件 =========
  * 变量格式: export qrxny_data='Authorization1 & userid & UA @ Authorization2 & userid & UA'  多个账号用 @分割
  *
  * 抓包 :  关键词  qrappser.cheryev.cn/cheryev/crm/user  找到 Authorization 跟 UA 就行了 , userid 我界面 id就是

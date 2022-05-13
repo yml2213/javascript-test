@@ -1,5 +1,5 @@
 const $ = new Env("羊毛更新提醒");
-const notify = $.isNode() ? require("./sendNotify") : "";
+const notify = $.isNode() ? require("../sendNotify") : "";
 const fs = require("fs");
 const readLine = require("readline");
 
@@ -33,7 +33,7 @@ fs.stat("./fscs.js", (err, stats) => {
 
 	} else {
 		//console.log("读取");
-		fscs = require("./fscs")
+		fscs = require("../fscs")
 	};
 });
 
@@ -323,7 +323,7 @@ async function SendMsg(message) {
 
 	if (Notify > 0) {
 		if ($.isNode()) {
-			var notify = require("./sendNotify");
+			var notify = require("../sendNotify");
 			await notify.sendNotify($.name, message);
 		} else {
 			$.msg(message);

@@ -1,45 +1,53 @@
 /**
- * 脚本地址: https://raw.githubusercontent.com/yemail2213/javascript/master/yemai/yemai.js
  * 转载请留信息,谢谢
  * 
- * 椰麦 
+ * 财资管家  渤海银行财资管家 公众号----热门活动-----签到有礼
  * 
- * cron 35 7 * * *  yemail2213_javascript_master/yemai.js
+ * cron 45 7 * * *  yml2213_javascript_master/czgj.js
  * 
- * 5-5	完成签到
+ * 5-7	完成签到
  * 
  * 
  * 感谢所有测试人员 
- * ========= 青龙 =========
- * 变量格式: export yemai_data='cokie1 @ cokie2 '  多个账号用 @分割
+ * ========= 青龙--配置文件 =========
+ * 变量格式: export czgj_data='accountid & UA & timestamp & sign @ accountid & UA & timestamp & sign '  多个账号用 @分割
  *
- * 抓包 :  关键词  qrappser.cheryev.cn/cheryev/crm/user  找到 Authorization 跟 UA 就行了 , userid 我界面 id就是
+ * 抓包 :  关键词  inndoo.ytdcloud.com/activity-api/signinact/signin , 抓个自己的 都是 headers 的参数 
  *
- * 还是不会的请百度或者群里求助: tg: https://t.me/yemail_tg  通知: https://t.me/yemail2213_tg
+ * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
-const $ = new Env("椰麦");
+const $ = new Env("财资管家");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 1 		//0为关闭调试，1为打开调试,默认为0
-//////////////////////
-let ckStr = process.env.yemai_data;
+const debug = 0 		//0为关闭调试，1为打开调试,默认为0
+///////////////////////////////////////////////////////////////////
+let ckStr = process.env.czgj_data;
 let msg = "";
 let ck = "";
-/////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////
+let Version = '\n yml   2022/5/8  完成签到 \n'
+let thank = `\n 感谢 心雨 的投稿\n`
+let test = `\n 脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!\n`
+///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	console.log(`\n版本: 0.1 -- 22/5/5`);
+
+	console.log(`${Version}`);
+	msg += `${Version}`
+
+	console.log(thank);
+	msg += `${thank}`
+
+	console.log(test);
+	msg += `${test}`
+
 	// console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-	// msg += `\n 脚本已恢复正常状态,请及时更新! `
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	console.log(`\n 脚本测试中,有bug及时反馈! \n`);
-	msg += `\n 脚本测试中,有bug及时反馈! \n`
+	// msg += `脚本已恢复正常状态,请及时更新`
 
-	console.log(`\n================================================\n脚本执行 - 北京时间(UTC+8): ${new Date(
+	console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
 		new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
-	).toLocaleString()} \n================================================\n`);
-
+	).toLocaleString()} \n===============================================\n`);
 	await wyy();
 
 	console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
@@ -47,102 +55,78 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "yemai_data");
-
+	let ckArr = await getCks(ckStr, "czgj_data");
 	await tips(ckArr);
-
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
 		console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
 
 		ck = ckArr[index].split("&");
 
-		if (ck.length < 3) {
-			console.log(`你没写 ua ,将使用默认ua`);
-			ck[2] = "NewEnergy/1.0.5 (com.mychery.ev; build:094; iOS 15.4.1) Alamofire/5.4.3 version=1.0.5 buildVersion=094 systemName=iOS systemVersion=15.4.1 model=iPhone modelName=iPhone14,2"
-		}
-		xyhd = {
-			"Content-Type": "application/json",
-			"Authorization": ck[0],
-			"User-Agent": ck[2],
-		}
-
 		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
-
 		await start();
 	}
 	await SendMsg(msg);
-
 })()
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done());
 
+
 async function start() {
 
-	console.log("开始 用户信息");
-	await userInfo();
-	await $.wait(2 * 1000);
-
-	console.log("开始 签到信息");
-	await sign();
+	console.log("开始 签到");
+	await signin();
 	await $.wait(2 * 1000);
 
 }
 
 
 
+
+
+
 /**
- * 用户信息   httpPost
- * https://qrappser.cheryev.cn/cheryev/crm/user/profile/1211519882
+ * 签到   httpGet
+ * https://inndoo.ytdcloud.com/activity-api/signinact/signin
  */
-async function userInfo(timeout = 3 * 1000) {
+async function signin() {
 
-	let url = {
-		url: `https://qrappser.cheryev.cn/cheryev/crm/user/profile/${ck[1]}`,
-		headers: xyhd,
-		body: ``,
-	};
+	type_name = `签到`
+	if (type_name == `签到`) {
+		let url = {
+			url: `https://inndoo.ytdcloud.com/activity-api/signinact/signin`,
+			headers: {
+				"Host": "inndoo.ytdcloud.com",
+				"accountid": ck[0],
+				"tenantid": "346911323650629632",
+				"user-agent": ck[1],
+				"wxappid": "wxf5a1bafe74b87c90",
+				"activityid": "359158268616253441",
+				"timestamp": ck[2],
+				"sign": ck[3]
+			},
+			// body: ``,
+		};
+		let result = await httpGet(url, type_name);
 
-	let result = await httpPost(url, `用户信息`, timeout);
-	if (result.resultCode == 0) {
-		console.log(`\n 用户信息: ${result.resultMsg} 🎉  \n欢迎光临: ${result.data.userName} , 拥有 e币: ${result.data.totalPoints} \n`);
-		msg += `\n 用户信息: ${result.resultMsg} 🎉  \n欢迎光临: ${result.data.userName} , 拥有 e币: ${result.data.totalPoints} \n`
-	} else if (result.resultCode == 2005) {
-		console.log(`\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
-		console.log(`\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`);
-		msg += `\n ${$.name}:${result.msg} , 喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n  喂 , 喂  喂 ---  登录过期了,别睡了, 起来更新了喂!\n`
-		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
-	} else {
-		console.log(`\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`);
-		msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！\n ${result} \n`
-		throw new Error(`'喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+		if (result.result.success == true) {
+			console.log(`\n	签到:  成功  \n`);
+			msg += `\n	签到:  成功 \n`;
+			console.log(`\n 以下测试使用\n`);
+			console.log(result);
+		} else if (result.result.success == false) {
+			console.log(`\n	签到:  ${result.result.message}\n`);
+			msg += `\n 签到:  ${result.result.message}\n`;
+		} else {
+			console.log(`\n 签到: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n`);
+			msg += `\n 签到: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `
+		}
 	}
 }
 
 
-/**
- * 签到   httpPost
- * https://qrappser.cheryev.cn/cheryev/crm/user/checkin
- */
-async function sign(timeout = 3 * 1000) {
 
-	let url = {
-		url: `https://qrappser.cheryev.cn/cheryev/crm/user/checkin`,
-		headers: xyhd,
-		body: `{"userId":"${ck[1]}"}`,
-	};
 
-	let result = await httpPost(url, `签到信息`, timeout);
-	if (result.resultCode == 0) {
-		console.log(`\n 签到: ${result.resultMsg} 🎉\n`);
-		msg += `\n 签到: ${result.resultMsg} 🎉\n`
-	} else if (result.resultCode == 2602) {
-		console.log(`\n 签到: ${result.resultMsg} !\n`);
-		msg += `\n 签到: ${result.resultMsg} !\n`
-	} else {
-		console.log(`\n 签到信息: 失败 ❌ 了呢,原因未知！\n ${result} \n `);
-	}
-}
 
 
 
@@ -238,8 +222,31 @@ function randomInt(min, max) {
 	return Math.round(Math.random() * (max - min) + min);
 }
 
+
+/**
+ * 时间戳 13位
+ */
+
+function ts13() {
+	return Math.round(new Date().getTime()).toString();
+}
+
+/**
+ * 时间戳 10位
+ */
+
+function ts10() {
+	return Math.round(new Date().getTime() / 1000).toString();
+}
+
+
+
+
+
+
+
 //每日网抑云
-function wyy(timeout = 3 * 1000) {
+function wyy() {
 	return new Promise((resolve) => {
 		let url = {
 			url: `https://keai.icu/apiwyy/api`
@@ -248,16 +255,17 @@ function wyy(timeout = 3 * 1000) {
 			try {
 				data = JSON.parse(data)
 				console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
-				msg += `\n 【网抑云时间】: ${data.content}  by--${data.music}\n`
 
 			} catch (e) {
 				$.logErr(e, resp);
 			} finally {
 				resolve()
 			}
-		}, timeout)
+		}, timeout = 3 * 1000)
 	})
 }
+
+
 // ============================================ get请求 ============================================ \\
 async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 	return new Promise((resolve) => {
@@ -269,28 +277,26 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
 			tip = matches[1];
 		}
 		if (debug) {
-			console.log(
-				`\n 【debug】=============== 这是 ${tip} 请求 url ===============`
-			);
+			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
 			console.log(url);
 		}
 
 		$.get(
 			url,
-			async (error, response, _data) => {
+			async (err, resp, data) => {
 				try {
 					if (debug) {
-						console.log(
-							`\n\n 【debug】===============这是 ${tip} 返回data==============`
-						);
-						console.log(_data);
+						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+						console.log(data);
 						console.log(`======`);
-						console.log(JSON.parse(_data));
+						console.log(JSON.parse(data));
 					}
-					let result = JSON.parse(_data);
+					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					console.log(e);
+					console.log(err, resp);
+					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+					msg += `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}
@@ -311,20 +317,16 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 			tip = matches[1];
 		}
 		if (debug) {
-			console.log(
-				`\n 【debug】=============== 这是 ${tip} 请求 url ===============`
-			);
+			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
 			console.log(url);
 		}
 
 		$.post(
 			url,
-			async (error, response, data) => {
+			async (err, resp, data) => {
 				try {
 					if (debug) {
-						console.log(
-							`\n\n 【debug】===============这是 ${tip} 返回data==============`
-						);
+						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
 						console.log(data);
 						console.log(`======`);
 						console.log(JSON.parse(data));
@@ -332,7 +334,9 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 					let result = JSON.parse(data);
 					resolve(result);
 				} catch (e) {
-					console.log(e);
+					console.log(err, resp);
+					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+					msg += `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}
@@ -341,6 +345,89 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 		);
 	});
 }
+
+
+
+
+async function task111(method, url, type_name) {
+
+	return new Promise(async resolve => {
+		if (!type_name) {
+			let tmp = arguments.callee.toString();
+			let re = /function\s*(\w*)/i;
+			let matches = re.exec(tmp);
+			type_name = matches[1];
+		}
+		// let timeout = '';
+		if (method = `get`) {
+			return new Promise((resolve) => {
+				if (debug) {
+					console.log(`\n 【debug】=============== 这是 ${type_name} 请求 url ===============`);
+					console.log(url);
+				}
+
+				$.get(url, async (err, resp, data) => {
+					try {
+						if (err) {
+							console.log(`${$.name}: API查询请求失败 ‼️‼️`);
+							console.log(JSON.stringify(err));
+							$.logErr(err);
+						} else if (debug) {
+							console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
+							console.log(data);
+							console.log(`======`);
+							console.log(JSON.parse(data));
+						}
+						let result = JSON.parse(data);
+						resolve(result);
+					} catch (e) {
+						console.log(e, resp);
+					} finally {
+						resolve();
+					}
+				},
+				);
+			});
+		} else if (method = httppost) {
+			return new Promise((resolve) => {
+				if (debug) {
+					console.log(`\n 【debug】=============== 这是 ${type_name} 请求 url ===============`);
+					console.log(url);
+				}
+				$.post(url, async (err, resp, data) => {
+					try {
+						if (err) {
+							console.log("$.name: API查询请求失败 ‼️‼️");
+							console.log(JSON.stringify(err));
+							$.logErr(err);
+						} else if (debug) {
+							console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
+							console.log(data);
+							console.log(`======`);
+							console.log(JSON.parse(data));
+						}
+						let result = JSON.parse(data);
+						resolve(result);
+					} catch (e) {
+						console.log(e, resp);
+					} finally {
+						resolve();
+					}
+				},
+					// timeout(3000)
+				);
+			});
+
+		} else {
+			console.log(`参数错误 ❌ ,请仔细检查修改后再试试吧!!`);
+		}
+
+	})
+}
+
+
+
+
 
 // ============================================ debug调试 ============================================ \\
 function debugLog(...args) {
