@@ -1,20 +1,21 @@
 /**
  * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/tlm/tlm.js
  * 转载请留信息,谢谢
- * 
+ *
  * 推了吗  链接带邀请  感谢走我的链接
  * 下载地址: http://tlm.zhixiang.run/index/user/wechatLogin?uid=10202     (微信打开)
- * 
- * cron 0-59/30 6-20 * * *  yml2213_javascript_master/tlm.js
- * 
+ *
+ * cron 10 6-22 * * *  yml2213_javascript_master/tlm.js
+ *
  * 5-9	完成 看文章领金币 任务 (每次执行 20 次,尽量模拟人工操作了)
  * 5-10	完成 荣誉值任务(测试中--失败)
  * 5-10	增加随机文章数量
  * 5-10	完成 荣誉值任务2(第二版--测试中)
  * 5-11	荣誉值可用了--好像是每天只有一次
- * 
- * 
- * 感谢所有测试人员 
+ * 5-17	修改运行次数
+ *
+ *
+ * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
  * 变量格式: export tlm_data=' 手机号&密码 @ 手机号&密码 '  多个账号用 @分割
  *
@@ -31,7 +32,7 @@ let ck = "";
 let token = "";
 
 ///////////////////////////////////////////////////////////////////
-let Version = '\n yml   2022/5/11      荣誉值可用了--好像是每天只有一次\n'
+let Version = '\n yml   2022/5/17      修改运行次数\n'
 let thank = `\n 感谢 xx 的投稿\n`
 let test = `\n 脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!\n`
 ///////////////////////////////////////////////////////////////////
@@ -87,7 +88,7 @@ async function start() {
 	await user_info();
 	await $.wait(2 * 1000);
 
-	for (let index = 1; index < 21; index++) {
+	for (let index = 1; index < 11; index++) {
 		console.log(`开始 第 ${index} 次 阅读文章--领金币`);
 		await start_reading();
 		await $.wait(5 * 1000);
@@ -230,7 +231,7 @@ async function start_reading() {
 	};
 	let result = await httpPost(url, `开始阅读`);
 
-	if (result.code == 1) {
+	if (result.code === 1) {
 
 		console.log(`\n 开始阅读: 成功 ,阅读预计获得金币:${result.data.drawNum} \n`);
 		msg += `\n 开始阅读: 成功 ,阅读预计获得金币:${result.data.drawNum} \n`;
@@ -242,7 +243,7 @@ async function start_reading() {
 		await article_coin();
 
 
-	} else if (result.code == 0) {
+	} else if (result.code === 0) {
 		console.log(`\n 这篇文章读过了! 让我们跳过他!\n`);
 		await $.wait(20 * 1000);
 		await article_coin();
@@ -438,22 +439,22 @@ async function getCks(ck, str) {
 
 	return new Promise((resolve, reject) => {
 
-		let ckArr = []
-		if (ck) {
-			if (ck.indexOf("@") != -1) {
+			let ckArr = []
+			if (ck) {
+				if (ck.indexOf("@") != -1) {
 
-				ck.split("@").forEach((item) => {
-					ckArr.push(item);
-				});
+					ck.split("@").forEach((item) => {
+						ckArr.push(item);
+					});
+				} else {
+					ckArr.push(ck);
+				}
+				resolve(ckArr)
 			} else {
-				ckArr.push(ck);
+				console.log(`\n 【${$.name}】：未填写变量 ${str}`)
 			}
-			resolve(ckArr)
-		} else {
-			console.log(`\n 【${$.name}】：未填写变量 ${str}`)
-		}
 
-	}
+		}
 	)
 }
 
@@ -514,7 +515,7 @@ function ts10() {
 }
 
 /**
- * 获取当前小时数 
+ * 获取当前小时数
  */
 
 function local_hours() {
@@ -524,7 +525,7 @@ function local_hours() {
 }
 
 /**
- * 获取当前分钟数 
+ * 获取当前分钟数
  */
 
 function local_minutes() {
@@ -660,25 +661,25 @@ async function task111(method, url, type_name) {
 				}
 
 				$.get(url, async (err, resp, data) => {
-					try {
-						if (err) {
-							console.log(`${$.name}: API查询请求失败 ‼️‼️`);
-							console.log(JSON.stringify(err));
-							$.logErr(err);
-						} else if (debug) {
-							console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-							console.log(data);
-							console.log(`======`);
-							console.log(JSON.parse(data));
+						try {
+							if (err) {
+								console.log(`${$.name}: API查询请求失败 ‼️‼️`);
+								console.log(JSON.stringify(err));
+								$.logErr(err);
+							} else if (debug) {
+								console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
+								console.log(data);
+								console.log(`======`);
+								console.log(JSON.parse(data));
+							}
+							let result = JSON.parse(data);
+							resolve(result);
+						} catch (e) {
+							console.log(e, resp);
+						} finally {
+							resolve();
 						}
-						let result = JSON.parse(data);
-						resolve(result);
-					} catch (e) {
-						console.log(e, resp);
-					} finally {
-						resolve();
-					}
-				},
+					},
 				);
 			});
 		} else if (method = httppost) {
@@ -688,25 +689,25 @@ async function task111(method, url, type_name) {
 					console.log(url);
 				}
 				$.post(url, async (err, resp, data) => {
-					try {
-						if (err) {
-							console.log("$.name: API查询请求失败 ‼️‼️");
-							console.log(JSON.stringify(err));
-							$.logErr(err);
-						} else if (debug) {
-							console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-							console.log(data);
-							console.log(`======`);
-							console.log(JSON.parse(data));
+						try {
+							if (err) {
+								console.log("$.name: API查询请求失败 ‼️‼️");
+								console.log(JSON.stringify(err));
+								$.logErr(err);
+							} else if (debug) {
+								console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
+								console.log(data);
+								console.log(`======`);
+								console.log(JSON.parse(data));
+							}
+							let result = JSON.parse(data);
+							resolve(result);
+						} catch (e) {
+							console.log(e, resp);
+						} finally {
+							resolve();
 						}
-						let result = JSON.parse(data);
-						resolve(result);
-					} catch (e) {
-						console.log(e, resp);
-					} finally {
-						resolve();
-					}
-				},
+					},
 					// timeout(3000)
 				);
 			});
