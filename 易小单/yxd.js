@@ -97,6 +97,7 @@ async function signIn() {
 			"Authorization": ck[0],
 			"Content-Type": "application/json; charset=utf-8"
 		},
+		body:`${ck[1]}`,
 	};
 	let result = await httpPost(url, `签到`);
 
