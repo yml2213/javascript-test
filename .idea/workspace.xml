@@ -1,29 +1,139 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f8105156-ef87-41de-9c73-e9e57fbce1f7" name="变更" comment="" />
+    <list default="true" id="f8105156-ef87-41de-9c73-e9e57fbce1f7" name="变更" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/5-20复制模板/yxd.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/已完成-封存/易小单/yxd.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/广汽传祺/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/广汽传祺/gqcq.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/广汽传祺/test.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/无用/阅读/ql.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/无用/阅读/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/javascript-test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/javascript-test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tom大佬/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/5-20复制模板/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tom大佬/qqq.js" beforeDir="false" afterPath="$PROJECT_DIR$/大佬的脚本搜集/tom大佬/qqq.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tom大佬/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/5-20复制模板/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/咸鱼要躺平/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/大佬的脚本搜集/tom大佬/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/咸鱼要躺平/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/大佬的脚本搜集/tom大佬/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/咸鱼要躺平/test.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/咸鱼要躺平/test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/咸鱼要躺平/xyytp.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/咸鱼要躺平/xyytp.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/奇瑞新能源/11.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/奇瑞新能源/11.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/奇瑞新能源/1111.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/奇瑞新能源/1111.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/奇瑞新能源/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/奇瑞新能源/login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/奇瑞新能源/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/咸鱼要躺平/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/奇瑞新能源/qrxny.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/奇瑞新能源/qrxny.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/奇瑞新能源/qrxny111.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/奇瑞新能源/qrxny111.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/奇瑞新能源/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/咸鱼要躺平/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/已完成-封存/广汽传祺/gqcq.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/已完成-封存/广汽传祺/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/奇瑞新能源/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/已完成-封存/广汽传祺/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/奇瑞新能源/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/已完成-封存/广汽传祺/sign规则.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/已完成-封存/广汽传祺/test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/已完成-封存/广汽传祺/test11.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/快手极速版-yml/ksjsb.js" beforeDir="false" afterPath="$PROJECT_DIR$/快手极速版-yml/ksjsb.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/快手极速版/5-12.js" beforeDir="false" afterPath="$PROJECT_DIR$/快手极速版-yml/快手极速版/5-12.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/快手极速版/5-12_7w修复版.js" beforeDir="false" afterPath="$PROJECT_DIR$/快手极速版-yml/快手极速版/5-12_7w修复版.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/快手极速版/5-12修复.js" beforeDir="false" afterPath="$PROJECT_DIR$/快手极速版-yml/快手极速版/5-12修复.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/快手极速版/最大化提现.js" beforeDir="false" afterPath="$PROJECT_DIR$/快手极速版-yml/快手极速版/最大化提现.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/推了吗/11.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/推了吗/11.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/推了吗/12314.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/推了吗/12314.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/推了吗/222.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/推了吗/222.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/推了吗/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/推了吗/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/推了吗/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/推了吗/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/推了吗/tlm.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/推了吗/tlm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/推了吗/tlm_pr.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/推了吗/tlm_pr.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/推了吗/信誉值.txt" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/推了吗/信誉值.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/易小单/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/易小单/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/易小单/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/易小单/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/易小单/yxd.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/椰麦/11.js" beforeDir="false" afterPath="$PROJECT_DIR$/无用/椰麦/11.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/椰麦/222.js" beforeDir="false" afterPath="$PROJECT_DIR$/无用/椰麦/222.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/椰麦/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/绍兴体彩/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/椰麦/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/绍兴体彩/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/椰麦/yemai copy.js" beforeDir="false" afterPath="$PROJECT_DIR$/无用/椰麦/yemai copy.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/椰麦/yemai.js" beforeDir="false" afterPath="$PROJECT_DIR$/无用/椰麦/yemai.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/绍兴体彩/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/绿喵/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/绍兴体彩/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/绿喵/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/绍兴体彩/sxtc.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/绍兴体彩/sxtc.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/绍兴体彩/sxtc_watch.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/绍兴体彩/sxtc_watch.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/绍兴体彩/库存.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/绍兴体彩/库存.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/绿喵/lvmiao.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/绿喵/lvmiao.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/绿喵/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/广汽传祺/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/绿喵/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/广汽传祺/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/自用签到合集/sign.js" beforeDir="false" afterPath="$PROJECT_DIR$/自用签到合集/sign.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/阅读/ql.js" beforeDir="false" afterPath="$PROJECT_DIR$/无用/椰麦/ql.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/阅读/read.js" beforeDir="false" afterPath="$PROJECT_DIR$/无用/阅读/read.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/阅读/sendNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/无用/椰麦/sendNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/阅读/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/无用/阅读/test.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../javascript/gqcq/gqcq.js" beforeDir="false" afterPath="$PROJECT_DIR$/../javascript/gqcq/gqcq.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="29H5BWCltU8xwDtARn5FlVuaY35" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/yml/WebstormProjects/javascript-test&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/无用" />
+      <recent name="$PROJECT_DIR$/已完成-封存" />
+      <recent name="$PROJECT_DIR$/快手极速版-yml" />
+      <recent name="$PROJECT_DIR$/大佬的脚本搜集" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Node.js.gqcq.js">
+    <configuration name="gqcq.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/广汽传祺/gqcq.js" working-dir="$PROJECT_DIR$/广汽传祺">
+      <method v="2" />
+    </configuration>
+    <configuration name="sign.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/自用签到合集/sign.js" working-dir="$PROJECT_DIR$/自用签到合集">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Node.js.gqcq.js" />
+        <item itemvalue="Node.js.sign.js" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="默认任务">
@@ -33,7 +143,41 @@
       <option name="presentableId" value="Default" />
       <updated>1652757035328</updated>
       <workItem from="1652757036549" duration="7000" />
+      <workItem from="1652869309792" duration="65000" />
+      <workItem from="1652869384230" duration="49000" />
+      <workItem from="1653043073353" duration="3068000" />
+      <workItem from="1653082869376" duration="4945000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

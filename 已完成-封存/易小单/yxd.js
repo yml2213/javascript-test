@@ -1,45 +1,34 @@
 /**
- * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/gqcq/gqcq.js
+ * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/yxd/yxd.js
  * 转载请留信息,谢谢
+ *
+ * 易小单
  *
  * cron 30 6 * * *  yml2213_javascript_master/gqcq.js
  *
- * 广汽传祺 app
- * 4-13     完成签到 抽奖 分享 发帖 评论 任务   有bug及时反馈
- * 4-14     修复已知bug  恢复正常使用
- * 5-21     更新通知,优化代码
- *
+ * 5-18    完成签到，自行抓包
  *
  *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
- * 变量格式: export gqcq_data='token1 @ token2 '  多个账号用 @分割
+ * 变量格式: export yxd_data=' az & body @ az & body '  多个账号用 @ 或者 换行分割
  *
  * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 
-const $ = new Env("广汽传祺");
+const $ = new Env("易小单");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 1 		//0为关闭调试，1为打开调试,默认为0
+const debug = 0 		//0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
-const salt = '17aaf8118ffb270b766c6d6774317a133.4.0'
-let ckStr = process.env.gqcq_data;
+let ckStr = process.env.yxd_data;
 let msg = "";
 let ck = "";
 
-let reqNonc = randomInt(100000, 999999)
-let ts = ts10();
-let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
-let textarr = ['最简单的提高观赏性的办法就是把地球故事的部分剪辑掉半小时， emo的部分剪辑掉半小时。这样剩下的90分钟我们就看看外星人，看看月球，看看灾难片大场面就不错。', '顶着叛国罪的风险无比坚信前妻，这种还会离婚？', '你以为它是灾难片，其实它是科幻片；你以为它是科幻片，其实它是恐怖片；你以为它是恐怖片，其实它是科教片', '我的天，剧情真的好阴谋论，但是还算是能自圆其说', '大杂烩啊……我能理解这电影为什么在海外卖的不好了，因为核心创意真的已经太老套了', '一开始我以为这就是外国人看《流浪地球》时的感受啊，后来发现这不是我当初看《胜利号》的感受么']
-let add_comment_text_arr = ['感谢推荐的电影呢', '有时间一定看看这个电影怎么样', '晚上就去看', '66666666666', '这部电影我看过，非常好看']
-ram_num = randomInt(1, 5)
-let text = textarr[ram_num];
-let add_comment_text = add_comment_text_arr[ram_num];
 ///////////////////////////////////////////////////////////////////
-let Version = '\n yml   2022/5/21     更新通知,优化代码'
-let thank = `\n 感谢 群友 的投稿`
-let test = `\n 脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!`
+let Version = '\n yml   2022/5/18      完成签到 \n'
+let thank = `\n 感谢 群友 的投稿\n`
+let test = `\n 脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!\n`
 
 ///////////////////////////////////////////////////////////////////
 
@@ -48,14 +37,14 @@ async function tips(ckArr) {
     console.log(`${Version}`);
     msg += `${Version}`
 
-    // console.log(thank);
-    // msg += `${thank}`
+    console.log(thank);
+    msg += `${thank}`
 
-    // console.log(test);
-    // msg += `${test}`
+    console.log(test);
+    msg += `${test}`
 
-    console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-    msg += `脚本已恢复正常状态,请及时更新`
+    // console.log(`\n 脚本已恢复正常状态,请及时更新! `);
+    // msg += `脚本已恢复正常状态,请及时更新`
 
     console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
         new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
@@ -67,7 +56,7 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-    let ckArr = await getCks(ckStr, "gqcq_data");
+    let ckArr = await getCks(ckStr, "yxd_data");
     await tips(ckArr);
     for (let index = 0; index < ckArr.length; index++) {
         let num = index + 1;
@@ -87,8 +76,8 @@ async function tips(ckArr) {
 async function start() {
 
 
-    console.log("检查任务列表");
-    await task_list();
+    console.log("开始 签到");
+    await signIn();
     await $.wait(3 * 1000);
 
 
@@ -96,351 +85,29 @@ async function start() {
 
 
 /**
- * 任务列表    httpPost
- * https://gsp.gacmotor.com/gw/app/community/api/mission/getlistv1?place=1
+ * 签到    httpPost
+ * http://gameforum.adspools.cn/gateway/mutual/api/v1/coins/signin
  */
-async function task_list() {
-    let reqNonc = randomInt(100000, 999999)
-    let ts = ts10();
-    let reqSign = MD5Encrypt(`signature${reqNonc}${ts}${salt}`)
+async function signIn() {
     let url = {
-        url: `https://gsp.gacmotor.com/gw/app/community/api/mission/getlistv1?place=1`,
+        url: `http://gameforum.adspools.cn/gateway/mutual/api/v1/coins/signin`,
         headers: {
-            "User-Agent": "okhttp/3.10.0",
-            "token": ck[0],
-            "verification": "signature",
-            "reqTs": ts,
-            "reqNonc": reqNonc,
-            "reqSign": reqSign,
-            "Host": "gsp.gacmotor.com",
-            "Connection": "Keep-Alive",
-            "Accept-Encoding": "gzip",
+            "Authorization": ck[0],
+            "Content-Type": "application/json; charset=utf-8"
         },
-        body: '',
+        body: `${ck[1]}`,
     };
-    let result = await httpPost(url, `任务列表`);
+    let result = await httpPost(url, `签到`);
 
-    if (result.errorCode === "20000") {
-
-        if (result.data[0].finishedNum === 0) {
-
-            console.log(`   签到状态： 未签到，去执行签到 \n`);
-            await signin();
-            await $.wait(5 * 1000);
-
-            console.log('   顺便抽个奖吧！ 开始 抽奖');
-            await lottery();
-            await $.wait(2 * 1000);
-
-        } else if (result.data[0].finishedNum === 1) {
-            console.log(`   签到状态：今天已经签到过了鸭，明天再来吧！`);
-        } else {
-            console.log(`   获取签到状态:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-        }
-
-
-        if (result.data[1].finishedNum < 2) {
-            console.log(`   发帖：${result.data[1].finishedNum} / ${result.data[1].total} \n`);
-
-            console.log(`   发帖：执行第一次发帖,评论，删除评论 \n`);
-            await post_topic();
-            await $.wait(30 * 1000);
-
-            await add_comment();
-            await $.wait(2 * 1000);
-
-            await delete_topic();
-            await $.wait(30 * 1000);
-
-
-            console.log(`   发帖：执行第二次发帖,评论，删除评论 \n`);
-            await post_topic();
-            await $.wait(30 * 1000);
-
-            await add_comment();
-            await $.wait(2 * 1000);
-
-            await delete_topic();
-            await $.wait(2 * 1000);
-
-
-        } else if (result.data[1].finishedNum === 2) {
-            console.log(`   今天已经发帖了，明天再来吧！\n `);
-        } else {
-            console.log(`   获取发帖状态:  失败 ❌ 了呢,原因未知！\n ${result} \n `);
-        }
-
-
-        if (result.data[3].finishedNum < 2) {
-
-            console.log(`   分享状态：${result.data[3].finishedNum} / ${result.data[3].total} \n`);
-
-            await Article_list();
-            await $.wait(2 * 1000);
-
-            await share();
-            await $.wait(2 * 1000);
-
-
-            await Article_list();
-            await $.wait(2 * 1000);
-
-            await share();
-            await $.wait(2 * 1000);
-
-
-        } else if (result.data[3].finishedNum === 2) {
-
-            console.log(`   今天已经分享过了鸭，明天再来吧！\n `);
-        } else {
-            console.log(`   获取分享状态:  失败 ❌ 了呢,原因未知！\n ${result} \n `)
-        }
-
-
-    } else {
-        console.log(`\n 任务列表: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n 任务列表: 失败 ❌ 了呢,原因未知！  \n `;
-        throw new Error(`'${$.name} :喂  喂 ---  过期了,别睡了, 起来更新了喂!`);
-    }
-}
-
-
-/**
- * 签到    httpGet
- * https://gsp.gacmotor.com/gateway/app-api/sign/submit
- */
-async function signin() {
-    let url = {
-        url: `https://gsp.gacmotor.com/gateway/app-api/sign/submit`,
-        headers: {
-            "User-Agent": "okhttp/3.10.0",
-            "token": ck[0],
-            "verification": "signature",
-            "reqTs": ts,
-            "reqNonc": reqNonc,
-            "reqSign": reqSign,
-            "Host": "gsp.gacmotor.com",
-            "Connection": "Keep-Alive",
-            "Accept-Encoding": "gzip",
-        },
-        // body: '',
-    };
-    let result = await httpGet(url, `签到`);
-
-    if (result.errorCode === "200") {
-        console.log(`\n 签到:${result.errorMessage} 🎉 \n你已经连续签到 ${result.data.dayCount} 天;  签到获得G豆 ${result.data.operationValue} 个 \n`);
-
-        msg += `\n 签到:${result.errorMessage} 🎉 \n你已经连续签到 ${result.data.dayCount} 天;  签到获得G豆 ${result.data.operationValue} 个 \n`;
-    } else if (result.errorCode === "200015") {
-        console.log(`\n 签到: ${result.errorMessage}  \n`);
-        msg += `\n 签到: ${result.errorMessage}  \n`;
+    if (result.code === 200) {
+        console.log(`\n 签到: ${result.message}  \n`);
+        msg += `\n 签到: ${result.message}  \n`;
+    } else if (result.code === 4204) {
+        console.log(`\n 签到: ${result.message}  \n`);
+        msg += `\n 签到: ${result.message}  \n`;
     } else {
         console.log(`\n 签到: 失败 ❌ 了呢,原因未知！  ${result} \n`);
         msg += `\n 签到: 失败 ❌ 了呢,原因未知！  \n `;
-    }
-}
-
-
-/**
- * 抽奖    httpPost
- * https://gsp.gacmotor.com/gw/app/activity/api/cge/trunaround
- */
-async function lottery() {
-    let url = {
-        url: `https://gsp.gacmotor.com/gw/app/activity/api/cge/trunaround`,
-        headers: {
-            "token": ck[0],
-            "Host": "gsp.gacmotor.com",
-            "Origin": "https://gsp.gacmotor.com",
-            "Accept": "application/json, text/plain, */*",
-            "Cache-Control": "no-cache",
-            "Sec-Fetch-Dest": "empty",
-            "X-Requested-With": "com.cloudy.component",
-            "Sec-Fetch-Site": "same-origin",
-            "Sec-Fetch-Mode": "cors",
-            "Referer": "https://gsp.gacmotor.com/h5/html/draw/index.html",
-            "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: 'activityCode=CGE',
-    };
-    let result = await httpPost(url, `抽奖`);
-
-    if (result.errorCode === "20000") {
-        console.log(`\n 抽奖:${result.errorMessage} 🎉 \n恭喜你获得 ${result.data.medalName} 奖品为 ${result.data.medalDescription} \n`);
-
-        msg += `\n 抽奖:${result.errorMessage} 🎉 \n恭喜你获得 ${result.data.medalName} 奖品为 ${result.data.medalDescription} \n`;
-
-    } else {
-        console.log(`\n 抽奖: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n 抽奖: 失败 ❌ 了呢,原因未知！  \n `;
-    }
-}
-
-
-/**
- * 文章列表    httpGet
- * https://gsp.gacmotor.com/gw/app/community/api/post/channelPostList?current=1&size=20&channelId=&sortType=1
- */
-async function Article_list() {
-    let url = {
-        url: `https://gsp.gacmotor.com/gw/app/community/api/post/channelPostList?current=1&size=20&channelId=&sortType=1`,
-        headers: {
-            "User-Agent": "okhttp/3.10.0",
-            "token": ck[0],
-            "verification": "signature",
-            "reqTs": ts,
-            "reqNonc": reqNonc,
-            "reqSign": reqSign,
-            "Host": "gsp.gacmotor.com",
-            "Connection": "Keep-Alive",
-            "Accept-Encoding": "gzip",
-        },
-        // body: '',
-    };
-    let result = await httpGet(url, `文章列表`);
-
-    if (result.errorCode === "20000") {
-        let num = randomInt(1, 19);
-        console.log(`分享的文章: ${result.data.records[num].topicNames}  文章ID:${result.data.records[num].postId}`);
-        postId = result.data.records[num].postId;
-
-        msg += `分享的文章: ${result.data.records[num].topicNames}  文章ID:${result.data.records[num].postId}`;
-    } else {
-        console.log(`\n 文章列表: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n 文章列表: 失败 ❌ 了呢,原因未知！  \n `;
-    }
-}
-
-
-/**
- * 分享文章   每天两次   httpPost
- * https://gsp.gacmotor.com/gw/app/community/api/post/forward
- */
-async function share() {
-    let url = {
-        url: `https://gsp.gacmotor.com/gw/app/community/api/post/forward`,
-        headers: {
-            "User-Agent": "okhttp/3.10.0",
-            "token": ck[0],
-            "verification": "signature",
-            "reqTs": ts,
-            "reqNonc": reqNonc,
-            "reqSign": reqSign,
-            "Host": "gsp.gacmotor.com",
-            "Connection": "Keep-Alive",
-            "Accept-Encoding": "gzip",
-        },
-        body: `postId=${postId}&userId=`,
-    };
-    let result = await httpPost(url, `分享文章`);
-
-    if (result.errorCode === "20000") {
-        console.log(`\n 分享文章:${result.errorMessage} 🎉 \n`);
-        msg += `\n 分享文章:${result.errorMessage} 🎉 \n`;
-    } else {
-        console.log(`\n 分享文章: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n 分享文章: 失败 ❌ 了呢,原因未知！  \n `;
-    }
-}
-
-
-/**
- * 发布帖子  httpPost
- * https://gsp.gacmotor.com/gw/app/community/api/topic/appsavepost
- */
-async function post_topic() {
-    let url = {
-        url: `https://gsp.gacmotor.com/gw/app/community/api/topic/appsavepost`,
-        headers: {
-            "User-Agent": "okhttp/3.10.0",
-            "token": ck[0],
-            "verification": "signature",
-            "reqTs": ts,
-            "reqNonc": reqNonc,
-            "reqSign": reqSign,
-            "Host": "gsp.gacmotor.com",
-            "Connection": "Keep-Alive",
-            "Accept-Encoding": "gzip",
-        },
-        body: `postId=&postType=2&topicId=176&columnId=&postTitle=那些年我们看过的电影&postContent=[{"text":"${text}"}]&coverImg=https://pic-gsp.gacmotor.com/app/42a97ad9-0bfb-4205-b838-8170ad3289e2.png&publishedTime=&contentWords=${text}&contentImgNums=1&lng=&lat=&address=&cityId=`,
-    };
-    let result = await httpPost(url, `发布帖子`);
-
-    if (result.errorCode === "20000") {
-        let num = randomInt(1, 39);
-        console.log(`\n 发布帖子:${result.errorMessage} 🎉 \n帖子ID: ${result.data.postId} `);
-        topic_id = result.data.postId;
-        msg += `\n 发布帖子:${result.errorMessage} 🎉 \n帖子ID: ${result.data.postId} `;
-    } else {
-        console.log(`\n 发布帖子: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n 发布帖子: 失败 ❌ 了呢,原因未知！  \n `;
-    }
-}
-
-
-/**
- * 评论帖子  httpPost
- * https://gsp.gacmotor.com/gw/app/community/api/comment/add
- */
-async function add_comment() {
-    let url = {
-        url: `https://gsp.gacmotor.com/gw/app/community/api/comment/add`,
-        headers: {
-            "User-Agent": "okhttp/3.10.0",
-            "token": ck[0],
-            "verification": "signature",
-            "reqTs": ts,
-            "reqNonc": reqNonc,
-            "reqSign": reqSign,
-            "Host": "gsp.gacmotor.com",
-            "Connection": "Keep-Alive",
-            "Accept-Encoding": "gzip",
-        },
-        body: `commentType=0&postId=${topic_id}&commentContent=${add_comment_text}&commentId=0&commentatorId=NDIwNTA0NQ==&isReplyComment=1`,
-    };
-    let result = await httpPost(url, `评论帖子`);
-
-    if (result.errorCode === "20000") {
-        console.log(`\n 评论帖子:${result.errorMessage} 🎉 \n`);
-        msg += `\n 评论帖子:${result.errorMessage} 🎉 \n`;
-    } else {
-        console.log(`\n 评论帖子: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n 评论帖子: 失败 ❌ 了呢,原因未知！  \n `;
-    }
-}
-
-
-/**
- * 删除帖子  httpPost
- * https://gsp.gacmotor.com/gw/app/community/api/post/delete
- */
-async function delete_topic() {
-    let url = {
-        url: `https://gsp.gacmotor.com/gw/app/community/api/post/delete`,
-        headers: {
-            "token": ck[0],
-            "Origin": "https://gsp.gacmotor.com",
-            "Accept": "application/json, text/plain, */*",
-            "Cache-Control": "no-cache",
-            "Sec-Fetch-Dest": "empty",
-            "X-Requested-With": "com.cloudy.component",
-            "Sec-Fetch-Site": "same-origin",
-            "Sec-Fetch-Mode": "cors",
-            "Referer": "https://gsp.gacmotor.com/h5/html/community/myHome.html?userId=NDIwNTA0NQ==&version=newApp",
-            "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `postId=${topic_id}`,
-    };
-    let result = await httpPost(url, `删除帖子`);
-
-    if (result.errorCode === "20000") {
-        console.log(`\n 删除帖子: 帖子ID: ${topic_id} , 执行删除 ${result.errorMessage} 🎉 \n`)
-        msg += `\n 删除帖子: 帖子ID: ${topic_id} , 执行删除 ${result.errorMessage} 🎉 \n`;
-    } else {
-        console.log(`\n 删除帖子: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n 删除帖子: 失败 ❌ 了呢,原因未知！  \n `;
     }
 }
 
