@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f8105156-ef87-41de-9c73-e9e57fbce1f7" name="变更" comment="优化目录">
+    <list default="true" id="f8105156-ef87-41de-9c73-e9e57fbce1f7" name="变更" comment="更新签到说明">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/已完成-封存/飞凡汽车/ffqc.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/飞凡汽车/ffqc.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../javascript/ffqc/ffqc.js" beforeDir="false" afterPath="$PROJECT_DIR$/../javascript/ffqc/ffqc.js" afterDir="false" />
@@ -15,7 +15,7 @@
     <option name="myRunOnSave" value="true" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../javascript" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -55,7 +55,10 @@
       <recent name="$PROJECT_DIR$/大佬的脚本搜集" />
     </key>
   </component>
-  <component name="RunManager" selected="Node.js.gqcq.js">
+  <component name="RunManager" selected="Node.js.ffqc.js">
+    <configuration name="ffqc.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/已完成-封存/飞凡汽车/ffqc.js" working-dir="$PROJECT_DIR$/已完成-封存/飞凡汽车">
+      <method v="2" />
+    </configuration>
     <configuration name="gqcq.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/已完成-封存/广汽传祺/gqcq.js" working-dir="$PROJECT_DIR$/已完成-封存/广汽传祺">
       <method v="2" />
     </configuration>
@@ -64,6 +67,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Node.js.ffqc.js" />
         <item itemvalue="Node.js.gqcq.js" />
         <item itemvalue="Node.js.sign.js" />
       </list>
@@ -81,7 +85,7 @@
       <workItem from="1652869309792" duration="65000" />
       <workItem from="1652869384230" duration="49000" />
       <workItem from="1653043073353" duration="3068000" />
-      <workItem from="1653082869376" duration="6148000" />
+      <workItem from="1653082869376" duration="6500000" />
     </task>
     <task id="LOCAL-00001" summary="更新通知,优化代码">
       <created>1653087922778</created>
@@ -97,7 +101,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653088103937</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="更新签到说明">
+      <created>1653089049250</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1653089049250</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -129,7 +140,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="更新通知,优化代码" />
     <MESSAGE value="优化目录" />
-    <option name="LAST_COMMIT_MESSAGE" value="优化目录" />
+    <MESSAGE value="更新签到说明" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新签到说明" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
