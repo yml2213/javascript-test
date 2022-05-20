@@ -121,7 +121,7 @@
     </key>
   </component>
   <component name="RunManager" selected="Node.js.gqcq.js">
-    <configuration name="gqcq.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/广汽传祺/gqcq.js" working-dir="$PROJECT_DIR$/广汽传祺">
+    <configuration name="gqcq.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/已完成-封存/广汽传祺/gqcq.js" working-dir="$PROJECT_DIR$/已完成-封存/广汽传祺">
       <method v="2" />
     </configuration>
     <configuration name="sign.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/自用签到合集/sign.js" working-dir="$PROJECT_DIR$/自用签到合集">
