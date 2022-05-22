@@ -1,35 +1,34 @@
 /**
- * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/lbxhy/lbxhy.js
- * 转载请留信息,谢谢
- *
- * 老百姓会员
- *
- * cron 30 6 * * *  yml2213_javascript_master/lbxhy.js
- *
- * 5-22    完成签到，自行抓包  群友投稿的,签到是互动值,可以换券啥的
- *
- *
+ * 太平洋汽车
+ * cron 10 8 * * *  yml2213_javascript_master/tpyqc.js
+ * 
+ * 七天签到 3 元红包 , 14 天 2 元红包 ; 详细自己看规则 
+ * 
+ * 太平洋汽车 app  
+ * 4-25     完成签到 任务   有bug及时反馈
+ * 5-8	    官方活动升级,暂时停用脚本,等以后看情况  回帖容易封号,不打算写了
+ * 5-22     优化太平洋汽车
+ * 
+ * 
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
- * 变量格式: export lbxhy_data='token @ token '  多个账号用 @ 或者 换行分割
- *
- *  jfsc.lbxcn.com 中找个token就行
- *
+ * 变量格式: export tpyqc_data=' 手机号 & 密码 @ 手机号 & 密码 '  多个账号用 @分割 
+ * 
  * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 
-const $ = new Env("老百姓会员");
+const $ = new Env("太平洋汽车");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
 const debug = 0 		//0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
-let ckStr = process.env.lbxhy_data;
+let ckStr = process.env.tpyqc_data;
 let msg = "";
 let ck = "";
 
 ///////////////////////////////////////////////////////////////////
-let Version = '\nyml   2022/5/22     完成签到 '
-let thank = `感谢 心雨 的投稿`
+let Version = '\nyml   2022/5/22     优化太平洋汽车'
+let thank = `感谢 群友 的投稿`
 let test = `脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!`
 
 ///////////////////////////////////////////////////////////////////
@@ -42,11 +41,11 @@ async function tips(ckArr) {
     console.log(thank);
     msg += `${thank}`
 
-    console.log(test);
-    msg += `${test}`
+    // console.log(test);
+    // msg += `${test}`
 
-    // console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-    // msg += `脚本已恢复正常状态,请及时更新`
+    console.log(`\n 脚本已恢复正常状态,请及时更新! `);
+    msg += `脚本已恢复正常状态,请及时更新`
 
     console.log(`==================================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
         new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
@@ -58,7 +57,7 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-    let ckArr = await getCks(ckStr, "lbxhy_data");
+    let ckArr = await getCks(ckStr, "jieda_data");
     await tips(ckArr);
     for (let index = 0; index < ckArr.length; index++) {
         let num = index + 1;
@@ -78,41 +77,112 @@ async function tips(ckArr) {
 async function start() {
 
 
-    console.log("开始 签到");
-    await signIn();
-    await $.wait(3 * 1000);
+    console.log('开始 登录');
+    await login();
+    await $.wait(2 * 1000);
 
+    console.log('开始 签到');
+    await signin();
+    await $.wait(2 * 1000);
+
+    console.log('开始 查询金币');
+    await user_info();
+    await $.wait(2 * 1000);
+
+}
+
+
+
+/**
+ * 登录   post
+ * https://mrobot.pcauto.com.cn/auto_passport3_back_intf/passport3/rest/login_new.jsp
+ */
+async function login() {
+    let url = {
+        url: 'https://mrobot.pcauto.com.cn/auto_passport3_back_intf/passport3/rest/login_new.jsp',
+        headers: {
+
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `password=${ck[1]}&username=${ck[0]}`,
+    };
+    let result = await httpPost(url, `登录`);
+
+    if (result.status == 0) {
+        console.log(`   登录:${result.message} 🎉`);
+        msg += `   登录:${result.message} 🎉`;
+        ck = result.common_session_id;
+    } else if (result.status == 1) {
+        console.log(`   登录:${result.message}`);
+        msg += `   登录:${result.message}`;
+    } else {
+        console.log(`   登录: 失败 ❌ 了呢,原因未知！\n ${result}`)
+        msg += `   登录: 失败 ❌ 了呢,原因未知`
+        throw new Error(`${$.name}:喂  喂 ---  登录过期了,别睡了, 起来更新了喂!`);
+    }
 
 }
 
 
 /**
- * 签到    httpGet
- * https://jfsc.lbxcn.com/saas/action/apimanager/execmulti?token=F725675B9E1FEFD6F1278CAC53481C50&methods=customer_signin&account_no=702
+ * 签到   post
+ * https://app-server.pcauto.com.cn/api/info/sign/register
  */
-async function signIn() {
+async function signin() {
     let url = {
-        url: `https://jfsc.lbxcn.com/saas/action/apimanager/execmulti?token=${ck[0]}&methods=customer_signin&account_no=702`,
+        url: 'https://app-server.pcauto.com.cn/api/info/sign/register',
         headers: {
-            "Host": "jfsc.lbxcn.com",
-            "charset": "utf-8",
-            "content-type": "application/json"
+            'Content-Type': 'text/plain',
+            'Cookie': `common_session_id=${ck}`,
         },
-        // body: `${ck[1]}`,
+        body: '{}',
     };
-    let result = await httpGet(url, `签到`);
+    let result = await httpPost(url, `签到`);
 
-    if (result.customer_signin.success === true) {
-        console.log(`   签到: 第${result.customer_signin.days}天签到, 获得${result.customer_signin.growth} 积分`);
-        msg += `   签到: 第${result.customer_signin.days}天签到, 获得${result.customer_signin.growth} 积分`;
-    } else if (result.customer_signin.success === false) {
-        console.log(`   签到: ${result.customer_signin.message}`);
-        msg += `   签到: ${result.customer_signin.message}`;
+    if (result.code == 200) {
+        console.log(`   签到:${result.message} 🎉`);
+        msg += `   签到:${result.message} 🎉`;
+    } else if (result.code == 500) {
+        console.log(`   签到:${result.message}`);
+        msg += `   签到:${result.message}`;
     } else {
-        console.log(`   签到: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `    签到: 失败 ❌ 了呢,原因未知！  \n `;
+        console.log(`   签到: 失败 ❌ 了呢,原因未知！\n ${result}`)
+        msg += `   签到: 失败 ❌ 了呢,原因未知`
+        // throw new Error(`${$.name}:喂  喂 ---  签到过期了,别睡了, 起来更新了喂!`);
     }
 }
+
+
+
+
+/**
+ * 查询金币   get
+ * https://mrobot.pcauto.com.cn/xsp/s/auto/info/nocache/task/getLoginUserInfo.xsp
+ */
+async function user_info() {
+    let url = {
+        url: 'https://mrobot.pcauto.com.cn/xsp/s/auto/info/nocache/task/getLoginUserInfo.xsp',
+        headers: {
+            'Cookie': `common_session_id=${ck}`,
+        },
+    };
+    let result = await httpPost(url, `查询金币`);
+
+    if (result.status == 0) {
+        console.log(`   查询金币:${result.userName} id:${result.userId} , 现在有金币 ${result.goldCount} 枚`);
+        msg += `   查询金币:${result.userName} id:${result.userId} , 现在有金币 ${result.goldCount} 枚`;
+    } else {
+        console.log(`   查询金币: 失败 ❌ 了呢,原因未知！\n ${result}`)
+        msg += `   查询金币: 失败 ❌ 了呢,原因未知`
+        // throw new Error(`${$.name}:喂  喂 ---  查询金币过期了,别睡了, 起来更新了喂!`);
+    }
+}
+
+
+
+
+
+
 
 
 

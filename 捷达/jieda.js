@@ -1,35 +1,35 @@
 /**
- * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/lbxhy/lbxhy.js
+ * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/jieda/jieda.js
  * 转载请留信息,谢谢
  *
- * 老百姓会员
+ * 捷达 app ios,安卓都有
  *
- * cron 30 6 * * *  yml2213_javascript_master/lbxhy.js
+ * cron 30 6 * * *  yml2213_javascript_master/jieda.js
  *
- * 5-22    完成签到，自行抓包  群友投稿的,签到是互动值,可以换券啥的
+ * 5-22    完成签到，自行抓包  群友投稿的,每个月18号才能提现,自己玩玩吧; 每日任务有时间再说吧
  *
  *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
- * 变量格式: export lbxhy_data='token @ token '  多个账号用 @ 或者 换行分割
+ * 变量格式: export jieda_data='token @ token '  多个账号用 @ 或者 换行分割
  *
- *  jfsc.lbxcn.com 中找个token就行
+ * 抓首页红包, service-yy.jconnect.faw-vw.com 中找个token就行
  *
  * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 
-const $ = new Env("老百姓会员");
+const $ = new Env("捷达");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
 const debug = 0 		//0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
-let ckStr = process.env.lbxhy_data;
+let ckStr = process.env.jieda_data;
 let msg = "";
 let ck = "";
 
 ///////////////////////////////////////////////////////////////////
 let Version = '\nyml   2022/5/22     完成签到 '
-let thank = `感谢 心雨 的投稿`
+let thank = `感谢 群友 的投稿`
 let test = `脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!`
 
 ///////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-    let ckArr = await getCks(ckStr, "lbxhy_data");
+    let ckArr = await getCks(ckStr, "jieda_data");
     await tips(ckArr);
     for (let index = 0; index < ckArr.length; index++) {
         let num = index + 1;
@@ -78,7 +78,7 @@ async function tips(ckArr) {
 async function start() {
 
 
-    console.log("开始 签到");
+    console.log("开始 领红包");
     await signIn();
     await $.wait(3 * 1000);
 
@@ -87,30 +87,29 @@ async function start() {
 
 
 /**
- * 签到    httpGet
- * https://jfsc.lbxcn.com/saas/action/apimanager/execmulti?token=F725675B9E1FEFD6F1278CAC53481C50&methods=customer_signin&account_no=702
+ * 领红包    httpGet
+ * https://service-yy.jconnect.faw-vw.com/redpackbank/prize/getPrize
  */
 async function signIn() {
     let url = {
-        url: `https://jfsc.lbxcn.com/saas/action/apimanager/execmulti?token=${ck[0]}&methods=customer_signin&account_no=702`,
+        url: `https://service-yy.jconnect.faw-vw.com/redpackbank/prize/getPrize`,
         headers: {
-            "Host": "jfsc.lbxcn.com",
-            "charset": "utf-8",
-            "content-type": "application/json"
+            "token": ck[0],
+            "accept": "application/json, text/plain, */*"
         },
         // body: `${ck[1]}`,
     };
-    let result = await httpGet(url, `签到`);
+    let result = await httpGet(url, `领红包`);
 
-    if (result.customer_signin.success === true) {
-        console.log(`   签到: 第${result.customer_signin.days}天签到, 获得${result.customer_signin.growth} 积分`);
-        msg += `   签到: 第${result.customer_signin.days}天签到, 获得${result.customer_signin.growth} 积分`;
-    } else if (result.customer_signin.success === false) {
-        console.log(`   签到: ${result.customer_signin.message}`);
-        msg += `   签到: ${result.customer_signin.message}`;
+    if (result.status === "SUCCEED") {
+        console.log(`   领红包: 本次获得 ${result.data.allPrize} 元, 累计获得${result.data.todayPrize} 元`);
+        msg += `   领红包: 本次获得 ${result.data.allPrize} 元, 累计获得${result.data.todayPrize} 元`;
+    } else if (result.status === "FAILED") {
+        console.log(`   领红包: ${result.errorMessage}`);
+        msg += `   领红包: ${result.errorMessage}`;
     } else {
-        console.log(`   签到: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `    签到: 失败 ❌ 了呢,原因未知！  \n `;
+        console.log(`   领红包: 失败 ❌ 了呢,原因未知！  ${result} \n`);
+        msg += `    领红包: 失败 ❌ 了呢,原因未知！  \n `;
     }
 }
 

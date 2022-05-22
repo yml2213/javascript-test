@@ -16,7 +16,6 @@
  * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 
-
 const $ = new Env("太平洋汽车");
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
