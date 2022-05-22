@@ -2,9 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8105156-ef87-41de-9c73-e9e57fbce1f7" name="变更" comment="更新签到说明">
+      <change afterPath="$PROJECT_DIR$/5-20复制模板/5-22.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/老百姓会员/111.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/老百姓会员/111.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/老百姓会员/lbxhy.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/老百姓会员/ql.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/老百姓会员/sendNotify.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/自用签到合集/111.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/自用签到合集/22.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/已完成-封存/飞凡汽车/ffqc.js" beforeDir="false" afterPath="$PROJECT_DIR$/已完成-封存/飞凡汽车/ffqc.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../javascript/ffqc/ffqc.js" beforeDir="false" afterPath="$PROJECT_DIR$/../javascript/ffqc/ffqc.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/自用签到合集/sign.js" beforeDir="false" afterPath="$PROJECT_DIR$/自用签到合集/sign.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../javascript/ksjsb/ksjsb.js" beforeDir="false" afterPath="$PROJECT_DIR$/../javascript/ksjsb/ksjsb.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../javascript/yxd/yxd.js" beforeDir="false" afterPath="$PROJECT_DIR$/../javascript/yxd/yxd.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,7 +24,7 @@
     <option name="myRunOnSave" value="true" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../javascript" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -28,24 +37,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/yml/WebstormProjects/javascript-test&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/Users/yml/WebstormProjects/javascript-test",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "web-ide.project.structure",
+    "settings.editor.splitter.proportion": "0.27087575",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/自用签到合集" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/模板文件夹" />
@@ -55,11 +65,14 @@
       <recent name="$PROJECT_DIR$/大佬的脚本搜集" />
     </key>
   </component>
-  <component name="RunManager" selected="Node.js.ffqc.js">
+  <component name="RunManager" selected="Node.js.lbxhy.js">
     <configuration name="ffqc.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/已完成-封存/飞凡汽车/ffqc.js" working-dir="$PROJECT_DIR$/已完成-封存/飞凡汽车">
       <method v="2" />
     </configuration>
     <configuration name="gqcq.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/已完成-封存/广汽传祺/gqcq.js" working-dir="$PROJECT_DIR$/已完成-封存/广汽传祺">
+      <method v="2" />
+    </configuration>
+    <configuration name="lbxhy.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/老百姓会员/lbxhy.js" working-dir="$PROJECT_DIR$/老百姓会员">
       <method v="2" />
     </configuration>
     <configuration name="sign.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/自用签到合集/sign.js" working-dir="$PROJECT_DIR$/自用签到合集">
@@ -67,9 +80,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Node.js.lbxhy.js" />
+        <item itemvalue="Node.js.sign.js" />
         <item itemvalue="Node.js.ffqc.js" />
         <item itemvalue="Node.js.gqcq.js" />
-        <item itemvalue="Node.js.sign.js" />
       </list>
     </recent_temporary>
   </component>
@@ -85,7 +99,10 @@
       <workItem from="1652869309792" duration="65000" />
       <workItem from="1652869384230" duration="49000" />
       <workItem from="1653043073353" duration="3068000" />
-      <workItem from="1653082869376" duration="6500000" />
+      <workItem from="1653082869376" duration="12796000" />
+      <workItem from="1653124062166" duration="304000" />
+      <workItem from="1653124395415" duration="663000" />
+      <workItem from="1653150674072" duration="5244000" />
     </task>
     <task id="LOCAL-00001" summary="更新通知,优化代码">
       <created>1653087922778</created>
@@ -108,7 +125,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653089049250</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="更新签到说明">
+      <created>1653089401665</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1653089401665</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

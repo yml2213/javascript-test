@@ -1,295 +1,116 @@
 /**
- * yml签到
- * cron 30 6 * * *  yml2213_javascript_master/baitu.js
+ * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/lbxhy/lbxhy.js
+ * 转载请留信息,谢谢
  *
+ * 老百姓会员
+ *
+ * cron 30 6 * * *  yml2213_javascript_master/gqcq.js
+ *
+ * 5-22    完成签到，自行抓包  群友投稿的,签到是互动值,可以换券啥的
+ *
+ *
+ * 感谢所有测试人员
+ * ========= 青龙--配置文件 =========
+ * 变量格式: export lbxhy_data='token @ token '  多个账号用 @ 或者 换行分割
+ *
+ *  jfsc.lbxcn.com 中找个token就行
+ *
+ * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 
-const $ = new Env("yml签到");
+const $ = new Env("老百姓会员");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 1 	    //0为关闭调试，1为打开调试,默认为0
+const debug = 0 		//0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
+let ckStr = process.env.lbxhy_data;
 let msg = "";
+let ck = "";
 
 ///////////////////////////////////////////////////////////////////
-let Version = '\n yml   2022/5/21   \n'
+let Version = '\nyml   2022/5/22     完成签到 '
+let thank = `感谢 心雨 的投稿`
+let test = `脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!`
 
 ///////////////////////////////////////////////////////////////////
 
+async function tips(ckArr) {
+
+    console.log(`${Version}`);
+    msg += `${Version}`
+
+    console.log(thank);
+    msg += `${thank}`
+
+    console.log(test);
+    msg += `${test}`
+
+    // console.log(`\n 脚本已恢复正常状态,请及时更新! `);
+    // msg += `脚本已恢复正常状态,请及时更新`
+
+    console.log(`==================================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
+        new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
+    ).toLocaleString()} \n==================================================`);
+    await wyy();
+
+    console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
+    debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
+}
 
 !(async () => {
+    let ckArr = await getCks(ckStr, "lbxhy_data");
+    await tips(ckArr);
+    for (let index = 0; index < ckArr.length; index++) {
+        let num = index + 1;
+        console.log(`------------- 开始【第 ${num} 个账号】-------------`);
 
-    console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
-        new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
-    ).toLocaleString()} \n===============================================\n`);
+        ck = ckArr[index].split("&");
 
-    await wyy();
-    console.log("开始 白兔签到");
-    await bt_signIn();
-    await $.wait(3 * 1000);
-
-
-    // console.log("开始 v社签到");
-    // await v_signIn();
-    // await $.wait(3 * 1000);
-
-    console.log("开始 btschool签到");
-    await btschool_signIn();
-    await $.wait(3 * 1000);
-
-
-    console.log("开始 1ptba签到");
-    await ptba_signIn();
-    await $.wait(3 * 1000);
-
-    console.log("开始 阿童木签到");
-    await hdatmos_signIn();
-    await $.wait(3 * 1000);
-
-
-    console.log("开始 柠檬🍋签到");
-    await lemonhd_signIn();
-    await $.wait(3 * 1000);
-
-    console.log("开始 我堡签到");
-    await ourbits_signIn();
-    await $.wait(3 * 1000);
-
-    console.log("开始 猫站🐱签到");
-    await pterclub_signIn();
-    await $.wait(3 * 1000);
-
-
+        debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
+        await start();
+    }
     await SendMsg(msg);
-
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done());
 
 
+async function start() {
+
+
+    console.log("开始 签到");
+    await signIn();
+    await $.wait(3 * 1000);
+
+
+}
+
+
 /**
- * 白兔签到    httpGet
- * https://club.hares.top/attendance.php?action=sign
+ * 签到    httpGet
+ * https://jfsc.lbxcn.com/saas/action/apimanager/execmulti?token=F725675B9E1FEFD6F1278CAC53481C50&methods=customer_signin&account_no=702
  */
-async function bt_signIn() {
+async function signIn() {
     let url = {
-        url: `https://club.hares.top/attendance.php?action=sign`,
+        url: `https://jfsc.lbxcn.com/saas/action/apimanager/execmulti?token=${ck[0]}&methods=customer_signin&account_no=702`,
         headers: {
-            "Cookie": "c_secure_uid=NDY3; c_secure_pass=b16fabe0ec1d473b65a71502d56ef0c7; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D",
-            "accept": "application/json, text/javascript, */*; q=0.01"
+            "Host": "jfsc.lbxcn.com",
+            "charset": "utf-8",
+            "content-type": "application/json"
         },
         // body: `${ck[1]}`,
     };
-    let result = await httpGet(url, `白兔签到`);
+    let result = await httpGet(url, `签到`);
 
-    if (result.code === "0") {
-        console.log(`\n 签到: ${result.msg} ,您已连续签到 ${result.data.days} 天, 获得积分 ${result.data.points}  \n${result}`);
-        msg += `\n 签到: ${result.msg} ,您已连续签到 ${result.data.days} 天, 获得积分 ${result.data.points}    \n`;
-    } else if (result.code === "1") {
-        console.log(`\n 签到: ${result.msg}  \n`);
-        msg += `\n 签到: ${result.msg}  \n`;
+    if (result.customer_signin.success === true) {
+        console.log(`   签到: 第${result.customer_signin.days}天签到, 获得${result.customer_signin.growth} 积分`);
+        msg += `   签到: 第${result.customer_signin.days}天签到, 获得${result.customer_signin.growth} 积分`;
+    } else if (result.customer_signin.success === false) {
+        console.log(`   签到: ${result.customer_signin.message}`);
+        msg += `   签到: ${result.customer_signin.message}`;
     } else {
-        console.log(`\n 签到: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n 签到: 失败 ❌ 了呢,原因未知！  \n `;
-    }
-}
-
-
-/**
- * v社签到    httpGet
- * https://www.acgv.cc/wp-admin/admin-ajax.php?_nonce=9b6d1f3a1f&action=3ab9566eae4a6f214d9a1fd6b7c1a776&type=goSign
- */
-async function v_signIn() {
-    let url = {
-        url: `https://www.acgv.cc/wp-admin/admin-ajax.php?_nonce=9b6d1f3a1f&action=3ab9566eae4a6f214d9a1fd6b7c1a776&type=goSign`,
-        headers: {
-            "Cookie": "wordpress_sec_47bdae8fa965c2ef84c5b4e94065d458=294fb9f10d5f5e5053549584c7f3b40f%7C1654064249%7CCVMAO0d6ZcrMs96BZkSYxk0EcT2aAXQVoh7dfFtwEMN%7C44e91d84b593553972bdbc2a6d5d436a8ba67f7e9f97f4d76d1939a9ba270cf3; wordpress_logged_in_47bdae8fa965c2ef84c5b4e94065d458=294fb9f10d5f5e5053549584c7f3b40f%7C1654064249%7CCVMAO0d6ZcrMs96BZkSYxk0EcT2aAXQVoh7dfFtwEMN%7Cf88899192b18b1aa57f186c8a5e5a39bdb8e01a20bc7d6900120fbfe87d13d67",
-            "referer": "https://www.acgv.cc/"
-        },
-        // body:`${ck[1]}`,
-    };
-    let result = await httpGet(url, `v社签到 `);
-
-    if (result.code === 0 && result.data != null) {
-        console.log(`\n v社签到 : ${result.msg}  \n`);
-        msg += `\n v社签到: ${result.msg}  \n`;
-    } else if (result.code === 0 && result.data != null) {
-        console.log(`\n v社签到: ${result.msg}  \n`);
-        msg += `\n v社签到: ${result.msg}  \n`;
-    } else {
-        console.log(`\n v社签到: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n v社签到: 失败 ❌ 了呢,原因未知！  \n `;
-    }
-}
-
-
-/**
- * btschool签到    httpGet
- * https://www.acgv.cc/wp-admin/admin-ajax.php?_nonce=9b6d1f3a1f&action=3ab9566eae4a6f214d9a1fd6b7c1a776&type=goSign
- */
-async function btschool_signIn() {
-    let url = {
-        url: `https://pt.btschool.club/index.php?action=addbonus`,
-        headers: {
-            "Host": "pt.btschool.club",
-            "Cookie": "c_secure_uid=NzM3Mzk%3D; c_secure_pass=9f3d348a9824c4f483888efa167a2e75; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D; cf_clearance=yHeiz8qXUxILgdCHI0oBEjn0YTdqjZqq5P.fydS3Jh0-1651374335-0-150",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"macOS\"",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "sec-fetch-site": "same-origin",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-user": "?1",
-            "sec-fetch-dest": "document",
-            "referer": "https://pt.btschool.club/",
-            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"
-        },
-        // body:`${ck[1]}`,
-    };
-    let result = await httpGet(url, `btschool签到 `);
-}
-
-
-/**
- * 1ptba    httpGet
- * https://1ptba.com/attendance.php
- */
-async function ptba_signIn() {
-    let url = {
-        url: `https://1ptba.com/attendance.php`,
-        headers: {
-            "Host": "1ptba.com",
-            "Cookie": "c_secure_uid=OTMyNTQ%3D; c_secure_pass=e9fd56c6f4d79dd5cb04e4730eb501b0; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"macOS\"",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "sec-fetch-site": "same-origin",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-user": "?1",
-            "sec-fetch-dest": "document",
-            "referer": "https://1ptba.com/index.php",
-            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"
-        },
-        // body:`${ck[1]}`,
-    };
-    let result = await httpGet(url, `1ptba签到 `);
-}
-
-
-/**
- * hdatmos 签到    httpGet
- * https://hdatmos.club/attendance.php
- */
-async function hdatmos_signIn() {
-    let url = {
-        url: `https://hdatmos.club/attendance.php`,
-        headers: {
-            "Host": "hdatmos.club",
-            "Cookie": "c_secure_uid=MjMwNDc%3D; c_secure_pass=11dd741442bdf1bedd1d930abaf73f9d; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"macOS\"",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "sec-fetch-site": "same-origin",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-user": "?1",
-            "sec-fetch-dest": "document",
-            "referer": "https://hdatmos.club/index.php",
-            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"
-        },
-        // body:`${ck[1]}`,
-    };
-    let result = await httpGet(url, `hdatmos 签到 `);
-}
-
-
-/**
- * 我堡 签到    httpGet
- * https://ourbits.club/attendance.php
- */
-async function ourbits_signIn() {
-    let url = {
-        url: `https://ourbits.club/attendance.php`,
-        headers: {
-            "Host": "ourbits.club",
-            "Cookie": "ourbits_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPVVJCSVRTIiwiYXVkIjo1MDM5NywiaWF0IjoxNjUyNTM3MDg4LCJqdGkiOiJPOTlNdVFNVmI2bDV4ZzBKOXVxOHh1VEpXeE5iUERlb2xXTk91N1B1TmJqMld2TGEiLCJleHAiOjE2NTUxMjkwODgsInNzbCI6dHJ1ZX0.Uh-ZzvOw17jc5OQHxjW5s1AIosVn_18urBde16PXR1I",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"macOS\"",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "sec-fetch-site": "same-origin",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-user": "?1",
-            "sec-fetch-dest": "document",
-            "referer": "https://ourbits.club/index.php",
-            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"
-        },
-        // body:`${ck[1]}`,
-    };
-    let result = await httpGet(url, `ourbits.club 签到 `);
-}
-
-/**
- * 柠檬 签到    httpGet
- * https://lemonhd.org/attendance.php
- */
-async function lemonhd_signIn() {
-    let url = {
-        url: `https://lemonhd.org/attendance.php`,
-        headers: {
-            "Host": "lemonhd.org",
-            "Cookie": "c_secure_uid=NDE0NDk%3D; c_secure_pass=cb9e4a9b1e89c4c76a6f97418d0f5b54; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"macOS\"",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "sec-fetch-site": "same-origin",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-user": "?1",
-            "sec-fetch-dest": "document",
-            "referer": "https://lemonhd.org/index.php",
-            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"
-        },
-        // body:`${ck[1]}`,
-    };
-    let result = await httpGet(url, `柠檬 签到 `);
-}
-
-
-/**
- * 猫站 签到    httpGet
- * https://pterclub.com/attendance-ajax.php
- */
-async function pterclub_signIn() {
-    let url = {
-        url: `https://pterclub.com/attendance-ajax.php`,
-        headers: {
-            "Host": "pterclub.com",
-            "Cookie": "PHPSESSID=h2ugod6t4cr6vqb91kl8h6ous4; c_secure_uid=MTQzMzE%3D; c_secure_pass=c5796fe6b36a13b23e3ca0c885d0b23f; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D"
-        },
-        // body:`${ck[1]}`,
-    };
-    let result = await httpGet(url, `猫站 签到 `);
-    if (result.status === "1") {
-        console.log(`\n 签到: ${result.message} `);
-        msg += `\n 签到: ${result.message} `;
-    } else if (result.code === "0") {
-        console.log(`\n 签到: ${result.message}  \n`);
-        msg += `\n 签到: ${result.message}  \n`;
-    } else {
-        console.log(`\n 签到: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n 签到: 失败 ❌ 了呢,原因未知！  \n `;
+        console.log(`   签到: 失败 ❌ 了呢,原因未知！  ${result} \n`);
+        msg += `    签到: 失败 ❌ 了呢,原因未知！  \n `;
     }
 }
 
@@ -300,16 +121,16 @@ async function pterclub_signIn() {
 async function getCks(ck, str) {
 
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
 
             let ckArr = []
             if (ck) {
-                if (ck.indexOf("@") != -1) {
+                if (ck.indexOf("@") !== -1) {
 
                     ck.split("@").forEach((item) => {
                         ckArr.push(item);
                     });
-                } else if (ck.indexOf("\n") != -1) {
+                } else if (ck.indexOf("\n") !== -1) {
 
                     ck.split("\n").forEach((item) => {
                         ckArr.push(item);
@@ -333,7 +154,7 @@ async function SendMsg(message) {
 
     if (Notify > 0) {
         if ($.isNode()) {
-            var notify = require("./sendNotify");
+            let notify = require("./sendNotify");
             await notify.sendNotify($.name, message);
         } else {
             $.msg(message);
@@ -349,7 +170,7 @@ async function SendMsg(message) {
 
 function randomString(e) {
     e = e || 32;
-    var t = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890",
+    let t = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890",
         a = t.length,
         n = "";
 
@@ -404,22 +225,23 @@ function local_minutes() {
 
 
 //每日网抑云
-function wyy() {
+function wyy(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
             url: `https://keai.icu/apiwyy/api`
         }
         $.get(url, async (err, resp, data) => {
-            try {
-                data = JSON.parse(data)
-                console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
+                try {
+                    data = JSON.parse(data)
+                    console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
 
-            } catch (e) {
-                $.logErr(e, resp);
-            } finally {
-                resolve()
-            }
-        }, timeout = 3 * 1000)
+                } catch (e) {
+                    $.logErr(e, resp);
+                } finally {
+                    resolve()
+                }
+            }, timeout
+        )
     })
 }
 
@@ -452,9 +274,9 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
                     let result = JSON.parse(data);
                     resolve(result);
                 } catch (e) {
-                    // console.log(err, resp);
-                    // console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-                    // msg += `\n ${tip} 失败了!请稍后尝试!!`
+                    console.log(err, resp);
+                    console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+                    msg += `\n ${tip} 失败了!请稍后尝试!!`
                 } finally {
                     resolve();
                 }
@@ -492,9 +314,9 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
                     let result = JSON.parse(data);
                     resolve(result);
                 } catch (e) {
-                    // console.log(err, resp);
-                    // console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-                    // msg += `\n ${tip} 失败了!请稍后尝试!!`
+                    console.log(err, resp);
+                    console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+                    msg += `\n ${tip} 失败了!请稍后尝试!!`
                 } finally {
                     resolve();
                 }
@@ -502,83 +324,6 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
             timeout
         );
     });
-}
-
-
-async function task111(method, url, type_name) {
-
-    return new Promise(async resolve => {
-        if (!type_name) {
-            let tmp = arguments.callee.toString();
-            let re = /function\s*(\w*)/i;
-            let matches = re.exec(tmp);
-            type_name = matches[1];
-        }
-        // let timeout = '';
-        if (method = `get`) {
-            return new Promise((resolve) => {
-                if (debug) {
-                    console.log(`\n 【debug】=============== 这是 ${type_name} 请求 url ===============`);
-                    console.log(url);
-                }
-
-                $.get(url, async (err, resp, data) => {
-                        try {
-                            if (err) {
-                                console.log(`${$.name}: API查询请求失败 ‼️‼️`);
-                                console.log(JSON.stringify(err));
-                                $.logErr(err);
-                            } else if (debug) {
-                                console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-                                console.log(data);
-                                console.log(`======`);
-                                console.log(JSON.parse(data));
-                            }
-                            let result = JSON.parse(data);
-                            resolve(result);
-                        } catch (e) {
-                            console.log(e, resp);
-                        } finally {
-                            resolve();
-                        }
-                    },
-                );
-            });
-        } else if (method = httppost) {
-            return new Promise((resolve) => {
-                if (debug) {
-                    console.log(`\n 【debug】=============== 这是 ${type_name} 请求 url ===============`);
-                    console.log(url);
-                }
-                $.post(url, async (err, resp, data) => {
-                        try {
-                            if (err) {
-                                console.log("$.name: API查询请求失败 ‼️‼️");
-                                console.log(JSON.stringify(err));
-                                $.logErr(err);
-                            } else if (debug) {
-                                console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-                                console.log(data);
-                                console.log(`======`);
-                                console.log(JSON.parse(data));
-                            }
-                            let result = JSON.parse(data);
-                            resolve(result);
-                        } catch (e) {
-                            console.log(e, resp);
-                        } finally {
-                            resolve();
-                        }
-                    },
-                    // timeout(3000)
-                );
-            });
-
-        } else {
-            console.log(`参数错误 ❌ ,请仔细检查修改后再试试吧!!`);
-        }
-
-    })
 }
 
 
@@ -590,8 +335,6 @@ function debugLog(...args) {
 }
 
 //#endregion
-
-// prettier-ignore
 function MD5Encrypt(a) {
     function b(a, b) {
         return a << b | a >>> 32 - b
