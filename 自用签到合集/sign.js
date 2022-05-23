@@ -7,7 +7,7 @@
 const $ = new Env("yml签到");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 1 	    //0为关闭调试，1为打开调试,默认为0
+const debug = 0 	    //0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
 let msg = "";
 
@@ -28,11 +28,6 @@ let Version = '\n yml   2022/5/21   \n'
     await bt_signIn();
     await $.wait(3 * 1000);
 
-
-    // console.log("开始 v社签到");
-    // await v_signIn();
-    // await $.wait(3 * 1000);
-
     console.log("开始 btschool签到");
     await btschool_signIn();
     await $.wait(3 * 1000);
@@ -42,8 +37,35 @@ let Version = '\n yml   2022/5/21   \n'
     await ptba_signIn();
     await $.wait(3 * 1000);
 
+    console.log("开始 pt时间");
+    await pttime_signIn();
+    await $.wait(3 * 1000);
+
+    console.log("开始 海胆");
+    await haidan_signIn();
+    await $.wait(3 * 1000);
+
     console.log("开始 阿童木签到");
     await hdatmos_signIn();
+    await $.wait(3 * 1000);
+
+
+    console.log("开始 hdfans签到");
+    await hdfans_signIn();
+    await $.wait(3 * 1000);
+
+
+    console.log("开始 hdtime签到");
+    await hdtime_signIn();
+    await $.wait(3 * 1000);
+
+
+    console.log("开始 hdarea签到");
+    await hdarea_signIn();
+    await $.wait(3 * 1000);
+
+    console.log("开始 hddolby签到");
+    await hddolby_signIn();
     await $.wait(3 * 1000);
 
 
@@ -59,6 +81,10 @@ let Version = '\n yml   2022/5/21   \n'
     await pterclub_signIn();
     await $.wait(3 * 1000);
 
+
+    // console.log("开始 v社签到");
+    // await v_signIn();
+    // await $.wait(3 * 1000);
 
     await SendMsg(msg);
 
@@ -83,8 +109,8 @@ async function bt_signIn() {
     let result = await httpGet(url, `白兔签到`);
 
     if (result.code === "0") {
-        console.log(`\n 签到: ${result.msg} ,您已连续签到 ${result.data.days} 天, 获得积分 ${result.data.points}  \n${result}`);
-        msg += `\n 签到: ${result.msg} ,您已连续签到 ${result.data.days} 天, 获得积分 ${result.data.points}    \n`;
+        console.log(`\n 签到: ${result}`);
+        msg += `\n 签到: ${result}`;
     } else if (result.code === "1") {
         console.log(`\n 签到: ${result.msg}  \n`);
         msg += `\n 签到: ${result.msg}  \n`;
@@ -131,20 +157,22 @@ async function btschool_signIn() {
     let url = {
         url: `https://pt.btschool.club/index.php?action=addbonus`,
         headers: {
-            "Host": "pt.btschool.club",
-            "Cookie": "c_secure_uid=NzM3Mzk%3D; c_secure_pass=9f3d348a9824c4f483888efa167a2e75; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D; cf_clearance=yHeiz8qXUxILgdCHI0oBEjn0YTdqjZqq5P.fydS3Jh0-1651374335-0-150",
+            "authority": "pt.btschool.club",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "cache-control": "no-cache",
+            "cookie": "cf_clearance=f1hrxA8X5cigAqxXA5s7iQz7KuVozDtqsktJeyuVIIY-1652165165-0-150; c_secure_uid=NzM3Mzk%3D; c_secure_pass=9f3d348a9824c4f483888efa167a2e75; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D",
+            "pragma": "no-cache",
+            "referer": "https://pt.btschool.club/?__SAKURA=38467632b1ac731b9c611e76f04c3e52e1653266354_15458145",
             "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
             "sec-ch-ua-mobile": "?0",
             "sec-ch-ua-platform": "\"macOS\"",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "sec-fetch-site": "same-origin",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-user": "?1",
             "sec-fetch-dest": "document",
-            "referer": "https://pt.btschool.club/",
-            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53"
         },
         // body:`${ck[1]}`,
     };
@@ -179,6 +207,195 @@ async function ptba_signIn() {
     };
     let result = await httpGet(url, `1ptba签到 `);
 }
+
+
+
+
+/**
+ * pttime    httpGet
+ * https://www.pttime.org/attendance.php
+ */
+async function pttime_signIn() {
+    let url = {
+        url: `https://www.pttime.org/attendance.php`,
+        headers: {
+            "authority": "www.pttime.org",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "cache-control": "no-cache",
+            "cookie": "c_secure_uid=MTA4Nzc%3D; c_secure_pass=6b274513c7412685a081f598c3373d07; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D",
+            "pragma": "no-cache",
+            "referer": "https://www.pttime.org/index.php",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53"
+        },
+        // body:`${ck[1]}`,
+    };
+    let result = await httpGet(url, `pttime `);
+}
+
+
+
+/**
+ * hdfans    httpGet
+ */
+async function hdfans_signIn() {
+    let url = {
+        url: `https://hdfans.org/attendance.php`,
+        headers: {
+            "authority": "hdfans.org",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "cache-control": "no-cache",
+            "cookie": "c_secure_uid=MTY5ODA%3D; c_secure_pass=0dabac61948298e14c2a06941534bf85; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D; __cf_bm=XIa2IgeTf1yy_l10DEb7lSU3mubf1sDYtSE.FaAYKH4-1653267385-0-ARx0lXLv5HatNzlokqtxc/8Tel+q3W26jUiKVdAgM7ZB68hSSYJxvvdqN6d5dL9/HsKb/OxUabqBSJNNsVtBQDu59kal31hegYFg9HgBOUgORXd93wBrYL4Oi8vpIT8FJA==",
+            "pragma": "no-cache",
+            "referer": "https://hdfans.org/torrents.php",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53"
+        },
+        // body:`${ck[1]}`,
+    };
+    let result = await httpGet(url, `hdfans `);
+}
+
+
+/**
+ * hdtime    httpGet
+ */
+async function hdtime_signIn() {
+    let url = {
+        url: `https://hdtime.org/attendance.php`,
+        headers: {
+            "authority": "hdtime.org",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "cache-control": "no-cache",
+            "cookie": "c_secure_uid=NjQ1Nzk%3D; c_secure_pass=f1992082e2a1219509ee8d73cd775844; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=bm9wZQ%3D%3D; c_secure_login=bm9wZQ%3D%3D",
+            "pragma": "no-cache",
+            "referer": "https://hdtime.org/torrents.php",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53"
+        },
+        // body:`${ck[1]}`,
+    };
+    let result = await httpGet(url, `hdtime `);
+}
+
+
+
+/**
+ * hdarea    httpGet
+ */
+async function hdarea_signIn() {
+    let url = {
+        url: `https://www.hdarea.co/sign_in.php`,
+        headers: {
+            "authority": "www.hdarea.co",
+            "accept": "*/*",
+            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "cache-control": "no-cache",
+            "content-type": "application/x-www-form-urlencoded",
+            "cookie": "c_secure_uid=OTQyMzg%3D; c_secure_pass=5ea435e48c28dec5c672f02576e5f4d0; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D; _ga=GA1.2.551476741.1652165305; __cf_bm=tnAToDsQDsl98fxWtAFzScoDKpaU2x5i.ANcSHg1ZMU-1653267598-0-AeL5SUz03W1sjVKNLApYrW2nu+RxJ48wLON5uesPEea8EtHMAHsXWwo/o+SPXXfeORl28NRU3sUHAoilwVKu2fkSUHrDhAxahQn/dxy0g6eoTYaaB5taBAbJXCZskN2nUQ==; Hm_lvt_04584756b6df0223a0a33332be422d74=1652165304,1653267599; Hm_lpvt_04584756b6df0223a0a33332be422d74=1653267599; _gid=GA1.2.1418749542.1653267600; _gat_gtag_UA_129091596_1=1",
+            "origin": "https://www.hdarea.co",
+            "pragma": "no-cache",
+            "referer": "https://www.hdarea.co/index.php",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53"
+        },
+        // body:`${ck[1]}`,
+    };
+    let result = await httpGet(url, `hdarea `);
+}
+
+
+/**
+ * hddolby    httpGet
+ */
+async function hddolby_signIn() {
+    let url = {
+        url: `https://www.hddolby.com/attendance.php`,
+        headers: {
+            "authority": "www.hddolby.com",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "cache-control": "no-cache",
+            "cookie": "cf_clearance=Z6ddNDeIEp8MyjkoA2bmVARe7l9p56va_GrvZNIB0Ww-1652165167-0-150; c_secure_uid=MjcwNzI%3D; c_secure_pass=7d66d695f8baf170f685d348e1ba1a7a; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=bm9wZQ%3D%3D; c_secure_login=bm9wZQ%3D%3D",
+            "pragma": "no-cache",
+            "referer": "https://www.hddolby.com/index.php",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53"
+        },
+        // body:`${ck[1]}`,
+    };
+    let result = await httpGet(url, `hddolby `);
+}
+
+
+
+
+/**
+ * haidan    httpGet
+ * https://www.pttime.org/attendance.php
+ */
+async function haidan_signIn() {
+    let url = {
+        url: `https://www.haidan.video/signin.php`,
+        headers: {
+            "authority": "www.haidan.video",
+            "accept": "*/*",
+            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "cache-control": "no-cache",
+            "cookie": "c_secure_uid=MzE1MjA%3D; c_secure_pass=2f9af222b85318f3b4278be56a4a17c6; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D",
+            "pragma": "no-cache",
+            "referer": "https://www.haidan.video/torrents.php",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53",
+            "x-requested-with": "XMLHttpRequest"
+        },
+        // body:`${ck[1]}`,
+    };
+    let result = await httpGet(url, `haidan `);
+}
+
+
 
 
 /**
@@ -302,27 +519,27 @@ async function getCks(ck, str) {
 
     return new Promise((resolve, reject) => {
 
-            let ckArr = []
-            if (ck) {
-                if (ck.indexOf("@") != -1) {
+        let ckArr = []
+        if (ck) {
+            if (ck.indexOf("@") != -1) {
 
-                    ck.split("@").forEach((item) => {
-                        ckArr.push(item);
-                    });
-                } else if (ck.indexOf("\n") != -1) {
+                ck.split("@").forEach((item) => {
+                    ckArr.push(item);
+                });
+            } else if (ck.indexOf("\n") != -1) {
 
-                    ck.split("\n").forEach((item) => {
-                        ckArr.push(item);
-                    });
-                } else {
-                    ckArr.push(ck);
-                }
-                resolve(ckArr)
+                ck.split("\n").forEach((item) => {
+                    ckArr.push(item);
+                });
             } else {
-                console.log(`\n 【${$.name}】：未填写变量 ${str}`)
+                ckArr.push(ck);
             }
-
+            resolve(ckArr)
+        } else {
+            console.log(`\n 【${$.name}】：未填写变量 ${str}`)
         }
+
+    }
     )
 }
 
@@ -523,25 +740,25 @@ async function task111(method, url, type_name) {
                 }
 
                 $.get(url, async (err, resp, data) => {
-                        try {
-                            if (err) {
-                                console.log(`${$.name}: API查询请求失败 ‼️‼️`);
-                                console.log(JSON.stringify(err));
-                                $.logErr(err);
-                            } else if (debug) {
-                                console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-                                console.log(data);
-                                console.log(`======`);
-                                console.log(JSON.parse(data));
-                            }
-                            let result = JSON.parse(data);
-                            resolve(result);
-                        } catch (e) {
-                            console.log(e, resp);
-                        } finally {
-                            resolve();
+                    try {
+                        if (err) {
+                            console.log(`${$.name}: API查询请求失败 ‼️‼️`);
+                            console.log(JSON.stringify(err));
+                            $.logErr(err);
+                        } else if (debug) {
+                            console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
+                            console.log(data);
+                            console.log(`======`);
+                            console.log(JSON.parse(data));
                         }
-                    },
+                        let result = JSON.parse(data);
+                        resolve(result);
+                    } catch (e) {
+                        console.log(e, resp);
+                    } finally {
+                        resolve();
+                    }
+                },
                 );
             });
         } else if (method = httppost) {
@@ -551,25 +768,25 @@ async function task111(method, url, type_name) {
                     console.log(url);
                 }
                 $.post(url, async (err, resp, data) => {
-                        try {
-                            if (err) {
-                                console.log("$.name: API查询请求失败 ‼️‼️");
-                                console.log(JSON.stringify(err));
-                                $.logErr(err);
-                            } else if (debug) {
-                                console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-                                console.log(data);
-                                console.log(`======`);
-                                console.log(JSON.parse(data));
-                            }
-                            let result = JSON.parse(data);
-                            resolve(result);
-                        } catch (e) {
-                            console.log(e, resp);
-                        } finally {
-                            resolve();
+                    try {
+                        if (err) {
+                            console.log("$.name: API查询请求失败 ‼️‼️");
+                            console.log(JSON.stringify(err));
+                            $.logErr(err);
+                        } else if (debug) {
+                            console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
+                            console.log(data);
+                            console.log(`======`);
+                            console.log(JSON.parse(data));
                         }
-                    },
+                        let result = JSON.parse(data);
+                        resolve(result);
+                    } catch (e) {
+                        console.log(e, resp);
+                    } finally {
+                        resolve();
+                    }
+                },
                     // timeout(3000)
                 );
             });
@@ -670,7 +887,7 @@ function Env(t, e) {
         }
 
         send(t, e = "GET") {
-            t = "string" == typeof t ? {url: t} : t;
+            t = "string" == typeof t ? { url: t } : t;
             let s = this.get;
             return "POST" === e && (s = this.post), new Promise((e, i) => {
                 s.call(this, t, (t, s, r) => {
@@ -745,7 +962,7 @@ function Env(t, e) {
 
         getScript(t) {
             return new Promise(e => {
-                this.get({url: t}, (t, s, i) => e(i))
+                this.get({ url: t }, (t, s, i) => e(i))
             })
         }
 
@@ -757,8 +974,8 @@ function Env(t, e) {
                 r = r ? 1 * r : 20, r = e && e.timeout ? e.timeout : r;
                 const [o, h] = i.split("@"), n = {
                     url: `http://${h}/v1/scripting/evaluate`,
-                    body: {script_text: t, mock_type: "cron", timeout: r},
-                    headers: {"X-Key": o, Accept: "*/*"}
+                    body: { script_text: t, mock_type: "cron", timeout: r },
+                    headers: { "X-Key": o, Accept: "*/*" }
                 };
                 this.post(n, (t, e, i) => s(i))
             }).catch(t => this.logErr(t))
@@ -846,11 +1063,11 @@ function Env(t, e) {
 
         get(t, e = (() => {
         })) {
-            t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {"X-Surge-Skip-Scripting": !1})), $httpClient.get(t, (t, s, i) => {
+            t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.get(t, (t, s, i) => {
                 !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            })) : this.isQuanX() ? (this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, {hints: !1})), $task.fetch(t).then(t => {
-                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+            })) : this.isQuanX() ? (this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
+                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
             }, t => e(t))) : this.isNode() && (this.initGotEnv(t), this.got(t).on("redirect", (t, e) => {
                 try {
                     if (t.headers["set-cookie"]) {
@@ -861,29 +1078,29 @@ function Env(t, e) {
                     this.logErr(t)
                 }
             }).then(t => {
-                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
             }, t => {
-                const {message: s, response: i} = t;
+                const { message: s, response: i } = t;
                 e(s, i, i && i.body)
             }))
         }
 
         post(t, e = (() => {
         })) {
-            if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {"X-Surge-Skip-Scripting": !1})), $httpClient.post(t, (t, s, i) => {
+            if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.post(t, (t, s, i) => {
                 !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            }); else if (this.isQuanX()) t.method = "POST", this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, {hints: !1})), $task.fetch(t).then(t => {
-                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+            }); else if (this.isQuanX()) t.method = "POST", this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
+                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
             }, t => e(t)); else if (this.isNode()) {
                 this.initGotEnv(t);
-                const {url: s, ...i} = t;
+                const { url: s, ...i } = t;
                 this.got.post(s, i).then(t => {
-                    const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                    e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+                    const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                    e(null, { status: s, statusCode: i, headers: r, body: o }, o)
                 }, t => {
-                    const {message: s, response: i} = t;
+                    const { message: s, response: i } = t;
                     e(s, i, i && i.body)
                 })
             }
@@ -908,19 +1125,19 @@ function Env(t, e) {
         msg(e = t, s = "", i = "", r) {
             const o = t => {
                 if (!t) return t;
-                if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? {"open-url": t} : this.isSurge() ? {url: t} : void 0;
+                if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? { "open-url": t } : this.isSurge() ? { url: t } : void 0;
                 if ("object" == typeof t) {
                     if (this.isLoon()) {
                         let e = t.openUrl || t.url || t["open-url"], s = t.mediaUrl || t["media-url"];
-                        return {openUrl: e, mediaUrl: s}
+                        return { openUrl: e, mediaUrl: s }
                     }
                     if (this.isQuanX()) {
                         let e = t["open-url"] || t.url || t.openUrl, s = t["media-url"] || t.mediaUrl;
-                        return {"open-url": e, "media-url": s}
+                        return { "open-url": e, "media-url": s }
                     }
                     if (this.isSurge()) {
                         let e = t.url || t.openUrl || t["open-url"];
-                        return {url: e}
+                        return { url: e }
                     }
                 }
             };
