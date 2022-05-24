@@ -82,9 +82,9 @@ let Version = '\n yml   2022/5/21   \n'
     await $.wait(3 * 1000);
 
 
-    // console.log("开始 v社签到");
-    // await v_signIn();
-    // await $.wait(3 * 1000);
+    console.log("开始 v社签到");
+    await v_signIn();
+    await $.wait(3 * 1000);
 
     await SendMsg(msg);
 
@@ -305,32 +305,35 @@ async function hdtime_signIn() {
 
 
 /**
- * hdarea    httpGet
+ * hdarea    httpPost
  */
 async function hdarea_signIn() {
     let url = {
         url: `https://www.hdarea.co/sign_in.php`,
         headers: {
-            "authority": "www.hdarea.co",
-            "accept": "*/*",
-            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-            "cache-control": "no-cache",
-            "content-type": "application/x-www-form-urlencoded",
-            "cookie": "c_secure_uid=OTQyMzg%3D; c_secure_pass=5ea435e48c28dec5c672f02576e5f4d0; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D; _ga=GA1.2.551476741.1652165305; __cf_bm=tnAToDsQDsl98fxWtAFzScoDKpaU2x5i.ANcSHg1ZMU-1653267598-0-AeL5SUz03W1sjVKNLApYrW2nu+RxJ48wLON5uesPEea8EtHMAHsXWwo/o+SPXXfeORl28NRU3sUHAoilwVKu2fkSUHrDhAxahQn/dxy0g6eoTYaaB5taBAbJXCZskN2nUQ==; Hm_lvt_04584756b6df0223a0a33332be422d74=1652165304,1653267599; Hm_lpvt_04584756b6df0223a0a33332be422d74=1653267599; _gid=GA1.2.1418749542.1653267600; _gat_gtag_UA_129091596_1=1",
-            "origin": "https://www.hdarea.co",
-            "pragma": "no-cache",
-            "referer": "https://www.hdarea.co/index.php",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"101\", \"Microsoft Edge\";v=\"101\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"macOS\"",
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53"
+            'authority': 'www.hdarea.co',
+            'accept': '*/*',
+            'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+            'cache-control': 'no-cache',
+            'content-type': 'application/x-www-form-urlencoded',
+            'cookie': 'c_secure_uid=OTQyMzg%3D; c_secure_pass=5ea435e48c28dec5c672f02576e5f4d0; c_secure_ssl=eWVhaA%3D%3D; c_secure_tracker_ssl=eWVhaA%3D%3D; c_secure_login=bm9wZQ%3D%3D; _ga=GA1.2.551476741.1652165305; Hm_lvt_04584756b6df0223a0a33332be422d74=1652165304,1653267599,1653357561; _gid=GA1.2.1262679976.1653357561; __cf_bm=5LRl3wyUgWwNwba89YLpUAvW8zAEWAgl1LOnyMVKHK4-1653359518-0-AYRaSHGVmPiXzH4H1gSLYaCwhqILKJmL9xaV7GtPRfn+gJ1aIGWvP7mhVG3iFUlDCxTo/nqgP/EnUOcGAIsQuDue3KKzyTxY4WvgqPva+6X/UL/0lwbfooT1NfVfzFYRoA==; Hm_lpvt_04584756b6df0223a0a33332be422d74=1653359520; _gat_gtag_UA_129091596_1=1',
+            'origin': 'https://www.hdarea.co',
+            'pragma': 'no-cache',
+            'referer': 'https://www.hdarea.co/index.php',
+            'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="101", "Microsoft Edge";v="101"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edg/101.0.1210.53'
         },
-        // body:`${ck[1]}`,
+        form: {
+            'action': 'sign_in'
+        }
     };
-    let result = await httpGet(url, `hdarea `);
+    let result = await httpPost(url, `hdarea `);
+    console.log(result);
 }
 
 

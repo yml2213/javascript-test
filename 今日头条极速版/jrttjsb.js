@@ -1,35 +1,35 @@
 /**
- * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/jieda/jieda.js
+ * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/jrttjsb/jrttjsb.js
  * 转载请留信息,谢谢
  *
- * 捷达 app ios,安卓都有
+ * 今日头条极速版
  *
- * cron 30 6 * * *  yml2213_javascript_master/jieda.js
+ * cron 30 6 * * *  yml2213_javascript_master/jrttjsb.js
  *
- * 5-22    完成签到，自行抓包  群友投稿的,每个月18号才能提现,自己玩玩吧; 每日任务有时间再说吧
- *
+ * 3-17   完成签到、评论、分享、回帖 任务
+ * 5-22   听说黑号也能提现了   自己试试吧
  *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
- * 变量格式: export jieda_data='token @ token '  多个账号用 @ 或者 换行分割
- *
- * 抓首页红包, service-yy.jconnect.faw-vw.com 中找个token就行
+ * 变量格式: export jrttjsb_data='cookie & cookie'  多个账号用 @ 或者 换行分割
  *
  * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
  */
 
-const $ = new Env("捷达");
+const $ = new Env("今日头条极速版");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 0 		//0为关闭调试，1为打开调试,默认为0
+const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
+const debug = 1 		//0为关闭调试,1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
-let ckStr = process.env.jieda_data;
+let ckStr = process.env.jrttjsb_data;
 let msg = "";
 let ck = "";
-
+let host = "api5-normal-lf.toutiaoapi.com";
+let hostname = "https://" + host;
+let version = "88011";
 ///////////////////////////////////////////////////////////////////
-let Version = '\nyml   2022/5/22     完成签到 '
-let thank = `感谢 群友 的投稿`
+let Version = '\nyml   2022/5/24     折腾下这个老毛吧,没好的新毛  '
+let thank = `感谢 xxxx 的投稿`
 let test = `脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!`
 
 ///////////////////////////////////////////////////////////////////
@@ -39,13 +39,13 @@ async function tips(ckArr) {
     console.log(`${Version}`);
     msg += `${Version}`
 
-    console.log(thank);
-    msg += `${thank}`
+    // console.log(thank);
+    // msg += `${thank}`
 
-    console.log(test);
-    msg += `${test}`
+    // console.log(test);
+    // msg += `${test}`
 
-    // console.log(`\n 脚本已恢复正常状态,请及时更新! `);
+    // console.log(` 脚本已恢复正常状态,请及时更新! `);
     // msg += `脚本已恢复正常状态,请及时更新`
 
     console.log(`==================================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
@@ -58,15 +58,15 @@ async function tips(ckArr) {
 }
 
 !(async () => {
-    let ckArr = await getCks(ckStr, "jieda_data");
+    let ckArr = await getCks(ckStr, "jrttjsb_data");
     await tips(ckArr);
     for (let index = 0; index < ckArr.length; index++) {
-        let num = index + 1;
-        console.log(`------------- 开始【第 ${num} 个账号】-------------`);
+        jrttjsb_num = index + 1;
+        console.log(`------------- 开始【第 ${jrttjsb_num} 个账号】-------------`);
 
         ck = ckArr[index].split("&");
 
-        debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
+        debugLog(`【debug】 这是你第 ${jrttjsb_num} 账号信息:\n ${ck}`);
         await start();
     }
     await SendMsg(msg);
@@ -78,40 +78,413 @@ async function tips(ckArr) {
 async function start() {
 
 
-    console.log("开始 领红包");
-    await signIn();
-    await $.wait(3 * 1000);
+    // console.log("开始 用户信息");
+    // await user_info(1);
+    // await $.wait(3 * 1000);
 
+    // console.log("\n开始 睡觉状态");
+    // await QuerySleepStatus();
+    // await $.wait(3 * 1000);
+
+    // console.log("\n开始 走路状态");
+    // await QueryWalkInfo();
+    // await $.wait(3 * 1000);
+
+    let time_hours = local_hours();
+    if (time_hours >= 5 && time_hours <= 9) {
+        console.log("\n开始 早餐补贴");
+        await EatInfo('早餐补贴', 0);
+        await $.wait(3 * 1000);
+    }
+    if (time_hours >= 11 && time_hours <= 14) {
+        console.log("\n开始 午餐补贴");
+        await EatInfo('午餐补贴', 1);
+        await $.wait(3 * 1000);
+    }
+    if (time_hours >= 17 && time_hours <= 20) {
+        console.log("\n开始 晚餐补贴");
+        await EatInfo('晚餐补贴', 2);
+        await $.wait(3 * 1000);
+    }
+    if (time_hours >= 21 && time_hours <= 24) {
+        console.log("\n开始 夜宵补贴");
+        await EatInfo('夜宵补贴', 3);
+        await $.wait(3 * 1000);
+    }
+
+
+
+    // for (let m = 1; m < 4; m++) {
+    //     console.log(`开始 第 ${m} 次分享领红包`)
+    //     await share();
+    //     await $.wait(5 * 1000);
+    // }
 
 }
 
 
 /**
- * 领红包    httpGet
- * https://service-yy.jconnect.faw-vw.com/redpackbank/prize/getPrize
+ * 用户信息    httpGet
  */
-async function signIn() {
+async function user_info(doTask) {
     let url = {
-        url: `https://service-yy.jconnect.faw-vw.com/redpackbank/prize/getPrize`,
+        url: `https://api5-normal-lf.toutiaoapi.com/luckycat/lite/v1/task/page_data/?aid=35`,
         headers: {
-            "token": ck[0],
-            "accept": "application/json, text/plain, */*"
+            'Host': 'api5-normal-lf.toutiaoapi.com',
+            'Cookie': ck[0],
+            'content-type': 'application/json'
         },
-        // body: `${ck[1]}`,
+        // body: '',
     };
-    let result = await httpGet(url, `领红包`);
+    let result = await httpGet(url, `用户信息`);
 
-    if (result.status === "SUCCEED") {
-        console.log(`\n   领红包: 本次获得 ${result.data.allPrize} 元, 累计获得${result.data.todayPrize} 元`);
-        msg += `\n   领红包: 本次获得 ${result.data.allPrize} 元, 累计获得${result.data.todayPrize} 元`;
-    } else if (result.status === "FAILED") {
-        console.log(`\n   领红包: ${result.errorMessage}`);
-        msg += `\n   领红包: ${result.errorMessage}`;
+    if (result.err_no == 0) {
+        if (!result.data.treasure) {
+            console.log(`   用户${jrttjsb_num} 查询状态失败,CK失效 `)
+            return;
+        }
+        if (doTask == 0) {
+            console.log(`   账户信息:金币:${result.data.user_income.score_balance} ,现金:${result.data.user_income.cash_balance / 100}元 `)
+        } else {
+            if (result.data.treasure.next_treasure_time == result.data.treasure.current_time) {
+                await OpenTreasureBox()
+            } else {
+                let cdTime = result.data.treasure.next_treasure_time - result.data.treasure.current_time
+                console.log(`    宝箱状态: 开宝箱冷却时间还有 ${cdTime} 秒`);
+                msg += `\n    宝箱状态: 开宝箱冷却时间还有 ${cdTime} 秒`;
+            }
+            if (result.data.signin_detail.today_signed == false) {
+                await SignIn()
+            } else {
+                console.log(`    签到: 用户 ${jrttjsb_num} 今天已签到`);
+                msg += `\n    签到: 用户 ${jrttjsb_num} 今天已签到`;
+            }
+        }
     } else {
-        console.log(`\n   领红包: 失败 ❌ 了呢,原因未知！  ${result} \n`);
-        msg += `\n    领红包: 失败 ❌ 了呢,原因未知！  \n `;
+        console.log(`   用户信息: 失败 ❌ 了呢,原因未知！  ${result} `);
+        msg += `\n    用户信息: 失败 ❌ 了呢,原因未知!`;
+        throw new Error(`${$.name}:喂  喂 ---  用户信息失败了,别睡了, 起来更新了喂!`);
     }
 }
+
+
+
+
+
+/**
+ * 开宝箱    httpPost
+ */
+async function OpenTreasureBox() {
+    let url = {
+        url: `https://api5-normal-lf.toutiaoapi.com/score_task/v1/task/open_treasure_box/?aid=35`,
+        headers: {
+            'Host': 'api5-normal-lf.toutiaoapi.com',
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            "from": "task_page",
+            "use_ecpm": 0,
+            "rit": "coin",
+            "enable_preload_exciting_video": 0,
+            "open_treasure_box_enter_from": ""
+        }),
+    };
+    let result = await httpPost(url, `开宝箱`);
+
+    if (result.err_no == 0) {
+        console.log(`   开宝箱: 获得 ${result.data.score_amount} 金币`);
+        msg += `\n   开宝箱: 获得 ${result.data.score_amount} 金币`;
+    } else {
+        console.log(`   开宝箱: 失败 ❌ 了呢,原因未知！ ${result.err_tips} `);
+        msg += `\n   开宝箱: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
+/**
+ * 签到    httpPost
+ */
+async function SignIn() {
+    let url = {
+        url: `https://api5-normal-lf.toutiaoapi.com/luckycat/lite/v1/sign_in/action?aid=35`,
+        headers: {
+            'Host': 'api5-normal-lf.toutiaoapi.com',
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        },
+        body: ''
+    };
+    let result = await httpPost(url, `签到`);
+
+    if (result.err_no == 0) {
+        console.log(`   签到: ${result.retinfo} ,获得 ${result.data.score_amount} 金币，已连续签到 ${result.data.sign_times} 天`);
+        msg += `\n   签到: ${result.retinfo} ,获得 ${result.data.score_amount} 金币，已连续签到 ${result.data.sign_times} 天`;
+    } else {
+        console.log(`   签到: 失败 ❌ 了呢,原因未知！  ${result} `);
+        msg += `\n   签到: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+/**
+ * 睡觉状态    httpGet
+ */
+async function QuerySleepStatus() {
+
+    let curHour = local_hours()
+    let url = {
+        url: `${hostname}/luckycat/lite/v1/sleep/status/?aid=35`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        },
+    };
+    let result = await httpGet(url, `睡觉状态`);
+
+    if (result.err_no == 0) {
+        let sleepHour = Math.floor(result.data.sleep_last_time / 36) / 100;
+        if (result.data.sleeping == true) {
+            if (sleepHour >= 12) {
+                await SleepStop()
+            } else if (result.data.sleep_unexchanged_score == result.data.max_coin && curHour >= 7) {
+                let rnd = Math.random()
+                if (rnd > 0.95) {
+                    await SleepStop()
+                } else {
+                    console.log(`    用户${jrttjsb_num}随机醒来时间，本次不进行醒来，已经睡了${sleepHour}小时，可以获得${result.data.sleep_unexchanged_score}金币`);
+                    msg += `\n    用户${jrttjsb_num}随机醒来时间，本次不进行醒来，已经睡了${sleepHour}小时，可以获得${result.data.sleep_unexchanged_score}金币`;
+                }
+            } else {
+                console.log(`    用户${jrttjsb_num}睡眠中，已经睡了${sleepHour}小时，可以获得${result.data.sleep_unexchanged_score}金币，上限${result.data.max_coin}金币`);
+                msg += `\n    用户${jrttjsb_num}睡眠中，已经睡了${sleepHour}小时，可以获得${result.data.sleep_unexchanged_score}金币，上限${result.data.max_coin}金币`;
+            }
+        } else {
+            if (result.data.history_amount > 0) {
+                await SleepDone(result.data.history_amount)
+            }
+            if (curHour >= 22 || curHour < 2) {
+                await SleepStart()
+            } else if (curHour >= 20) {
+                let rnd = Math.random()
+                if (rnd > 0.95) {
+                    await SleepStart()
+                } else {
+                    console.log(`    用户${jrttjsb_num}随机睡眠时间，本次不进行睡眠`);
+                    msg += `\n    用户${jrttjsb_num}随机睡眠时间，本次不进行睡眠`;
+                }
+            } else {
+                console.log(`    用户${jrttjsb_num}未到睡觉时间`);
+                msg += `\n    用户${jrttjsb_num}随机睡眠时间，本次不进行睡眠`;
+            }
+        }
+    } else {
+        console.log(`    用户${jrttjsb_num}查询睡觉状态失败：${result.err_tips}`);
+        msg += `\n    用户${jrttjsb_num}随机睡眠时间，本次不进行睡眠`;
+    }
+}
+
+
+/**
+ * 睡觉醒来    httpPost
+ */
+async function SleepStop() {
+    let url = {
+        url: `${hostname}/api/news/feed/v78/?aid=35`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        }, body: '',
+    };
+    let result = await httpPost(url, `睡觉醒来`);
+
+    if (result.err_no == 0) {
+        let sleepHour = result.data.sleep_last_time / 3600;
+        console.log(`    用户${jrttjsb_num}结束睡眠，本次睡了${sleepHour}小时，可以领取${result.data.history_amount}金币`);
+        msg += `\n    用户${jrttjsb_num}结束睡眠，本次睡了${sleepHour}小时，可以领取${result.data.history_amount}金币`;
+        await SleepDone(result.data.history_amount)
+    } else {
+        console.log(`   睡觉醒来: 失败 ❌ 了呢,原因未知！  ${result} `);
+        msg += `\n    睡觉醒来: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+/**
+ * 睡觉醒来收金币    httpPost
+ */
+async function SleepDone(amount) {
+    let timeInMS = ts13();
+    let url = {
+        url: `${hostname}/luckycat/lite/v1/sleep/done_task/?aid=35&_rticket=${timeInMS}`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        }, body: `{"score_amount":${amount},"enable_preload_exciting_video":0}`,
+    };
+    let result = await httpPost(url, `睡觉醒来收金币`);
+
+    if (result.err_no === 0) {
+        console.log(`    领取睡觉金币奖励 ${amount} 金币成功`);
+        msg += `\n    领取睡觉金币奖励 ${amount} 金币成功`;
+    } else {
+        console.log(`   睡觉醒来收金币: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n    睡觉醒来收金币: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
+/**
+ * 开始睡觉    httpPost
+ */
+async function SleepStart() {
+    let url = {
+        url: `${hostname}/luckycat/lite/v1/sleep/start/?aid=35`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        }, body: '',
+    };
+    let result = await httpPost(url, `开始睡觉`);
+
+    if (result.err_no == 0) {
+        console.log(`    开始睡觉, ZZZzzz...`);
+        msg += `\n    开始睡觉, ZZZzzz...`;
+        await SleepDone(result.data.history_amount)
+    } else {
+        console.log(`   开始睡觉: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n    开始睡觉: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+/**
+ * 查询走路状态    httpGet
+ */
+async function QueryWalkInfo() {
+    let url = {
+        url: `${hostname}/luckycat/lite/v1/walk/page_data/?aid=35`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            // 'content-type': 'application/json'
+        },
+    };
+    let result = await httpGet(url, `查询走路状态`);
+
+    if (result.err_no == 0) {
+        if (result.data.can_get_amount > 0) await GetWalkBonus()
+    } else {
+        console.log(`   查询走路状态: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n    查询走路状态: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
+/**
+ * 走路奖励    httpPost  
+ */
+async function GetWalkBonus() {
+    let nowtime = ts10();
+    let url = {
+        url: `${hostname}/luckycat/lite/v1/walk/bonus/?aid=35`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        }, body: `{"task_id":136,"client_time":${nowtime},"rit":"coin","use_ecpm":0,"enable_preload_exciting_video":0}`,
+    };
+    let result = await httpPost(url, `走路奖励`);
+
+    if (result.err_no == 0) {
+        console.log(`    领取走路奖励获得 ${result.data.score_amount} 金币`);
+        msg += `\n    领取走路奖励获得 ${result.data.score_amount} 金币`;
+    } else {
+        console.log(`   走路奖励: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n    走路奖励: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
+
+
+/**
+ * 查询吃饭补贴    httpGet
+ */
+async function EatInfo(eat_name, taskId) {
+    let url = {
+        url: `${hostname}/luckycat/lite/v1/eat/done_eat/?update_version_code=${version}&device_platform=android&aid=35`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        },
+    };
+    let result = await httpGet(url, `${eat_name}`);
+
+    if (result.err_no == 0) {
+        if (taskId == 0) {
+            if (esult.data.can_get_amount) {
+
+            }
+
+        }
+        if (result.data.complete_status[taskId] == false) {
+            await GetWalkBonus()
+        }
+    } else {
+        console.log(`   查询吃饭补贴: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n    查询吃饭补贴: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
+
+
+/**
+ * 吃饭补贴    httpPost  
+ * https://api5-normal-lf.toutiaoapi.com/luckycat/lite/v1/eat/done_eat/?update_version_code=88011&device_platform=android&aid=35
+ */
+async function DoneEat() {
+    let url = {
+        url: `${hostname}/luckycat/lite/v1/eat/done_eat/?update_version_code=${version}&device_platform=android&aid=35`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        }, body: '{"enable_preload_exciting_video":0}',
+    };
+    let result = await httpPost(url, `吃饭补贴`);
+
+    if (result.err_no == 0) {
+        console.log(`    领取吃饭补贴获得 ${result.data.score_amount} 金币`);
+        msg += `\n    领取吃饭补贴获得 ${result.data.score_amount} 金币`;
+    } else if (result.err_no == 1071) {
+        console.log(`    领取吃饭补贴 ${result.err_tips}`);
+        msg += `\n    领取吃饭补贴获得 ${result.err_tips}`;
+    } else {
+        console.log(`   吃饭补贴: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n    吃饭补贴: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
 
 
 
@@ -150,7 +523,7 @@ async function getCks(ck, str) {
             }
             resolve(ckArr)
         } else {
-            console.log(`\n 【${$.name}】：未填写变量 ${str}`)
+            console.log(` 【${$.name}】:未填写变量 ${str}`)
         }
 
     }
@@ -243,7 +616,7 @@ function wyy(timeout = 3 * 1000) {
         $.get(url, async (err, resp, data) => {
             try {
                 data = JSON.parse(data)
-                console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
+                console.log(` 【网抑云时间】: ${data.content}  by--${data.music}`);
 
             } catch (e) {
                 $.logErr(e, resp);
@@ -282,6 +655,7 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
                         console.log(JSON.parse(data));
                     }
                     let result = JSON.parse(data);
+                    if (!result) return;
                     resolve(result);
                 } catch (e) {
                     console.log(err, resp);
@@ -322,6 +696,7 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
                         console.log(JSON.parse(data));
                     }
                     let result = JSON.parse(data);
+                    if (!result) return;
                     resolve(result);
                 } catch (e) {
                     console.log(err, resp);

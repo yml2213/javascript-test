@@ -26,6 +26,8 @@ const debug = 0 		//0为关闭调试，1为打开调试,默认为0
 let ckStr = process.env.lbxhy_data;
 let msg = "";
 let ck = "";
+let host = 'i.snssdk.com'
+let hostname = 'https://' + host
 
 ///////////////////////////////////////////////////////////////////
 let Version = '\nyml   2022/5/22     完成签到 '
@@ -109,9 +111,10 @@ async function signIn() {
         console.log(`   签到: ${result.customer_signin.message}`);
         msg += `   签到: ${result.customer_signin.message}`;
     } else {
-        console.log(`   签到: 失败 ❌ 了呢,原因未知！  ${result} \n`);
+        console.log(`   签到: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
         msg += `    签到: 失败 ❌ 了呢,原因未知！  \n `
-        throw new Error(`${$.name}:喂  喂 ---  登录失败了,别睡了, 起来更新了喂!`);;
+        // throw new Error(`${$.name}:喂  喂 ---  登录失败了,别睡了, 起来更新了喂!`);;
     }
 }
 
