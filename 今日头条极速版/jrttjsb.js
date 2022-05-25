@@ -19,7 +19,7 @@
 const $ = new Env("今日头条极速版");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
-const debug = 1 		//0为关闭调试,1为打开调试,默认为0
+const debug = 0 		//0为关闭调试,1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
 let ckStr = process.env.jrttjsb_data;
 let msg = "";
@@ -27,6 +27,7 @@ let ck = "";
 let host = "api5-normal-lf.toutiaoapi.com";
 let hostname = "https://" + host;
 let version = "88011";
+let adIdList = [26, 181, 186, 187, 188, 189, 190, 195, 210, 214, 216, 225, 308, 324, 327, 329]
 ///////////////////////////////////////////////////////////////////
 let Version = '\nyml   2022/5/24     折腾下这个老毛吧,没好的新毛  '
 let thank = `感谢 xxxx 的投稿`
@@ -77,18 +78,17 @@ async function tips(ckArr) {
 
 async function start() {
 
+    console.log("开始 用户信息");
+    await user_info(1);
+    await $.wait(3 * 1000);
 
-    // console.log("开始 用户信息");
-    // await user_info(1);
-    // await $.wait(3 * 1000);
+    console.log("\n开始 睡觉状态");
+    await QuerySleepStatus();
+    await $.wait(3 * 1000);
 
-    // console.log("\n开始 睡觉状态");
-    // await QuerySleepStatus();
-    // await $.wait(3 * 1000);
-
-    // console.log("\n开始 走路状态");
-    // await QueryWalkInfo();
-    // await $.wait(3 * 1000);
+    console.log("\n开始 走路状态");
+    await QueryWalkInfo();
+    await $.wait(3 * 1000);
 
     let time_hours = local_hours();
     if (time_hours >= 5 && time_hours <= 9) {
@@ -113,21 +113,20 @@ async function start() {
     }
 
 
+    console.log("\n开始 宝箱视频奖励");
+    for (let adId of adIdList) await ExcitationAd(adId)
+    await $.wait(3 * 1000);
 
-    // for (let m = 1; m < 4; m++) {
-    //     console.log(`开始 第 ${m} 次分享领红包`)
-    //     await share();
-    //     await $.wait(5 * 1000);
-    // }
 
 }
 
 
 /**
- * 用户信息    httpGet
+ * 用户信息    GET
  */
 async function user_info(doTask) {
-    let url = {
+    let options = {
+        method: 'GET',
         url: `https://api5-normal-lf.toutiaoapi.com/luckycat/lite/v1/task/page_data/?aid=35`,
         headers: {
             'Host': 'api5-normal-lf.toutiaoapi.com',
@@ -136,7 +135,7 @@ async function user_info(doTask) {
         },
         // body: '',
     };
-    let result = await httpGet(url, `用户信息`);
+    let result = await httpRequest(options, `用户信息`);
 
     if (result.err_no == 0) {
         if (!result.data.treasure) {
@@ -169,13 +168,12 @@ async function user_info(doTask) {
 
 
 
-
-
 /**
- * 开宝箱    httpPost
+ * 开宝箱    POST
  */
 async function OpenTreasureBox() {
-    let url = {
+    let options = {
+        method: 'POST',
         url: `https://api5-normal-lf.toutiaoapi.com/score_task/v1/task/open_treasure_box/?aid=35`,
         headers: {
             'Host': 'api5-normal-lf.toutiaoapi.com',
@@ -190,7 +188,7 @@ async function OpenTreasureBox() {
             "open_treasure_box_enter_from": ""
         }),
     };
-    let result = await httpPost(url, `开宝箱`);
+    let result = await httpRequest(options, `开宝箱`);
 
     if (result.err_no == 0) {
         console.log(`   开宝箱: 获得 ${result.data.score_amount} 金币`);
@@ -204,10 +202,11 @@ async function OpenTreasureBox() {
 
 
 /**
- * 签到    httpPost
+ * 签到    POST
  */
 async function SignIn() {
-    let url = {
+    let options = {
+        method: 'POST',
         url: `https://api5-normal-lf.toutiaoapi.com/luckycat/lite/v1/sign_in/action?aid=35`,
         headers: {
             'Host': 'api5-normal-lf.toutiaoapi.com',
@@ -216,11 +215,11 @@ async function SignIn() {
         },
         body: ''
     };
-    let result = await httpPost(url, `签到`);
+    let result = await httpRequest(options, `签到`);
 
     if (result.err_no == 0) {
-        console.log(`   签到: ${result.retinfo} ,获得 ${result.data.score_amount} 金币，已连续签到 ${result.data.sign_times} 天`);
-        msg += `\n   签到: ${result.retinfo} ,获得 ${result.data.score_amount} 金币，已连续签到 ${result.data.sign_times} 天`;
+        console.log(`   签到: ${result.err_tips} ,获得 ${result.data.score_amount} 金币，已连续签到 ${result.data.sign_times} 天`);
+        msg += `\n   签到: ${result.err_tips} ,获得 ${result.data.score_amount} 金币，已连续签到 ${result.data.sign_times} 天`;
     } else {
         console.log(`   签到: 失败 ❌ 了呢,原因未知！  ${result} `);
         msg += `\n   签到: 失败 ❌ 了呢,原因未知!`;
@@ -229,12 +228,13 @@ async function SignIn() {
 
 
 /**
- * 睡觉状态    httpGet
+ * 睡觉状态    GET
  */
 async function QuerySleepStatus() {
 
     let curHour = local_hours()
-    let url = {
+    let options = {
+        method: 'GET',
         url: `${hostname}/luckycat/lite/v1/sleep/status/?aid=35`,
         headers: {
             'Host': host,
@@ -242,7 +242,7 @@ async function QuerySleepStatus() {
             'content-type': 'application/json'
         },
     };
-    let result = await httpGet(url, `睡觉状态`);
+    let result = await httpRequest(options, `睡觉状态`);
 
     if (result.err_no == 0) {
         let sleepHour = Math.floor(result.data.sleep_last_time / 36) / 100;
@@ -288,10 +288,11 @@ async function QuerySleepStatus() {
 
 
 /**
- * 睡觉醒来    httpPost
+ * 睡觉醒来    POST
  */
 async function SleepStop() {
-    let url = {
+    let options = {
+        method: 'POST',
         url: `${hostname}/api/news/feed/v78/?aid=35`,
         headers: {
             'Host': host,
@@ -299,7 +300,7 @@ async function SleepStop() {
             'content-type': 'application/json'
         }, body: '',
     };
-    let result = await httpPost(url, `睡觉醒来`);
+    let result = await httpRequest(options, `睡觉醒来`);
 
     if (result.err_no == 0) {
         let sleepHour = result.data.sleep_last_time / 3600;
@@ -314,11 +315,12 @@ async function SleepStop() {
 
 
 /**
- * 睡觉醒来收金币    httpPost
+ * 睡觉醒来收金币    POST
  */
 async function SleepDone(amount) {
     let timeInMS = ts13();
-    let url = {
+    let options = {
+        method: 'POST',
         url: `${hostname}/luckycat/lite/v1/sleep/done_task/?aid=35&_rticket=${timeInMS}`,
         headers: {
             'Host': host,
@@ -326,7 +328,7 @@ async function SleepDone(amount) {
             'content-type': 'application/json'
         }, body: `{"score_amount":${amount},"enable_preload_exciting_video":0}`,
     };
-    let result = await httpPost(url, `睡觉醒来收金币`);
+    let result = await httpRequest(options, `睡觉醒来收金币`);
 
     if (result.err_no === 0) {
         console.log(`    领取睡觉金币奖励 ${amount} 金币成功`);
@@ -341,10 +343,11 @@ async function SleepDone(amount) {
 
 
 /**
- * 开始睡觉    httpPost
+ * 开始睡觉    POST
  */
 async function SleepStart() {
-    let url = {
+    let options = {
+        method: 'POST',
         url: `${hostname}/luckycat/lite/v1/sleep/start/?aid=35`,
         headers: {
             'Host': host,
@@ -352,7 +355,7 @@ async function SleepStart() {
             'content-type': 'application/json'
         }, body: '',
     };
-    let result = await httpPost(url, `开始睡觉`);
+    let result = await httpRequest(options, `开始睡觉`);
 
     if (result.err_no == 0) {
         console.log(`    开始睡觉, ZZZzzz...`);
@@ -367,10 +370,11 @@ async function SleepStart() {
 
 
 /**
- * 查询走路状态    httpGet
+ * 查询走路状态    GET
  */
 async function QueryWalkInfo() {
-    let url = {
+    let options = {
+        method: 'GET',
         url: `${hostname}/luckycat/lite/v1/walk/page_data/?aid=35`,
         headers: {
             'Host': host,
@@ -378,10 +382,12 @@ async function QueryWalkInfo() {
             // 'content-type': 'application/json'
         },
     };
-    let result = await httpGet(url, `查询走路状态`);
+    let result = await httpRequest(options, `查询走路状态`);
 
     if (result.err_no == 0) {
-        if (result.data.can_get_amount > 0) await GetWalkBonus()
+        if (result.data.can_get_amount > 0) await GetWalkBonus();
+        console.log(`   查询走路状态: 暂时没有可领取步数!`);
+        msg += `\n    查询走路状态: 暂时没有可领取步数!`;
     } else {
         console.log(`   查询走路状态: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
@@ -392,23 +398,28 @@ async function QueryWalkInfo() {
 
 
 /**
- * 走路奖励    httpPost  
+ * 走路奖励    POST
  */
 async function GetWalkBonus() {
     let nowtime = ts10();
-    let url = {
+    let options = {
+        method: 'POST',
         url: `${hostname}/luckycat/lite/v1/walk/bonus/?aid=35`,
         headers: {
             'Host': host,
             'Cookie': ck[0],
             'content-type': 'application/json'
-        }, body: `{"task_id":136,"client_time":${nowtime},"rit":"coin","use_ecpm":0,"enable_preload_exciting_video":0}`,
+        },
+        body: `{"task_id":136,"client_time":${nowtime},"rit":"coin","use_ecpm":0,"enable_preload_exciting_video":0}`,
     };
-    let result = await httpPost(url, `走路奖励`);
+    let result = await httpRequest(options, `走路奖励`);
 
     if (result.err_no == 0) {
         console.log(`    领取走路奖励获得 ${result.data.score_amount} 金币`);
         msg += `\n    领取走路奖励获得 ${result.data.score_amount} 金币`;
+    } else if (result.err_no == 8005028) {
+        console.log(`     ${result.err_tips} `);
+        msg += `\n     ${result.err_tips} `;
     } else {
         console.log(`   走路奖励: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
@@ -417,32 +428,27 @@ async function GetWalkBonus() {
 }
 
 
-
-
-
 /**
- * 查询吃饭补贴    httpGet
+ * 查询吃饭补贴    GET
  */
 async function EatInfo(eat_name, taskId) {
-    let url = {
-        url: `${hostname}/luckycat/lite/v1/eat/done_eat/?update_version_code=${version}&device_platform=android&aid=35`,
+    let options = {
+        method: 'GET',
+        url: `${hostname}/luckycat/lite/v1/eat/eat_info/?aid=35`,
         headers: {
             'Host': host,
             'Cookie': ck[0],
             'content-type': 'application/json'
         },
     };
-    let result = await httpGet(url, `${eat_name}`);
+    let result = await httpRequest(options, `${eat_name}`);
 
     if (result.err_no == 0) {
-        if (taskId == 0) {
-            if (esult.data.can_get_amount) {
-
-            }
-
-        }
         if (result.data.complete_status[taskId] == false) {
-            await GetWalkBonus()
+            await DoneEat()
+        } else {
+
+            console.log(`${eat_name}:已经领取过了!`);
         }
     } else {
         console.log(`   查询吃饭补贴: 失败 ❌ 了呢,原因未知!`);
@@ -452,15 +458,13 @@ async function EatInfo(eat_name, taskId) {
 }
 
 
-
-
-
 /**
- * 吃饭补贴    httpPost  
+ * 吃饭补贴    POST  
  * https://api5-normal-lf.toutiaoapi.com/luckycat/lite/v1/eat/done_eat/?update_version_code=88011&device_platform=android&aid=35
  */
 async function DoneEat() {
-    let url = {
+    let options = {
+        method: 'POST',
         url: `${hostname}/luckycat/lite/v1/eat/done_eat/?update_version_code=${version}&device_platform=android&aid=35`,
         headers: {
             'Host': host,
@@ -468,7 +472,7 @@ async function DoneEat() {
             'content-type': 'application/json'
         }, body: '{"enable_preload_exciting_video":0}',
     };
-    let result = await httpPost(url, `吃饭补贴`);
+    let result = await httpRequest(options, `吃饭补贴`);
 
     if (result.err_no == 0) {
         console.log(`    领取吃饭补贴获得 ${result.data.score_amount} 金币`);
@@ -484,6 +488,34 @@ async function DoneEat() {
 }
 
 
+/**
+ * 宝箱视频奖励    POST  
+ */
+async function ExcitationAd(task_id) {
+    let options = {
+        method: 'POST',
+        url: `${hostname}/luckycat/lite/v1/task/done/excitation_ad?pass_through=default&is_pad=0&act_token=JL1HtwPHpvxHv_rcZQtKAC3ajuo-5azRQIvjbqJ6IzTAVtWR7EY0xlY06pA-0Zt20xMGw7GE1fPabIBqQE8pPw&act_hash=9da3c5e7bb026f0eff562764c9acc7e0&cookie_base=H-WaAsR8Y-beqKCfWCVyEih4XmEeLj9OlveW2Bswl8EKdR7DS9onPILukxh3Fi5qRwKVtr3wHSG4ATcEbn-Dj5aGAuGWeoH56k8wZtIjJaA&cookie_data=yOg0jvd7ihkqR-WciihsFA&iid=2819597821290968&device_id=4244563972598088&ac=wifi&channel=lite_xiaomi_64&aid=35&app_name=news_article_lite&version_code=880&version_name=8.8.0&device_platform=android&os=android&ab_version=668776%2C4174795%2C668907%2C4174798%2C1859937%2C668905%2C4174766%2C668906%2C4174774%2C668904%2C4174751%2C668903%2C4174792%2C668908%2C4174802%2C3596061%2C4007849%2C4046906%2C4071697%2C4098661%2C4126737%2C4131037%2C4098838&ab_client=a1%2Ce1%2Cf2%2Cg2%2Cf7&ab_feature=z1&abflag=3&ssmix=a&device_type=22041211AC&device_brand=Redmi&language=zh&os_api=31&os_version=12&manifest_version_code=8800&resolution=1080*2280&dpi=420&update_version_code=88011&_rticket=${ts13()}&sa_enable=0&dq_param=0&plugin_state=280419485511709&isTTWebView=1&session_id=82e83565-d2ca-47f3-a50b-5268dfd25a3a&host_abi=arm64-v8a&tma_jssdk_version=2.8.0.16&rom_version=miui_v130_v13.0.13.0.slncnxm&cdid=84ee2972-20d3-4b4e-ae10-b9ddcb1647ea&polaris_version=1.0.5&status_bar_height=29&luckydog_base=rBGqzakReKG1QpYNj3-hS1Rz0r1i-BYhGoCDMYsCqbu9JQbbmS3Ou7H4xAY7R5rTTJ-ia6K8iTQh-dGhXvnjyoVRkA0ldRfI4IM0qDGKF15PVuK9-NsBsdZybYpIyNMzOAIw300pgezuxrf1jFuSgHhfF7Iyt-nLd7EVGh0nsr0&luckydog_data=Ui61fJQ-9iBJBqLTyqqB_xXhSXNt_0bp1RgP7lnnk0yI8sDNBnRy4ef_HqCaw8vsjJRGjFPj7OfPZnwXWsTblLJoNGoFSJ7e3WYyuGF7A8Q&luckydog_token=F3c5TeVJoC5GxpnvQWnCm3Vci0Y2ODjz3qHi9hAnURa8_ZyVOm-Sv44zIxkk8DkhyKT4iuD7WvxAkEpytbobBg&luckydog_sdk_version=5.0.1-rc.11&luckydog_settings_version=15&luckycat_version_name=5.0.1-rc.26&luckycat_version_code=501026`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        },
+        body: `{"ad_id":11,"amount":1543,"ad_rit":"11","extra_data":{"enter_from":"task"},"task_key":"excitation_ad","extra":{"track_id":"7101510817782301470"},"task_id":"${task_id}","ad_alias_position":"coin","is_post_login":false,"ad_from":"coin","score_source":1,"coin_count":1543,"exci_extra":{"cid":1731121759811619,"req_id":"202205251129010102120720761B2CD0B2","rit":20047}}`,
+    };
+    let result = await httpRequest(options, `宝箱视频奖励`);
+
+    if (result.err_no == 0) {
+        console.log(`    领取宝箱视频奖励获得 ${result.data.score_amount} 金币`);
+        msg += `\n    领取宝箱视频奖励获得 ${result.data.score_amount} 金币`;
+    } else if (result.err_no == 1071) {
+        console.log(`    领取宝箱视频奖励 ${result.err_tips}`);
+        msg += `\n    领取宝箱视频奖励获得 ${result.err_tips}`;
+    } else {
+        console.log(`   宝箱视频奖励: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n    宝箱视频奖励: 失败 ❌ 了呢,原因未知!`;
+    }
+}
 
 
 
@@ -502,10 +534,7 @@ async function DoneEat() {
 // ============================================变量检查============================================ \\
 
 async function getCks(ck, str) {
-
-
     return new Promise((resolve) => {
-
         let ckArr = []
         if (ck) {
             if (ck.indexOf("@") !== -1) {
@@ -523,18 +552,15 @@ async function getCks(ck, str) {
             }
             resolve(ckArr)
         } else {
-            console.log(` 【${$.name}】:未填写变量 ${str}`)
+            console.log(` :未填写变量 ${str}`)
         }
-
     }
     )
 }
 
 // ============================================发送消息============================================ \\
-
 async function SendMsg(message) {
     if (!message) return;
-
     if (Notify > 0) {
         if ($.isNode()) {
             let notify = require("./sendNotify");
@@ -550,7 +576,6 @@ async function SendMsg(message) {
 /**
  * 随机数生成
  */
-
 function randomString(e) {
     e = e || 32;
     let t = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890",
@@ -564,7 +589,6 @@ function randomString(e) {
 /**
  * 随机整数生成
  */
-
 function randomInt(min, max) {
     return Math.round(Math.random() * (max - min) + min);
 }
@@ -573,7 +597,6 @@ function randomInt(min, max) {
 /**
  * 时间戳 13位
  */
-
 function ts13() {
     return Math.round(new Date().getTime()).toString();
 }
@@ -581,7 +604,6 @@ function ts13() {
 /**
  * 时间戳 10位
  */
-
 function ts10() {
     return Math.round(new Date().getTime() / 1000).toString();
 }
@@ -589,7 +611,6 @@ function ts10() {
 /**
  * 获取当前小时数
  */
-
 function local_hours() {
     let myDate = new Date();
     h = myDate.getHours();
@@ -599,7 +620,6 @@ function local_hours() {
 /**
  * 获取当前分钟数
  */
-
 function local_minutes() {
     let myDate = new Date();
     m = myDate.getMinutes();
@@ -607,32 +627,47 @@ function local_minutes() {
 }
 
 
-//每日网抑云
-function wyy(timeout = 3 * 1000) {
+
+
+/**
+ * 每日网抑云    GET
+ */
+function wyy() {
     return new Promise((resolve) => {
-        let url = {
-            url: `https://keai.icu/apiwyy/api`
-        }
-        $.get(url, async (err, resp, data) => {
+        let request = require('request');
+        let options = {
+            'method': 'GET',
+            'url': 'https://keai.icu/apiwyy/api',
+            'headers': {
+            }
+        };
+
+        request(options, function (error, response) {
             try {
-                data = JSON.parse(data)
-                console.log(` 【网抑云时间】: ${data.content}  by--${data.music}`);
+                if (error) throw new Error(error);
+                // console.log(response.body);
+                data = JSON.parse(response.body)
+                console.log(`   【网抑云时间】: ${data.content}  by--${data.music}`);
 
             } catch (e) {
                 $.logErr(e, resp);
             } finally {
                 resolve()
             }
-        }, timeout
-        )
+        });
     })
+
 }
 
 
-// ============================================ get请求 ============================================ \\
-async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
+
+
+// ======================================== 网络请求 (get, post等) ======================================== \\
+async function httpRequest(postOptionsObject, tip, timeout = 3 * 1000) {
     return new Promise((resolve) => {
-        let url = getUrlObject;
+
+        let options = postOptionsObject;
+        let request = require('request');
         if (!tip) {
             let tmp = arguments.callee.toString();
             let re = /function\s*(\w*)/i;
@@ -640,74 +675,30 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
             tip = matches[1];
         }
         if (debug) {
-            console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
-            console.log(url);
+            console.log(`\n 【debug】=============== 这是 ${tip} 请求 信息 ===============`);
+            console.log(options);
         }
 
-        $.get(
-            url,
-            async (err, resp, data) => {
-                try {
-                    if (debug) {
-                        console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-                        console.log(data);
-                        console.log(`======`);
-                        console.log(JSON.parse(data));
-                    }
-                    let result = JSON.parse(data);
-                    if (!result) return;
-                    resolve(result);
-                } catch (e) {
-                    console.log(err, resp);
-                    console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-                    msg += `\n ${tip} 失败了!请稍后尝试!!`
-                } finally {
-                    resolve();
+        request(options, async (err, resp, data) => {
+            try {
+                if (debug) {
+                    console.log(`\n\n 【debug】===============这是 ${tip} 返回数据==============`);
+                    console.log(data);
+                    console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
+                    console.log(JSON.parse(data));
                 }
-            },
-            timeout
-        );
-    });
-}
+                let result = JSON.parse(data);
+                if (!result) return;
+                resolve(result);
+            } catch (e) {
+                console.log(err, resp);
+                console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+                msg += `\n ${tip} 失败了!请稍后尝试!!`
+            } finally {
+                resolve();
+            }
+        }), timeout
 
-// ============================================ post请求 ============================================ \\
-async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
-    return new Promise((resolve) => {
-        let url = postUrlObject;
-        if (!tip) {
-            let tmp = arguments.callee.toString();
-            let re = /function\s*(\w*)/i;
-            let matches = re.exec(tmp);
-            tip = matches[1];
-        }
-        if (debug) {
-            console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
-            console.log(url);
-        }
-
-        $.post(
-            url,
-            async (err, resp, data) => {
-                try {
-                    if (debug) {
-                        console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-                        console.log(data);
-                        console.log(`======`);
-                        console.log(JSON.parse(data));
-                    }
-                    let result = JSON.parse(data);
-                    if (!result) return;
-                    resolve(result);
-                } catch (e) {
-                    console.log(err, resp);
-                    console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-                    msg += `\n ${tip} 失败了!请稍后尝试!!`
-                } finally {
-                    resolve();
-                }
-            },
-            timeout
-        );
     });
 }
 
@@ -789,33 +780,13 @@ function MD5Encrypt(a) {
     return O.toLowerCase()
 }
 
-function Env(t, e) {
-    "undefined" != typeof process && JSON.stringify(process.env).indexOf("GITHUB") > -1 && process.exit(0);
 
+function Env(t, e) {
     class s {
         constructor(t) {
             this.env = t
         }
-
-        send(t, e = "GET") {
-            t = "string" == typeof t ? { url: t } : t;
-            let s = this.get;
-            return "POST" === e && (s = this.post), new Promise((e, i) => {
-                s.call(this, t, (t, s, r) => {
-                    t ? i(t) : e(s)
-                })
-            })
-        }
-
-        get(t) {
-            return this.send.call(this.env, t)
-        }
-
-        post(t) {
-            return this.send.call(this.env, t, "POST")
-        }
     }
-
     return new class {
         constructor(t, e) {
             this.name = t, this.http = new s(this), this.data = null, this.dataFile = "box.dat", this.logs = [], this.isMute = !1, this.isNeedRewrite = !1, this.logSeparator = "\n", this.startTime = (new Date).getTime(), Object.assign(this, e), this.log("", `🔔${this.name}, 开始!`)
@@ -823,198 +794,6 @@ function Env(t, e) {
 
         isNode() {
             return "undefined" != typeof module && !!module.exports
-        }
-
-        isQuanX() {
-            return "undefined" != typeof $task
-        }
-
-        isSurge() {
-            return "undefined" != typeof $httpClient && "undefined" == typeof $loon
-        }
-
-        isLoon() {
-            return "undefined" != typeof $loon
-        }
-
-        toObj(t, e = null) {
-            try {
-                return JSON.parse(t)
-            } catch {
-                return e
-            }
-        }
-
-        toStr(t, e = null) {
-            try {
-                return JSON.stringify(t)
-            } catch {
-                return e
-            }
-        }
-
-        getjson(t, e) {
-            let s = e;
-            const i = this.getdata(t);
-            if (i) try {
-                s = JSON.parse(this.getdata(t))
-            } catch {
-            }
-            return s
-        }
-
-        setjson(t, e) {
-            try {
-                return this.setdata(JSON.stringify(t), e)
-            } catch {
-                return !1
-            }
-        }
-
-        getScript(t) {
-            return new Promise(e => {
-                this.get({ url: t }, (t, s, i) => e(i))
-            })
-        }
-
-        runScript(t, e) {
-            return new Promise(s => {
-                let i = this.getdata("@chavy_boxjs_userCfgs.httpapi");
-                i = i ? i.replace(/\n/g, "").trim() : i;
-                let r = this.getdata("@chavy_boxjs_userCfgs.httpapi_timeout");
-                r = r ? 1 * r : 20, r = e && e.timeout ? e.timeout : r;
-                const [o, h] = i.split("@"), n = {
-                    url: `http://${h}/v1/scripting/evaluate`,
-                    body: { script_text: t, mock_type: "cron", timeout: r },
-                    headers: { "X-Key": o, Accept: "*/*" }
-                };
-                this.post(n, (t, e, i) => s(i))
-            }).catch(t => this.logErr(t))
-        }
-
-        loaddata() {
-            if (!this.isNode()) return {};
-            {
-                this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path");
-                const t = this.path.resolve(this.dataFile), e = this.path.resolve(process.cwd(), this.dataFile),
-                    s = this.fs.existsSync(t), i = !s && this.fs.existsSync(e);
-                if (!s && !i) return {};
-                {
-                    const i = s ? t : e;
-                    try {
-                        return JSON.parse(this.fs.readFileSync(i))
-                    } catch (t) {
-                        return {}
-                    }
-                }
-            }
-        }
-
-        writedata() {
-            if (this.isNode()) {
-                this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path");
-                const t = this.path.resolve(this.dataFile), e = this.path.resolve(process.cwd(), this.dataFile),
-                    s = this.fs.existsSync(t), i = !s && this.fs.existsSync(e), r = JSON.stringify(this.data);
-                s ? this.fs.writeFileSync(t, r) : i ? this.fs.writeFileSync(e, r) : this.fs.writeFileSync(t, r)
-            }
-        }
-
-        lodash_get(t, e, s) {
-            const i = e.replace(/\[(\d+)\]/g, ".$1").split(".");
-            let r = t;
-            for (const t of i) if (r = Object(r)[t], void 0 === r) return s;
-            return r
-        }
-
-        lodash_set(t, e, s) {
-            return Object(t) !== t ? t : (Array.isArray(e) || (e = e.toString().match(/[^.[\]]+/g) || []), e.slice(0, -1).reduce((t, s, i) => Object(t[s]) === t[s] ? t[s] : t[s] = Math.abs(e[i + 1]) >> 0 == +e[i + 1] ? [] : {}, t)[e[e.length - 1]] = s, t)
-        }
-
-        getdata(t) {
-            let e = this.getval(t);
-            if (/^@/.test(t)) {
-                const [, s, i] = /^@(.*?)\.(.*?)$/.exec(t), r = s ? this.getval(s) : "";
-                if (r) try {
-                    const t = JSON.parse(r);
-                    e = t ? this.lodash_get(t, i, "") : e
-                } catch (t) {
-                    e = ""
-                }
-            }
-            return e
-        }
-
-        setdata(t, e) {
-            let s = !1;
-            if (/^@/.test(e)) {
-                const [, i, r] = /^@(.*?)\.(.*?)$/.exec(e), o = this.getval(i),
-                    h = i ? "null" === o ? null : o || "{}" : "{}";
-                try {
-                    const e = JSON.parse(h);
-                    this.lodash_set(e, r, t), s = this.setval(JSON.stringify(e), i)
-                } catch (e) {
-                    const o = {};
-                    this.lodash_set(o, r, t), s = this.setval(JSON.stringify(o), i)
-                }
-            } else s = this.setval(t, e);
-            return s
-        }
-
-        getval(t) {
-            return this.isSurge() || this.isLoon() ? $persistentStore.read(t) : this.isQuanX() ? $prefs.valueForKey(t) : this.isNode() ? (this.data = this.loaddata(), this.data[t]) : this.data && this.data[t] || null
-        }
-
-        setval(t, e) {
-            return this.isSurge() || this.isLoon() ? $persistentStore.write(t, e) : this.isQuanX() ? $prefs.setValueForKey(t, e) : this.isNode() ? (this.data = this.loaddata(), this.data[e] = t, this.writedata(), !0) : this.data && this.data[e] || null
-        }
-
-        initGotEnv(t) {
-            this.got = this.got ? this.got : require("got"), this.cktough = this.cktough ? this.cktough : require("tough-cookie"), this.ckjar = this.ckjar ? this.ckjar : new this.cktough.CookieJar, t && (t.headers = t.headers ? t.headers : {}, void 0 === t.headers.Cookie && void 0 === t.cookieJar && (t.cookieJar = this.ckjar))
-        }
-
-        get(t, e = (() => {
-        })) {
-            t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.get(t, (t, s, i) => {
-                !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            })) : this.isQuanX() ? (this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
-                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
-                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
-            }, t => e(t))) : this.isNode() && (this.initGotEnv(t), this.got(t).on("redirect", (t, e) => {
-                try {
-                    if (t.headers["set-cookie"]) {
-                        const s = t.headers["set-cookie"].map(this.cktough.Cookie.parse).toString();
-                        s && this.ckjar.setCookieSync(s, null), e.cookieJar = this.ckjar
-                    }
-                } catch (t) {
-                    this.logErr(t)
-                }
-            }).then(t => {
-                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
-                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
-            }, t => {
-                const { message: s, response: i } = t;
-                e(s, i, i && i.body)
-            }))
-        }
-
-        post(t, e = (() => {
-        })) {
-            if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.post(t, (t, s, i) => {
-                !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            }); else if (this.isQuanX()) t.method = "POST", this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
-                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
-                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
-            }, t => e(t)); else if (this.isNode()) {
-                this.initGotEnv(t);
-                const { url: s, ...i } = t;
-                this.got.post(s, i).then(t => {
-                    const { statusCode: s, statusCode: i, headers: r, body: o } = t;
-                    e(null, { status: s, statusCode: i, headers: r, body: o }, o)
-                }, t => {
-                    const { message: s, response: i } = t;
-                    e(s, i, i && i.body)
-                })
-            }
         }
 
         time(t, e = null) {
@@ -1033,37 +812,11 @@ function Env(t, e) {
             return t
         }
 
-        msg(e = t, s = "", i = "", r) {
-            const o = t => {
-                if (!t) return t;
-                if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? { "open-url": t } : this.isSurge() ? { url: t } : void 0;
-                if ("object" == typeof t) {
-                    if (this.isLoon()) {
-                        let e = t.openUrl || t.url || t["open-url"], s = t.mediaUrl || t["media-url"];
-                        return { openUrl: e, mediaUrl: s }
-                    }
-                    if (this.isQuanX()) {
-                        let e = t["open-url"] || t.url || t.openUrl, s = t["media-url"] || t.mediaUrl;
-                        return { "open-url": e, "media-url": s }
-                    }
-                    if (this.isSurge()) {
-                        let e = t.url || t.openUrl || t["open-url"];
-                        return { url: e }
-                    }
-                }
-            };
-            if (this.isMute || (this.isSurge() || this.isLoon() ? $notification.post(e, s, i, o(r)) : this.isQuanX() && $notify(e, s, i, o(r))), !this.isMuteLog) {
-                let t = ["", "==============📣系统通知📣=============="];
-                t.push(e), s && t.push(s), i && t.push(i), console.log(t.join("\n")), this.logs = this.logs.concat(t)
-            }
-        }
-
         log(...t) {
             t.length > 0 && (this.logs = [...this.logs, ...t]), console.log(t.join(this.logSeparator))
         }
 
         logErr(t, e) {
-            const s = !this.isSurge() && !this.isQuanX() && !this.isLoon();
             s ? this.log("", `❗️${this.name}, 错误!`, t.stack) : this.log("", `❗️${this.name}, 错误!`, t)
         }
 
@@ -1073,7 +826,12 @@ function Env(t, e) {
 
         done(t = {}) {
             const e = (new Date).getTime(), s = (e - this.startTime) / 1e3;
-            this.log("", `🔔${this.name}, 结束! 🕛 ${s} 秒`), this.log(), (this.isSurge() || this.isQuanX() || this.isLoon()) && $done(t)
+            this.log("", `🔔${this.name}, 结束! 🕛 ${s} 秒`), this.log()
         }
     }(t, e)
 }
+
+
+
+
+
