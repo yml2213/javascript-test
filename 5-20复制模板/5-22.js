@@ -26,6 +26,7 @@ const debug = 0 		//0为关闭调试，1为打开调试,默认为0
 let ckStr = process.env.lbxhy_data;
 let msg = "";
 let ck = "";
+let ck_status = '';
 let host = 'i.snssdk.com'
 let hostname = 'https://' + host
 
@@ -56,6 +57,8 @@ async function tips(ckArr) {
     await wyy();
 
     console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
+    msg += `\n =================== 共找到 ${ckArr.length} 个账号 ===================`
+
     debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
 
@@ -64,7 +67,8 @@ async function tips(ckArr) {
     await tips(ckArr);
     for (let index = 0; index < ckArr.length; index++) {
         let num = index + 1;
-        console.log(`------------- 开始【第 ${num} 个账号】-------------`);
+        console.log(`------------- 开始【第 ${jrttjsb_num} 个账号】------------- `);
+        msg += `\n------------- 开始【第 ${jrttjsb_num} 个账号】------------- `
 
         ck = ckArr[index].split("&");
 
@@ -83,6 +87,22 @@ async function start() {
     console.log("开始 签到");
     await signIn();
     await $.wait(3 * 1000);
+
+    if (ck_status == 0) {
+
+        console.log("开始 签到");
+        await signIn();
+        await $.wait(3 * 1000);
+        console.log("开始 签到");
+        await signIn();
+        await $.wait(3 * 1000);
+        console.log("开始 签到");
+        await signIn();
+        await $.wait(3 * 1000);
+
+
+    }
+
 
 
 }
@@ -114,6 +134,7 @@ async function signIn() {
         console.log(`   签到: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
         msg += `    签到: 失败 ❌ 了呢,原因未知！  \n `
+        return ck_status = 1;
         // throw new Error(`${$.name}:喂  喂 ---  登录失败了,别睡了, 起来更新了喂!`);;
     }
 }
