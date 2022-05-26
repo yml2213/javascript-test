@@ -6,14 +6,20 @@
  *
  * cron 30 6 * * *  yml2213_javascript_master/jrttjsb.js
  *
- * 3-17   完成签到、评论、分享、回帖 任务
- * 5-22   听说黑号也能提现了   自己试试吧
+ * 5-26     完成 签到  宝箱  睡觉  走路  吃饭 阅读(基本黑号)等任务 ,农场看情况加不加
+ * 
+ * 不要问跟以前的有啥不同,都是开源脚本,自己看就行了
  *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
  * 变量格式: export jrttjsb_data='cookie & cookie'  多个账号用 @ 或者 换行分割
- *
- * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
+ * 
+ * 完整cookie 或 ck的 sessionid_ss 项都行
+ * 
+ * tg频道: https://t.me/yml2213_tg  
+ * tg群组: https://t.me/yml_tg    
+ * qq频道: https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W4InjV&appChannel=share&businessType=9&from=181074&biz=ka&shareSource=5
+ * 
  */
 
 const $ = new Env("今日头条极速版");
@@ -28,6 +34,7 @@ let host = "api5-normal-lf.toutiaoapi.com";
 let hostname = "https://" + host;
 let version = "88011";
 let adIdList = [26, 181, 186, 187, 188, 189, 190, 195, 210, 214, 216, 225, 308, 324, 327, 329]
+let maxReadPerRun = ($.isNode() ? process.env.jrttjsbReadNum : $.getdata('jrttjsbReadNum')) || 10;
 ///////////////////////////////////////////////////////////////////
 let Version = '\nyml   2022/5/24     折腾下这个老毛吧,没好的新毛  '
 let thank = `感谢 xxxx 的投稿`
@@ -117,6 +124,9 @@ async function start() {
     for (let adId of adIdList) await ExcitationAd(adId)
     await $.wait(3 * 1000);
 
+    console.log("\n开始 阅读文章");
+    await ReadArticles();
+    await $.wait(3 * 1000);
 
 }
 
@@ -139,18 +149,19 @@ async function user_info(doTask) {
 
     if (result.err_no == 0) {
         if (!result.data.treasure) {
-            console.log(`   用户${jrttjsb_num} 查询状态失败,CK失效 `)
-            return;
+            console.log(`    用户${jrttjsb_num} 查询状态失败,CK失效 `)
+            throw new Error(`${$.name}:喂  喂 ---  登录失败了,别睡了, 起来更新了喂!`);;
+
         }
         if (doTask == 0) {
-            console.log(`   账户信息:金币:${result.data.user_income.score_balance} ,现金:${result.data.user_income.cash_balance / 100}元 `)
+            console.log(`    账户信息:金币:${result.data.user_income.score_balance} ,现金:${result.data.user_income.cash_balance / 100}元 `)
         } else {
             if (result.data.treasure.next_treasure_time == result.data.treasure.current_time) {
                 await OpenTreasureBox()
             } else {
                 let cdTime = result.data.treasure.next_treasure_time - result.data.treasure.current_time
                 console.log(`    宝箱状态: 开宝箱冷却时间还有 ${cdTime} 秒`);
-                msg += `\n    宝箱状态: 开宝箱冷却时间还有 ${cdTime} 秒`;
+                msg += `\n     宝箱状态: 开宝箱冷却时间还有 ${cdTime} 秒`;
             }
             if (result.data.signin_detail.today_signed == false) {
                 await SignIn()
@@ -160,7 +171,7 @@ async function user_info(doTask) {
             }
         }
     } else {
-        console.log(`   用户信息: 失败 ❌ 了呢,原因未知！  ${result} `);
+        console.log(`    用户信息: 失败 ❌ 了呢,原因未知！  ${result} `);
         msg += `\n    用户信息: 失败 ❌ 了呢,原因未知!`;
         throw new Error(`${$.name}:喂  喂 ---  用户信息失败了,别睡了, 起来更新了喂!`);
     }
@@ -191,11 +202,11 @@ async function OpenTreasureBox() {
     let result = await httpRequest(options, `开宝箱`);
 
     if (result.err_no == 0) {
-        console.log(`   开宝箱: 获得 ${result.data.score_amount} 金币`);
-        msg += `\n   开宝箱: 获得 ${result.data.score_amount} 金币`;
+        console.log(`    开宝箱: 获得 ${result.data.score_amount} 金币`);
+        msg += `\n    开宝箱: 获得 ${result.data.score_amount} 金币`;
     } else {
-        console.log(`   开宝箱: 失败 ❌ 了呢,原因未知！ ${result.err_tips} `);
-        msg += `\n   开宝箱: 失败 ❌ 了呢,原因未知!`;
+        console.log(`    开宝箱: 失败 ❌ 了呢,原因未知！ ${result.err_tips} `);
+        msg += `\n    开宝箱: 失败 ❌ 了呢,原因未知!`;
     }
 }
 
@@ -218,11 +229,11 @@ async function SignIn() {
     let result = await httpRequest(options, `签到`);
 
     if (result.err_no == 0) {
-        console.log(`   签到: ${result.err_tips} ,获得 ${result.data.score_amount} 金币，已连续签到 ${result.data.sign_times} 天`);
-        msg += `\n   签到: ${result.err_tips} ,获得 ${result.data.score_amount} 金币，已连续签到 ${result.data.sign_times} 天`;
+        console.log(`    签到: ${result.err_tips} ,获得 ${result.data.score_amount} 金币,已连续签到 ${result.data.sign_times} 天`);
+        msg += `\n    签到: ${result.err_tips} ,获得 ${result.data.score_amount} 金币,已连续签到 ${result.data.sign_times} 天`;
     } else {
-        console.log(`   签到: 失败 ❌ 了呢,原因未知！  ${result} `);
-        msg += `\n   签到: 失败 ❌ 了呢,原因未知!`;
+        console.log(`    签到: 失败 ❌ 了呢,原因未知！  ${result} `);
+        msg += `\n    签到: 失败 ❌ 了呢,原因未知!`;
     }
 }
 
@@ -254,12 +265,12 @@ async function QuerySleepStatus() {
                 if (rnd > 0.95) {
                     await SleepStop()
                 } else {
-                    console.log(`    用户${jrttjsb_num}随机醒来时间，本次不进行醒来，已经睡了${sleepHour}小时，可以获得${result.data.sleep_unexchanged_score}金币`);
-                    msg += `\n    用户${jrttjsb_num}随机醒来时间，本次不进行醒来，已经睡了${sleepHour}小时，可以获得${result.data.sleep_unexchanged_score}金币`;
+                    console.log(`     用户${jrttjsb_num}随机醒来时间,本次不进行醒来,已经睡了${sleepHour}小时,可以获得${result.data.sleep_unexchanged_score}金币`);
+                    msg += `\n     用户${jrttjsb_num}随机醒来时间,本次不进行醒来,已经睡了${sleepHour}小时,可以获得${result.data.sleep_unexchanged_score}金币`;
                 }
             } else {
-                console.log(`    用户${jrttjsb_num}睡眠中，已经睡了${sleepHour}小时，可以获得${result.data.sleep_unexchanged_score}金币，上限${result.data.max_coin}金币`);
-                msg += `\n    用户${jrttjsb_num}睡眠中，已经睡了${sleepHour}小时，可以获得${result.data.sleep_unexchanged_score}金币，上限${result.data.max_coin}金币`;
+                console.log(`     用户${jrttjsb_num}睡眠中,已经睡了${sleepHour}小时,可以获得${result.data.sleep_unexchanged_score}金币,上限${result.data.max_coin}金币`);
+                msg += `\n     用户${jrttjsb_num}睡眠中,已经睡了${sleepHour}小时,可以获得${result.data.sleep_unexchanged_score}金币,上限${result.data.max_coin}金币`;
             }
         } else {
             if (result.data.history_amount > 0) {
@@ -272,17 +283,17 @@ async function QuerySleepStatus() {
                 if (rnd > 0.95) {
                     await SleepStart()
                 } else {
-                    console.log(`    用户${jrttjsb_num}随机睡眠时间，本次不进行睡眠`);
-                    msg += `\n    用户${jrttjsb_num}随机睡眠时间，本次不进行睡眠`;
+                    console.log(`     用户${jrttjsb_num}随机睡眠时间,本次不进行睡眠`);
+                    msg += `\n     用户${jrttjsb_num}随机睡眠时间,本次不进行睡眠`;
                 }
             } else {
                 console.log(`    用户${jrttjsb_num}未到睡觉时间`);
-                msg += `\n    用户${jrttjsb_num}随机睡眠时间，本次不进行睡眠`;
+                msg += `\n     用户${jrttjsb_num}随机睡眠时间,本次不进行睡眠`;
             }
         }
     } else {
-        console.log(`    用户${jrttjsb_num}查询睡觉状态失败：${result.err_tips}`);
-        msg += `\n    用户${jrttjsb_num}随机睡眠时间，本次不进行睡眠`;
+        console.log(`     用户${jrttjsb_num}查询睡觉状态失败：${result.err_tips}`);
+        msg += `\n     用户${jrttjsb_num}随机睡眠时间,本次不进行睡眠`;
     }
 }
 
@@ -304,12 +315,12 @@ async function SleepStop() {
 
     if (result.err_no == 0) {
         let sleepHour = result.data.sleep_last_time / 3600;
-        console.log(`    用户${jrttjsb_num}结束睡眠，本次睡了${sleepHour}小时，可以领取${result.data.history_amount}金币`);
-        msg += `\n    用户${jrttjsb_num}结束睡眠，本次睡了${sleepHour}小时，可以领取${result.data.history_amount}金币`;
+        console.log(`     用户${jrttjsb_num}结束睡眠,本次睡了${sleepHour}小时,可以领取${result.data.history_amount}金币`);
+        msg += `\n     用户${jrttjsb_num}结束睡眠,本次睡了${sleepHour}小时,可以领取${result.data.history_amount}金币`;
         await SleepDone(result.data.history_amount)
     } else {
-        console.log(`   睡觉醒来: 失败 ❌ 了呢,原因未知！  ${result} `);
-        msg += `\n    睡觉醒来: 失败 ❌ 了呢,原因未知!`;
+        console.log(`    睡觉醒来: 失败 ❌ 了呢,原因未知！  ${result} `);
+        msg += `\n     睡觉醒来: 失败 ❌ 了呢,原因未知!`;
     }
 }
 
@@ -331,12 +342,12 @@ async function SleepDone(amount) {
     let result = await httpRequest(options, `睡觉醒来收金币`);
 
     if (result.err_no === 0) {
-        console.log(`    领取睡觉金币奖励 ${amount} 金币成功`);
-        msg += `\n    领取睡觉金币奖励 ${amount} 金币成功`;
+        console.log(`     领取睡觉金币奖励 ${amount} 金币成功`);
+        msg += `\n     领取睡觉金币奖励 ${amount} 金币成功`;
     } else {
-        console.log(`   睡觉醒来收金币: 失败 ❌ 了呢,原因未知!`);
+        console.log(`    睡觉醒来收金币: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
-        msg += `\n    睡觉醒来收金币: 失败 ❌ 了呢,原因未知!`;
+        msg += `\n     睡觉醒来收金币: 失败 ❌ 了呢,原因未知!`;
     }
 }
 
@@ -358,13 +369,13 @@ async function SleepStart() {
     let result = await httpRequest(options, `开始睡觉`);
 
     if (result.err_no == 0) {
-        console.log(`    开始睡觉, ZZZzzz...`);
-        msg += `\n    开始睡觉, ZZZzzz...`;
+        console.log(`     开始睡觉, ZZZzzz...`);
+        msg += `\n     开始睡觉, ZZZzzz...`;
         await SleepDone(result.data.history_amount)
     } else {
-        console.log(`   开始睡觉: 失败 ❌ 了呢,原因未知!`);
+        console.log(`    开始睡觉: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
-        msg += `\n    开始睡觉: 失败 ❌ 了呢,原因未知!`;
+        msg += `\n     开始睡觉: 失败 ❌ 了呢,原因未知!`;
     }
 }
 
@@ -386,12 +397,12 @@ async function QueryWalkInfo() {
 
     if (result.err_no == 0) {
         if (result.data.can_get_amount > 0) await GetWalkBonus();
-        console.log(`   查询走路状态: 暂时没有可领取步数!`);
-        msg += `\n    查询走路状态: 暂时没有可领取步数!`;
+        console.log(`    查询走路状态: 暂时没有可领取步数!`);
+        msg += `\n     查询走路状态: 暂时没有可领取步数!`;
     } else {
-        console.log(`   查询走路状态: 失败 ❌ 了呢,原因未知!`);
+        console.log(`    查询走路状态: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
-        msg += `\n    查询走路状态: 失败 ❌ 了呢,原因未知!`;
+        msg += `\n     查询走路状态: 失败 ❌ 了呢,原因未知!`;
     }
 }
 
@@ -416,14 +427,14 @@ async function GetWalkBonus() {
 
     if (result.err_no == 0) {
         console.log(`    领取走路奖励获得 ${result.data.score_amount} 金币`);
-        msg += `\n    领取走路奖励获得 ${result.data.score_amount} 金币`;
+        msg += `\n     领取走路奖励获得 ${result.data.score_amount} 金币`;
     } else if (result.err_no == 8005028) {
-        console.log(`     ${result.err_tips} `);
-        msg += `\n     ${result.err_tips} `;
+        console.log(`      ${result.err_tips} `);
+        msg += `\n      ${result.err_tips} `;
     } else {
-        console.log(`   走路奖励: 失败 ❌ 了呢,原因未知!`);
+        console.log(`    走路奖励: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
-        msg += `\n    走路奖励: 失败 ❌ 了呢,原因未知!`;
+        msg += `\n     走路奖励: 失败 ❌ 了呢,原因未知!`;
     }
 }
 
@@ -448,12 +459,12 @@ async function EatInfo(eat_name, taskId) {
             await DoneEat()
         } else {
 
-            console.log(`${eat_name}:已经领取过了!`);
+            console.log(`    ${eat_name}:已经领取过了!`);
         }
     } else {
-        console.log(`   查询吃饭补贴: 失败 ❌ 了呢,原因未知!`);
+        console.log(`    查询吃饭补贴: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
-        msg += `\n    查询吃饭补贴: 失败 ❌ 了呢,原因未知!`;
+        msg += `\n     查询吃饭补贴: 失败 ❌ 了呢,原因未知!`;
     }
 }
 
@@ -475,15 +486,15 @@ async function DoneEat() {
     let result = await httpRequest(options, `吃饭补贴`);
 
     if (result.err_no == 0) {
-        console.log(`    领取吃饭补贴获得 ${result.data.score_amount} 金币`);
-        msg += `\n    领取吃饭补贴获得 ${result.data.score_amount} 金币`;
+        console.log(`     领取吃饭补贴获得 ${result.data.score_amount} 金币`);
+        msg += `\n     领取吃饭补贴获得 ${result.data.score_amount} 金币`;
     } else if (result.err_no == 1071) {
-        console.log(`    领取吃饭补贴 ${result.err_tips}`);
-        msg += `\n    领取吃饭补贴获得 ${result.err_tips}`;
+        console.log(`     领取吃饭补贴 ${result.err_tips}`);
+        msg += `\n     领取吃饭补贴获得 ${result.err_tips}`;
     } else {
-        console.log(`   吃饭补贴: 失败 ❌ 了呢,原因未知!`);
+        console.log(`    吃饭补贴: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
-        msg += `\n    吃饭补贴: 失败 ❌ 了呢,原因未知!`;
+        msg += `\n     吃饭补贴: 失败 ❌ 了呢,原因未知!`;
     }
 }
 
@@ -511,11 +522,109 @@ async function ExcitationAd(task_id) {
         console.log(`    领取宝箱视频奖励 ${result.err_tips}`);
         msg += `\n    领取宝箱视频奖励获得 ${result.err_tips}`;
     } else {
-        console.log(`   宝箱视频奖励: 失败 ❌ 了呢,原因未知!`);
+        console.log(`    宝箱视频奖励: 失败 ❌ 了呢,原因未知!`);
         console.log(result);
         msg += `\n    宝箱视频奖励: 失败 ❌ 了呢,原因未知!`;
     }
 }
+
+
+/**
+ * 阅读文章      
+ */
+async function ReadArticles() {
+    console.log(`    开始阅读,将会阅读${maxReadPerRun}篇文章`)
+    await ReadDouble()
+    // await DailyArtsReward()
+    // await DailyPushReward()
+    Reading_state = true;
+    for (let i = 0; i < maxReadPerRun; i++) {
+        if (Reading_state == false) {
+            return;
+        } else {
+            await ReadArtsReward();
+
+        }
+    }
+
+}
+
+
+
+/**
+ * 阅读文章奖励    POST  
+ */
+async function ReadArtsReward() {
+    let rndGroupId = Math.floor(Math.random() * 7000000000000000000)
+    let options = {
+        method: 'POST',
+        url: `${hostname}/luckycat/lite/v1/activity/done_whole_scene_task/?device_id=4244563972598088&aid=35&device_platform=android&update_version_code=${version}`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        },
+        body: `{"group_id":"${rndGroupId}","scene_key":"little_headline","is_golden_egg":false}`,
+    };
+    let result = await httpRequest(options, `阅读文章奖励`);
+
+    if (result.err_no == 0) {
+        console.log(`    阅读文章奖励: 获得${result.data.score_amount}金币，今日阅读总收入：${result.data.total_score_amount}金币`);
+        msg += `\n    阅读文章奖励: 获得${result.data.score_amount}金币，今日阅读总收入：${result.data.total_score_amount}金币`;
+        console.log('    等待15秒阅读下一篇...');
+        await $.wait(15 * 1000);
+    } else if (result.err_no == 9) {
+        console.log(`    阅读文章奖励: ${result.err_tips}`);
+        msg += `\n    阅读文章奖励: ${result.err_tips}`;
+        return Reading_state = false;
+    } else {
+        console.log(`    阅读文章奖励: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n    阅读文章奖励: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
+
+
+/**
+ * 阅读翻倍    POST  
+ */
+async function ReadDouble() {
+    let options = {
+        method: 'POST',
+        url: `${hostname}/luckycat/lite/v1/activity/double_whole_scene_task/?aid=35`,
+        headers: {
+            'Host': host,
+            'Cookie': ck[0],
+            'content-type': 'application/json'
+        },
+        body: `{}`,
+    };
+    let result = await httpRequest(options, `阅读翻倍`);
+
+    if (result.err_no == 0) {
+        console.log(`    阅读翻倍: 成功`);
+        msg += `\n    阅读翻倍: 成功`;
+    } else {
+        console.log(`    阅读翻倍: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n    阅读翻倍: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -647,7 +756,7 @@ function wyy() {
                 if (error) throw new Error(error);
                 // console.log(response.body);
                 data = JSON.parse(response.body)
-                console.log(`   【网抑云时间】: ${data.content}  by--${data.music}`);
+                console.log(`    【网抑云时间】: ${data.content}  by--${data.music}`);
 
             } catch (e) {
                 $.logErr(e, resp);
