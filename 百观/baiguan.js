@@ -4,7 +4,7 @@
  *
  * 百观  app (安卓最好下载  2.0.8 版本,ios随意)
  *
- * cron 10 6-22 * * *  yml2213_javascript_master/baiguan.js
+ * cron 10 7 * * *  yml2213_javascript_master/baiguan.js
  *
  *
  * 5-30		完成 签到  资讯阅读  分享资讯  资讯点赞  本地服务 任务
@@ -24,7 +24,7 @@
 const $ = new Env("百观");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
-const debug = 0 		//0为关闭调试,1为打开调试,默认为0
+const debug = 1 		//0为关闭调试,1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
 let ckStr = process.env.baiguan_data;
 let msg = "";
@@ -368,16 +368,6 @@ async function new_like() {
 		msg += `\n    新闻资讯点赞: 失败 ❌ 了呢,原因未知!}`;
 	}
 }
-
-/**
- * 使用本地服务    httpPost
- * https://vapp.tmuyun.com/api/favorite/like
- */
-
-
-
-
-
 
 
 
