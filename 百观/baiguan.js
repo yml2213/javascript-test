@@ -1,5 +1,5 @@
 /**
- * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/baiguan/baiguan.js
+ * 脚本地址: http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/baiguan.js
  * 转载请留信息,谢谢
  *
  * 百观  app (安卓最好下载  2.0.8 版本,ios随意)
@@ -8,6 +8,7 @@
  *
  *
  * 5-30		完成 签到  资讯阅读  分享资讯  资讯点赞  本地服务 任务
+ * 5-31		增加社区任务,修复一个任务bug
  *
  *
  * 感谢所有测试人员
@@ -24,7 +25,7 @@
 const $ = new Env("百观");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
-const debug = 1 		//0为关闭调试,1为打开调试,默认为0
+const debug = 0 		//0为关闭调试,1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
 let ckStr = process.env.baiguan_data;
 let msg = "";
@@ -34,14 +35,15 @@ let hostname = "https://" + host;
 let salt = 'FR*r!isE5W'
 let ck_status = '';
 let new_id = "";
+let Community_new_id = "";
 ///////////////////////////////////////////////////////////////////
-let VersionCheck = "0.0.1"
+let VersionCheck = "0.0.2"
 let thank = `\n 感谢 xx 的投稿`
 ///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
 	let Version_latest = await Version_Check('baiguan');
-	let Version = `\n本地脚本:V0.0.1     远程仓库脚本:V${Version_latest}\n`
+	let Version = `\n本地脚本:V0.0.2     远程仓库脚本:V${Version_latest}\n`
 	console.log(`${Version}`);
 	msg += `${Version}`
 
@@ -78,8 +80,8 @@ async function start() {
 
 	console.log("开始 任务列表");
 	await task_list();
-}
 
+}
 
 
 
@@ -92,7 +94,7 @@ async function task_list() {
 	let ts = ts13();
 	let _data = `/api/user_mumber/numberCenter&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
 	let sign = sha256_Encrypt(_data)
-	console.log(sign);
+	// console.log(sign);
 	let url = {
 		url: `${hostname}/api/user_mumber/numberCenter`,
 		headers: {
@@ -170,6 +172,32 @@ async function task_list() {
 			console.log(`    使用本地服务: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`);
 			msg += `\n    使用本地服务: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`;
 		}
+		if (result.data.rst.user_task_list[7].finish_times < result.data.rst.user_task_list[7].frequency) {
+			console.log(`    社区帖子分享: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[7].finish_times}/${result.data.rst.user_task_list[7].frequency}`);
+			msg += `\n    社区帖子分享: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[7].finish_times}/${result.data.rst.user_task_list[7].frequency}`;
+			let num = result.data.rst.user_task_list[7].frequency - result.data.rst.user_task_list[7].finish_times;
+			console.log(num);
+			for (let j = 0; j < num; j++) {
+				console.log(`开始 社区帖子分享`);
+				await Community_share();
+			}
+		} else if (result.data.rst.user_task_list[7].finish_times == result.data.rst.user_task_list[7].frequency) {
+			console.log(`    社区帖子分享: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`);
+			msg += `\n    社区帖子分享: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`;
+		}
+		if (result.data.rst.user_task_list[8].finish_times < result.data.rst.user_task_list[8].frequency) {
+			console.log(`    社区帖子点赞: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[8].finish_times}/${result.data.rst.user_task_list[8].frequency}`);
+			msg += `\n    社区帖子点赞: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[8].finish_times}/${result.data.rst.user_task_list[8].frequency}`;
+			let num = result.data.rst.user_task_list[8].frequency - result.data.rst.user_task_list[8].finish_times;
+			console.log(num);
+			for (let j = 0; j < num; j++) {
+				console.log(`开始 社区帖子点赞`);
+				await Community_like();
+			}
+		} else if (result.data.rst.user_task_list[8].finish_times == result.data.rst.user_task_list[8].frequency) {
+			console.log(`    社区帖子点赞: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`);
+			msg += `\n    社区帖子点赞: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`;
+		}
 
 
 
@@ -190,7 +218,7 @@ async function signIn() {
 	let ts = ts13();
 	let _data = `/api/user_mumber/sign&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
 	let sign = sha256_Encrypt(_data)
-	console.log(sign);
+	// console.log(sign);
 	let url = {
 		url: `${hostname}/api/user_mumber/sign`,
 		headers: {
@@ -227,7 +255,7 @@ async function new_list() {
 	let ts = ts13();
 	let _data = `/api/article/channel_list&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
 	let sign = sha256_Encrypt(_data)
-	console.log(sign);
+	// console.log(sign);
 	let url = {
 		url: `${hostname}/api/article/channel_list?channel_id=606566eaad61a43e7054b600&isDiangHao=false&is_new=true&list_count=500&size=10`,
 		headers: {
@@ -257,16 +285,17 @@ async function new_list() {
 
 /**
  * 新闻资讯阅读    httpGet
- * https://vapp.tmuyun.com/api/article/read_time?channel_article_id=1453119&read_time=12662
+ * https://vapp.tmuyun.com/api/article/read_time?channel_article_id=1455280&read_time=2540
  */
 async function read_new() {
 	await new_list();
 	let ts = ts13();
 	let _data = `/api/article/read_time&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
 	let sign = sha256_Encrypt(_data)
-	console.log(sign);
+	let num_time = randomInt(3000, 20000)
+	// console.log(sign);
 	let url = {
-		url: `${hostname}/api/article/read_time?channel_article_id=${new_id}&read_time=12662`,
+		url: `${hostname}/api/article/read_time?channel_article_id=${new_id}&read_time=${num_time}`,
 		headers: {
 			'X-SESSION-ID': ck[0],
 			'X-REQUEST-ID': ck[1],
@@ -301,7 +330,7 @@ async function dotask(name, num) {
 	let ts = ts13();
 	let _data = `/api/user_mumber/doTask&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
 	let sign = sha256_Encrypt(_data)
-	console.log(sign);
+	// console.log(sign);
 	let url = {
 		url: `${hostname}/api/user_mumber/doTask`,
 		headers: {
@@ -340,7 +369,7 @@ async function new_like() {
 	let ts = ts13();
 	let _data = `/api/favorite/like&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
 	let sign = sha256_Encrypt(_data)
-	console.log(sign);
+	// console.log(sign);
 	let url = {
 		url: `${hostname}/api/favorite/like`,
 		headers: {
@@ -368,6 +397,141 @@ async function new_like() {
 		msg += `\n    新闻资讯点赞: 失败 ❌ 了呢,原因未知!}`;
 	}
 }
+
+
+
+/**
+ * 社区帖子列表    httpGet
+ * https://vapp.tmuyun.com/api/forum/thread_list?forum_id=174
+ */
+async function Community_new_list() {
+	let ts = ts13();
+	let _data = `/api/forum/thread_list&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/forum/thread_list?forum_id=174`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': 'vapp.tmuyun.com',
+		},
+	};
+	let result = await httpGet(url, `社区帖子列表`);
+
+	if (result.code == 0) {
+		console.log(`    社区帖子列表: 成功`);
+		msg += `\n    社区帖子列表: 成功`;
+		await $.wait(3 * 1000);
+		let num = randomInt(1, 9);
+		Community_new_id = result.data.thread_list[num].id;
+	} else {
+		console.log(`    社区帖子列表: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    社区帖子列表: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+
+/**
+ * 社区帖子分享    httppost
+ * https://vapp.tmuyun.com/api/user_mumber/doTask?member_type=14&target_id=21452
+ */
+async function Community_share() {
+	await Community_new_list();
+	let ts = ts13();
+	let _data = `/api/user_mumber/doTask&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	let url = {
+		url: `${hostname}/api/user_mumber/doTask?member_type=14&target_id=${Community_new_id}`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': 'vapp.tmuyun.com',
+		},
+		form: {}
+	}
+	let result = await httpPost(url, `社区帖子分享`);
+
+	if (result.code == 0) {
+		console.log(`    社区帖子分享: 成功`);
+		msg += `\n    社区帖子分享: 成功`;
+		await $.wait(3 * 1000);
+	} else {
+		console.log(`    社区帖子分享: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    社区帖子分享: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+
+
+/**
+ * 社区帖子点赞    httppost
+ * https://vapp.tmuyun.com/api/forum/like
+ */
+async function Community_like() {
+	await Community_new_list();
+	let ts = ts13();
+	let _data = `/api/forum/like&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	let url = {
+		url: `${hostname}/api/forum/like`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': 'vapp.tmuyun.com',
+		},
+		form: {
+			'target_type': '1',
+			'target_id': Community_new_id
+		}
+	}
+	let result = await httpPost(url, `社区帖子点赞`);
+
+	if (result.code == 0) {
+		console.log(`    社区帖子点赞: 成功`);
+		msg += `\n    社区帖子点赞: 成功`;
+		await $.wait(3 * 1000);
+	} else {
+		console.log(`    社区帖子点赞: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    社区帖子点赞: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -406,11 +570,12 @@ async function getCks(ck, str) {
 
 /**
  * 获取远程版本
+ * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/baiguan.js
  */
 function Version_Check(name) {
 	return new Promise((resolve) => {
 		let url = {
-			url: `https://raw.gh.fakev.cn/yml2213/javascript/master/${name}/${name}.js`,
+			url: `http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/baiguan.js`,
 		}
 		$.get(url, async (err, resp, data) => {
 			try {
@@ -1114,5 +1279,5 @@ function Env(t, e) {
 	}(t, e)
 }
 
-    //#endregion
+     //#endregion
 
