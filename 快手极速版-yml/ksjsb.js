@@ -9,7 +9,6 @@
  * 5-13    完成签到,宝箱信息功能 --脚本开源,欢迎 pr
  * 5-13    增加箱提示,增加分享任务
  *
- *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
  * 变量格式: export ksjsb_data='xxxxx'  多个账号用 @分割 或者 换行分割
@@ -19,39 +18,33 @@
 const $ = new Env("快手极速版");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 0 		//0为关闭调试，1为打开调试,默认为0
+const debug = 1 		//0为关闭调试，1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
 let ckStr = process.env.ksjsb_data;
 let msg = "";
 let ck = "";
-let user_name;
-
+let ck_status = "";
+let user_name = "";
+let bind_type = "";
 ///////////////////////////////////////////////////////////////////
-let Version = '\n yml   2022/5/13-2      完成签到,宝箱,分享 功能,请使用完整版ck\n'
-let thank = `\n 感谢 xx 的投稿\n`
-let test = `\n 脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!\n`
-
+let VersionCheck = "1.1.1"
+let thank = `\n 感谢 xx 的投稿`
+let Change = '\n增加提现功能'
 ///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
 
-    console.log(`${Version}`);
+    let Version_latest = await Version_Check('ksjsb');
+    let Version = `\n本地脚本:V1.0.1  远程仓库脚本:V${Version_latest}\n`
+    console.log(Version);
     msg += `${Version}`
+    console.log(`更新内容:${Change}`);
+    msg += `${Change}`
 
     // console.log(thank);
     // msg += `${thank}`
 
-    console.log(test);
-    msg += `${test}`
-
-    // console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-    // msg += `脚本已恢复正常状态,请及时更新`
-
-    console.log(`\n===============================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
-        new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
-    ).toLocaleString()} \n===============================================\n`);
     await wyy();
-
     console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
     debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
@@ -62,9 +55,7 @@ async function tips(ckArr) {
     for (let index = 0; index < ckArr.length; index++) {
         let num = index + 1;
         console.log(`\n========= 开始【第 ${num} 个账号】=========\n`);
-
         ck = ckArr[index].split("&");
-
         debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
         await start();
     }
@@ -78,26 +69,33 @@ async function start() {
 
 
     console.log("开始 用户信息");
-    await user_info();
-    await $.wait(2 * 1000);
+    await user_info(0);
 
-
-    console.log("开始 宝箱信息");
-    await box_info();
-    await $.wait(2 * 1000);
-
-    console.log("开始 每天一次任务");
-    if (local_hours() === 8) {
-        console.log("开始 签到信息");
-        await sign_info();
-        await $.wait(5 * 1000);
-
-        console.log("开始 分享");
-        await do_Share();
+    if (!ck_status) {
+        console.log("开始 宝箱信息");
+        await box_info();
         await $.wait(2 * 1000);
-    } else {
-        console.log("每天 8 点做 签到,分享 任务,时间不对跳过执行!");
+
+
+        if (local_hours() === 8) {
+            console.log("开始 签到信息");
+            await sign_info();
+            await $.wait(5 * 1000);
+
+            console.log("开始 分享");
+            await do_Share();
+            await $.wait(2 * 1000);
+        } else {
+            console.log("每天 8 点做 签到,分享 任务,时间不对跳过执行!");
+        }
+
+        console.log("开始 提现信息");
+        await cashInfo();
+        await $.wait(2 * 1000);
+
     }
+
+
 
 
 }
@@ -107,7 +105,7 @@ async function start() {
  * 用户信息    httpGet
  * https://nebula.kuaishou.com/rest/n/nebula/activity/earn/overview/basicInfo
  */
-async function user_info() {
+async function user_info(todesk) {
     let url = {
         url: `https://nebula.kuaishou.com/rest/n/nebula/activity/earn/overview/basicInfo`,
         headers: {
@@ -116,18 +114,22 @@ async function user_info() {
     };
     let result = await httpGet(url, `用户信息`);
 
-    if (result.result === 1) {
-
-        console.log(`\n 用户信息: 欢迎光临 ${result.data.userData.nickname} 🎉  , 账户余额: ${result.data.totalCash} 元 ,金币: ${result.data.totalCoin}  枚 \n`);
-        user_name = result.data.userData.nickname;
-
-        msg += `\n 用户信息: 欢迎光临 ${result.data.userData.nickname} 🎉  , 账户余额: ${result.data.totalCash} 元 ,金币: ${result.data.totalCoin}  枚 \n`;
-
-
+    if (result.result == 1) {
+        if (todesk == 0) {
+            console.log(`\n 用户信息: 欢迎光临 ${result.data.userData.nickname} 🎉  , 账户余额: ${result.data.totalCash} 元 ,金币: ${result.data.totalCoin}  枚 \n`);
+            msg += `\n 用户信息: 欢迎光临 ${result.data.userData.nickname} 🎉  , 账户余额: ${result.data.totalCash} 元 ,金币: ${result.data.totalCoin}  枚 \n`;
+            user_name = result.data.userData.nickname;
+        } else if (todesk == 1) {
+            if (result.data.totalCash > 0.3) {
+                console.log(`    您当前有 ${result.data.totalCash} 元`);
+                msg += `\n    您当前有 ${result.data.totalCash} 元`
+            }
+        }
+        await $.wait(2 * 1000);
     } else {
         console.log(`\n 用户信息: 失败 ❌ 了呢,原因未知！  ${result} \n`);
         msg += `\n 用户信息: 失败 ❌ 了呢,原因未知！  ${JSON.parse(result)} \n `;
-        throw new Error(`'喂  喂 ---  用户信息 失败 ❌ 了呢 ,别睡了, 起来更新了喂!`);
+        return ck_status = false;
     }
 }
 
@@ -173,10 +175,10 @@ async function signin() {
     };
     let result = await httpGet(url, `签到`);
 
-    if (result.result === 1) {
+    if (result.result == 1) {
         console.log(`\n 签到: ${result.data.toast} ,获得金币: ${result.data.totalCoin} 枚 \n`);
         msg += `\n 签到: ${result.data.toast} ,获得金币: ${result.data.totalCoin} 枚 \n`;
-    } else if (result.result === 10901) {
+    } else if (result.result == 10901) {
         console.log(`\n 签到: ${result.error_msg} \n`);
         msg += `\n 签到: ${result.error_msg} \n`;
     } else {
@@ -200,7 +202,7 @@ async function box_info() {
     };
     let result = await httpGet(url, `宝箱信息`);
 
-    if (result.result === 1) {
+    if (result.result == 1) {
         if (result.data.openTime === -1) {
             console.log(`\n 宝箱信息: 今天的宝箱开完了,明天再来吧! \n`);
             msg += `\n 宝箱信息: 今天的宝箱开完了,明天再来吧! \n`;
@@ -208,13 +210,13 @@ async function box_info() {
             console.log(`\n 宝箱信息: 宝箱冷却中, ${result.data.openTime / 1000 / 60} 分钟 后重试吧! \n`);
             msg += `\n 宝箱信息: 宝箱冷却中, ${result.data.openTime / 1000 / 60} 分钟 后重试吧! \n`;
         } else {
-            console.log(`\n 宝箱信息:  ${user_name} 可以宝箱信息,去 宝箱信息 喽! \n`);
-            msg += `\n 宝箱信息:  ${user_name} 可以宝箱信息,去 宝箱信息 喽! \n`;
+            console.log(`\n 宝箱信息:  ${user_name} 可以宝箱信息,去 开宝箱 喽! \n`);
+            msg += `\n 宝箱信息:  ${user_name} 可以宝箱信息,去 开宝箱 喽! \n`;
             await $.wait(3 * 1000);
             await open_box();
         }
 
-    } else if (result.result === 10901) {
+    } else if (result.result == 10901) {
         console.log(`\n 宝箱信息: ${result.error_msg} \n`);
         msg += `\n 宝箱信息: ${result.error_msg} \n`;
     } else {
@@ -237,7 +239,7 @@ async function open_box() {
     };
     let result = await httpGet(url, `开宝箱`);
 
-    if (result.result === 1) {
+    if (result.result == 1) {
         console.log(`\n 开宝箱: 获得 金币 ${result.data.commonAwardPopup.awardAmount} 枚!\n`);
         msg += `\n 开宝箱: 获得 金币 ${result.data.commonAwardPopup.awardAmount} 枚!\n`;
 
@@ -263,7 +265,7 @@ async function do_Share() {
     };
     let result = await httpPost(url, `分享`);
 
-    if (result.result === 1) {
+    if (result.result == 1) {
         await $.wait(200);
         await Share(122);
     }
@@ -274,8 +276,6 @@ async function do_Share() {
  * 分享获得 3000金币   httpGet
  */
 async function Share(id) {
-
-
     let url = {
         url: `https://nebula.kuaishou.com/rest/n/nebula/daily/report?taskId=${id}`,
         headers: {
@@ -284,10 +284,10 @@ async function Share(id) {
     };
     let result = await httpGet(url, `分享`);
 
-    if (result.result === 1) {
+    if (result.result == 1) {
         console.log(`\n 分享: 获得 金币 ${result.data.amount} 枚!\n`);
         msg += `\n 分享: 获得 金币 ${result.data.amount} 枚!\n`;
-    } else if (result.result === 14004) {
+    } else if (result.result == 14004) {
         console.log(`\n 分享: 今天已经分享过了,明天再来吧!\n`);
         msg += `\n 分享: 今天已经分享过了,明天再来吧!\n\n`;
     } else {
@@ -297,40 +297,221 @@ async function Share(id) {
 }
 
 
-//#region 固定代码
-// ============================================变量检查============================================ \\
-
-async function getCks(ck, str) {
 
 
-    return new Promise((resolve, reject) => {
+/**
+ * 提现信息    httpGet
+ */
+async function cashInfo() {
+    let url = {
+        url: `https://nebula.kuaishou.com/rest/n/nebula/outside/withdraw/overview`,
+        headers: {
+            'Cookie': ck[0],
+        },
+    };
+    let result = await httpGet(url, `提现信息`);
 
-            let ckArr = []
-            if (ck) {
-                if (ck.indexOf("@") != -1) {
-
-                    ck.split("@").forEach((item) => {
-                        ckArr.push(item);
-                    });
-                } else if (ck.indexOf("\n") != -1) {
-
-                    ck.split("\n").forEach((item) => {
-                        ckArr.push(item);
-                    });
-                } else {
-                    ckArr.push(ck);
+    if (result.result == 1) {
+        console.log(`    提现信息: ${result.data.nickname} ,余额:${result.data.enWithdrawAmount}`);
+        msg += `\n    提现信息: ${result.data.nickname} ,余额:${result.data.enWithdrawAmount}`;
+        if (result.data.isLimit == false) {
+            await bind_info();
+            if (bind_type != false) {
+                if (result.data.enWithdrawAmount < 0.3) {
+                    console.log(`    提现信息: ${result.data.enWithdrawAmount} ,余额不足0.3元，不提现`);
+                    msg += `\n    提现信息: ${result.data.enWithdrawAmount} ,余额不足0.3元，不提现`;
+                } else if (0.3 <= result.data.enWithdrawAmount && result.data.enWithdrawAmount < 2) {
+                    console.log(`    提现信息: ${result.data.enWithdrawAmount} ,准备提现 0.3 元!`);
+                    msg += `\n    提现信息: ${result.data.enWithdrawAmount} ,准备提现 0.3 元!`;
+                    await Docash('300', bind_type);
+                } else if (2 <= result.data.enWithdrawAmount && result.data.enWithdrawAmount < 10) {
+                    console.log(`    提现信息: ${result.data.enWithdrawAmount} ,准备提现 2 元!`);
+                    msg += `\n    提现信息: ${result.data.enWithdrawAmount} ,准备提现 2 元!`;
+                    await Docash('200', bind_type);
+                } else if (10 <= result.data.enWithdrawAmount && result.data.enWithdrawAmount < 20) {
+                    console.log(`    提现信息: ${result.data.enWithdrawAmount} ,准备提现 10 元!`);
+                    msg += `\n    提现信息: ${result.data.enWithdrawAmount} ,准备提现 10 元!`;
+                    await Docash('1000', bind_type);
+                } else if (20 <= result.data.enWithdrawAmount && result.data.enWithdrawAmount < 50) {
+                    console.log(`    提现信息: ${result.data.enWithdrawAmount} ,准备提现 20 元!`);
+                    msg += `\n    提现信息: ${result.data.enWithdrawAmount} ,准备提现 20 元!`;
+                    await Docash('2000', bind_type);
+                } else if (result.data.enWithdrawAmount > 50) {
+                    console.log(`    提现信息: ${result.data.enWithdrawAmount} ,准备提现 50 元!`);
+                    msg += `\n    提现信息: ${result.data.enWithdrawAmount} ,准备提现 50 元!`;
+                    await Docash('5000', bind_type);
                 }
-                resolve(ckArr)
             } else {
-                console.log(`\n 【${$.name}】：未填写变量 ${str}`)
+                console.log(`    绑定查询: 未查询到当前账号绑定类型,停止提现!`);
+                msg += `\n    绑定查询: 未查询到当前账号绑定类型,停止提现!`;
             }
 
+
+
+        } else {
+            console.log(`    提现信息: ${result.data.nickname} 今天已提现过了!`);
+            msg += `\n    提现信息: ${result.data.nickname} 今天已提现过了!`;
         }
+
+    } else {
+        console.log(`\n 提现信息: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n 提现信息: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
+
+/**
+ * 绑定查询    httpPost
+ */
+async function bind_info() {
+    let url = {
+        url: `https://www.kuaishoupay.com/pay/account/h5/provider/bind_info`,
+        headers: {
+            'Cookie': ck[0],
+        },
+        form: {
+            'account_group_key': 'NEBULA_CASH_ACCOUNT',
+            'bind_page_type': '3'
+        }
+    };
+    let result = await httpPost(url, `绑定查询`);
+
+    if (result.code == 'SUCCESS') {
+        if (result.wechat_bind == true) {
+            console.log(`    绑定查询: 当前账号已绑定 微信`);
+            msg += `\n    绑定查询: 当前账号已绑定 微信`;
+            bind_type = 'WECHAT';
+        } else if (result.alipay_bind == true) {
+            console.log(`    绑定查询: 当前账号已绑定 支付宝`);
+            msg += `\n    绑定查询: 当前账号已绑定 支付宝`;
+            bind_type = 'ALIPAY';
+        } else {
+            console.log(`    绑定查询: 未查询到当前账号绑定类型,停止提现!`);
+            msg += `\n    绑定查询: 未查询到当前账号绑定类型,停止提现!`;
+            return bind_type = false;
+        }
+    } else {
+        console.log(`\n 绑定查询: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n 绑定查询: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+/**
+ * 提现    httpPost
+ */
+async function Docash(cash_num, bind_type) {
+    let url = {
+        url: `https://www.kuaishoupay.com/pay/account/h5/withdraw/apply`,
+        headers: {
+            'Cookie': ck[0],
+        },
+        form: {
+            'account_group_key': 'NEBULA_CASH_ACCOUNT',
+            'mobile_code': '',
+            'fen': cash_num,
+            'provider': bind_type,
+            'total_fen': cash_num,
+            'commission_fen': '0',
+            'third_account': bind_type,
+            'attach': '',
+            // 'biz_content': '',
+            'session_id': ''
+        }
+
+        // "account_group_key=NEBULA_CASH_ACCOUNT&mobile_code=&fen=" + p + "&provider=" + C + "&total_fen=" + p + "&commission_fen=0&third_account=" + C + "&attach=&biz_content=&session_id="
+    };
+    let result = await httpPost(url, `提现`);
+
+    if (result.result == 'SUCCESS') {
+        console.log(`    提现: 提现 ${cash_num} 成功 🎉`);
+        msg += `\n    提现: 提现 ${cash_num} 成功 🎉`;
+    } else if (result.result == WITHDRAW_VERIFY_SMS_CODE) {
+        console.log(`    提现: ${result.msg}`);
+        msg += `\n    提现: ${result.msg}`;
+    } else {
+        console.log(`\n 提现: 失败 ❌ 了呢,原因未知!`);
+        console.log(result);
+        msg += `\n 提现: 失败 ❌ 了呢,原因未知!`;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#region ********************************固定代码********************************
+
+/**
+ * 变量检查
+ */
+async function getCks(ck, str) {
+    return new Promise((resolve) => {
+        let ckArr = []
+        if (ck) {
+            if (ck.indexOf("@") !== -1) {
+
+                ck.split("@").forEach((item) => {
+                    ckArr.push(item);
+                });
+            } else if (ck.indexOf("\n") !== -1) {
+
+                ck.split("\n").forEach((item) => {
+                    ckArr.push(item);
+                });
+            } else {
+                ckArr.push(ck);
+            }
+            resolve(ckArr)
+        } else {
+            console.log(` :未填写变量 ${str}`)
+        }
+    }
     )
 }
 
-// ============================================发送消息============================================ \\
 
+/**
+ * 获取远程版本
+ */
+function Version_Check(name) {
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://raw.gh.fakev.cn/yml2213/javascript/master/${name}/${name}.js`,
+        }
+        $.get(url, async (err, resp, data) => {
+            try {
+                let VersionCheck = resp.body.match(/VersionCheck = "([\d\.]+)"/)[1]
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve(VersionCheck)
+            }
+        }, timeout = 3 * 1000)
+    })
+}
+
+/**
+ * 发送消息
+ */
 async function SendMsg(message) {
     if (!message) return;
 
@@ -405,17 +586,19 @@ function local_minutes() {
     return m;
 }
 
-
-//每日网抑云
+/**
+ * 每日网抑云
+ */
 function wyy() {
     return new Promise((resolve) => {
         let url = {
-            url: `https://keai.icu/apiwyy/api`
+            url: `http://ovooa.com/API/wyrp/api.php`,
         }
         $.get(url, async (err, resp, data) => {
             try {
                 data = JSON.parse(data)
-                console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
+                // console.log(data);
+                console.log(`【网抑云时间】 ${data.data.Content}  by--${data.data.Music}`);
 
             } catch (e) {
                 $.logErr(e, resp);
@@ -426,8 +609,9 @@ function wyy() {
     })
 }
 
-
-// ============================================ get请求 ============================================ \\
+/**
+ * get请求
+ */
 async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = getUrlObject;
@@ -467,7 +651,9 @@ async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
     });
 }
 
-// ============================================ post请求 ============================================ \\
+/**
+ * post请求
+ */
 async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = postUrlObject;
@@ -508,162 +694,18 @@ async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
 }
 
 
-async function task111(method, url, type_name) {
-
-    return new Promise(async resolve => {
-        if (!type_name) {
-            let tmp = arguments.callee.toString();
-            let re = /function\s*(\w*)/i;
-            let matches = re.exec(tmp);
-            type_name = matches[1];
-        }
-        // let timeout = '';
-        if (method = `get`) {
-            return new Promise((resolve) => {
-                if (debug) {
-                    console.log(`\n 【debug】=============== 这是 ${type_name} 请求 url ===============`);
-                    console.log(url);
-                }
-
-                $.get(url, async (err, resp, data) => {
-                        try {
-                            if (err) {
-                                console.log(`${$.name}: API查询请求失败 ‼️‼️`);
-                                console.log(JSON.stringify(err));
-                                $.logErr(err);
-                            } else if (debug) {
-                                console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-                                console.log(data);
-                                console.log(`======`);
-                                console.log(JSON.parse(data));
-                            }
-                            let result = JSON.parse(data);
-                            resolve(result);
-                        } catch (e) {
-                            console.log(e, resp);
-                        } finally {
-                            resolve();
-                        }
-                    },
-                );
-            });
-        } else if (method = httppost) {
-            return new Promise((resolve) => {
-                if (debug) {
-                    console.log(`\n 【debug】=============== 这是 ${type_name} 请求 url ===============`);
-                    console.log(url);
-                }
-                $.post(url, async (err, resp, data) => {
-                        try {
-                            if (err) {
-                                console.log("$.name: API查询请求失败 ‼️‼️");
-                                console.log(JSON.stringify(err));
-                                $.logErr(err);
-                            } else if (debug) {
-                                console.log(`\n\n 【debug】===============这是 ${type_name} 返回data==============`);
-                                console.log(data);
-                                console.log(`======`);
-                                console.log(JSON.parse(data));
-                            }
-                            let result = JSON.parse(data);
-                            resolve(result);
-                        } catch (e) {
-                            console.log(e, resp);
-                        } finally {
-                            resolve();
-                        }
-                    },
-                    // timeout(3000)
-                );
-            });
-
-        } else {
-            console.log(`参数错误 ❌ ,请仔细检查修改后再试试吧!!`);
-        }
-
-    })
-}
 
 
-// ============================================ debug调试 ============================================ \\
+/**
+ * debug调试
+ */
 function debugLog(...args) {
     if (debug) {
         console.log(...args);
     }
 }
 
-//#endregion
-
-// prettier-ignore
-function MD5Encrypt(a) {
-    function b(a, b) {
-        return a << b | a >>> 32 - b
-    }
-
-    function c(a, b) {
-        var c, d, e, f, g;
-        return e = 2147483648 & a, f = 2147483648 & b, c = 1073741824 & a, d = 1073741824 & b, g = (1073741823 & a) + (1073741823 & b), c & d ? 2147483648 ^ g ^ e ^ f : c | d ? 1073741824 & g ? 3221225472 ^ g ^ e ^ f : 1073741824 ^ g ^ e ^ f : g ^ e ^ f
-    }
-
-    function d(a, b, c) {
-        return a & b | ~a & c
-    }
-
-    function e(a, b, c) {
-        return a & c | b & ~c
-    }
-
-    function f(a, b, c) {
-        return a ^ b ^ c
-    }
-
-    function g(a, b, c) {
-        return b ^ (a | ~c)
-    }
-
-    function h(a, e, f, g, h, i, j) {
-        return a = c(a, c(c(d(e, f, g), h), j)), c(b(a, i), e)
-    }
-
-    function i(a, d, f, g, h, i, j) {
-        return a = c(a, c(c(e(d, f, g), h), j)), c(b(a, i), d)
-    }
-
-    function j(a, d, e, g, h, i, j) {
-        return a = c(a, c(c(f(d, e, g), h), j)), c(b(a, i), d)
-    }
-
-    function k(a, d, e, f, h, i, j) {
-        return a = c(a, c(c(g(d, e, f), h), j)), c(b(a, i), d)
-    }
-
-    function l(a) {
-        for (var b, c = a.length, d = c + 8, e = (d - d % 64) / 64, f = 16 * (e + 1), g = new Array(f - 1), h = 0, i = 0; c > i;) b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | a.charCodeAt(i) << h, i++;
-        return b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | 128 << h, g[f - 2] = c << 3, g[f - 1] = c >>> 29, g
-    }
-
-    function m(a) {
-        var b, c, d = "", e = "";
-        for (c = 0; 3 >= c; c++) b = a >>> 8 * c & 255, e = "0" + b.toString(16), d += e.substr(e.length - 2, 2);
-        return d
-    }
-
-    function n(a) {
-        a = a.replace(/\r\n/g, "\n");
-        for (var b = "", c = 0; c < a.length; c++) {
-            var d = a.charCodeAt(c);
-            128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(d >> 6 | 192), b += String.fromCharCode(63 & d | 128)) : (b += String.fromCharCode(d >> 12 | 224), b += String.fromCharCode(d >> 6 & 63 | 128), b += String.fromCharCode(63 & d | 128))
-        }
-        return b
-    }
-
-    var o, p, q, r, s, t, u, v, w, x = [], y = 7, z = 12, A = 17, B = 22, C = 5, D = 9, E = 14, F = 20, G = 4, H = 11,
-        I = 16, J = 23, K = 6, L = 10, M = 15, N = 21;
-    for (a = n(a), x = l(a), t = 1732584193, u = 4023233417, v = 2562383102, w = 271733878, o = 0; o < x.length; o += 16) p = t, q = u, r = v, s = w, t = h(t, u, v, w, x[o + 0], y, 3614090360), w = h(w, t, u, v, x[o + 1], z, 3905402710), v = h(v, w, t, u, x[o + 2], A, 606105819), u = h(u, v, w, t, x[o + 3], B, 3250441966), t = h(t, u, v, w, x[o + 4], y, 4118548399), w = h(w, t, u, v, x[o + 5], z, 1200080426), v = h(v, w, t, u, x[o + 6], A, 2821735955), u = h(u, v, w, t, x[o + 7], B, 4249261313), t = h(t, u, v, w, x[o + 8], y, 1770035416), w = h(w, t, u, v, x[o + 9], z, 2336552879), v = h(v, w, t, u, x[o + 10], A, 4294925233), u = h(u, v, w, t, x[o + 11], B, 2304563134), t = h(t, u, v, w, x[o + 12], y, 1804603682), w = h(w, t, u, v, x[o + 13], z, 4254626195), v = h(v, w, t, u, x[o + 14], A, 2792965006), u = h(u, v, w, t, x[o + 15], B, 1236535329), t = i(t, u, v, w, x[o + 1], C, 4129170786), w = i(w, t, u, v, x[o + 6], D, 3225465664), v = i(v, w, t, u, x[o + 11], E, 643717713), u = i(u, v, w, t, x[o + 0], F, 3921069994), t = i(t, u, v, w, x[o + 5], C, 3593408605), w = i(w, t, u, v, x[o + 10], D, 38016083), v = i(v, w, t, u, x[o + 15], E, 3634488961), u = i(u, v, w, t, x[o + 4], F, 3889429448), t = i(t, u, v, w, x[o + 9], C, 568446438), w = i(w, t, u, v, x[o + 14], D, 3275163606), v = i(v, w, t, u, x[o + 3], E, 4107603335), u = i(u, v, w, t, x[o + 8], F, 1163531501), t = i(t, u, v, w, x[o + 13], C, 2850285829), w = i(w, t, u, v, x[o + 2], D, 4243563512), v = i(v, w, t, u, x[o + 7], E, 1735328473), u = i(u, v, w, t, x[o + 12], F, 2368359562), t = j(t, u, v, w, x[o + 5], G, 4294588738), w = j(w, t, u, v, x[o + 8], H, 2272392833), v = j(v, w, t, u, x[o + 11], I, 1839030562), u = j(u, v, w, t, x[o + 14], J, 4259657740), t = j(t, u, v, w, x[o + 1], G, 2763975236), w = j(w, t, u, v, x[o + 4], H, 1272893353), v = j(v, w, t, u, x[o + 7], I, 4139469664), u = j(u, v, w, t, x[o + 10], J, 3200236656), t = j(t, u, v, w, x[o + 13], G, 681279174), w = j(w, t, u, v, x[o + 0], H, 3936430074), v = j(v, w, t, u, x[o + 3], I, 3572445317), u = j(u, v, w, t, x[o + 6], J, 76029189), t = j(t, u, v, w, x[o + 9], G, 3654602809), w = j(w, t, u, v, x[o + 12], H, 3873151461), v = j(v, w, t, u, x[o + 15], I, 530742520), u = j(u, v, w, t, x[o + 2], J, 3299628645), t = k(t, u, v, w, x[o + 0], K, 4096336452), w = k(w, t, u, v, x[o + 7], L, 1126891415), v = k(v, w, t, u, x[o + 14], M, 2878612391), u = k(u, v, w, t, x[o + 5], N, 4237533241), t = k(t, u, v, w, x[o + 12], K, 1700485571), w = k(w, t, u, v, x[o + 3], L, 2399980690), v = k(v, w, t, u, x[o + 10], M, 4293915773), u = k(u, v, w, t, x[o + 1], N, 2240044497), t = k(t, u, v, w, x[o + 8], K, 1873313359), w = k(w, t, u, v, x[o + 15], L, 4264355552), v = k(v, w, t, u, x[o + 6], M, 2734768916), u = k(u, v, w, t, x[o + 13], N, 1309151649), t = k(t, u, v, w, x[o + 4], K, 4149444226), w = k(w, t, u, v, x[o + 11], L, 3174756917), v = k(v, w, t, u, x[o + 2], M, 718787259), u = k(u, v, w, t, x[o + 9], N, 3951481745), t = c(t, p), u = c(u, q), v = c(v, r), w = c(w, s);
-    var O = m(t) + m(u) + m(v) + m(w);
-    return O.toLowerCase()
-}
-
+// 忽略
 function Env(t, e) {
     "undefined" != typeof process && JSON.stringify(process.env).indexOf("GITHUB") > -1 && process.exit(0);
 
@@ -673,7 +715,7 @@ function Env(t, e) {
         }
 
         send(t, e = "GET") {
-            t = "string" == typeof t ? {url: t} : t;
+            t = "string" == typeof t ? { url: t } : t;
             let s = this.get;
             return "POST" === e && (s = this.post), new Promise((e, i) => {
                 s.call(this, t, (t, s, r) => {
@@ -748,7 +790,7 @@ function Env(t, e) {
 
         getScript(t) {
             return new Promise(e => {
-                this.get({url: t}, (t, s, i) => e(i))
+                this.get({ url: t }, (t, s, i) => e(i))
             })
         }
 
@@ -760,8 +802,8 @@ function Env(t, e) {
                 r = r ? 1 * r : 20, r = e && e.timeout ? e.timeout : r;
                 const [o, h] = i.split("@"), n = {
                     url: `http://${h}/v1/scripting/evaluate`,
-                    body: {script_text: t, mock_type: "cron", timeout: r},
-                    headers: {"X-Key": o, Accept: "*/*"}
+                    body: { script_text: t, mock_type: "cron", timeout: r },
+                    headers: { "X-Key": o, Accept: "*/*" }
                 };
                 this.post(n, (t, e, i) => s(i))
             }).catch(t => this.logErr(t))
@@ -849,11 +891,11 @@ function Env(t, e) {
 
         get(t, e = (() => {
         })) {
-            t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {"X-Surge-Skip-Scripting": !1})), $httpClient.get(t, (t, s, i) => {
+            t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.get(t, (t, s, i) => {
                 !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            })) : this.isQuanX() ? (this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, {hints: !1})), $task.fetch(t).then(t => {
-                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+            })) : this.isQuanX() ? (this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
+                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
             }, t => e(t))) : this.isNode() && (this.initGotEnv(t), this.got(t).on("redirect", (t, e) => {
                 try {
                     if (t.headers["set-cookie"]) {
@@ -864,29 +906,29 @@ function Env(t, e) {
                     this.logErr(t)
                 }
             }).then(t => {
-                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
             }, t => {
-                const {message: s, response: i} = t;
+                const { message: s, response: i } = t;
                 e(s, i, i && i.body)
             }))
         }
 
         post(t, e = (() => {
         })) {
-            if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {"X-Surge-Skip-Scripting": !1})), $httpClient.post(t, (t, s, i) => {
+            if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.post(t, (t, s, i) => {
                 !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            }); else if (this.isQuanX()) t.method = "POST", this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, {hints: !1})), $task.fetch(t).then(t => {
-                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+            }); else if (this.isQuanX()) t.method = "POST", this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
+                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
             }, t => e(t)); else if (this.isNode()) {
                 this.initGotEnv(t);
-                const {url: s, ...i} = t;
+                const { url: s, ...i } = t;
                 this.got.post(s, i).then(t => {
-                    const {statusCode: s, statusCode: i, headers: r, body: o} = t;
-                    e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+                    const { statusCode: s, statusCode: i, headers: r, body: o } = t;
+                    e(null, { status: s, statusCode: i, headers: r, body: o }, o)
                 }, t => {
-                    const {message: s, response: i} = t;
+                    const { message: s, response: i } = t;
                     e(s, i, i && i.body)
                 })
             }
@@ -911,19 +953,19 @@ function Env(t, e) {
         msg(e = t, s = "", i = "", r) {
             const o = t => {
                 if (!t) return t;
-                if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? {"open-url": t} : this.isSurge() ? {url: t} : void 0;
+                if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? { "open-url": t } : this.isSurge() ? { url: t } : void 0;
                 if ("object" == typeof t) {
                     if (this.isLoon()) {
                         let e = t.openUrl || t.url || t["open-url"], s = t.mediaUrl || t["media-url"];
-                        return {openUrl: e, mediaUrl: s}
+                        return { openUrl: e, mediaUrl: s }
                     }
                     if (this.isQuanX()) {
                         let e = t["open-url"] || t.url || t.openUrl, s = t["media-url"] || t.mediaUrl;
-                        return {"open-url": e, "media-url": s}
+                        return { "open-url": e, "media-url": s }
                     }
                     if (this.isSurge()) {
                         let e = t.url || t.openUrl || t["open-url"];
-                        return {url: e}
+                        return { url: e }
                     }
                 }
             };
@@ -952,3 +994,7 @@ function Env(t, e) {
         }
     }(t, e)
 }
+
+//#endregion
+
+
