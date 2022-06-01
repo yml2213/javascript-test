@@ -1,49 +1,52 @@
 /**
- * 脚本地址: http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/hfhx.js
+ * 脚本地址: http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/baiguan.js
  * 转载请留信息,谢谢
  *
-  * 汇丰汇选 
- * cron 10 7 * * *  yml2213_javascript_master/hfhx.js
+ * 百观  app (安卓最好下载  2.0.8 版本,ios随意)
  *
- * 4-23  	增加签到  查询积分  通知 功能
- * 6-1		更新下模板
+ * cron 10 7,12 * * *  yml2213_javascript_master/baiguan.js
+ *
+ *
+ * 5-30		完成 签到  资讯阅读  分享资讯  资讯点赞  本地服务 任务
+ * 5-31		增加社区任务,修复一个任务bug
+ * 6-1		增加评论任务,基本完成所有任务,测试无 bug直接转正式基本
+ * 6-1		修改运行逻辑 ,leaf大佬 nb ,破音
  *
  *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
- * 变量格式: export hfhx_data=' X-HSBC-E2E-Trust-Token1 @ X-HSBC-E2E-Trust-Token2 '   多个账号用 @分割 
+ * 变量格式: export baiguan_data='X-SESSION-ID & X-REQUEST-ID @ X-SESSION-ID & X-REQUEST-ID'  多个账号用 换行 或 @分割
  * 
- * 抓包： 先打开 app - 发现 - 右上角 '领积分' , 然后再打开抓包软件  , 抓签到包  , 找到有 X-HSBC-E2E-Trust-Token 的包就行了
+ * 抓包 vapp.tmuyun.com 这个域名 ,找到上面的变量即可
  *
  * tg频道: https://t.me/yml2213_tg  
  * tg群组: https://t.me/yml_tg    
  * qq频道: https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W4InjV&appChannel=share&businessType=9&from=181074&biz=ka&shareSource=5
  * 
  */
-const $ = new Env("汇丰汇选");
+const $ = new Env("百观");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 const debug = 0			//0为关闭调试,1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
-let ckStr = process.env.hfhx_data;
+let ckStr = process.env.baiguan_data;
 let msg = "";
 let ck = "";
 let host = "vapp.tmuyun.com";
 let hostname = "https://" + host;
+let salt = 'FR*r!isE5W'
 let ck_status = "";
 ///////////////////////////////////////////////////////////////////
-let VersionCheck = "1.0.1"
-let Change = '更新下模板!'
+let VersionCheck = "0.2.3"
 let thank = `\n 感谢 xx 的投稿`
 ///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	let Version_latest = await Version_Check('hfhx');
-	let Version = `\n📌 本地脚本: V 1.0.1  远程仓库脚本: V ${Version_latest}`
+	let Version_latest = await Version_Check('baiguan');
+	let Version = `\n本地脚本:V0.2.3     远程仓库脚本:V${Version_latest}\n`
 	console.log(`${Version}`);
 	msg += `${Version}`
-	console.log(`📌 🆙 更新内容: ${Change}\n`);
-	msg += `${Change}`
+
 	// console.log(thank);
 	// msg += `${thank}`
 
@@ -55,7 +58,7 @@ async function tips(ckArr) {
 
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "hfhx_data");
+	let ckArr = await getCks(ckStr, "baiguan_data");
 	await tips(ckArr);
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
@@ -75,10 +78,13 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("开始 用户信息");
+	console.log("\n开始 用户信息");
 	await user_info();
 
-
+	if (!ck_status) {
+		console.log("\n开始 任务列表");
+		await task_list();
+	}
 }
 
 
@@ -87,63 +93,188 @@ async function start() {
  * https://vapp.tmuyun.com/api/user_mumber/account_detail
  */
 async function user_info() {
-	let options = {
-		url: `https://m.prod.app.hsbcfts.com.cn/api/sapp/biz/pointscenter/pointsindex/v1`,
+	let ts = ts13();
+	let _data = `/api/user_mumber/account_detail&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/user_mumber/account_detail`,
 		headers: {
-			'Connection': 'keep-alive',
-			'Host': 'm.prod.app.hsbcfts.com.cn',
-			'Referer': 'https://m.prod.app.hsbcfts.com.cn/activities/points/',
-			'X-HSBC-Global-Channel-Id': 'MOBILE',
-			'X-HSBC-E2E-Trust-Token': ck[0]
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
 		},
 	};
-	let result = await httpGet(options, `用户信息`);
+	let result = await httpGet(url, `用户信息`);
 
-	if (result.retCode == 10000) {
-		console.log(`    用户信息 成功 🎉  , 你现在有 ${result.data.pointBalance} 积分`);
-		msg += `\n    用户信息 成功 🎉  , 你现在有 ${result.data.pointBalance} 积分`
-		if (result.data.todaySignInStatus != true) {
-			console.log(`    您今天还没签到,去签到喽!`);
-			await signIn();
-			await $.wait(2 * 1000);
-		}
+	if (result.code == 0) {
+		console.log(`    任务列表: 欢迎光临 ${result.data.rst.nick_name} 🎉  , 手机号: ${result.data.rst.mobile} , 积分 ${result.data.rst.total_integral} , 等级 ${result.data.rst.grade} ${result.data.rst.grade_name}`);
+		msg += `\n    任务列表: 欢迎光临 ${result.data.rst.nick_name} 🎉  , 手机号: ${result.data.rst.mobile} , 积分 ${result.data.rst.total_integral} , 等级 ${result.data.rst.grade} ${result.data.rst.grade_name}`;
+		user_name = result.data.rst.nick_name;
 	} else {
 		console.log(`    用户信息: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
-		msg += `\n    用户信息: 失败 ❌ 了呢,原因未知!`;
+		msg += `\n    用户信息: 失败 ❌ 了呢,原因未知!}`;
+		return ck_status = false;
+	}
+}
+
+
+
+/**
+ * 任务列表    httpGet
+ * /api/user_mumber/numberCenter&&6294ba9bfe3fc15cbf96bbcc&&5e107ab6-74ed-4c65-bc8a-f9ab11d7d558&&1653915287942&&FR*r!isE5W&&44
+ */
+async function task_list() {
+	let ts = ts13();
+	let _data = `/api/user_mumber/numberCenter&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/user_mumber/numberCenter`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+	};
+	let result = await httpGet(url, `任务列表`);
+
+	if (result.code == 0) {
+		taskArr = result.data.rst.user_task_list;
+		if (taskArr[0].finish_times < taskArr[0].frequency) {
+			console.log(`    签到: ${result.data.rst.nick_name} 未签到 ,去签到喽!`);
+			msg += `\n    签到: ${result.data.rst.nick_name} 未签到 ,去签到喽!`;
+			console.log(`开始 签到`);
+			await signIn();
+		} else if (taskArr[0].finish_times == taskArr[0].frequency) {
+			console.log(`    签到: ${result.data.rst.nick_name} 今天已经签到了 ,明天再来吧!`);
+			msg += `\n    签到: ${result.data.rst.nick_name} 今天已经签到了 ,明天再来吧!`;
+		}
+
+		for (let index = 1; index < taskArr.length; index++) {
+			let name = taskArr[index].name;
+			let task_type = taskArr[index].member_task_type;
+			if (taskArr[index].finish_times < taskArr[index].frequency) {
+				console.log(`    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`);
+				msg += `\n    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`;
+				let num = taskArr[index].frequency - taskArr[index].finish_times;
+				for (let j = 0; j < num; j++) {
+					console.log(`    开始第 ${j + 1} 次 ${name}`);
+					await dotask(name, task_type);
+				}
+			} else if (taskArr[index].finish_times == taskArr[index].frequency) {
+				console.log(`    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`);
+				msg += `\n    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`;
+			}
+		}
+
+	} else {
+		console.log(`    任务列表: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    任务列表: 失败 ❌ 了呢,原因未知!`;
 	}
 }
 
 
 /**
- * 签到    httpPost
- * https://vapp.tmuyun.com/api/user_mumber/account_detail
+ * 签到    httpGet
  */
 async function signIn() {
-	let options = {
-		url: `https://m.prod.app.hsbcfts.com.cn/api/sapp/biz/pointscenter/signin/v1`,
+	let ts = ts13();
+	let _data = `/api/user_mumber/sign&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/user_mumber/sign`,
 		headers: {
-			'Origin': 'https://m.prod.app.hsbcfts.com.cn',
-			'Content-Type': 'application/json',
-			'X-HSBC-E2E-Trust-Token': ck[0],
-			'Host': 'm.prod.app.hsbcfts.com.cn',
-			'X-HSBC-Request-Correlation-Id': 'e18e39c3-5f15-4aae-bd2a-8c21e340986a',
-			'Referer': 'https://m.prod.app.hsbcfts.com.cn/activities/points/',
-			'X-HSBC-Global-Channel-Id': 'MOBILE',
-			'Connection': 'keep-alive'
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
 		},
 	};
-	let result = await httpPost(options, `签到`);
+	let result = await httpGet(url, `签到`);
 
-	if (result.retCode == 10000) {
-		console.log(`    签到: ${result.message} 🎉  获得积分 ${result.data.pointAmount} 个`);
-		msg += `\n    签到: ${result.message} 🎉  获得积分 ${result.data.pointAmount} 个`
+	if (result.code == 0) {
+		console.log(`    签到: ${result.data.reason} ,获得积分 ${result.data.signExperience}`);
+		console.log(`*********以下测试使用*********`);
+		console.log(result.data);
+		msg += `\n    签到: ${result.data.reason} ,获得积分 ${result.data.signExperience}`;
+		await wait(3);
 	} else {
 		console.log(`    签到: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
-		msg += `\n    签到: 失败 ❌ 了呢,原因未知!`;
+		msg += `\n    签到: 失败 ❌ 了呢,原因未知!}`;
 	}
 }
+
+
+
+
+/**
+ * 通用任务接口  httpPost 
+ */
+async function dotask(name, task_type) {
+	let ts = ts13();
+	let _data = `/api/user_mumber/doTask&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/user_mumber/doTask`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+		form: {
+			'memberType': task_type,
+			'member_type': task_type
+		}
+	};
+	let result = await httpPost(url, name);
+
+	if (result.code == 0) {
+		console.log(`    ${name}: 成功`);
+		msg += `\n    ${name}: 成功`;
+		await wait(3);
+	} else {
+		console.log(`    ${name}: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    ${name}: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -187,12 +318,12 @@ async function getCks(ck, str) {
 
 /**
  * 获取远程版本
- * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/hfhx.js
+ * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/baiguan.js
  */
 function Version_Check(name) {
 	return new Promise((resolve) => {
 		let url = {
-			url: `http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/hfhx.js`,
+			url: `http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/baiguan.js`,
 		}
 		$.get(url, async (err, resp, data) => {
 			try {

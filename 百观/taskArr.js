@@ -91,18 +91,25 @@ taskArr = [
   },
 ];
 
-for (let index = 0; index < taskArr.length; index++) {
+for (let index = 1; index < taskArr.length; index++) {
   let name = taskArr[index].name;
+  let task_type=taskArr[index].member_task_type;
   if (taskArr[index].finish_times < taskArr[index].frequency) {
     // console.log(name);
-    console.log(
-      `    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`
-    );
-    // msg += `\n    ${name}:  未签到 ,去签到喽!`;
+    console.log(`    进行中任务: ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`);
+    // msg += `\n    新闻资讯阅读: 进度 ${result.data.rst.nick_name} , ${taskArr[1].finish_times}/${taskArr[1].frequency}`;
+    let num = taskArr[index].frequency - taskArr[index].finish_times;
+    for (let j = 0; j < num; j++) {
+      console.log(`    开始第 ${j + 1} 次 ${name}`);
+      // await dotask(name, task_type);
+      console.log(name);
+      console.log(task_type);
+
+    }
   } else if (taskArr[index].finish_times == taskArr[index].frequency) {
     // console.log(name);
     console.log(
-      `    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`
+      `    已完成任务: ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`
     );
     // msg += `\n    ${name}:  未签到 ,去签到喽!`;
   }
