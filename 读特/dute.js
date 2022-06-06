@@ -6,7 +6,7 @@
  *
  * cron 10 7,12 * * *  yml2213_javascript_master/dute.js
  *
- * 6-1		签到
+ * 6-6		基本完成所有任务
  *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
@@ -22,7 +22,7 @@
 const $ = new Env("读特");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
-const debug = 1			//0为关闭调试,1为打开调试,默认为0
+const debug = 0			//0为关闭调试,1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
 let ckStr = process.env.dute_data;
 let msg = "";
@@ -33,18 +33,18 @@ let salt = "01ff984b3118a8ec815058f03025b6ac"
 let ck_status = "";
 let app_version = "7.0.6.0";
 let num = randomInt(1, 200);
-let ip = `192.168.31.100`
+let ip = `192.168.31.${num}`
 let rand_device_id = randomString(12)
-let device_id = `2e7d44ef-fd4a-4c72-bc90-b967f2d0164c`
+let device_id = `3b5293c9-a392-459a-bc3a-${rand_device_id}`
 ///////////////////////////////////////////////////////////////////
 let VersionCheck = "0.0.2"
-let Change = '完成 签到 '
+let Change = '基本完成所有任务!'
 let thank = `\n感谢 xx 的投稿`
 ///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
 	let Version_latest = await Version_Check('dute');
-	let Version = `\n📌 本地脚本: V 0.0.1  远程仓库脚本: V ${Version_latest}`
+	let Version = `\n📌 本地脚本: V 0.0.2  远程仓库脚本: V ${Version_latest}`
 	console.log(`${Version}`);
 	msg += `${Version}`
 	console.log(`📌 🆙 更新内容: ${Change}\n`);
@@ -87,6 +87,7 @@ async function start() {
 	if (!ck_status) {
 		console.log("\n开始 任务列表");
 		await task_list();
+
 	}
 
 
@@ -110,11 +111,13 @@ async function login() {
 
 	};
 	let result = await httpPost(Options, `登录`);
-	console.log(result);
+	// console.log(result);
 	if (result.resp_code == 000000) {
 		DoubleLog(`登录: 欢迎光临 ${result.data.login.loginInfo.nickname} 🎉  , 手机号: ${result.data.login.loginInfo.mobile}`);
 		AZ = result.data.login.auth.accessToken;
 		user_id = result.data.login.loginInfo.encodeInfo.userid;
+	} else if (result.resp_code == 999999) {
+		DoubleLog(`登录: ${result.resp_msg} ,密码中请不要包含 & @ 等字符!`);
 	} else {
 		DoubleLog(`登录: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
@@ -161,11 +164,11 @@ async function user_info() {
 
 /**
  * 任务列表    httpGet
- * https://api.dutenews.com/gateway/pgc/v2/app/mall?bind_id=773754&clientid=1&ip=192.168.31.118&siteid=10001&type=android&modules=integral:1
+ * https://api.dutenews.com/gateway/pgc/v2/app/mall?bind_id=773754&clientid=1&ip=192.168.31.118&siteid=10001&type=android&modules=integral:1&app_version=7.0.6.0&device_id=2e7d44ef-fd4a-4c72-bc90-9247de6b1690&system_name=android
  */
 async function task_list() {
 	let Options = {
-		url: `${hostname}/gateway/pgc/v2/app/mall?bind_id=773754&clientid=1&ip=${ip}&siteid=10001&type=android&modules=integral:1`,
+		url: `${hostname}/gateway/pgc/v2/app/mall?bind_id=${user_id}&clientid=1&ip=${ip}&siteid=10001&type=android&modules=integral:1&app_version=${app_version}&device_id=${device_id}&system_name=android`,
 		headers: {
 			'User-Agent': 'okhttp/3.12.1',
 			'Authorization': `Bearer ${AZ}`,
@@ -176,49 +179,24 @@ async function task_list() {
 
 	if (result.state == true) {
 		taskArr = result.data.integral.rule;
-		console.log(taskArr);
-
+		// console.log(taskArr);
 		for (let index = 0; index < taskArr.length; index++) {
-			let name = taskArr[index].name;
-			let task_type = taskArr[index].action_sign;
-			if (taskArr[index].current_times < taskArr[index].reward_num) {
-				DoubleLog(`${name}:  ${taskArr[index].current_times} / ${taskArr[index].reward_num}`)
-				let num = taskArr[index].reward_num - taskArr[index].current_times;
-				for (let j = 0; j < num; j++) {
-					console.log(`    开始第 ${j + 1} 次 ${name}`);
-					await dotask(name, task_type);
+			if (taskArr[index].id != 1 && taskArr[index].id != 12) {
+				let name = taskArr[index].name;
+				let task_type = taskArr[index].action_sign;
+				if (taskArr[index].current_times < taskArr[index].reward_num) {
+					DoubleLog(`${name}:  ${taskArr[index].current_times} / ${taskArr[index].reward_num}`)
+					let num = taskArr[index].reward_num - taskArr[index].current_times;
+					for (let j = 0; j < num; j++) {
+						console.log(`    开始第 ${j + 1} 次 ${name}`);
+						await dotask(name, task_type);
+					}
+				} else if (taskArr[index].current_times == taskArr[index].reward_num) {
+					DoubleLog(`${name}:  ${taskArr[index].current_times} / ${taskArr[index].reward_num}`)
 				}
-			} else if (taskArr[index].current_times == taskArr[index].reward_num) {
-				DoubleLog(`${name}:  ${taskArr[index].current_times} / ${taskArr[index].reward_num}`)
 			}
 		}
 
-		// if (taskArr[0].finish_times < taskArr[0].frequency) {
-		// 	console.log(`    签到: ${result.data.rst.nick_name} 未签到 ,去签到喽!`);
-		// 	msg += `\n    签到: ${result.data.rst.nick_name} 未签到 ,去签到喽!`;
-		// 	console.log(`开始 签到`);
-		// 	await signIn();
-		// } else if (taskArr[0].finish_times == taskArr[0].frequency) {
-		// 	console.log(`    签到: ${result.data.rst.nick_name} 今天已经签到了 ,明天再来吧!`);
-		// 	msg += `\n    签到: ${result.data.rst.nick_name} 今天已经签到了 ,明天再来吧!`;
-		// }
-
-		// for (let index = 1; index < taskArr.length; index++) {
-		// 	let name = taskArr[index].name;
-		// 	let task_type = taskArr[index].member_task_type;
-		// 	if (taskArr[index].finish_times < taskArr[index].frequency) {
-		// 		console.log(`    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`);
-		// 		msg += `\n    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`;
-		// 		let num = taskArr[index].frequency - taskArr[index].finish_times;
-		// 		for (let j = 0; j < num; j++) {
-		// 			console.log(`    开始第 ${j + 1} 次 ${name}`);
-		// 			await dotask(name, task_type);
-		// 		}
-		// 	} else if (taskArr[index].finish_times == taskArr[index].frequency) {
-		// 		console.log(`    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`);
-		// 		msg += `\n    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`;
-		// 	}
-		// }
 
 	} else {
 		console.log(`    任务列表: 失败 ❌ 了呢,原因未知!`);
@@ -259,22 +237,14 @@ async function signIn() {
 
 /**
  * 通用任务接口  httpGet  
- * 分享
- * https://api.dutenews.com/gateway/pgc/v2/credit?creditType=SYS_SHARE&contentId=773754_1654483374378&sign=342c8c5fa497b42298fcbeca5c5204f8&time=1654483374379&memberId=773754&siteid=10001&clientid=1&modules=common%3A1&app_version=7.0.6.0&device_id=3b5293c9-a392-459a-bc3a-b967f2d0164c&memberid=773754&system_name=android&ip=100.100.100.100&type=android
- * 
- * 发布评论
-* https://api.dutenews.com/gateway/pgc/v2/credit?creditType=SYS_COMMENT&contentId=773754_1654488307110&sign=0cff6144481eca0c05a9d4ca2ff6c1cf&time=1654488307114&memberId=773754&siteid=10001&clientid=1&modules=common%3A1&app_version=7.0.6.0&device_id=3b5293c9-a392-459a-bc3a-b967f2d0164c&memberid=773754&system_name=android&ip=100.100.100.100&type=android
  */
 async function dotask(name, task_type) {
-	let ts1 = ts13();
-	let data_1 = `app_version=${app_version}&clientid=1&contentId=${user_id}_${ts1}&creditType=${task_type}&device_id=${device_id}&ip=${ip}&memberId=${user_id}&memberid=${user_id}&modules=common%3A1&siteid=10001&system_name=android&type=android`;
-	console.log(data_1);
+	let ts = ts13();
+	let data_1 = `app_version=${app_version}&clientid=1&contentId=${user_id}_${ts - 1}&creditType=${task_type}&device_id=${device_id}&ip=${ip}&memberId=${user_id}&memberid=${user_id}&modules=common%3A1&siteid=10001&system_name=android&type=android`;
 	let sign_ = MD5Encrypt(data_1)
-	let ts2 = ts13();
-	let data_2 = `${sign_}${salt}${ts2}`
-	let sign = MD5Encrypt(data_2)
+	let sign = MD5Encrypt(`${sign_}${salt}${ts}`)
 	let Options = {
-		url: `${hostname}/gateway/pgc/v2/credit?creditType=${task_type}&contentId=${user_id}_${ts2}&sign=${sign}&time=${ts2}&memberId=${user_id}&siteid=10001&clientid=1&modules=common%3A1&app_version=${app_version}&device_id=${device_id}&memberId=${user_id}&system_name=android&ip=${ip}&type=android`,
+		url: `${hostname}/gateway/pgc/v2/credit?creditType=${task_type}&contentId=${user_id}_${ts - 1}&sign=${sign}&time=${ts}&memberId=${user_id}&siteid=10001&clientid=1&modules=common:1&app_version=${app_version}&device_id=${device_id}&memberid=${user_id}&system_name=android&ip=${ip}&type=android`,
 		headers: {
 			'User-Agent': 'okhttp/3.12.1',
 			'Authorization': `Bearer ${AZ}`,
@@ -284,7 +254,7 @@ async function dotask(name, task_type) {
 	let result = await httpGet(Options, name);
 
 	if (result.state == true) {
-		DoubleLog(`${name}: ${result.data.sign}`);
+		DoubleLog(`${name}: ${result.data.common.message}`);
 		await wait(3);
 	} else if (result.state == false) {
 		DoubleLog(`${name}: ${result.error}`);
@@ -357,11 +327,12 @@ async function getCks(ck, str) {
 
 /**
  * 获取远程版本
+ * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/dute.js
  */
 function Version_Check(name) {
 	return new Promise((resolve) => {
 		let url = {
-			url: `https://raw.gh.fakev.cn/yml2213/javascript/master/${name}/${name}.js`,
+			url: `http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/${name}.js`,
 		}
 		$.get(url, async (err, resp, data) => {
 			try {
