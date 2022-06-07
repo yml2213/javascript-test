@@ -590,12 +590,27 @@ async function SendMsg(message) {
 }
 
 /**
- * 随机数生成
+ * 随机 数字 + 大写字母 生成
  */
 
-function randomString(e) {
+function randomszdx(e) {
     e = e || 32;
     var t = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890",
+        a = t.length,
+        n = "";
+
+    for (i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
+    return n;
+}
+
+
+/**
+ * 随机 数字 + 小写字母 生成
+ */
+
+function randomszxx(e) {
+    e = e || 32;
+    var t = "qwertyuioplkjhgfdsazxcvbnm1234567890",
         a = t.length,
         n = "";
 
@@ -823,6 +838,18 @@ function debugLog(...args) {
         console.log(...args);
     }
 }
+
+/**
+ * 双平台log输出
+ */
+function DoubleLog(data) {
+    if (data) {
+        console.log(`    ${data}`);
+        msg += `\n    ${data}`;
+    }
+}
+
+
 
 // /**
 //  *  单名字 Env

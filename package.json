@@ -3,7 +3,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "crypto-js": "^4.0.0",
+    "crypto-js": "^4.1.1",
     "dotenv": "^16.0.0",
     "download": "^8.0.0",
     "got": "^11.5.1",

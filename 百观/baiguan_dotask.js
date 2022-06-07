@@ -546,6 +546,18 @@ function debugLog(...args) {
 }
 
 
+/**
+ * 双平台log输出
+ */
+function DoubleLog(data) {
+	if (data) {
+		console.log(`    ${data}`);
+		msg += `\n    ${data}`;
+	}
+}
+
+
+
 /* SHA256 logical functions */
 function rotateRight(n, x) {
 	return ((x >>> n) | (x << (32 - n)));

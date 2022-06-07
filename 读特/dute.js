@@ -11,8 +11,6 @@
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
  * 变量格式: export dute_data='手机号&密码 @ 手机号&密码'  多个账号用 换行 或 @分割
- * 
- * 抓包 vapp.tmuyun.com 这个域名 ,找到上面的变量即可
  *
  * tg频道: https://t.me/yml2213_tg  
  * tg群组: https://t.me/yml_tg    
@@ -602,10 +600,10 @@ function debugLog(...args) {
 /**
  * 双平台log输出
  */
-function DoubleLog(msg) {
-	if (msg) {
-		console.log(`    ${msg}`);
-		msg += `\n    ${msg}`;
+function DoubleLog(data) {
+	if (data) {
+		console.log(`    ${data}`);
+		msg += `\n    ${data}`;
 	}
 }
 
