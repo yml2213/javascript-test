@@ -88,6 +88,49 @@ async function start() {
 
 
 
+/**
+ * 签到前    httpPost
+ * https://mallapi.yuexiangvideo.com/tcenter/v1/center/signplan/sign
+ */
+async function signIn_() {
+	let ts = ts10();
+	let data_ = `{"alyimei":"Yp2IHV6BuAADAAoFxhbu2F6/","channel":"xiaomi","device":"Xiaomi-M2102J2SC","deviceId":"7e2e3aa1ef9ce8b5","deviceIdTwo":"","imei":"B89868E01DA260F1DF05F0303BE34FEC","isfast":"0","location":"0,0","nettype":"Wifi","nonce_str":"8aks526gg1c36zed","oaid":"","operator":"中国电信","osversion":"android 7.1.2","pushid":"${ck[0]}","resolution":"2208*1080","simulator":"0","system":"android","timestamp":"${ts}","token":"${ck[1]}","udid":"","version":"2.0.2"}`;
+	// data_ = `{"alyimei":"Yp2IHV6BuAADAAoFxhbu2F6/","channel":"xiaomi","device":"Xiaomi-M2102J2SC","deviceId":"7e2e3aa1ef9ce8b5","deviceIdTwo":"","imei":"B89868E01DA260F1DF05F0303BE34FEC","isfast":"0","location":"0,0","nettype":"Wifi","nonce_str":"o6q7dy1zo6evtqlo","oaid":"","operator":"中国电信","osversion":"android 7.1.2","pushid":"13065ffa4ef247036c1","resolution":"2208*1080","simulator":"0","system":"android","timestamp":"1654526654","token":"M27D18BCCD109A9D68616F80EDA63006664FE3368","udid":"","version":"2.0.2"}`;
+	console.log(`${data_}${salt}`);
+	let sign_ = MD5Encrypt(`${data_}${salt}`)
+	console.log(sign_);
+	let hash = CryptoJS.HmacSHA256(sign_, salt);
+	let sign = CryptoJS.enc.Hex.stringify(hash);
+	console.log(sign);
+	let buff = Buffer.from(data_, 'utf-8');
+	let biz = buff.toString('base64');
+	let Options = {
+		url: `${hostname}/tcenter/v1/center/signplan/components`,
+		headers: {
+			'Host': host,
+			'content-type': 'application/x-www-form-urlencoded; charset=utf-8',
+			'user-agent': 'okhttp/4.2.2'
+		},
+		form: {
+			signature: sign,
+			biz_content: biz
+		}
+	};
+	let result = await httpPost(Options, `签到前`);
+
+	if (result.code == 200) {
+		DoubleLog(`签到前: ${result.msg}`);
+		await wait(3);
+	}
+	// else if (result.state == false) {
+	// 	DoubleLog(`签到: ${result.error}`);
+	// 	await wait(3);
+	// }
+	else {
+		DoubleLog(`签到: 失败 ❌ 了呢,原因未知!`);
+	}
+}
+
 
 
 /**
@@ -97,34 +140,9 @@ async function start() {
 async function signIn() {
 	let ts = ts10();
 	let salt_data = randomszxx(16);
-	let salt = MD5Encrypt(`${salt_data}80`).toUpperCase();
-	data_ = `{"alyimei":"Yp2IHV6BuAADAAoFxhbu2F6/","channel":"xiaomi","device":"Xiaomi-M2102J2SC","deviceId":"7e2e3aa1ef9ce8b5","deviceIdTwo":"","imei":"B89868E01DA260F1DF05F0303BE34FEC","isfast":"0","location":"0,0","nettype":"Wifi","nonce_str":"${salt_data}","oaid":"","operator":"中国电信","osversion":"android 7.1.2","pushid":"${ck[0]}","resolution":"2208*1080","simulator":"0","system":"android","timestamp":"${ts}","token":"${ck[1]}","udid":"","version":"2.0.2"}`;
+	let salt = MD5Encrypt(`${salt_data}80`);
 	
-	let sign_ = MD5Encrypt(`${data_}${salt}`);
-	let hash = CryptoJS.HmacSHA256(sign_, salt);
-	let sign = CryptoJS.enc.Hex.stringify(hash).toUpperCase();
-
-	let buff = Buffer.from(data_, 'utf-8');
-	let biz = buff.toString('base64');
-	let Options = {
-		url: `${hostname}/tcenter/v1/center/signplan/sign`,
-		headers: {
-			'Host': host,
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-			'user-agent': 'okhttp/4.2.2'
-		},
-		body: `biz_content=${biz}&signature=${sign}`
-	};
-	let result = await httpPost(Options, `签到`);
-
-	if (result.code == 200) {
-		DoubleLog(`签到: ${result.msg}`);
-		await wait(3);
-	} else if (result.code == 400) {
-		DoubleLog(`签到: ${result.msg}`);
-	} else {
-		DoubleLog(`签到: 失败 ❌ 了呢,原因未知!`);
-	}
+	console.log();
 }
 
 
