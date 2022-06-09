@@ -24,8 +24,6 @@ const debug = 1			//0为关闭调试,1为打开调试,默认为0
 let ckStr = process.env.ys_data;
 let msg = "";
 let ck = "";
-let host = "mallapi.yuexiangvideo.com";
-let hostname = "https://" + host;
 let ck_status = "";
 let AZ = "";
 let user_id = "";
@@ -86,8 +84,6 @@ async function start() {
 		console.log("\n开始 任务列表");
 		await task_list();
 	}
-
-	// await viewVideoAdd(1);
 
 
 }
@@ -160,15 +156,11 @@ async function task_list() {
 	};
 	let result = await httpGet(Options, `任务列表`);
 	if (result.code == 0) {
-		// console.log(result);
-		// console.log(JSON.stringify(result));
-		// await recommendList();
 		for (let key in result.data) {
 			let task = result.data[key];
 			if (task.title.indexOf('观看作品') > -1) {
 				for (let idx in task.step) {
 					if (task.step[idx].com_status == 12) {
-						await wait(1);
 						await receiveCoin(task);
 						break;
 					} else if (task.step[idx].com_status != 13) {
@@ -177,39 +169,40 @@ async function task_list() {
 						break;
 					}
 				}
-			} else {
-				for (let idx in task.step) {
-					let step = task.step[idx]
-					if (step.com_status == 10 || step.com_status == 11) {
-						await taskReceive(task);
-					}
-					if (step.com_status == 12) {
-						await receiveCoin(task);
-					} else if (step.com_status != 13) {
-						let num = step.condition < 25 ? (step.condition - step.finish_progress) : 1
-						let getReward = true;
-						for (let i = 0; i < num; i++) {
-							if (task.title.indexOf('点赞') > -1) {
-								await recommendList();
-								await like();
-								await like();
-							} else if (task.title.indexOf('观看直播') > -1) {
-								await finishLive();
-							} else if (task.title.indexOf('关注') > -1) {
-								await recommendList();
-								await follow(user_id, 1);
-								await follow(user_id, 2);
-							} else {
-								getReward = false;
-							}
-						}
-						if (getReward) {
-							await receiveCoin(task);
-						}
-					}
-					break;
-				}
 			}
+			// else {
+			// 	for (let idx in task.step) {
+			// 		let step = task.step[idx]
+			// 		if (step.com_status == 10 || step.com_status == 11) {
+			// 			await taskReceive(task);
+			// 		}
+			// 		if (step.com_status == 12) {
+			// 			await receiveCoin(task);
+			// 		} else if (step.com_status != 13) {
+			// 			let num = step.condition < 25 ? (step.condition - step.finish_progress) : 1
+			// 			let getReward = true;
+			// 			for (let i = 0; i < num; i++) {
+			// 				if (task.title.indexOf('点赞') > -1) {
+			// 					await recommendList();
+			// 					await like();
+			// 					await like();
+			// 				} else if (task.title.indexOf('观看直播') > -1) {
+			// 					await finishLive();
+			// 				} else if (task.title.indexOf('关注') > -1) {
+			// 					await recommendList();
+			// 					await follow(user_id, 1);
+			// 					await follow(user_id, 2);
+			// 				} else {
+			// 					getReward = false;
+			// 				}
+			// 			}
+			// 			if (getReward) {
+			// 				await receiveCoin(task);
+			// 			}
+			// 		}
+			// 		break;
+			// 	}
+			// }
 		}
 
 
@@ -309,7 +302,7 @@ async function viewVideoAdd(step) {
 	let data_ = `Authorization=${AZ}&platform=android&timestamp=${ts}${iv}${key}`;
 	let sign = sha1(`${iv}${key}${sha1(data_)}${AZ}`);
 	let Options = {
-		url: `https://ysapi.elecfans.com/api/video/index`,
+		url: `https://ysapi.elecfans.com/api/activity/task/viewVideo/add`,
 		headers: {
 			"Host": "ysapi.elecfans.com",
 			"authorization": AZ,
@@ -320,7 +313,7 @@ async function viewVideoAdd(step) {
 			"version": "2.3.1",
 			"user-agent": "okhttp/3.12.3",
 		},
-		body: JSON.stringify({ 'type': task.type }),
+		body: JSON.stringify({ 'step': step }),
 	};
 	let result = await httpPost(Options, `刷新看视频进度`);
 
@@ -328,7 +321,7 @@ async function viewVideoAdd(step) {
 		DoubleLog(`刷新看视频进度: 第 ${step} 次 ,成功刷新!`);
 		await wait(3);
 	} else {
-		DoubleLog(`刷新看视频进度: ${task.title} : 失败 ❌ 了呢 , ${result.message}`);
+		DoubleLog(`刷新看视频进度: 第 ${step} 次 ,失败 ❌ 了呢 , ${result.message}`);
 		console.log(result);
 	}
 }
