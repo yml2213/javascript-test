@@ -86,9 +86,9 @@ console.log(ys_data);
 			await signin();
 			await $.wait(2 * 1000);
 
-			// console.log('开始 获取推荐视频列表');
-			// await video_list();
-			// await $.wait(2 * 1000);
+			console.log('开始 获取推荐视频列表');
+			await video_list();
+			await $.wait(2 * 1000);
 
 			console.log('开始 关注任务');
 			for (let index = 0; index < 1; index++) {
@@ -112,13 +112,13 @@ console.log(ys_data);
 			await receiveCoin(4, '点赞');
 			await $.wait(2 * 1000);
 
-			// console.log('开始 每日任务列表');
-			// await task_list();
-			// await $.wait(2 * 1000);
+			console.log('开始 每日任务列表');
+			await task_list();
+			await $.wait(2 * 1000);
 
-			// console.log('开始 观看作品赚硬币');
-			// await receiveCoin();
-			// await $.wait(2 * 1000);
+			console.log('开始 观看作品赚硬币');
+			await receiveCoin();
+			await $.wait(2 * 1000);
 
 
 
