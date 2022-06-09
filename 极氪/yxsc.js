@@ -4,10 +4,9 @@
  *
  * 悦享商城  app 
  *
- * cron 15 7,12 * * *  yml2213_javascript_master/yxsc.js
+ * cron 10 7,12 * * *  yml2213_javascript_master/yxsc.js
  *
- * 6-6		签到
- * 6-9		增加任务,感谢 Y 大佬的代码!
+ * 6-6		基本完成所有任务
  *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
@@ -33,14 +32,14 @@ let pushid = randomszxx(19);
 let imei = randomszdx(32);
 let CryptoJS = require("crypto-js");
 ///////////////////////////////////////////////////////////////////
-let VersionCheck = "0.1.2"
-let Change = '增加任务,感谢 Y 大佬的代码!'
+let VersionCheck = "0.0.1"
+let Change = '签到!'
 let thank = `\n感谢 xx 的投稿`
 ///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
 	let Version_latest = await Version_Check('yxsc');
-	let Version = `\n📌 本地脚本: V 0.1.2  远程仓库脚本: V ${Version_latest}`
+	let Version = `\n📌 本地脚本: V 0.0.1  远程仓库脚本: V ${Version_latest}`
 	console.log(`${Version}`);
 	msg += `${Version}`
 	console.log(`📌 🆙 更新内容: ${Change}\n`);
@@ -78,15 +77,11 @@ async function start() {
 	console.log("\n开始 签到");
 	await signIn();
 
-	if (!ck_status) {
+	// if (!ck_status) {
+	// 	console.log("\n开始 任务列表");
+	// 	await task_list();
 
-		console.log("\n开始 任务列表");
-		await task_list();
-
-		await wait(5);
-		await task_list();
-
-	}
+	// }
 
 
 }
@@ -143,135 +138,6 @@ async function signIn() {
 
 
 
-
-/**
- * 任务单获取    hthttpPost
- *https://mallapi.yuexiangvideo.com/tcenter/v1/center/list
- */
-async function task_list() {
-	let ts = ts10();
-	let salt_data = randomszxx(16);
-	let salt = MD5Encrypt(`${salt_data}80`).toUpperCase();
-	data_ = `{"alyimei":"Yp2IHV6BuAADAAoFxhbu2F6/","channel":"xiaomi","device":"Xiaomi-M2102J2SC","deviceId":"${deviceId}","deviceIdTwo":"","imei":"${imei}","isfast":"0","location":"0,0","nettype":"Wifi","nonce_str":"${salt_data}","oaid":"","operator":"中国电信","osversion":"android 7.1.2","pushid":"${pushid}","resolution":"2208*1080","simulator":"0","system":"android","timestamp":"${ts}","token":"${ck[0]}","udid":"","version":"2.0.2"}`;
-
-	let sign_ = MD5Encrypt(`${data_}${salt}`);
-	let hash = CryptoJS.HmacSHA256(sign_, salt);
-	let sign = CryptoJS.enc.Hex.stringify(hash).toUpperCase();
-
-	let buff = Buffer.from(data_, 'utf-8');
-	let biz = buff.toString('base64');
-	let Options = {
-		url: `${hostname}/tcenter/v1/center/list`,
-		headers: {
-			'Host': host,
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-			'user-agent': 'okhttp/4.2.2'
-		},
-		body: `biz_content=${biz}&signature=${sign}`
-	};
-	let result = await httpPost(Options, `任务单获取`);
-	if (result.code == 200) {
-		taskArr = result.data.result.daily.list;
-		for (let index = 0; index < taskArr.length; index++) {
-			if (taskArr[index].id != 1 && taskArr[index].id != 12) {
-				let name = taskArr[index].title;
-				let task_type = taskArr[index].task_no;
-				if (taskArr[index].state < taskArr[index].status) {
-					DoubleLog(`${name}:  ${taskArr[index].state} / ${taskArr[index].status}`)
-					let num = taskArr[index].status - taskArr[index].state;
-					for (let j = 0; j < num; j++) {
-						console.log(`    开始第 ${j + 1} 次 ${name}`);
-						await zrw(name, task_type);
-
-					}
-				} else if (taskArr[index].state == taskArr[index].status) {
-					await lqjl(name, task_type);
-					DoubleLog(`${name}:  ${taskArr[index].state} / ${taskArr[index].status}`)
-				}
-			}
-		}
-
-	} else {
-		console.log(`    任务列表: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
-		msg += `\n    任务列表: 失败 ❌ 了呢,原因未知!`;
-	}
-}
-
-
-
-/**
-* 通用任务接口 做任务  httpPost
-* https://mallapi.yuexiangvideo.com/tcenter/v1/center/doCheers  
-*/
-async function zrw(name, task_type) {
-	let ts = ts10();
-	let salt_data = randomszxx(16);
-	let salt = MD5Encrypt(`${salt_data}80`).toUpperCase();
-	data_ = `{"channel":"iOS","device":"iPhone 12 Pro Max","idfa":"","imei":"${imei}","isfast":"0","location":"31.996089,118.725356","nettype":"Wifi","nonce_str":"${salt_data}","operator":"中国电信","osversion":"iOS14.7.1","point":"0","pushid":"${pushid}","resolution":"1284*2778","system":"ios","taskno":"${task_type}","timestamp":"${ts}","token":"${ck[0]}","version":"2.0.1"}`;
-
-	let sign_ = MD5Encrypt(`${data_}${salt}`);
-	let hash = CryptoJS.HmacSHA256(sign_, salt);
-	let sign = CryptoJS.enc.Hex.stringify(hash).toUpperCase();
-
-	let buff = Buffer.from(data_, 'utf-8');
-	let biz = buff.toString('base64');
-	let Options = {
-		url: `${hostname}/tcenter/v1/center/doCheers`,
-		headers: {
-			'Host': host,
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-			'user-agent': 'okhttp/4.2.2'
-		},
-		body: `biz_content=${biz}&signature=${sign}`
-	};
-	let result = await httpPost(Options, `做任务`);
-
-
-	if (result.code == 200) {
-		console.log(result.msg);
-		await wait(3);
-	} else {
-		console.log(result);
-	}
-}
-
-
-/**
- * 通用任务领取接口  领取任务奖励   httpPost
- * https://mallapi.yuexiangvideo.com/tcenter/v1/center/receive
- */
-async function lqjl(name, task_type) {
-	let ts = ts10();
-	let salt_data = randomszxx(16);
-	let salt = MD5Encrypt(`${salt_data}80`).toUpperCase();
-	data_ = `{"channel":"iOS","device":"iPhone 12 Pro Max","idfa":"","imei":"${imei}","isfast":"0","location":"31.996089,118.725356","nettype":"Wifi","nonce_str":"${salt_data}","operator":"中国电信","osversion":"iOS14.7.1","point":"0","pushid":"${pushid}","resolution":"1284*2778","system":"ios","taskno":"${task_type}","timestamp":"${ts}","token":"${ck[0]}","version":"2.0.1"}`;
-
-	let sign_ = MD5Encrypt(`${data_}${salt}`);
-	let hash = CryptoJS.HmacSHA256(sign_, salt);
-	let sign = CryptoJS.enc.Hex.stringify(hash).toUpperCase();
-
-	let buff = Buffer.from(data_, 'utf-8');
-	let biz = buff.toString('base64');
-	let Options = {
-		url: `${hostname}/tcenter/v1/center/receive`,
-		headers: {
-			'Host': host,
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-			'user-agent': 'okhttp/4.2.2'
-		},
-		body: `biz_content=${biz}&signature=${sign}`
-	};
-	let result = await httpPost(Options, `领取任务`);
-
-
-	if (result.code == 200) {
-		console.log(result.msg);
-		await wait(3);
-	} else {
-		console.log(result);
-	}
-}
 
 
 

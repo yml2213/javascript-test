@@ -1,46 +1,36 @@
 /**
- * 脚本地址: http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/yxsc.js
- * 转载请留信息,谢谢
  *
- * 悦享商城  app 
+ * 网易严选  小程序 
  *
- * cron 15 7,12 * * *  yml2213_javascript_master/yxsc.js
+ * cron:  13 8,12,16,18,20 * * *
  *
- * 6-6		签到
- * 6-9		增加任务,感谢 Y 大佬的代码!
+ * 6-9		感谢大佬脚本
  *
- * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
- * 变量格式: export yxsc_data='token @ token'  多个账号用 换行 或 @分割
- *
- * tg频道: https://t.me/yml2213_tg  
- * tg群组: https://t.me/yml_tg    
- * 
+ * 变量格式: export wyyx_data='X-WX-3RD-Session @ X-WX-3RD-Session '  多个账号用 换行 或 @分割
  */
-const $ = new Env("悦享商城");
+
+const $ = new Env("网易严选");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 const debug = 0			//0为关闭调试,1为打开调试,默认为0
 ///////////////////////////////////////////////////////////////////
-let ckStr = process.env.yxsc_data;
+let ckStr = process.env.wyyx_data;
 let msg = "";
 let ck = "";
-let host = "mallapi.yuexiangvideo.com";
+let host = "miniapp.you.163.com";
 let hostname = "https://" + host;
 let ck_status = "";
-let deviceId = randomszxx(16);
-let pushid = randomszxx(19);
-let imei = randomszdx(32);
 let CryptoJS = require("crypto-js");
 ///////////////////////////////////////////////////////////////////
-let VersionCheck = "0.1.2"
-let Change = '增加任务,感谢 Y 大佬的代码!'
+let VersionCheck = "0.0.2"
+let Change = '签到!'
 let thank = `\n感谢 xx 的投稿`
 ///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	let Version_latest = await Version_Check('yxsc');
-	let Version = `\n📌 本地脚本: V 0.1.2  远程仓库脚本: V ${Version_latest}`
+	// let Version_latest = await Version_Check('wyyx');
+	let Version = `\n📌 本地脚本: V 0.0.2`
 	console.log(`${Version}`);
 	msg += `${Version}`
 	console.log(`📌 🆙 更新内容: ${Change}\n`);
@@ -57,7 +47,7 @@ async function tips(ckArr) {
 
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "yxsc_data");
+	let ckArr = await getCks(ckStr, "wyyx_data");
 	await tips(ckArr);
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
@@ -79,12 +69,23 @@ async function start() {
 	await signIn();
 
 	if (!ck_status) {
+		console.log("\n开始 收取气泡水滴");
+		await qpsd();
 
-		console.log("\n开始 任务列表");
-		await task_list();
+		console.log("\n开始 免费水滴");
+		await mfsd();
 
-		await wait(5);
-		await task_list();
+		console.log("\n开始 三餐水滴");
+		await scsd();
+
+		console.log("\n开始 浏览商品");
+		await llsp();
+
+		console.log("\n开始 浇水");
+		await js();
+
+		console.log("\n开始 农场进度");
+		await cs();
 
 	}
 
@@ -98,42 +99,24 @@ async function start() {
 
 
 /**
- * 签到    httpPost
+ * 签到    httpGet
  * https://mallapi.yuexiangvideo.com/tcenter/v1/center/signplan/sign
  */
 async function signIn() {
-	let ts = ts10();
-	let salt_data = randomszxx(16);
-	let salt = MD5Encrypt(`${salt_data}80`).toUpperCase();
-	data_ = `{"alyimei":"Yp2IHV6BuAADAAoFxhbu2F6/","channel":"xiaomi","device":"Xiaomi-M2102J2SC","deviceId":"${deviceId}","deviceIdTwo":"","imei":"${imei}","isfast":"0","location":"0,0","nettype":"Wifi","nonce_str":"${salt_data}","oaid":"","operator":"中国电信","osversion":"android 7.1.2","pushid":"${pushid}","resolution":"2208*1080","simulator":"0","system":"android","timestamp":"${ts}","token":"${ck[0]}","udid":"","version":"2.0.2"}`;
-
-	let sign_ = MD5Encrypt(`${data_}${salt}`);
-	let hash = CryptoJS.HmacSHA256(sign_, salt);
-	let sign = CryptoJS.enc.Hex.stringify(hash).toUpperCase();
-
-	let buff = Buffer.from(data_, 'utf-8');
-	let biz = buff.toString('base64');
 	let Options = {
-		url: `${hostname}/tcenter/v1/center/signplan/sign`,
+		url: `${hostname}/act/money/checkIn/V3/checkIn.json`,
 		headers: {
 			'Host': host,
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-			'user-agent': 'okhttp/4.2.2'
+			'X-WX-3RD-Session': ck[0],
+			'Content-Type': 'application/json'
 		},
-		body: `biz_content=${biz}&signature=${sign}`
 	};
-	let result = await httpPost(Options, `签到`);
+	let result = await httpGet(Options, `签到`);
 
 	if (result.code == 200) {
-		if (!result.data.result.coupon) {
-			DoubleLog(`签到: ${result.msg} ,以连续签到 ${result.data.result.sign_day} 天 ,获得 ${result.data.result.coupon[0]}`);
-			console.log(result);
-			await wait(3);
-		} else {
-			DoubleLog(`今天已经签到了!`)
-		}
+		DoubleLog(`签到: 总奖励 ${result.data.totalAmount} 元`);
 	} else if (result.code == 400) {
-		DoubleLog(`签到: ${result.msg}`);
+		DoubleLog(`签到: 今天已经签到过了!`);
 	} else {
 		DoubleLog(`签到: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
@@ -144,137 +127,154 @@ async function signIn() {
 
 
 
+
 /**
- * 任务单获取    hthttpPost
- *https://mallapi.yuexiangvideo.com/tcenter/v1/center/list
+ * 收取气泡水滴    httpGet
  */
-async function task_list() {
-	let ts = ts10();
-	let salt_data = randomszxx(16);
-	let salt = MD5Encrypt(`${salt_data}80`).toUpperCase();
-	data_ = `{"alyimei":"Yp2IHV6BuAADAAoFxhbu2F6/","channel":"xiaomi","device":"Xiaomi-M2102J2SC","deviceId":"${deviceId}","deviceIdTwo":"","imei":"${imei}","isfast":"0","location":"0,0","nettype":"Wifi","nonce_str":"${salt_data}","oaid":"","operator":"中国电信","osversion":"android 7.1.2","pushid":"${pushid}","resolution":"2208*1080","simulator":"0","system":"android","timestamp":"${ts}","token":"${ck[0]}","udid":"","version":"2.0.2"}`;
-
-	let sign_ = MD5Encrypt(`${data_}${salt}`);
-	let hash = CryptoJS.HmacSHA256(sign_, salt);
-	let sign = CryptoJS.enc.Hex.stringify(hash).toUpperCase();
-
-	let buff = Buffer.from(data_, 'utf-8');
-	let biz = buff.toString('base64');
+async function qpsd() {
 	let Options = {
-		url: `${hostname}/tcenter/v1/center/list`,
+		url: `${hostname}/orchard/task/water/get.json?taskId=REWARD_TOMORROW&taskRecordId=6509215`,
 		headers: {
 			'Host': host,
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-			'user-agent': 'okhttp/4.2.2'
+			'X-WX-3RD-Session': ck[0],
+			'Content-Type': 'application/json'
 		},
-		body: `biz_content=${biz}&signature=${sign}`
 	};
-	let result = await httpPost(Options, `任务单获取`);
-	if (result.code == 200) {
-		taskArr = result.data.result.daily.list;
-		for (let index = 0; index < taskArr.length; index++) {
-			if (taskArr[index].id != 1 && taskArr[index].id != 12) {
-				let name = taskArr[index].title;
-				let task_type = taskArr[index].task_no;
-				if (taskArr[index].state < taskArr[index].status) {
-					DoubleLog(`${name}:  ${taskArr[index].state} / ${taskArr[index].status}`)
-					let num = taskArr[index].status - taskArr[index].state;
-					for (let j = 0; j < num; j++) {
-						console.log(`    开始第 ${j + 1} 次 ${name}`);
-						await zrw(name, task_type);
+	let result = await httpGet(Options, `收取气泡水滴`);
 
-					}
-				} else if (taskArr[index].state == taskArr[index].status) {
-					await lqjl(name, task_type);
-					DoubleLog(`${name}:  ${taskArr[index].state} / ${taskArr[index].status}`)
-				}
-			}
-		}
-
+	if (result.result.result == 1) {
+		DoubleLog(`收取气泡水滴: 收取 ${result.result.water} 滴水💧`);
+	} else if (result.result.result == 2) {
+		DoubleLog(`收取气泡水滴: 没有可以收取的 💧`);
 	} else {
-		console.log(`    任务列表: 失败 ❌ 了呢,原因未知!`);
+		DoubleLog(`收取气泡水滴: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
-		msg += `\n    任务列表: 失败 ❌ 了呢,原因未知!`;
 	}
 }
 
 
 
 /**
-* 通用任务接口 做任务  httpPost
-* https://mallapi.yuexiangvideo.com/tcenter/v1/center/doCheers  
+ * 免费水滴    httpGet
+ */
+async function mfsd() {
+	let Options = {
+		url: `${hostname}/orchard/task/water/get.json?taskId=GET_EVERYDAY_FREE&taskRecordId=&subTaskId=`,
+		headers: {
+			'Host': host,
+			'X-WX-3RD-Session': ck[0],
+			'Content-Type': 'application/json'
+		},
+	};
+	let result = await httpGet(Options, `免费水滴`);
+
+	if (result.result.result == 1) {
+		DoubleLog(`免费水滴: 收取 ${result.result.water} 滴水💧`);
+	} else if (result.result.result == 2) {
+		DoubleLog(`免费水滴: 没有可以收取的 💧`);
+	} else {
+		DoubleLog(`免费水滴: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+	}
+}
+
+
+/**
+* 三餐水滴    httpGet
 */
-async function zrw(name, task_type) {
-	let ts = ts10();
-	let salt_data = randomszxx(16);
-	let salt = MD5Encrypt(`${salt_data}80`).toUpperCase();
-	data_ = `{"channel":"iOS","device":"iPhone 12 Pro Max","idfa":"","imei":"${imei}","isfast":"0","location":"31.996089,118.725356","nettype":"Wifi","nonce_str":"${salt_data}","operator":"中国电信","osversion":"iOS14.7.1","point":"0","pushid":"${pushid}","resolution":"1284*2778","system":"ios","taskno":"${task_type}","timestamp":"${ts}","token":"${ck[0]}","version":"2.0.1"}`;
-
-	let sign_ = MD5Encrypt(`${data_}${salt}`);
-	let hash = CryptoJS.HmacSHA256(sign_, salt);
-	let sign = CryptoJS.enc.Hex.stringify(hash).toUpperCase();
-
-	let buff = Buffer.from(data_, 'utf-8');
-	let biz = buff.toString('base64');
+async function scsd() {
 	let Options = {
-		url: `${hostname}/tcenter/v1/center/doCheers`,
+		url: `${hostname}/orchard/task/water/get.json?taskId=GET_EVERYDAY_RANDOM&taskRecordId=&subTaskId=`,
 		headers: {
 			'Host': host,
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-			'user-agent': 'okhttp/4.2.2'
+			'X-WX-3RD-Session': ck[0],
+			'Content-Type': 'application/json'
 		},
-		body: `biz_content=${biz}&signature=${sign}`
 	};
-	let result = await httpPost(Options, `做任务`);
+	let result = await httpGet(Options, `三餐水滴`);
 
-
-	if (result.code == 200) {
-		console.log(result.msg);
-		await wait(3);
+	if (result.result.result == 1) {
+		DoubleLog(`三餐水滴: 收取 ${result.result.water} 滴水💧`);
+	} else if (result.result.result == 2) {
+		DoubleLog(`三餐水滴: 没有可以收取的 💧`);
 	} else {
+		DoubleLog(`三餐水滴: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
 	}
 }
+
 
 
 /**
- * 通用任务领取接口  领取任务奖励   httpPost
- * https://mallapi.yuexiangvideo.com/tcenter/v1/center/receive
- */
-async function lqjl(name, task_type) {
-	let ts = ts10();
-	let salt_data = randomszxx(16);
-	let salt = MD5Encrypt(`${salt_data}80`).toUpperCase();
-	data_ = `{"channel":"iOS","device":"iPhone 12 Pro Max","idfa":"","imei":"${imei}","isfast":"0","location":"31.996089,118.725356","nettype":"Wifi","nonce_str":"${salt_data}","operator":"中国电信","osversion":"iOS14.7.1","point":"0","pushid":"${pushid}","resolution":"1284*2778","system":"ios","taskno":"${task_type}","timestamp":"${ts}","token":"${ck[0]}","version":"2.0.1"}`;
-
-	let sign_ = MD5Encrypt(`${data_}${salt}`);
-	let hash = CryptoJS.HmacSHA256(sign_, salt);
-	let sign = CryptoJS.enc.Hex.stringify(hash).toUpperCase();
-
-	let buff = Buffer.from(data_, 'utf-8');
-	let biz = buff.toString('base64');
+* 浏览商品    httpGet
+*/
+async function llsp() {
 	let Options = {
-		url: `${hostname}/tcenter/v1/center/receive`,
+		url: `${hostname}/orchard/task/finish.json?taskId=VISIT_ITEM&taskRecordId=0`,
 		headers: {
 			'Host': host,
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-			'user-agent': 'okhttp/4.2.2'
+			'X-WX-3RD-Session': ck[0],
+			'Content-Type': 'application/json'
 		},
-		body: `biz_content=${biz}&signature=${sign}`
 	};
-	let result = await httpPost(Options, `领取任务`);
+	let result = await httpGet(Options, `浏览商品`);
 
-
-	if (result.code == 200) {
-		console.log(result.msg);
-		await wait(3);
+	if (result.result.result == 1) {
+		DoubleLog(`浏览商品: 收取 10 滴水💧`);
+	} else if (result.result.result == 2) {
+		DoubleLog(`浏览商品: 没有可以收取的 💧`);
 	} else {
+		DoubleLog(`浏览商品: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
 	}
 }
 
 
 
+
+/**
+ * 浇水    httpGet
+ */
+async function js() {
+	let Options = {
+		url: `${hostname}/orchard/game/water/drop.json`,
+		headers: {
+			'Host': host,
+			'X-WX-3RD-Session': ck[0],
+			'Content-Type': 'application/json'
+		},
+	};
+	let result = await httpGet(Options, `浇水`);
+
+	if (result.code == 200) {
+		DoubleLog(`浇水: 浇水成功!`);
+	} else if (result.code == 500) {
+		DoubleLog(`浇水: 水滴不足，无法浇水!`);
+	} else {
+		DoubleLog(`浇水: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+	}
+}
+
+
+
+
+/**
+* 农场    httpGet
+*/
+async function cs() {
+	let Options = {
+		url: `${hostname}/orchard/game/water/index/dynamic.json`,
+		headers: {
+			'Host': host,
+			'X-WX-3RD-Session': ck[0],
+			'Content-Type': 'application/json'
+		},
+	};
+	let result = await httpGet(Options, `农场`);
+
+	DoubleLog(`农场: ${result.result.levelDesc}`);
+}
 
 
 
@@ -337,7 +337,7 @@ async function getCks(ck, str) {
 
 /**
  * 获取远程版本
- * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/yxsc.js
+ * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/wyyx.js
  */
 function Version_Check(name) {
 	return new Promise((resolve) => {
