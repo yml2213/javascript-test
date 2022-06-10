@@ -1,7 +1,7 @@
 /*
 硬声
 
-注册登录之后，设置密码，把手机密码填到 yingshengAccount 里
+注册登录之后，设置密码，把手机密码填到yingshengAccount里
 多账户换行或者@隔开，格式：account=13888888888&password=xxxxxxxx
 一天至少三次
 */

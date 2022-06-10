@@ -1,7 +1,7 @@
 /*
 硬声
 
-注册登录之后，设置密码，把手机密码填到 yingshengAccount 里
+注册登录之后，设置密码，把手机密码填到yingshengAccount里
 多账户换行或者@隔开，格式：account=13888888888&password=xxxxxxxx
 一天至少三次
 */
@@ -13,8 +13,12 @@ var CryptoJS = require("crypto-js");
 let envSplitor = ['\n', '@']
 let httpResult, httpReq, httpResp
 
-let userCookie = process.env.yingshengAccount;
+let userCookie1 = ($.isNode() ? process.env.yingshengAccount : $.getdata('yingshengAccount')) || '';
+let userCookie = 'account=15339956683&password=yml123456789'
+
 let userList = []
+
+let user_id, audio_id;
 
 let userIdx = 0
 let userCount = 0
@@ -60,6 +64,7 @@ class UserInfo {
         return param;
     }
 
+    // 登录
     async login() {
         try {
             let pwd = EncryptCrypto(AES_method, AES_mode, AES_padding, this.params.password, AES_key, AES_IV)
@@ -89,6 +94,7 @@ class UserInfo {
         } finally { }
     }
 
+    // 用户信息
     async getInfo() {
         try {
             let param = { 'user_id': this.user_id }
@@ -111,6 +117,7 @@ class UserInfo {
         } finally { }
     }
 
+    // 签到状态
     async getSignStatus() {
         try {
             let param = { 'date': '' }
@@ -137,7 +144,7 @@ class UserInfo {
             console.log(e)
         } finally { }
     }
-
+    // 签到
     async signin() {
         try {
             let param = { 'date': '' }
@@ -159,7 +166,8 @@ class UserInfo {
         } finally { }
     }
 
-    //com_status: 10,11 -- 未完成, 12 -- 待领取， 13 -- 已完成
+    // 任务列表
+    //com_status: 10,11 -- 未完成, 12 -- 待领取， 13 -- 已完成 
     async getTaskList() {
         try {
             let param = {}
@@ -173,7 +181,7 @@ class UserInfo {
             //console.log(result)
             if (result.code == 0) {
                 await $.wait(TASK_WAIT_TIME);
-                await this.recommendList();
+                // await this.recommendList();
                 for (let key in result.data) {
                     let task = result.data[key]
                     if (task.title.indexOf('观看作品') > -1) {
@@ -205,20 +213,20 @@ class UserInfo {
                                 let getReward = true;
                                 for (let i = 0; i < num; i++) {
                                     if (task.title.indexOf('点赞') > -1) {
-                                        let rndIdx = Math.floor(Math.random() * 2000) + 8000
+                                        await this.recommendList();
                                         await $.wait(TASK_WAIT_TIME);
-                                        await this.thumbsup(rndIdx);
-                                        await $.wait(TASK_WAIT_TIME);
-                                        await this.thumbsup(rndIdx);
+                                        await this.thumbsup(audio_id);
+                                        await $.wait(5 * 1000);
+                                        await this.thumbsup(audio_id);
                                     } else if (task.title.indexOf('观看直播') > -1) {
                                         await $.wait(TASK_WAIT_TIME);
                                         await this.finishLive();
                                     } else if (task.title.indexOf('关注') > -1) {
-                                        let uid = this.userIdList[i] ? this.userIdList[i] : Math.floor(Math.random() * 100000) + 4900000
                                         await $.wait(TASK_WAIT_TIME);
-                                        await this.doFollow(uid, 1);
-                                        await $.wait(TASK_WAIT_TIME);
-                                        await this.doFollow(uid, 2);
+                                        await this.recommendList();
+                                        await this.doFollow(1);
+                                        await $.wait(5 * 1000);
+                                        await this.doFollow(2);
                                     } else {
                                         getReward = false;
                                     }
@@ -240,6 +248,7 @@ class UserInfo {
         } finally { }
     }
 
+    // 开始任务
     async taskReceive(task) {
         try {
             let param = { 'type': task.type }
@@ -261,6 +270,7 @@ class UserInfo {
         } finally { }
     }
 
+    // 领取硬币
     async receiveCoin(task) {
         try {
             let param = { 'type': task.type }
@@ -282,6 +292,7 @@ class UserInfo {
         } finally { }
     }
 
+    // 点赞
     async thumbsup(video_id) {
         try {
             let param = { 'video_id': video_id }
@@ -302,6 +313,33 @@ class UserInfo {
             console.log(e)
         } finally { }
     }
+
+
+    // 关注
+    async doFollow(type) {
+        try {
+            let param = { 'user_id': user_id, 'type': type }
+            let url = `https://ysapi.elecfans.com/api/member/follow`
+            let body = $.json2str(param, '&')
+            param = this.calculateSign_ysapi(param)
+            let urlObject = populateUrlObject(url, param, body)
+            await httpRequest('post', urlObject)
+            let result = httpResult;
+            if (!result) return
+            //console.log(result)
+            let str = type == 1 ? '关注' : '取消关注'
+            if (result.code == 0) {
+                console.log(`${str}用户[${user_id}]成功`)
+            } else {
+                console.log(`${str}用户[${user_id}]失败: ${result.message}`)
+            }
+        } catch (e) {
+            console.log(e)
+        } finally { }
+    }
+
+
+
 
     async viewVideoAdd(step) {
         try {
@@ -324,6 +362,7 @@ class UserInfo {
         } finally { }
     }
 
+    // 完成观看直播
     async finishLive() {
         try {
             let param = {}
@@ -345,10 +384,11 @@ class UserInfo {
         } finally { }
     }
 
+    // 推荐列表
     async recommendList() {
         try {
             let param = {}
-            let url = `https://ysapi.elecfans.com/api/live/recommendList`
+            let url = `https://ysapi.elecfans.com/api/video/index`
             let body = ``
             param = this.calculateSign_ysapi(param)
             let urlObject = populateUrlObject(url, param, body)
@@ -357,9 +397,13 @@ class UserInfo {
             if (!result) return
             //console.log(result)
             if (result.code == 0) {
-                for (let item of result.data.data) {
-                    this.userIdList.push(item.user_id)
-                }
+                let id_num = randomInt(0, 9);
+                user_id = result.data.data[id_num].user_id;
+                audio_id = result.data.data[id_num].detail.audio_id;
+
+                // for (let item of result.data.data) {
+                //     this.userIdList.push(item.user_id)
+                // }
             } else {
                 console.log(`获取推荐列表失败: ${result.message}`)
             }
@@ -368,27 +412,6 @@ class UserInfo {
         } finally { }
     }
 
-    async doFollow(user_id, type) {
-        try {
-            let param = { 'user_id': user_id, 'type': type }
-            let url = `https://ysapi.elecfans.com/api/member/follow`
-            let body = $.json2str(param, '&')
-            param = this.calculateSign_ysapi(param)
-            let urlObject = populateUrlObject(url, param, body)
-            await httpRequest('post', urlObject)
-            let result = httpResult;
-            if (!result) return
-            //console.log(result)
-            let str = type == 1 ? '关注' : '取消关注'
-            if (result.code == 0) {
-                console.log(`${str}用户[${user_id}]成功`)
-            } else {
-                console.log(`${str}用户[${user_id}]失败: ${result.message}`)
-            }
-        } catch (e) {
-            console.log(e)
-        } finally { }
-    }
 
     async userTask() {
         console.log(`\n============= 账号[${this.index}] =============`)
@@ -431,6 +454,7 @@ async function GetRewrite() {
 
 async function checkEnv() {
     if (userCookie) {
+        // let userCookie='account=15614832213&password=yml123456'
         let splitor = envSplitor[0];
         for (let sp of envSplitor) {
             if (userCookie.indexOf(sp) > -1) {
@@ -521,6 +545,13 @@ function DecryptCrypto(method, mode, padding, message, key, iv) {
         { mode: CryptoJS.mode[mode], padding: CryptoJS.pad[padding], iv: CryptoJS.enc.Utf8.parse(iv) }
     ).toString(CryptoJS.enc.Utf8);
 }
+
+
+function randomInt(min, max) {
+    return Math.round(Math.random() * (max - min) + min);
+}
+
+
 
 var Base64 = { _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", encode: function (e) { var t = ""; var n, r, i, s, o, u, a; var f = 0; e = Base64._utf8_encode(e); while (f < e.length) { n = e.charCodeAt(f++); r = e.charCodeAt(f++); i = e.charCodeAt(f++); s = n >> 2; o = (n & 3) << 4 | r >> 4; u = (r & 15) << 2 | i >> 6; a = i & 63; if (isNaN(r)) { u = a = 64 } else if (isNaN(i)) { a = 64 } t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a) } return t }, decode: function (e) { var t = ""; var n, r, i; var s, o, u, a; var f = 0; e = e.replace(/[^A-Za-z0-9+/=]/g, ""); while (f < e.length) { s = this._keyStr.indexOf(e.charAt(f++)); o = this._keyStr.indexOf(e.charAt(f++)); u = this._keyStr.indexOf(e.charAt(f++)); a = this._keyStr.indexOf(e.charAt(f++)); n = s << 2 | o >> 4; r = (o & 15) << 4 | u >> 2; i = (u & 3) << 6 | a; t = t + String.fromCharCode(n); if (u != 64) { t = t + String.fromCharCode(r) } if (a != 64) { t = t + String.fromCharCode(i) } } t = Base64._utf8_decode(t); return t }, _utf8_encode: function (e) { e = e.replace(/rn/g, "n"); var t = ""; for (var n = 0; n < e.length; n++) { var r = e.charCodeAt(n); if (r < 128) { t += String.fromCharCode(r) } else if (r > 127 && r < 2048) { t += String.fromCharCode(r >> 6 | 192); t += String.fromCharCode(r & 63 | 128) } else { t += String.fromCharCode(r >> 12 | 224); t += String.fromCharCode(r >> 6 & 63 | 128); t += String.fromCharCode(r & 63 | 128) } } return t }, _utf8_decode: function (e) { var t = ""; var n = 0; var r = c1 = c2 = 0; while (n < e.length) { r = e.charCodeAt(n); if (r < 128) { t += String.fromCharCode(r); n++ } else if (r > 191 && r < 224) { c2 = e.charCodeAt(n + 1); t += String.fromCharCode((r & 31) << 6 | c2 & 63); n += 2 } else { c2 = e.charCodeAt(n + 1); c3 = e.charCodeAt(n + 2); t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63); n += 3 } } return t } }
 
