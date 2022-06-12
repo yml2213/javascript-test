@@ -1,0 +1,29 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<string xmlns="http://mmp.meichis.com/DataInterface/">{"Sequence":0,"Return":0,"ReturnInfo":"","Result":"{\"ID\":\"ddbe98e6-8195-41d4-9e61-bba76147039a\",\"BabyClubID\":\"45f61993-b470-4924-9950-d8584286fbb5\",\"BabyClubBabyID\":0,\"RealName\":\"杨梦磊\",\"MemberType\":11,\"MemberTypeName\":\"消费者\",\"MemberLevel\":4,\"MemberLevelName\":\"银卡\",\"FgActivityTag\":\"N\",\"IsFirstOrder\":\"N\",\"ClientType\":0,\"LastBuyProBrand\":\"0\",\"Mobile\":\"13754650804\",\"Email\":\"\",\"EmailVerifyFlag\":false,\"Sex\":0,\"Role\":3,\"RoleName\":\"母亲\",\"Birthday\":\"1997-04-10T00:00:00\",\"BabyBirthDay\":\"2021-04-10T00:00:00\",\"BirthClassify\":2,\"BirthAge\":61,\"Hobby\":\"\",\"OfficialCity\":0,\"OfficialCityName\":\"\",\"ProvName\":\"\",\"CityName\":\"\",\"AreaName\":\"\",\"Address\":\"\",\"ActiveDate\":\"2022-04-10T17:45:18.327\",\"RegisterSource\":9,\"RegisterSourceName\":\"妈妈学院\",\"OwnerClient\":104007176,\"InfoFullFlag\":2,\"GradeBalance\":155.0,\"PointsBalance\":0.00,\"TotalAddUpPoints\":0.0,\"TotalExchangePoints\":0.00,\"WillExpirePoints\":0.0,\"OrderCount\":0,\"G_BeginDate\":\"2022-04-10T05:44:15\",\"G_EndDate\":\"2022-07-09T05:44:15\",\"NickName\":\"夢里夢\",\"HeadImage\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/BuYb7uB4mSPblTeLlfgyMR8MX3PAibjY8UQwHhZ18speiaiaTWbInic8c9GXb34icmOPNsTtD6gRQtltuhdMkxcZLOA/132\",\"UserName\":\"YLMaMaXueYuanMALL_13754650804\",\"ServicePromotorCode\":\"\",\"ServicePromotorName\":\"\",\"ServicePromotroMobile\":\"\",\"ServicePromotorQRCodeUrl\":\"\",\"ISQW\":\"N\",\"IsOnlineCU\":\"N\",\"CRMMemebrID\":\"45f61993-b470-4924-9950-d8584286fbb5\",\"BabyCRMID\":104007176,\"NewClientFlag\":\"Y\",\"OpenID\":\"\",\"IsGetGift_Black\":\"Y\",\"IsBuyed_GiftBlack\":\"N\"}","ExceptionInfo":"","CompressFlag":"N","GUID":"00000000-0000-0000-0000-000000000000"}</string>
+
+<?xml version="1.0" encoding="utf-8"?>
+<string xmlns="http://mmp.meichis.com/DataInterface/">{"Sequence":0,"Return":0,"ReturnInfo":"","Result":"[]","ExceptionInfo":"","CompressFlag":"N","GUID":"00000000-0000-0000-0000-000000000000"}</string>
+
+<?xml version="1.0" encoding="utf-8"?>
+<string xmlns="http://mmp.meichis.com/DataInterface/">{"Sequence":0,"Return":1,"ReturnInfo":"","Result":"[{\"ID\":\"b30b0e40-cc43-4a80-9153-623d94148172\",\"Activity\":\"F573A113-CC68-4AF3-8BB0-300F10BBFDF1\",\"ActivityName\":\"妈妈学院营销活动\",\"Shop\":\"1\",\"ShopName\":null,\"UserId\":\"ddbe98e6-8195-41d4-9e61-bba76147039a\",\"JoinType\":31,\"JoinTypeName\":\"单次签到\",\"State\":3,\"StateName\":\"已发放\",\"DeliveryTime\":\"1900-01-01T00:00:00\",\"DeliveryInfo\":\"\",\"AwardType\":1,\"AwardTypeName\":\"成长值\",\"PointsActCode\":\"MaMaDaySign\",\"Points\":5,\"CouponActivity\":\"\",\"FaceValue\":0.0,\"RedPacketBankID\":0,\"RedPacketAmount\":0.0,\"Remark\":\"5\",\"InsertTime\":\"1900-01-01T00:00:00\"}]","ExceptionInfo":"","CompressFlag":"N","GUID":"00000000-0000-0000-0000-000000000000"}</string>
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<string xmlns="http://mmp.meichis.com/DataInterface/">{"Sequence":0,"Return":1,"ReturnInfo":"","Result":"[{\"ID\":\"83cd7f07-6abd-4f59-9518-e23130cb976f\",\"Activity\":\"F573A113-CC68-4AF3-8BB0-300F10BBFDF1\",\"ActivityName\":\"妈妈学院营销活动\",\"Shop\":\"F573A113-CC68-4AF3-8BB0-300F10BBFDF1\",\"ShopName\":null,\"UserId\":\"ddbe98e6-8195-41d4-9e61-bba76147039a\",\"UserNickName\":\"夢里夢\",\"UserHeadImage\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/BuYb7uB4mSPblTeLlfgyMR8MX3PAibjY8UQwHhZ18speiaiaTWbInic8c9GXb34icmOPNsTtD6gRQtltuhdMkxcZLOA/132\",\"RelateUserId\":\"00000000-0000-0000-0000-000000000000\",\"RelateUserNickName\":null,\"RelateUserHeadImage\":null,\"JoinType\":31,\"JoinTypeName\":\"单次签到\",\"JoinInfo\":\"5\",\"Remark\":\"1\",\"InsertTime\":\"2022-06-11T21:56:51.15\"}]","ExceptionInfo":"","CompressFlag":"N","GUID":"00000000-0000-0000-0000-000000000000"}</string>
+
+
+
+
+{
+"string": {
+"#text": "{\"Sequence\":0,\"Return\":1,\"ReturnInfo\":\"\",\"Result\":\"[{\\\"ID\\\":\\\"b30b0e40-cc43-4a80-9153-623d94148172\\\",\\\"Activity\\\":\\\"F573A113-CC68-4AF3-8BB0-300F10BBFDF1\\\",\\\"ActivityName\\\":\\\"妈妈学院营销活动\\\",\\\"Shop\\\":\\\"1\\\",\\\"ShopName\\\":null,\\\"UserId\\\":\\\"ddbe98e6-8195-41d4-9e61-bba76147039a\\\",\\\"JoinType\\\":31,\\\"JoinTypeName\\\":\\\"单次签到\\\",\\\"State\\\":3,\\\"StateName\\\":\\\"已发放\\\",\\\"DeliveryTime\\\":\\\"1900-01-01T00:00:00\\\",\\\"DeliveryInfo\\\":\\\"\\\",\\\"AwardType\\\":1,\\\"AwardTypeName\\\":\\\"成长值\\\",\\\"PointsActCode\\\":\\\"MaMaDaySign\\\",\\\"Points\\\":5,\\\"CouponActivity\\\":\\\"\\\",\\\"FaceValue\\\":0.0,\\\"RedPacketBankID\\\":0,\\\"RedPacketAmount\\\":0.0,\\\"Remark\\\":\\\"5\\\",\\\"InsertTime\\\":\\\"1900-01-01T00:00:00\\\"}]\",\"ExceptionInfo\":\"\",\"CompressFlag\":\"N\",\"GUID\":\"00000000-0000-0000-0000-000000000000\"}",
+"-xmlns": "http://mmp.meichis.com/DataInterface/"
+}
+}
+
+
+
+
+
+

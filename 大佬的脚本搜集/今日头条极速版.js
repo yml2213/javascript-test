@@ -148,7 +148,7 @@ async function initAccountInfo() {
 	}
 }
 
-async function RunMultiUser() {      
+async function RunMultiUser() {
 	for (userIdx = 0; userIdx < userHeaderArr.length; userIdx++) {
 		//任务页
 		await QueryUserInfo(1);  // 查询用户信息
@@ -362,7 +362,7 @@ async function QueryCoinInfo() {
 
 //查询用户信息,任务状态
 async function QueryUserInfo(doTask) {
-	let caller = printCaller();    
+	let caller = printCaller();
 	let url = `${hostname}/luckycat/lite/v1/task/page_data/?aid=35&update_version_code=85221&device_platform=iphone&&device_type=iPhone13,2`;
 	let urlObject = populateGetUrl(url);
 	await httpGet(urlObject, caller);
