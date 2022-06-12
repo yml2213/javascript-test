@@ -142,7 +142,7 @@ async function user_info() {
 	let data = `account=${ck[0]}&deviceid=${deviceid}&gv=12&os=android_31&password=${ck[1]}&proid=ifengnewsredpack&sign=${sign_}`;
 	let DES_data = encryptByDES(data, key, iv);
 	// console.log(DES_data);
-	RSA_data = RSA(key, rsa_key)
+	RSA_data = RSA(key, rsa_key);
 
 	let Options = {
 		url: `${hostname}/Newlogin_Api_Login/doLogin?deviceid=${deviceid}&proid=ifengnewsredpack`,
@@ -390,7 +390,9 @@ function encryptByDES(string, key, ivstr) {
 	return hexstr;
 }
 
-//RSA加密
+/**
+ * RSA加密
+ */
 function RSA(msg, key) {
 	global.navigator = { appName: 'nodejs' }; // fake the navigator object
 	global.window = {}; // fake the window object
