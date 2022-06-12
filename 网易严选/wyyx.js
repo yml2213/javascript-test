@@ -1,63 +1,74 @@
 /**
+ * 脚本地址:  https://raw.githubusercontent.com/yml2213/javascript/master/wyyx_app/wyyx_app.js
+ * 转载请留信息,谢谢
  *
- * 网易严选  小程序 
+ * 网易严选  app
  *
- * cron:  13 8,12,16,18,20 * * *
+ * cron 20 7,12  * * *  yml2213_javascript_master/wyyx_app.js
  *
- * 6-9		感谢大佬脚本
+ * 6-12		完成 签到 浏览 前进 任务 
+ * 6-12		重写应该行了 ,抓到数据后自己关闭重写
  *
+ * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
- * 变量格式: export wyyx_data='X-WX-3RD-Session @ X-WX-3RD-Session '  多个账号用 换行 或 @分割
+ * 变量格式: export wyyx_app_data='cookie @ cookie '   ,多账号用 换行 或 @@ 分割
+ * 抓包 act.you.163.com 包, 找到 cookie 即可
+ * ========= 重写  =========
+ * url:   act-attendance/task/list
+ * 类型:   script-request-header
+ * 路径:   https://raw.githubusercontent.com/yml2213/javascript/master/wyyx_app/wyyx_app.js
+ * 域名:   act.you.163.com
+ * 使用:   打开app--个人--任务中心 即可
+ * ---------------------------------------------------------------------------------------------------------
+ * tg频道: https://t.me/yml2213_tg  
+ * tg群组: https://t.me/yml_tg    
+ * 
  */
+
 
 const $ = new Env("网易严选");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
-const debug = 0			//0为关闭调试,1为打开调试,默认为0
-///////////////////////////////////////////////////////////////////
-let ckStr = process.env.wyyx_data;
-let msg = "";
-let ck = "";
-let host = "miniapp.you.163.com";
-let hostname = "https://" + host;
-let ck_status = "";
-let CryptoJS = require("crypto-js");
-///////////////////////////////////////////////////////////////////
-let VersionCheck = "0.0.2"
-let Change = '签到!'
-let thank = `\n感谢 xx 的投稿`
-///////////////////////////////////////////////////////////////////
+const debug = 0		        //0为关闭调试,1为打开调试,默认为0
+//---------------------------------------------------------------------------------------------------------
+let ckStr = ($.isNode() ? process.env.wyyx_app_data : $.getdata('wyyx_app_data')) || '';
+let msg, ck;
+let ck_status = true;
+let host = 'act.you.163.com';
+let hostname = 'https://' + host;
+//---------------------------------------------------------------------------------------------------------
+let VersionCheck = "0.1.2"
+let Change = '增加圈x v2p兼容,自行测试吧!'
+let thank = `\n感谢 心雨 的投稿\n`
+//---------------------------------------------------------------------------------------------------------
 
 async function tips(ckArr) {
-	// let Version_latest = await Version_Check('wyyx');
-	let Version = `\n📌 本地脚本: V 0.0.2`
-	console.log(`${Version}`);
-	msg += `${Version}`
-	console.log(`📌 🆙 更新内容: ${Change}\n`);
-	msg += `${Change}`
-
-	// console.log(thank);
-	// msg += `${thank}`
-
+	let Version_latest = await Version_Check('wyyx_app');
+	let Version = `\n📌 本地脚本: V 0.1.2  远程仓库脚本: V ${Version_latest}`
+	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
+	// DoubleLog(`${thank}`);
 	await wyy();
-	console.log(`\n================= 共找到 ${ckArr.length} 个账号 =================`);
-	msg += `\n================= 共找到 ${ckArr.length} 个账号 =================`
+	DoubleLog(`\n========== 共找到 ${ckArr.length} 个账号 ==========`);
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
 
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "wyyx_data");
-	await tips(ckArr);
-	for (let index = 0; index < ckArr.length; index++) {
-		let num = index + 1;
-		console.log(`\n------------- 开始【第 ${num} 个账号】------------- `);
-		msg += `\n------------- 开始【第 ${num} 个账号】------------- `
-		ck = ckArr[index].split("&");
-		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
-		await start();
+	if (typeof $request !== "undefined") {  // 严格不相等
+		await GetRewrite();
+	} else {
+		let ckArr = await Variable_Check(ckStr, "wyyx_app_data");
+		await tips(ckArr);
+		for (let index = 0; index < ckArr.length; index++) {
+			let num = index + 1;
+			DoubleLog(`\n-------- 开始【第 ${num} 个账号】--------`);
+			ck = ckArr[index].split("&&");
+			debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
+			await start();
+		}
+		await SendMsg(msg);
 	}
-	await SendMsg(msg);
+
 })()
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done());
@@ -65,193 +76,211 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("\n开始 签到");
-	await signIn();
+	console.log("\n开始 用户信息");
+	await user_info();
 
-	if (!ck_status) {
-		console.log("\n开始 收取气泡水滴");
-		await qpsd();
+	if (ck_status) {
+		console.log("\n开始 签到信息");
+		await sign_info();
 
-		console.log("\n开始 免费水滴");
-		await mfsd();
+		console.log("\n开始 任务列表");
+		await task_list();
 
-		console.log("\n开始 三餐水滴");
-		await scsd();
-
-		console.log("\n开始 浏览商品");
-		await llsp();
-
-		console.log("\n开始 浇水");
-		await js();
-
-		console.log("\n开始 农场进度");
-		await cs();
+		console.log("\n开始 任务后积分查询");
+		await point_info(2);
 
 	}
 
+}
 
+
+
+// 重写 测试中
+// https://act.you.163.com/act-attendance/task/list
+async function GetRewrite() {
+	if ($request.url.indexOf("act-attendance/task/list") > -1) {
+		ck = $request.headers.Cookie;
+		if (ckStr) {
+			if (ckStr.indexOf(ck) == -1) {  // 找不到返回 -1
+				ckStr = ckStr + "@@" + ck;
+				$.setdata(ckStr, "wyyx_app_data");
+				ckList = ckStr.split("@@");
+				$.msg($.name + ` 获取第${ckList.length}个 ck 成功: ${ck} ,请不用的 自己关闭重写!`);
+			}
+		} else {
+			$.setdata(ck, "wyyx_app_data");
+			$.msg($.name + ` 获取第1个 ck 成功: ${ck}  ,请不用的 自己关闭重写!`);
+		}
+	}
 }
 
 
 
 
 
-
-
 /**
- * 签到    httpGet
- * https://mallapi.yuexiangvideo.com/tcenter/v1/center/signplan/sign
+ * 用户信息    httpPost  
  */
-async function signIn() {
+async function user_info() {
+	await point_info(1);
 	let Options = {
-		url: `${hostname}/act/money/checkIn/V3/checkIn.json`,
+		url: `${hostname}/napi/yxcommon/ajax/getYouUserInfo.do`,
 		headers: {
 			'Host': host,
-			'X-WX-3RD-Session': ck[0],
-			'Content-Type': 'application/json'
+			'Cookie': ck[0]
 		},
 	};
-	let result = await httpGet(Options, `签到`);
+	let result = await httpPost(Options, `用户信息`);
 
 	if (result.code == 200) {
-		DoubleLog(`签到: 总奖励 ${result.data.totalAmount} 元`);
-	} else if (result.code == 400) {
-		DoubleLog(`签到: 今天已经签到过了!`);
+		DoubleLog(`欢迎: ${result.content.nickName} ,目前有积分 ${mypoint}`);
 	} else {
-		DoubleLog(`签到: 失败 ❌ 了呢,原因未知!`);
+		DoubleLog(`用户信息: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
 		return ck_status = false;
 	}
 }
 
 
-
-
-
 /**
- * 收取气泡水滴    httpGet
+ * 积分信息    httpPost  
  */
-async function qpsd() {
+async function point_info(task) {
 	let Options = {
-		url: `${hostname}/orchard/task/water/get.json?taskId=REWARD_TOMORROW&taskRecordId=6509215`,
+		url: `https://m.you.163.com/xhr/points/index.json`,
 		headers: {
-			'Host': host,
-			'X-WX-3RD-Session': ck[0],
-			'Content-Type': 'application/json'
+			'Host': 'm.you.163.com',
+			'Cookie': ck[0]
 		},
+		body: '',
 	};
-	let result = await httpGet(Options, `收取气泡水滴`);
-
-	if (result.result.result == 1) {
-		DoubleLog(`收取气泡水滴: 收取 ${result.result.water} 滴水💧`);
-	} else if (result.result.result == 2) {
-		DoubleLog(`收取气泡水滴: 没有可以收取的 💧`);
-	} else {
-		DoubleLog(`收取气泡水滴: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
-	}
-}
-
-
-
-/**
- * 免费水滴    httpGet
- */
-async function mfsd() {
-	let Options = {
-		url: `${hostname}/orchard/task/water/get.json?taskId=GET_EVERYDAY_FREE&taskRecordId=&subTaskId=`,
-		headers: {
-			'Host': host,
-			'X-WX-3RD-Session': ck[0],
-			'Content-Type': 'application/json'
-		},
-	};
-	let result = await httpGet(Options, `免费水滴`);
-
-	if (result.result.result == 1) {
-		DoubleLog(`免费水滴: 收取 ${result.result.water} 滴水💧`);
-	} else if (result.result.result == 2) {
-		DoubleLog(`免费水滴: 没有可以收取的 💧`);
-	} else {
-		DoubleLog(`免费水滴: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
-	}
-}
-
-
-/**
-* 三餐水滴    httpGet
-*/
-async function scsd() {
-	let Options = {
-		url: `${hostname}/orchard/task/water/get.json?taskId=GET_EVERYDAY_RANDOM&taskRecordId=&subTaskId=`,
-		headers: {
-			'Host': host,
-			'X-WX-3RD-Session': ck[0],
-			'Content-Type': 'application/json'
-		},
-	};
-	let result = await httpGet(Options, `三餐水滴`);
-
-	if (result.result.result == 1) {
-		DoubleLog(`三餐水滴: 收取 ${result.result.water} 滴水💧`);
-	} else if (result.result.result == 2) {
-		DoubleLog(`三餐水滴: 没有可以收取的 💧`);
-	} else {
-		DoubleLog(`三餐水滴: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
-	}
-}
-
-
-
-/**
-* 浏览商品    httpGet
-*/
-async function llsp() {
-	let Options = {
-		url: `${hostname}/orchard/task/finish.json?taskId=VISIT_ITEM&taskRecordId=0`,
-		headers: {
-			'Host': host,
-			'X-WX-3RD-Session': ck[0],
-			'Content-Type': 'application/json'
-		},
-	};
-	let result = await httpGet(Options, `浏览商品`);
-
-	if (result.result.result == 1) {
-		DoubleLog(`浏览商品: 收取 10 滴水💧`);
-	} else if (result.result.result == 2) {
-		DoubleLog(`浏览商品: 没有可以收取的 💧`);
-	} else {
-		DoubleLog(`浏览商品: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
-	}
-}
-
-
-
-
-/**
- * 浇水    httpGet
- */
-async function js() {
-	let Options = {
-		url: `${hostname}/orchard/game/water/drop.json`,
-		headers: {
-			'Host': host,
-			'X-WX-3RD-Session': ck[0],
-			'Content-Type': 'application/json'
-		},
-	};
-	let result = await httpGet(Options, `浇水`);
+	let result = await httpPost(Options, `积分信息`);
 
 	if (result.code == 200) {
-		DoubleLog(`浇水: 浇水成功!`);
-	} else if (result.code == 500) {
-		DoubleLog(`浇水: 水滴不足，无法浇水!`);
+		if (task == 1) {
+			mypoint = result.data.availablePoint;
+		} else if (task == 2) {
+			DoubleLog(`任务完成后: 积分 ${result.data.availablePoint}`);
+		}
 	} else {
-		DoubleLog(`浇水: 失败 ❌ 了呢,原因未知!`);
+		DoubleLog(`积分信息: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+	}
+}
+
+
+/**
+ * 签到信息    httpGet  
+ * https://act.you.163.com/act-attendance/att/v3/index?csrf_token=9c1f547bba9729acb2cc8e51c08961b5&__timestamp=1655025930612&
+ */
+async function sign_info() {
+	let Options = {
+		url: `${hostname}/act-attendance/att/v3/index`,
+		headers: {
+			'Host': host,
+			'Cookie': ck[0]
+		},
+	};
+	let result = await httpGet(Options, `签到信息`);
+
+	if (result.code == 200) {
+		if (result.data.sign.status == 0) {
+			DoubleLog(`任务列表: 今天还未签到 ,去签到喽!`);
+			await signIn();
+		} else if (result.data.sign.status == 1) {
+			DoubleLog(`任务列表: 今天已经签到了 ,明天再来吧!`);
+		}
+	} else {
+		DoubleLog(`签到信息: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+	}
+}
+
+
+/**
+ * 任务列表    httpGet
+ * https://act.you.163.com/act-attendance/task/list
+ */
+async function task_list() {
+	let Options = {
+		url: `${hostname}/act-attendance/task/list`,
+		headers: {
+			'Host': host,
+			'Cookie': ck[0]
+		},
+	};
+	let result = await httpGet(Options, `任务列表`);
+
+	if (result.code == 200) {
+		let taskArr = result.data.dailyTasks;
+		// console.log(taskArr);
+		for (let index = 0; index < taskArr.length; index++) {
+			if (taskArr[index].status == 0 && taskArr[index].remark.indexOf("浏览活动页面10s") > -1) {
+				let name = taskArr[index].title;
+				let task_id = taskArr[index].taskId;
+				await dotask(name, task_id);
+				await dotask_receive(name, task_id);
+			} else {
+				DoubleLog(`没有可执行的任务了 ,明天再来吧~!`);
+			}
+		}
+		await walk();
+
+	} else {
+		DoubleLog(`任务列表: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+	}
+}
+
+
+
+/**
+ * 签到    httpGet
+ * https://act.you.163.com/act-attendance/att/v3/sign
+ */
+async function signIn() {
+	let Options = {
+		url: `${hostname}/act-attendance/att/v3/sign`,
+		headers: {
+			'Host': host,
+			'Cookie': ck[0]
+		},
+	};
+	let result = await httpGet(Options, `签到`);
+
+	if (result.code == 200) {
+		DoubleLog(`签到: 成功 🎉`);
+	} else if (result.code == 1009) {
+		DoubleLog(`签到信息: ${result.msg}`);
+	} else {
+		DoubleLog(`签到: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+	}
+}
+
+
+
+/**
+ * 前进    httpGet
+ */
+async function walk() {
+	let Options = {
+		url: `${hostname}/act-attendance//game/walk`,
+		headers: {
+			'Host': host,
+			'Cookie': ck[0]
+		},
+	};
+	let result = await httpGet(Options, `前进`);
+
+	if (result.code == 200) {
+		DoubleLog(`前进: 成功 🎉`);
+		await wait(5);
+		await walk();
+	} else if (result.code == 1007) {
+		DoubleLog(`前进信息: ${result.msg}`);
+	} else {
+		DoubleLog(`前进: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
 	}
 }
@@ -260,38 +289,55 @@ async function js() {
 
 
 /**
-* 农场    httpGet
-*/
-async function cs() {
+ * 通用任务接口  httpPost 
+ */
+async function dotask(name, task_id) {
 	let Options = {
-		url: `${hostname}/orchard/game/water/index/dynamic.json`,
+		url: `${hostname}/napi/play/web/taskT/task/trigger`,
 		headers: {
 			'Host': host,
-			'X-WX-3RD-Session': ck[0],
+			'Cookie': ck[0],
 			'Content-Type': 'application/json'
 		},
+		body: JSON.stringify({ "taskId": task_id })
 	};
-	let result = await httpGet(Options, `农场`);
+	let result = await httpPost(Options, name);
 
-	DoubleLog(`农场: ${result.result.levelDesc}`);
+	if (result.code == 200) {
+		DoubleLog(`${name}: ${result.msg}`);
+		await wait(15);
+	} else if (result.code == 52001) {
+		DoubleLog(`${name}: ${result.msg}`);
+	} else {
+		DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+	}
 }
 
 
+/**
+ * 通用任务接口---领取奖励  httpPost 
+ */
+async function dotask_receive(name, task_id) {
+	let Options = {
+		url: `${hostname}/act-attendance/task/reward`,
+		headers: {
+			'Host': host,
+			'Content-Type': 'application/json',
+			'Cookie': ck[0]
+		},
+		body: JSON.stringify({ "taskId": task_id })
+	};
+	let result = await httpPost(Options, name);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	if (result.code == 200) {
+		DoubleLog(`${name}领取: ${result.msg}`);
+		await wait(3);
+	} else {
+		DoubleLog(`${name}领取: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+	}
+}
 
 
 
@@ -309,13 +355,13 @@ async function cs() {
 /**
  * 变量检查
  */
-async function getCks(ck, str) {
+async function Variable_Check(ck, Variables) {
 	return new Promise((resolve) => {
 		let ckArr = []
 		if (ck) {
-			if (ck.indexOf("@") !== -1) {
+			if (ck.indexOf("@@") !== -1) {
 
-				ck.split("@").forEach((item) => {
+				ck.split("@@").forEach((item) => {
 					ckArr.push(item);
 				});
 			} else if (ck.indexOf("\n") !== -1) {
@@ -328,7 +374,7 @@ async function getCks(ck, str) {
 			}
 			resolve(ckArr)
 		} else {
-			console.log(` :未填写变量 ${str}`)
+			console.log(` ${$.neme}:未填写变量 ${Variables} ,请仔细阅读脚本说明!`)
 		}
 	}
 	)
@@ -337,12 +383,13 @@ async function getCks(ck, str) {
 
 /**
  * 获取远程版本
- * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/wyyx.js
+ * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/${name}.js
+ * https://raw.gh.fakev.cn/yml2213/javascript/master/${name}/${name}.js
  */
 function Version_Check(name) {
 	return new Promise((resolve) => {
 		let url = {
-			url: `http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/${name}.js`,
+			url: `https://raw.gh.fakev.cn/yml2213/javascript/master/${name}/${name}.js`,
 		}
 		$.get(url, async (err, resp, data) => {
 			try {
@@ -361,13 +408,13 @@ function Version_Check(name) {
  */
 async function SendMsg(message) {
 	if (!message) return;
-
 	if (Notify > 0) {
 		if ($.isNode()) {
 			var notify = require("./sendNotify");
 			await notify.sendNotify($.name, message);
 		} else {
-			$.msg(message);
+			// $.msg(message);
+			$.msg($.name, '', message)
 		}
 	} else {
 		console.log(message);
@@ -375,9 +422,24 @@ async function SendMsg(message) {
 }
 
 /**
+ * 双平台log输出
+ */
+function DoubleLog(data) {
+	if ($.isNode()) {
+		if (data) {
+			console.log(`    ${data}`);
+			msg += `\n    ${data}`;
+		}
+	} else {
+		console.log(`    ${data}`);
+		msg += `\n    ${data}`;
+	}
+
+}
+
+/**
  * 随机 数字 + 大写字母 生成
  */
-
 function randomszdx(e) {
 	e = e || 32;
 	var t = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890",
@@ -392,7 +454,6 @@ function randomszdx(e) {
 /**
  * 随机 数字 + 小写字母 生成
  */
-
 function randomszxx(e) {
 	e = e || 32;
 	var t = "qwertyuioplkjhgfdsazxcvbnm1234567890",
@@ -409,7 +470,6 @@ function randomszxx(e) {
 /**
  * 随机整数生成
  */
-
 function randomInt(min, max) {
 	return Math.round(Math.random() * (max - min) + min);
 }
@@ -434,7 +494,7 @@ function ts10() {
  */
 function local_hours() {
 	let myDate = new Date();
-	h = myDate.getHours();
+	let h = myDate.getHours();
 	return h;
 }
 
@@ -443,9 +503,64 @@ function local_hours() {
  */
 function local_minutes() {
 	let myDate = new Date();
-	m = myDate.getMinutes();
+	let m = myDate.getMinutes();
 	return m;
 }
+
+
+/**
+ * 获取当前年份 2022
+ */
+function local_year() {
+	let myDate = new Date();
+	y = myDate.getFullYear();
+	return y;
+}
+
+/**
+ * 获取当前月份(数字)  5月
+ */
+function local_month() {
+	let myDate = new Date();
+	let m = myDate.getMonth();
+	return m;
+}
+
+
+/**
+* 获取当前月份(数字)  05月 补零
+*/
+function local_month_two() {
+	let myDate = new Date();
+	let m = myDate.getMonth();
+	if (m.toString().length == 1) {
+		m = `0${m}`
+	}
+	return m;
+}
+
+/**
+* 获取当前天数(数字)  5日  
+*/
+function local_day() {
+	let myDate = new Date();
+	let d = myDate.getDate();
+	return d;
+}
+
+
+/**
+* 获取当前天数  05日 补零
+*/
+function local_day_two() {
+	let myDate = new Date();
+	let d = myDate.getDate();
+	if (d.toString().length == 1) {
+		d = `0${d}`
+	}
+	return d;
+}
+
 
 
 /**
@@ -468,10 +583,11 @@ function wyy() {
 		}
 		$.get(url, async (err, resp, data) => {
 			try {
-				data = JSON.parse(data)
+				data = JSON.parse(data);
 				// console.log(data);
-				console.log(`【网抑云时间】 ${data.data.Content}  by--${data.data.Music}`);
-
+				console.log(`网抑云时间: ${data.data.Content}  by--${data.data.Music}`)
+				msg = `[网抑云时间]: ${data.data.Content}  by--${data.data.Music}`
+				// DoubleLog(`[网抑云时间]: ${data.data.Content}  by--${data.data.Music}`);
 			} catch (e) {
 				$.logErr(e, resp);
 			} finally {
@@ -505,7 +621,7 @@ async function httpGet(getUrlObject, tip, timeout = 3) {
 					if (debug) {
 						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
 						console.log(data);
-						console.log(`======`);
+						console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
 						console.log(JSON.parse(data));
 					}
 					let result = JSON.parse(data);
@@ -518,7 +634,7 @@ async function httpGet(getUrlObject, tip, timeout = 3) {
 				} catch (e) {
 					console.log(err, resp);
 					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg += `\n ${tip} 失败了!请稍后尝试!!`
+					msg = `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}
@@ -552,7 +668,7 @@ async function httpPost(postUrlObject, tip, timeout = 3) {
 					if (debug) {
 						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
 						console.log(data);
-						console.log(`======`);
+						console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
 						console.log(JSON.parse(data));
 					}
 					let result = JSON.parse(data);
@@ -565,7 +681,7 @@ async function httpPost(postUrlObject, tip, timeout = 3) {
 				} catch (e) {
 					console.log(err, resp);
 					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg += `\n ${tip} 失败了!请稍后尝试!!`
+					msg = `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}
@@ -581,7 +697,7 @@ async function httpPost(postUrlObject, tip, timeout = 3) {
 async function httpRequest(postOptionsObject, tip, timeout = 3) {
 	return new Promise((resolve) => {
 
-		let options = postOptionsObject;
+		let Options = postOptionsObject;
 		let request = require('request');
 		if (!tip) {
 			let tmp = arguments.callee.toString();
@@ -591,10 +707,10 @@ async function httpRequest(postOptionsObject, tip, timeout = 3) {
 		}
 		if (debug) {
 			console.log(`\n 【debug】=============== 这是 ${tip} 请求 信息 ===============`);
-			console.log(options);
+			console.log(Options);
 		}
 
-		request(options, async (err, resp, data) => {
+		request(Options, async (err, resp, data) => {
 			try {
 				if (debug) {
 					console.log(`\n\n 【debug】===============这是 ${tip} 返回数据==============`);
@@ -608,7 +724,7 @@ async function httpRequest(postOptionsObject, tip, timeout = 3) {
 			} catch (e) {
 				console.log(err, resp);
 				console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-				msg += `\n ${tip} 失败了!请稍后尝试!!`
+				msg = `\n ${tip} 失败了!请稍后尝试!!`
 			} finally {
 				resolve();
 			}
@@ -627,15 +743,7 @@ function debugLog(...args) {
 	}
 }
 
-/**
- * 双平台log输出
- */
-function DoubleLog(data) {
-	if (data) {
-		console.log(`    ${data}`);
-		msg += `\n    ${data}`;
-	}
-}
+
 
 // /**
 //  *  单名字 Env
