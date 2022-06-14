@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>网猴线报 - 一个简单且纯粹的活动线报资源分享网站</title>
+	<meta name="description" content="一个简单且纯粹的活动线报资源分享网站" />
+	<meta name="renderer" content="webkit" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<meta http-equiv="Cache-Control" content="no-transform" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="dns-prefetch" href="//tpc.googlesyndication.com" />
+	<link rel="dns-prefetch" href="//pagead2.googlesyndication.com" />
+
+	<link rel="shortcut icon" href="view/img/favicon.ico" />
+	<link rel="icon" sizes="32x32" href="view/img/favicon.ico" />
+	<link rel="Bookmark" href="view/img/favicon.ico" />
+	<style>
+		table.nav_tag_list {
+			margin-bottom: 0.2rem;
+		}
+
+		table.nav_tag_list td {
+			padding: 0.3rem;
+		}
+
+		table.nav_tag_list td a {
+			margin-right: 0.2rem;
+		}
+
+		.nav_tag_list .active {
+			font-weight: normal;
+		}
+
+		.tag_option {
+			border: 1px solid #bbb;
+			padding: 1px 10px;
+			border-radius: 10px;
+			text-decoration: none;
+		}
+
+		.tag_option:active,
+		.tag_option.active {
+			border: 1px solid #000;
+			background: #000;
+			color: #fff;
+			text-decoration: none;
+		}
+	</style>
+	<link rel="stylesheet" href="view/css/bootstrap.css?1.2" />
+
+	<link rel="stylesheet" href="view/css/iehou.css?1.2" />
+	<link rel="stylesheet" href="plugin/huux_notice/view/css/huux-notice.css" name="huux_notice" />
+	<style type="text/css" data-model="huux_hlight">
+		.huux_thread_hlight_style1 {
+			color: #d9534d;
+			font-weight: normal;
+		}
+
+		.huux_thread_hlight_style2 {
+			color: #f0ad4e;
+			font-weight: normal;
+		}
+
+		.huux_thread_hlight_style3 {
+			color: #5bc0de;
+			font-weight: normal;
+		}
+
+		.huux_thread_hlight_style4 {
+			color: #5cb85c;
+			font-weight: normal;
+		}
+
+		.huux_thread_hlight_style5 {
+			color: #337ab7;
+			font-weight: normal;
+		}
+	</style>
+	<!-- <script data-ad-client="ca-pub-5881626673689172" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> -->
+</head>
+
+<body>
+	<div class="header mb-3">
+		<div class="container">
+			<div class="jumbotron bg-white mb-0 text-center hidden-sm">
+				<h1><a href="https://iehou.com/">网猴线报</a></h1>
+				<span class="text-grey">一个简单且纯粹的活动线报资源分享网站</span>
+			</div>
+			<div class="d-sm-none d-block text-center mt-4">
+				<h2><a href="https://iehou.com/">网猴线报</a></h2>
+			</div>
+			<nav class="row">
+				<div class="col-sm-8 px-0">
+					<ul class="nav sm-center">
+						<li class="nav-item">
+							<a class="nav-link" href="https://iehou.com/">首页</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" data-toggle="dropdown"
+								href="#" role="button" aria-haspopup="true"
+								aria-expanded="false">工具箱</a>
+							<div class="dropdown-menu">
+								<a class="dropdown-item"
+									href="https://iehou.com/page-tools-douyin.htm">抖音无水印视频解析</a>
+								<a class="dropdown-item"
+									href="https://iehou.com/page-tools-qrcode.htm">二维码批量生成</a>
+								<a class="dropdown-item"
+									href="https://iehou.com/page-tools-shorturl.htm">新浪短链接生成</a>
+								<a class="dropdown-item"
+									href="https://iehou.com/page-tools-shortre.htm">短链接还原</a>
+								<a class="dropdown-item"
+									href="https://iehou.com/page-tools-goupibutong.htm">狗屁不通文章生成器</a>
+							</div>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link"
+								href="https://iehou.com/page-guestbook.htm">留言本</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link"
+								href="https://iehou.com/wechat_login.htm">登陆</a>
+						</li>
+					</ul>
+				</div>
+				<div class="col-sm-4">
+					<form action="search.htm" id="search_form">
+						<div class="input-group form-inline">
+							<input type="text" name="keyword" placeholder="搜索线报..."
+								class="form-control form-control-sm" />
+							<div class="input-group-append">
+								<button class="btn btn-dark btn-sm" type="submit">
+									搜索
+								</button>
+							</div>
+						</div>
+						<!-- <span id="search_submit" class="icon-search position-absolute p-2 text-muted" style="right:0;"></span> -->
+					</form>
+				</div>
+			</nav>
+		</div>
+	</div>
+	<main id="body">
+		<div class="container">
+			<div class="divider"></div>
+
+			<div class="post-body">
+				<ul class="nav justify-content-center">
+					<li class="nav-item">
+						<a class="nav-link active" href="https://iehou.com/">最新线报</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="https://iehou.com/page-dayhot.htm">24小时热门</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="https://iehou.com/page-weekhot.htm">一周热门</a>
+					</li>
+				</ul>
+
+				<ul class="list-group post-list mt-3">
+					<style type="text/css" data-model="huux_hlight">
+						.huux_thread_hlight_style1 {
+							color: #d9534d;
+							font-weight: normal;
+						}
+
+						.huux_thread_hlight_style2 {
+							color: #f0ad4e;
+							font-weight: normal;
+						}
+
+						.huux_thread_hlight_style3 {
+							color: #5bc0de;
+							font-weight: normal;
+						}
+
+						.huux_thread_hlight_style4 {
+							color: #5cb85c;
+							font-weight: normal;
+						}
+
+						.huux_thread_hlight_style5 {
+							color: #337ab7;
+							font-weight: normal;
+						}
+					</style>
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<span class="font-weight-bold">[置顶]</span>
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-123899.htm"
+									title="每日领取最高66元外卖红包，最高100元打车红包" target="_blank"
+									rel="bookmark"><span
+										class="huux_thread_hlight_style1">每日领取最高66元外卖红包，最高100元打车红包</span></a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							08-10 17:51</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<span class="font-weight-bold">[置顶]</span>
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-172486.htm"
+									title="淘宝618超级红包来了，最高22888元，首发有大包"
+									target="_blank" rel="bookmark"><span
+										class="huux_thread_hlight_style4">淘宝618超级红包来了，最高22888元，首发有大包</span></a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							05-29 20:07</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<span class="font-weight-bold">[置顶]</span>
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-172578.htm"
+									title="快快快，京东618红包，有19618大包，数量有限"
+									target="_blank" rel="bookmark"><span
+										class="huux_thread_hlight_style1">快快快，京东618红包，有19618大包，数量有限</span></a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							05-30 12:03</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174839.htm"
+									title="淘宝app搜索“秘密通道811”领取随机购物红包，累计领"
+									target="_blank"
+									rel="bookmark">淘宝app搜索“秘密通道811”领取随机购物红包，累计领</a>
+							</h2>
+							<a href="https://iehou.com/tag-5.htm"
+								class="badge badge-pill mr-1 tag badge-warning">淘宝</a>
+							<a href="https://iehou.com/tag-1.htm"
+								class="badge badge-pill mr-1 tag badge-primary">红包</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 15:05</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174838.htm"
+									title="*******从6.7号到6.11号，小红包加全品券10-2全力撸的东西"
+									target="_blank"
+									rel="bookmark">*******从6.7号到6.11号，小红包加全品券10-2全力撸的东西</a>
+							</h2>
+							<a href="https://iehou.com/tag-1.htm"
+								class="badge badge-pill mr-1 tag badge-primary">红包</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 15:05</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174837.htm"
+									title="微信免费极优谁用装礼包 内含纸尿裤棉柔巾纸巾" target="_blank"
+									rel="bookmark">微信免费极优谁用装礼包 内含纸尿裤棉柔巾纸巾</a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 15:02</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174836.htm"
+									title="12.9亓[ 大牌东熊电器 ]USB长续航手持降温小电风扇"
+									target="_blank" rel="bookmark">12.9亓[ 大牌东熊电器
+									]USB长续航手持降温小电风扇</a>
+							</h2>
+							<a href="https://iehou.com/tag-5.htm"
+								class="badge badge-pill mr-1 tag badge-warning">淘宝</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:54</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174835.htm"
+									title="亲测0元撸蓝票洗衣液450g 需领券2元券+5元惊喜礼包"
+									target="_blank" rel="bookmark">亲测0元撸蓝票洗衣液450g
+									需领券2元券+5元惊喜礼包</a>
+							</h2>
+							<a href="https://iehou.com/tag-5.htm"
+								class="badge badge-pill mr-1 tag badge-warning">淘宝</a>
+							<a href="https://iehou.com/tag-3.htm"
+								class="badge badge-pill mr-1 tag badge-dark">优惠券</a>
+							<a href="https://iehou.com/tag-1.htm"
+								class="badge badge-pill mr-1 tag badge-primary">红包</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:52</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174834.htm"
+									title="QQ音乐完成任务免费领31天QQ绿钻 需要7天才能完成"
+									target="_blank"
+									rel="bookmark">QQ音乐完成任务免费领31天QQ绿钻 需要7天才能完成</a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:52</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174833.htm"
+									title="39.9亓全尺寸一个价南极人专卖店多款式可选南极人"
+									target="_blank"
+									rel="bookmark">39.9亓全尺寸一个价南极人专卖店多款式可选南极人</a>
+							</h2>
+							<a href="https://iehou.com/tag-5.htm"
+								class="badge badge-pill mr-1 tag badge-warning">淘宝</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:43</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174832.htm"
+									title="[ 百亿补贴到手19.9 ]力士香氛沐浴露！！下拉详情页"
+									target="_blank" rel="bookmark">[ 百亿补贴到手19.9
+									]力士香氛沐浴露！！下拉详情页</a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:38</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174831.htm"
+									title="天‪猫超‪市每日翻‪卡抽随机猫‪超卡" target="_blank"
+									rel="bookmark">天‪猫超‪市每日翻‪卡抽随机猫‪超卡</a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:30</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174830.htm"
+									title="006598下面还有40？" target="_blank"
+									rel="bookmark">006598下面还有40？</a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:29</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174829.htm"
+									title="京东0.1买药" target="_blank"
+									rel="bookmark">京东0.1买药</a>
+							</h2>
+							<a href="https://iehou.com/tag-6.htm"
+								class="badge badge-pill mr-1 tag badge-danger">京东</a>
+							<a href="https://iehou.com/tag-3.htm"
+								class="badge badge-pill mr-1 tag badge-dark">优惠券</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:25</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174828.htm"
+									title="京东金融简单关注店铺领0.8元金贴 在购物时可抵扣"
+									target="_blank" rel="bookmark">京东金融简单关注店铺领0.8元金贴
+									在购物时可抵扣</a>
+							</h2>
+							<a href="https://iehou.com/tag-6.htm"
+								class="badge badge-pill mr-1 tag badge-danger">京东</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:22</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174827.htm"
+									title="18.9螺满地螺蛳粉5袋每袋300g正餐宵夜都够够的喜欢"
+									target="_blank"
+									rel="bookmark">18.9螺满地螺蛳粉5袋每袋300g正餐宵夜都够够的喜欢</a>
+							</h2>
+							<a href="https://iehou.com/tag-5.htm"
+								class="badge badge-pill mr-1 tag badge-warning">淘宝</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:16</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174826.htm"
+									title="微信点亮地标抽实物/现金红包 /腾讯会员周卡/肯德基代金券 非必中"
+									target="_blank" rel="bookmark">微信点亮地标抽实物/现金红包
+									/腾讯会员周卡/肯德基代金券
+									非必中</a>
+							</h2>
+							<a href="https://iehou.com/tag-6.htm"
+								class="badge badge-pill mr-1 tag badge-danger">京东</a>
+							<a href="https://iehou.com/tag-1.htm"
+								class="badge badge-pill mr-1 tag badge-primary">红包</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:12</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174825.htm"
+									title="速度！京东金融1.6金贴，同实名都可领，手慢可能无"
+									target="_blank"
+									rel="bookmark">速度！京东金融1.6金贴，同实名都可领，手慢可能无</a>
+							</h2>
+							<a href="https://iehou.com/tag-6.htm"
+								class="badge badge-pill mr-1 tag badge-danger">京东</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:11</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174824.htm"
+									title="招行体验金" target="_blank"
+									rel="bookmark">招行体验金</a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:10</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174823.htm"
+									title="Steam喜加一 免费领< 方舟：生存进化 >限时领取"
+									target="_blank" rel="bookmark">Steam喜加一 免费领<
+										方舟：生存进化>限时领取</a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 14:02</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174822.htm"
+									title="微信免费领价值142元希思黎乳液小样包邮 限量1万份"
+									target="_blank"
+									rel="bookmark">微信免费领价值142元希思黎乳液小样包邮 限量1万份</a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 13:52</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174821.htm"
+									title="1元包邮购森米1m长type数据线 数量有限先到先得"
+									target="_blank" rel="bookmark">1元包邮购森米1m长type数据线
+									数量有限先到先得</a>
+							</h2>
+							<a href="https://iehou.com/tag-3.htm"
+								class="badge badge-pill mr-1 tag badge-dark">优惠券</a>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 13:12</span>
+					</li>
+
+					<li class="list-group-item px-0">
+						<div class="subject break-all">
+							<h2>
+								<a class="mr-1"
+									href="https://iehou.com/xianbao-174820.htm"
+									title="支付宝基金毛" target="_blank"
+									rel="bookmark">支付宝基金毛</a>
+							</h2>
+						</div>
+						<span class="num-font text-muted" style="flex-shrink: 0">
+							06-13 12:47</span>
+					</li>
+				</ul>
+				<ul class="pagination justify-content-center mt-md-5 mt-3 num-font">
+					<li class="page-item active">
+						<a href="https://iehou.com/index.htm" class="page-link">1</a>
+					</li>
+					<li class="page-item">
+						<a href="https://iehou.com/index-2.htm" class="page-link">2</a>
+					</li>
+					<li class="page-item">
+						<a href="https://iehou.com/index-3.htm" class="page-link">3</a>
+					</li>
+					<li class="page-item">
+						<a href="https://iehou.com/index-4.htm" class="page-link">4</a>
+					</li>
+					<li class="page-item">
+						<a href="https://iehou.com/index-8736.htm" class="page-link">...8736</a>
+					</li>
+					<li class="page-item">
+						<a href="https://iehou.com/index-2.htm" class="page-link">▶</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</main>
+
+	<div class="footer text-muted text-center py-3">
+		<div class="container">
+			<div class="frend-link mb-2">
+				友情链接：
+				<a href="https://iehou.com" target="_blank">活动线报</a>
+				<a href="https://iehou.com" target="_blank">线报</a>
+				<a href="https://iehou.com" target="_blank">全网线报</a>
+			</div>
+
+			<div class="copy-right">
+				Copyright © <a href="https://iehou.com">网猴线报</a> (iehou.com)
+				2019-2022 | 邮箱: 5075368@qq.com |
+				<a href="http://beian.miit.gov.cn/" target="_blank">鲁ICP备19011124号-2</a>
+				|
+				<img
+					src="https://s.bongm.com/uploads/20220505/78485f61345af98dd8c4439f51a5e895.png" /><a
+					href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=37170202666313"
+					target="_blank">鲁公网安备 37170202666313号</a>
+			</div>
+		</div>
+	</div>
+	<ul class="iehou_side_nav">
+		<li>
+			<i class="iehou_sn1 icon-android"></i>
+			<i class="iehou_sn_i"></i>
+			<div class="iehou_sn2">
+				<div class="wx_qrcode">
+					<div class="qq_qr">
+						<img src="view/img/app.png" />
+						<span>扫码下载安卓APP</span>
+					</div>
+				</div>
+			</div>
+		</li>
+		<li>
+			<i class="iehou_sn1 icon-weixin"></i>
+			<i class="iehou_sn_i"></i>
+			<div class="iehou_sn2">
+				<div class="wx_qrcode">
+					<div class="mr-3">
+						<img src="view/img/wx.png" />
+						<span>微信扫一扫关注我们</span>
+					</div>
+					<div class="mr-3">
+						<img src="view/img/miniapp.png" />
+						<span>微信扫一扫打开小程序</span>
+					</div>
+					<div class="qq_qr">
+						<img src="view/img/qqapp.png" />
+						<span>手Q扫一扫打开小程序</span>
+					</div>
+				</div>
+			</div>
+		</li>
+		<li id="gotop">
+			<i class="iehou_sn1 icon-chevron-up" onclick="topFunction()"></i>
+			<i class="iehou_sn_i"></i>
+			<div class="iehou_sn2">返回顶部</div>
+		</li>
+	</ul>
+
+	<!--[if ltg IE 9]>
+      <script>
+        window.location = "https://iehou.com/browser.htm";
+      </script>
+    <![endif]-->
+
+	<script src="lang/zh-cn/bbs.js?1.2"></script>
+	<script src="view/js/jquery-3.1.0.js?1.2"></script>
+	<script src="view/js/popper.js?1.2"></script>
+	<script src="view/js/bootstrap.js?1.2"></script>
+	<script src="view/js/iehou.js?1.2"></script>
+	<script src="view/js/bootstrap-plugin.js?1.2"></script>
+	<script src="view/js/async.js?1.2"></script>
+	<script src="view/js/bbs.js?1.2"></script>
+	<script src="view/js/pushlink.js?1.2"></script>
+	<script>
+		var debug = (DEBUG = 0);
+		var url_rewrite_on = 1;
+		var fid = 0;
+		var uid = 0;
+		var gid = 0;
+		xn.options.water_image_url = "view/img/water-small.png"; // 水印图片 / watermark image
+	</script>
+	<div class="float_hongbao" style="
+        position: fixed;
+        right: 10px;
+        bottom: 50px;
+        width: 100px;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+      ">
+		<a href="https://u.jd.com/JIUhmi3" style="margin-bottom: 20px" target="_blank">
+			<img src="http://img-haodanku-com.cdn.fudaiapp.com/FrGuJr5Zhzz1DZY4zM82VkB1CsmG"
+				style="width: 100%" />
+		</a>
+		<a href="https://s.click.taobao.com/7VoCCXu" target="_blank">
+			<img src="http://img-haodanku-com.cdn.fudaiapp.com/FtLJ1-2JbcdjYGXNlCN19TiM8gmu"
+				style="width: 100%" />
+		</a>
+	</div>
+</body>
+
+</html>
+
+<script>
+	jsearch_form = $("#search_form");
+	jsearch_form.on("submit", function () {
+		// if(!uid) {
+		// 	$.confirm('提示', function() {
+		// 		window.location = xn.url('user-login');
+		// 	},{size:'md',body:'为了节约服务器资源，请您登陆后再进行搜索<br />点击确定登陆'});
+		// 	return false;
+		// }
+		var keyword = jsearch_form.find('input[name="keyword"]').val();
+		if ($.trim(keyword) == "") {
+			$.alert("请输入关键词后再搜索...", 30, { size: "sm" });
+			return false;
+		}
+		var url = xn.url("search-" + xn.urlencode(keyword));
+		window.location = url;
+		return false;
+	});
+</script>
+<!--Processed: 0.015, SQL: 7-->
