@@ -1,74 +1,94 @@
 /**
- * 脚本地址: http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/ylarxy.js
+ * 脚本地址: http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/dute.js
  * 转载请留信息,谢谢
  *
- * 伊利爱儿学院  微信公众号--福利专区---积分乐园 
+ * 读特  app 
  *
- * cron 20 7  * * *  yml2213_javascript_master/ylarxy.js
+ * cron 10 7,12 * * *  yml2213_javascript_master/dute.js
  *
- * 6-11		完成 签到 三次积分抽奖任务
- * 6-11		增加圈x v2p兼容,自行测试吧
+ * 6-6		基本完成所有任务
+ * 6-14		增加积分查询
  *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
- * 变量格式: export ylarxy_data='unionId @ unionId'   ,多账号用 换行 或 @ 分割
- * 
- * 抓包 20315128-3.hdpyqe.com 找到 unionId 即可
+ * 变量格式: export dute_data='手机号&密码 @ 手机号&密码'  多个账号用 换行 或 @分割
  *
  * tg频道: https://t.me/yml2213_tg  
  * tg群组: https://t.me/yml_tg    
+ * qq频道: https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W4InjV&appChannel=share&businessType=9&from=181074&biz=ka&shareSource=5
  * 
  */
-
-const $ = new Env('伊利爱儿学院');
-const notify = $.isNode() ? require('./sendNotify') : '';
+const $ = new Env("读特");
+const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 const debug = 0			//0为关闭调试,1为打开调试,默认为0
-//---------------------------------------------------------------------------------------------------------
-let ckStr = ($.isNode() ? process.env.ylarxy_data : $.getdata('ylarxy_data')) || '';
-let msg, ck, ck_status;
-//---------------------------------------------------------------------------------------------------------
-let VersionCheck = '0.0.1'
-let Change = '增加圈x v2p兼容,自行测试吧!'
-let thank = `\n感谢 心雨 的投稿\n`
-//---------------------------------------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////
+let ckStr = process.env.dute_data;
+let msg = "";
+let ck = "";
+let host = "api.dutenews.com";
+let hostname = "https://" + host;
+let salt = "01ff984b3118a8ec815058f03025b6ac"
+let ck_status = "";
+let app_version = "7.0.6.0";
+let num = randomInt(1, 200);
+let ip = `192.168.31.${num}`
+let rand_device_id = randomString(12)
+let device_id = `3b5293c9-a392-459a-bc3a-${rand_device_id}`
+///////////////////////////////////////////////////////////////////
+let VersionCheck = "1.0.3"
+let Change = '基本完成所有任务!'
+let thank = `\n感谢 xx 的投稿`
+///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
-	let Version_latest = await Version_Check('ylarxy');
-	let Version = `\n📌 本地脚本: V 0.0.1  远程仓库脚本: V ${Version_latest}`
-	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
-	// DoubleLog(`${thank}`);
+	let Version_latest = await Version_Check('dute');
+	let Version = `\n📌 本地脚本: V 1.0.3  远程仓库脚本: V ${Version_latest}`
+	console.log(`${Version}`);
+	msg += `${Version}`
+	console.log(`📌 🆙 更新内容: ${Change}\n`);
+	msg += `${Change}`
+
+	// console.log(thank);
+	// msg += `${thank}`
+
 	await wyy();
-	DoubleLog(`\n================= 共找到 ${ckArr.length} 个账号 =================`);
+	console.log(`\n================= 共找到 ${ckArr.length} 个账号 =================`);
+	msg += `\n================= 共找到 ${ckArr.length} 个账号 =================`
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
 
 
 !(async () => {
-	let ckArr = await getCks(ckStr, "ylarxy_data");
+	let ckArr = await getCks(ckStr, "dute_data");
 	await tips(ckArr);
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
-		debugLog(`\n------------- 开始【第 ${num} 个账号】-------------`);
+		console.log(`\n------------- 开始【第 ${num} 个账号】------------- `);
+		msg += `\n------------- 开始【第 ${num} 个账号】------------- `
+
 		ck = ckArr[index].split("&");
+
 		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
 		await start();
 	}
 	await SendMsg(msg);
 })()
+	.catch((e) => $.logErr(e))
+	.finally(() => $.done());
 
 
 async function start() {
 
-	console.log("\n开始 用户信息");
-	await user_info();
+	console.log("\n开始 登录");
+	await login();
+	await task_list(2);
+
 
 	if (!ck_status) {
-		console.log("\n开始 签到信息");
-		await sign_info(1);
+		console.log("\n开始 任务列表");
+		await task_list(1);
 
-		console.log("\n开始 抽奖");
-		await Lottery();
 	}
 
 
@@ -76,30 +96,31 @@ async function start() {
 
 
 
-
-
-
 /**
- * 用户信息    httpPost  
- * https://20315128-3.hdpyqe.com/api/game4JFLY/getPlayerInfo?canal=-1&playerOrigin=3&aid=20315128&gameId=3
- * 
+ * 登录    httpPost
+ * https://api.dutenews.com/api-uaa/client/token?clientid=1&type=android&siteid=10001&ip=192.168.31.118
  */
-async function user_info() {
-	let option = {
-		url: `https://20315128-3.hdpyqe.com/api/game4JFLY/getPlayerInfo?aid=20315128&gameId=3`,
+async function login() {
+	let Options = {
+		url: `${hostname}/api-uaa/client/token?clientid=1&type=android&siteid=10001&ip=${ip}`,
 		headers: {
-			'Host': '20315128-3.hdpyqe.com',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+			'User-Agent': 'okhttp/3.12.1',
+			'Host': host,
+			'Content-Type': 'application/x-www-form-urlencoded'
 		},
-		body: `unionId=${ck[0]}&shareDeep=1&playerOrigin=3`
-	};
-	let result = await httpPost(option, `用户信息`);
+		body: `password=${ck[1]}&device_id=${device_id}&grantType=custom_pwd&account=${ck[0]}`
 
-	if (result.rt == 0) {
-		// console.log(result);
-		DoubleLog(`欢迎: ${result.data.player.name} ,目前有积分 ${result.data.subject.currentValue} ,累计获得积分 ${result.data.subject.totalValue} !`);
+	};
+	let result = await httpPost(Options, `登录`);
+	// console.log(result);
+	if (result.resp_code == 000000) {
+		DoubleLog(`登录: 欢迎光临 ${result.data.login.loginInfo.nickname} 🎉  , 手机号: ${result.data.login.loginInfo.mobile}`);
+		AZ = result.data.login.auth.accessToken;
+		user_id = result.data.login.loginInfo.encodeInfo.userid;
+	} else if (result.resp_code == 999999) {
+		DoubleLog(`登录: ${result.resp_msg} ,密码中请不要包含 & @ 等字符!`);
 	} else {
-		DoubleLog(`用户信息: 失败 ❌ 了呢,原因未知!`);
+		DoubleLog(`登录: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
 		return ck_status = false;
 	}
@@ -107,101 +128,159 @@ async function user_info() {
 
 
 /**
- * 签到信息    httpPost
- * https://20315128-3.hdpyqe.com/api/game4JFLY/getSignInRecords?canal=-1&playerOrigin=3&uid=&extra=&aid=20315128&gameId=3&_openId=oosnVwlCIrrR9M1TCw-0IGNW0g9o
- * 
- * https://20315128-3.hdpyqe.com/api/game4JFLY/getSignInRecords?gameId=3
- * 
+ * 用户信息    httpGet
+ * https://vapp.tmuyun.com/api/user_mumber/account_detail
  */
-async function sign_info(task) {
-	let option = {
-		url: `https://20315128-3.hdpyqe.com/api/game4JFLY/getSignInRecords?gameId=3`,
+async function user_info() {
+	let ts = ts13();
+	let _data = `/api/user_mumber/account_detail&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	// console.log(sign);
+	let Options = {
+		url: `${hostname}/api/user_mumber/account_detail`,
 		headers: {
-			'Host': '20315128-3.hdpyqe.com',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
 		},
-		body: `unionId=${ck[0]}&year=${local_year()}&month=${local_month()}`
 	};
-	let result = await httpPost(option, `签到信息`);
+	let result = await httpGet(Options, `用户信息`);
 
-	if (result.rt == 0) {
-		if (task == 1) {
-			if (result.data.hasSignInToday == false) {
-				DoubleLog(`签到信息: 今天还未签到 ,去签到喽!`);
-				await wait(2);
-				await signIn();
-			} else if (result.rt == 0 && result.data.hasSignInToday == true) {
-				DoubleLog(`签到信息: 今天已经签到了 ,明天再来吧!`);
-			}
-		} else if (task == 2) {
-			DoubleLog(`签到信息: 您已累计签到 ${result.data.totalSignInDayNums} 天 ;再连续签到 ${result.data.getExtraRewardNeedDays} 天 ,即可获得额外积分奖励 ${result.data.extraRewardValues}!`);
-		}
+	if (result.code == 0) {
+		console.log(`    任务列表: 欢迎光临 ${result.data.rst.nick_name} 🎉  , 手机号: ${result.data.rst.mobile} , 积分 ${result.data.rst.total_integral} , 等级 ${result.data.rst.grade} ${result.data.rst.grade_name}`);
+		msg += `\n    任务列表: 欢迎光临 ${result.data.rst.nick_name} 🎉  , 手机号: ${result.data.rst.mobile} , 积分 ${result.data.rst.total_integral} , 等级 ${result.data.rst.grade} ${result.data.rst.grade_name}`;
+		user_name = result.data.rst.nick_name;
 	} else {
-		DoubleLog(`签到信息: 失败 ❌ 了呢,原因未知!`);
+		console.log(`    用户信息: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
+		msg += `\n    用户信息: 失败 ❌ 了呢,原因未知!}`;
+		return ck_status = false;
 	}
 }
 
 
 
+/**
+ * 任务列表    httpGet
+ * https://api.dutenews.com/gateway/pgc/v2/app/mall?bind_id=773754&clientid=1&ip=192.168.31.118&siteid=10001&type=android&modules=integral:1&app_version=7.0.6.0&device_id=2e7d44ef-fd4a-4c72-bc90-9247de6b1690&system_name=android
+ */
+async function task_list(task) {
+	let Options = {
+		url: `${hostname}/gateway/pgc/v2/app/mall?bind_id=${user_id}&clientid=1&ip=${ip}&siteid=10001&type=android&modules=integral:1&app_version=${app_version}&device_id=${device_id}&system_name=android`,
+		headers: {
+			'User-Agent': 'okhttp/3.12.1',
+			'Authorization': `Bearer ${AZ}`,
+			'Host': host
+		},
+	};
+	let result = await httpGet(Options, `任务列表`);
 
+	if (result.state == true) {
+		if (task == 1) {
+			taskArr = result.data.integral.rule;
+			// console.log(taskArr);
+			for (let index = 0; index < taskArr.length; index++) {
+				if (taskArr[index].id != 1 && taskArr[index].id != 12) {
+					let name = taskArr[index].name;
+					let task_type = taskArr[index].action_sign;
+					if (taskArr[index].current_times < taskArr[index].reward_num) {
+						DoubleLog(`${name}:  ${taskArr[index].current_times} / ${taskArr[index].reward_num}`)
+						let num = taskArr[index].reward_num - taskArr[index].current_times;
+						for (let j = 0; j < num; j++) {
+							console.log(`    开始第 ${j + 1} 次 ${name}`);
+							await dotask(name, task_type);
+						}
+					} else if (taskArr[index].current_times == taskArr[index].reward_num) {
+						DoubleLog(`${name}:  ${taskArr[index].current_times} / ${taskArr[index].reward_num}`)
+					}
+				}
+			}
+		} else if (task == 2) {
+			DoubleLog(`积分: ${result.data.integral.integral}`)
+
+		}
+
+
+
+	} else {
+		console.log(`    任务列表: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    任务列表: 失败 ❌ 了呢,原因未知!`;
+	}
+}
 
 
 /**
  * 签到    httpGet
- * https://20315128-3.hdpyqe.com/api/game4JFLY/signIn?canal=-1&playerOrigin=3&uid=&extra=&aid=20315128&gameId=3&_openId=oosnVwlCIrrR9M1TCw-0IGNW0g9o
- * 
+ * https://api.dutenews.com/gateway/pgc/v2/app/mall?bind_id=773754&clientid=1&ip=192.168.31.118&modules=sign:1&type=android&siteid=10001
  */
 async function signIn() {
-	let option = {
-		url: `https://20315128-3.hdpyqe.com/api/game4JFLY/signIn?gameId=3`,
+	let Options = {
+		url: `${hostname}/gateway/pgc/v2/app/mall?bind_id=773754&clientid=1&ip=${ip}8&modules=sign:1&type=android&siteid=10001`,
 		headers: {
-			'Host': '20315128-3.hdpyqe.com',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+			'User-Agent': 'okhttp/3.12.1',
+			'Authorization': `Bearer ${AZ}`,
+			'Host': host
 		},
-		body: `unionId=${ck[0]}`
 	};
-	let result = await httpPost(option, `签到`);
+	let result = await httpGet(Options, `签到`);
 
-	if (result.rt == 0) {
-		DoubleLog(`签到: 成功 ,获得积分 ${result.data.rewardedValues}!`);
+	if (result.state == true) {
+		DoubleLog(`签到: ${result.data.sign}`);
 		await wait(3);
-		await sign_info(2);
+	} else if (result.state == false) {
+		DoubleLog(`签到: ${result.error}`);
+		await wait(3);
 	} else {
 		DoubleLog(`签到: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
 	}
 }
+
 
 
 
 /**
- * 抽奖    httpGet
- * https://21156742-7.hdpyqe.com/api/game4JFLY/wheelLotteryGoDraw?canal=-1&playerOrigin=3&uid=&extra=&aid=20315128&gameId=3&_openId=o1ueSjujJDKMNu3tzbJsxUmhUrWE
- * 
+ * 通用任务接口  httpGet  
  */
-async function Lottery() {
-	let option = {
-		url: `https://21156742-7.hdpyqe.com/api/game4JFLY/wheelLotteryGoDraw?gameId=3`,
+async function dotask(name, task_type) {
+	let ts = ts13();
+	let data_1 = `app_version=${app_version}&clientid=1&contentId=${user_id}_${ts - 1}&creditType=${task_type}&device_id=${device_id}&ip=${ip}&memberId=${user_id}&memberid=${user_id}&modules=common%3A1&siteid=10001&system_name=android&type=android`;
+	let sign_ = MD5Encrypt(data_1)
+	let sign = MD5Encrypt(`${sign_}${salt}${ts}`)
+	let Options = {
+		url: `${hostname}/gateway/pgc/v2/credit?creditType=${task_type}&contentId=${user_id}_${ts - 1}&sign=${sign}&time=${ts}&memberId=${user_id}&siteid=10001&clientid=1&modules=common:1&app_version=${app_version}&device_id=${device_id}&memberid=${user_id}&system_name=android&ip=${ip}&type=android`,
 		headers: {
-			'Host': '21156742-7.hdpyqe.com',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+			'User-Agent': 'okhttp/3.12.1',
+			'Authorization': `Bearer ${AZ}`,
+			'Host': host
 		},
-		body: `aid=20315128&gameId=3&unionId=${ck[0]}`
 	};
-	let result = await httpPost(option, `抽奖`);
+	let result = await httpGet(Options, name);
 
-	if (result.rt == 0) {
-		DoubleLog(`抽奖: 恭喜获得 ${result.data.awardInfo.awardedLevel} 等奖 ,积分 ${result.data.awardInfo.awardedValue}!`);
-		await wait(5);
-		await Lottery();
-	} else if (result.rt == 4021) {
-		DoubleLog(`抽奖: 今天没有机会了 ,明天再来吧!`);
+	if (result.state == true) {
+		DoubleLog(`${name}: ${result.data.common.message}`);
+		await wait(3);
+	} else if (result.state == false) {
+		DoubleLog(`${name}: ${result.error}`);
 	} else {
-		DoubleLog(`抽奖: 失败 ❌ 了呢,原因未知!`);
+		DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -255,7 +334,7 @@ async function getCks(ck, str) {
 
 /**
  * 获取远程版本
- * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/ylarxy.js
+ * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/dute.js
  */
 function Version_Check(name) {
 	return new Promise((resolve) => {
@@ -293,9 +372,10 @@ async function SendMsg(message) {
 }
 
 /**
- * 随机 数字 + 大写字母 生成
+ * 随机数生成
  */
-function randomszdx(e) {
+
+function randomString(e) {
 	e = e || 32;
 	var t = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890",
 		a = t.length,
@@ -305,26 +385,10 @@ function randomszdx(e) {
 	return n;
 }
 
-
-/**
- * 随机 数字 + 小写字母 生成
- */
-function randomszxx(e) {
-	e = e || 32;
-	var t = "qwertyuioplkjhgfdsazxcvbnm1234567890",
-		a = t.length,
-		n = "";
-
-	for (i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
-	return n;
-}
-
-
-
-
 /**
  * 随机整数生成
  */
+
 function randomInt(min, max) {
 	return Math.round(Math.random() * (max - min) + min);
 }
@@ -349,7 +413,7 @@ function ts10() {
  */
 function local_hours() {
 	let myDate = new Date();
-	let h = myDate.getHours();
+	h = myDate.getHours();
 	return h;
 }
 
@@ -358,64 +422,9 @@ function local_hours() {
  */
 function local_minutes() {
 	let myDate = new Date();
-	let m = myDate.getMinutes();
+	m = myDate.getMinutes();
 	return m;
 }
-
-
-/**
- * 获取当前年份 2022
- */
-function local_year() {
-	let myDate = new Date();
-	y = myDate.getFullYear();
-	return y;
-}
-
-/**
- * 获取当前月份(数字)  5月
- */
-function local_month() {
-	let myDate = new Date();
-	let m = myDate.getMonth();
-	return m;
-}
-
-
-/**
-* 获取当前月份(数字)  05月 补零
-*/
-function local_month_two() {
-	let myDate = new Date();
-	let m = myDate.getMonth();
-	if (m.toString().length == 1) {
-		m = `0${m}`
-	}
-	return m;
-}
-
-/**
-* 获取当前天数(数字)  5日  
-*/
-function local_day() {
-	let myDate = new Date();
-	let d = myDate.getDate();
-	return d;
-}
-
-
-/**
-* 获取当前天数  05日 补零
-*/
-function local_day_two() {
-	let myDate = new Date();
-	let d = myDate.getDate();
-	if (d.toString().length == 1) {
-		d = `0${d}`
-	}
-	return d;
-}
-
 
 
 /**
@@ -438,11 +447,10 @@ function wyy() {
 		}
 		$.get(url, async (err, resp, data) => {
 			try {
-				data = JSON.parse(data);
+				data = JSON.parse(data)
 				// console.log(data);
-				console.log(`网抑云时间: ${data.data.Content}  by--${data.data.Music}`)
-				msg = `[网抑云时间]: ${data.data.Content}  by--${data.data.Music}`
-				// DoubleLog(`[网抑云时间]: ${data.data.Content}  by--${data.data.Music}`);
+				console.log(`【网抑云时间】 ${data.data.Content}  by--${data.data.Music}`);
+
 			} catch (e) {
 				$.logErr(e, resp);
 			} finally {
@@ -476,7 +484,7 @@ async function httpGet(getUrlObject, tip, timeout = 3) {
 					if (debug) {
 						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
 						console.log(data);
-						console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
+						console.log(`======`);
 						console.log(JSON.parse(data));
 					}
 					let result = JSON.parse(data);
@@ -489,7 +497,7 @@ async function httpGet(getUrlObject, tip, timeout = 3) {
 				} catch (e) {
 					console.log(err, resp);
 					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg = `\n ${tip} 失败了!请稍后尝试!!`
+					msg += `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}
@@ -523,7 +531,7 @@ async function httpPost(postUrlObject, tip, timeout = 3) {
 					if (debug) {
 						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
 						console.log(data);
-						console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
+						console.log(`======`);
 						console.log(JSON.parse(data));
 					}
 					let result = JSON.parse(data);
@@ -536,7 +544,7 @@ async function httpPost(postUrlObject, tip, timeout = 3) {
 				} catch (e) {
 					console.log(err, resp);
 					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg = `\n ${tip} 失败了!请稍后尝试!!`
+					msg += `\n ${tip} 失败了!请稍后尝试!!`
 				} finally {
 					resolve();
 				}
@@ -579,7 +587,7 @@ async function httpRequest(postOptionsObject, tip, timeout = 3) {
 			} catch (e) {
 				console.log(err, resp);
 				console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-				msg = `\n ${tip} 失败了!请稍后尝试!!`
+				msg += `\n ${tip} 失败了!请稍后尝试!!`
 			} finally {
 				resolve();
 			}
@@ -604,7 +612,7 @@ function debugLog(...args) {
 function DoubleLog(data) {
 	if (data) {
 		console.log(`    ${data}`);
-		msg = `\n    ${data}`;
+		msg += `\n    ${data}`;
 	}
 }
 
@@ -628,5 +636,4 @@ function MD5Encrypt(a) { function b(a, b) { return a << b | a >>> 32 - b } funct
 // 完整 Env
 function Env(t, e) { "undefined" != typeof process && JSON.stringify(process.env).indexOf("GITHUB") > -1 && process.exit(0); class s { constructor(t) { this.env = t } send(t, e = "GET") { t = "string" == typeof t ? { url: t } : t; let s = this.get; return "POST" === e && (s = this.post), new Promise((e, i) => { s.call(this, t, (t, s, r) => { t ? i(t) : e(s) }) }) } get(t) { return this.send.call(this.env, t) } post(t) { return this.send.call(this.env, t, "POST") } } return new class { constructor(t, e) { this.name = t, this.http = new s(this), this.data = null, this.dataFile = "box.dat", this.logs = [], this.isMute = !1, this.isNeedRewrite = !1, this.logSeparator = "\n", this.startTime = (new Date).getTime(), Object.assign(this, e), this.log("", `🔔${this.name}, 开始!`) } isNode() { return "undefined" != typeof module && !!module.exports } isQuanX() { return "undefined" != typeof $task } isSurge() { return "undefined" != typeof $httpClient && "undefined" == typeof $loon } isLoon() { return "undefined" != typeof $loon } toObj(t, e = null) { try { return JSON.parse(t) } catch { return e } } toStr(t, e = null) { try { return JSON.stringify(t) } catch { return e } } getjson(t, e) { let s = e; const i = this.getdata(t); if (i) try { s = JSON.parse(this.getdata(t)) } catch { } return s } setjson(t, e) { try { return this.setdata(JSON.stringify(t), e) } catch { return !1 } } getScript(t) { return new Promise(e => { this.get({ url: t }, (t, s, i) => e(i)) }) } runScript(t, e) { return new Promise(s => { let i = this.getdata("@chavy_boxjs_userCfgs.httpapi"); i = i ? i.replace(/\n/g, "").trim() : i; let r = this.getdata("@chavy_boxjs_userCfgs.httpapi_timeout"); r = r ? 1 * r : 20, r = e && e.timeout ? e.timeout : r; const [o, h] = i.split("@"), n = { url: `http://${h}/v1/scripting/evaluate`, body: { script_text: t, mock_type: "cron", timeout: r }, headers: { "X-Key": o, Accept: "*/*" } }; this.post(n, (t, e, i) => s(i)) }).catch(t => this.logErr(t)) } loaddata() { if (!this.isNode()) return {}; { this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path"); const t = this.path.resolve(this.dataFile), e = this.path.resolve(process.cwd(), this.dataFile), s = this.fs.existsSync(t), i = !s && this.fs.existsSync(e); if (!s && !i) return {}; { const i = s ? t : e; try { return JSON.parse(this.fs.readFileSync(i)) } catch (t) { return {} } } } } writedata() { if (this.isNode()) { this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path"); const t = this.path.resolve(this.dataFile), e = this.path.resolve(process.cwd(), this.dataFile), s = this.fs.existsSync(t), i = !s && this.fs.existsSync(e), r = JSON.stringify(this.data); s ? this.fs.writeFileSync(t, r) : i ? this.fs.writeFileSync(e, r) : this.fs.writeFileSync(t, r) } } lodash_get(t, e, s) { const i = e.replace(/\[(\d+)\]/g, ".$1").split("."); let r = t; for (const t of i) if (r = Object(r)[t], void 0 === r) return s; return r } lodash_set(t, e, s) { return Object(t) !== t ? t : (Array.isArray(e) || (e = e.toString().match(/[^.[\]]+/g) || []), e.slice(0, -1).reduce((t, s, i) => Object(t[s]) === t[s] ? t[s] : t[s] = Math.abs(e[i + 1]) >> 0 == +e[i + 1] ? [] : {}, t)[e[e.length - 1]] = s, t) } getdata(t) { let e = this.getval(t); if (/^@/.test(t)) { const [, s, i] = /^@(.*?)\.(.*?)$/.exec(t), r = s ? this.getval(s) : ""; if (r) try { const t = JSON.parse(r); e = t ? this.lodash_get(t, i, "") : e } catch (t) { e = "" } } return e } setdata(t, e) { let s = !1; if (/^@/.test(e)) { const [, i, r] = /^@(.*?)\.(.*?)$/.exec(e), o = this.getval(i), h = i ? "null" === o ? null : o || "{}" : "{}"; try { const e = JSON.parse(h); this.lodash_set(e, r, t), s = this.setval(JSON.stringify(e), i) } catch (e) { const o = {}; this.lodash_set(o, r, t), s = this.setval(JSON.stringify(o), i) } } else s = this.setval(t, e); return s } getval(t) { return this.isSurge() || this.isLoon() ? $persistentStore.read(t) : this.isQuanX() ? $prefs.valueForKey(t) : this.isNode() ? (this.data = this.loaddata(), this.data[t]) : this.data && this.data[t] || null } setval(t, e) { return this.isSurge() || this.isLoon() ? $persistentStore.write(t, e) : this.isQuanX() ? $prefs.setValueForKey(t, e) : this.isNode() ? (this.data = this.loaddata(), this.data[e] = t, this.writedata(), !0) : this.data && this.data[e] || null } initGotEnv(t) { this.got = this.got ? this.got : require("got"), this.cktough = this.cktough ? this.cktough : require("tough-cookie"), this.ckjar = this.ckjar ? this.ckjar : new this.cktough.CookieJar, t && (t.headers = t.headers ? t.headers : {}, void 0 === t.headers.Cookie && void 0 === t.cookieJar && (t.cookieJar = this.ckjar)) } get(t, e = (() => { })) { t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.get(t, (t, s, i) => { !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i) })) : this.isQuanX() ? (this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => e(t))) : this.isNode() && (this.initGotEnv(t), this.got(t).on("redirect", (t, e) => { try { if (t.headers["set-cookie"]) { const s = t.headers["set-cookie"].map(this.cktough.Cookie.parse).toString(); s && this.ckjar.setCookieSync(s, null), e.cookieJar = this.ckjar } } catch (t) { this.logErr(t) } }).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => { const { message: s, response: i } = t; e(s, i, i && i.body) })) } post(t, e = (() => { })) { if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.post(t, (t, s, i) => { !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i) }); else if (this.isQuanX()) t.method = "POST", this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => e(t)); else if (this.isNode()) { this.initGotEnv(t); const { url: s, ...i } = t; this.got.post(s, i).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => { const { message: s, response: i } = t; e(s, i, i && i.body) }) } } time(t, e = null) { const s = e ? new Date(e) : new Date; let i = { "M+": s.getMonth() + 1, "d+": s.getDate(), "H+": s.getHours(), "m+": s.getMinutes(), "s+": s.getSeconds(), "q+": Math.floor((s.getMonth() + 3) / 3), S: s.getMilliseconds() }; /(y+)/.test(t) && (t = t.replace(RegExp.$1, (s.getFullYear() + "").substr(4 - RegExp.$1.length))); for (let e in i) new RegExp("(" + e + ")").test(t) && (t = t.replace(RegExp.$1, 1 == RegExp.$1.length ? i[e] : ("00" + i[e]).substr(("" + i[e]).length))); return t } msg(e = t, s = "", i = "", r) { const o = t => { if (!t) return t; if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? { "open-url": t } : this.isSurge() ? { url: t } : void 0; if ("object" == typeof t) { if (this.isLoon()) { let e = t.openUrl || t.url || t["open-url"], s = t.mediaUrl || t["media-url"]; return { openUrl: e, mediaUrl: s } } if (this.isQuanX()) { let e = t["open-url"] || t.url || t.openUrl, s = t["media-url"] || t.mediaUrl; return { "open-url": e, "media-url": s } } if (this.isSurge()) { let e = t.url || t.openUrl || t["open-url"]; return { url: e } } } }; if (this.isMute || (this.isSurge() || this.isLoon() ? $notification.post(e, s, i, o(r)) : this.isQuanX() && $notify(e, s, i, o(r))), !this.isMuteLog) { let t = ["", "==============📣系统通知📣=============="]; t.push(e), s && t.push(s), i && t.push(i), console.log(t.join("\n")), this.logs = this.logs.concat(t) } } log(...t) { t.length > 0 && (this.logs = [...this.logs, ...t]), console.log(t.join(this.logSeparator)) } logErr(t, e) { const s = !this.isSurge() && !this.isQuanX() && !this.isLoon(); s ? this.log("", `❗️${this.name}, 错误!`, t.stack) : this.log("", `❗️${this.name}, 错误!`, t) } wait(t) { return new Promise(e => setTimeout(e, t)) } done(t = {}) { const e = (new Date).getTime(), s = (e - this.startTime) / 1e3; this.log("", `🔔${this.name}, 结束! 🕛 ${s} 秒`), this.log(), (this.isSurge() || this.isQuanX() || this.isLoon()) && $done(t) } }(t, e) }
 
-//#endregion
-
+     //#endregion
