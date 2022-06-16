@@ -9,7 +9,7 @@
  * 频道：https://t.me/FengYun27
  */
 const $ = new Env("广汽三菱");
-const notify = $.isNode() ? require("./sendNotify") : "";
+const notify = $.isNode() ? require("../sendNotify") : "";
 slCookies = $.isNode() ? process.env.slCookies : "";
 slCookiesArr = [];
 body = {

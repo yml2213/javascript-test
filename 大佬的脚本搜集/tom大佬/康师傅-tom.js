@@ -1,22 +1,25 @@
 /*
-咔咔
-下载：https://h5.imkaka.com/fep/fun-kaka/invitation.html?code=PKUTNNC
-填写邀请码自动获得5元，每天提现1元，提现需要实名认证
-脚本自动提现
+微信小程序：康师傅畅饮社
+邀请链接：https://raw.githubusercontent.com/leafxcy/JavaScript/main/ksfcys.png
 
-重写：
+1200+积分换5元京东E卡
+脚本自动签到，默认不会抽奖
+如果需要自动抽奖，请设置变量ksfcysDraw为true
+
+青龙捉club.biqr.cn的任意包，把Token值填到变量ksfcysToken里，多账号@隔开
+
+V2P/圈X 重写：
+点击签到或者我的自动获取
+
 [task_local]
-#咔咔
-35 9 * * * https://raw.githubusercontent.com/leafxcy/JavaScript/main/kaka.js, tag=咔咔, enabled=true
+#康师傅畅饮社
+42 9,18 * * * https://raw.githubusercontent.com/leafxcy/JavaScript/main/ksfcys.js, tag=康师傅畅饮社, enabled=true
 [rewrite_local]
-https://api.imkaka.com/v1/user/index/ url script-request-header https://raw.githubusercontent.com/leafxcy/JavaScript/main/kaka.js
+https://club.biqr.cn/api/member/getMemberInfo url script-request-header https://raw.githubusercontent.com/leafxcy/JavaScript/main/ksfcys.js
 [MITM]
-hostname = api.imkaka.com
-
-青龙：
-把任意api.imkaka.com捉包头里的Cookie填到kakaCookie里，多账户@隔开
+hostname = club.biqr.cn
 */
-const jsname = '咔咔'
+const jsname = '康师傅畅饮社'
 const $ = new Env(jsname);
 const logDebug = 0
 
@@ -25,81 +28,98 @@ let notifyStr = ''
 
 let httpResult //global buffer
 
-let userCookie = ($.isNode() ? process.env.kakaCookie : $.getdata('kakaCookie')) || '';
-let userCookieArr = []
+let userCookie = ($.isNode() ? process.env.ksfcysToken : $.getdata('ksfcysToken')) || '';
+let DO_LUCKYDRAW = ($.isNode() ? process.env.ksfcysDraw : $.getdata('ksfcysDraw')) || false;
+
 let userList = []
 
 let userIdx = 0
 let userCount = 0
 
-let codeName = 'kaka'
-let taskUrl = 'https://leafxcy.coding.net/p/validcode/d/validCode/git/raw/master/task.json'
-let taskCode = {}
-
 ///////////////////////////////////////////////////////////////////
 class UserInfo {
     constructor(str) {
         this.index = ++userIdx
-        let info = str.split('#')
-        this.cookie = info[0]
+        this.token = str
+        this.integral = 0
+        this.nickname = ''
+        this.valid = false
     }
 
-    async withdraw() {
-        let url = `https://api.imkaka.com/v1/app/wallet/withdraw`
-        let body = `id=ka1`
-        let urlObject = populateUrlObject(url,this.cookie,body)
-        await httpRequest('post',urlObject)
-        let result = httpResult;
-        if(!result) return
-        //console.log(result)
-        if(result.ec == 200) {
-            console.log(`[${this.nickname}]提现成功：${result.em}`)
-        } else {
-            console.log(`[${this.nickname}]提现失败: ${result.em}`)
-        }
-    }
-
-    async getInfo(state) {
-        let url = `https://api.imkaka.com/v1/app/wallet/info`
+    async getSignInStatus() {
+        let url = `https://club.biqr.cn/api/signIn/integralSignInList`
         let body = ``
-        let urlObject = populateUrlObject(url,this.cookie,body)
+        let urlObject = populateUrlObject(url,this.token,body)
         await httpRequest('post',urlObject)
         let result = httpResult;
         if(!result) return
         //console.log(result)
-        if(result.ec == 200) {
-            this.nickname = result.data.alipay_id ? result.data.alipay_id : `账号${this.index}(未绑定支付宝)`
-            this.alipay = result.data.alipay_id ? true : false
-            this.received_amount = result.data.received_amount
-            this.unreceived_amount = parseFloat(result.data.unreceived_amount)
-            console.log(`[${this.nickname}]还剩${this.unreceived_amount}元可以提现，已提现${this.received_amount}`)
-            if(result.data.unreceived_amount > 0) {
-                if(this.alipay) {
-                    await $.wait(500)
-                    await this.withdraw()
-                } else {
-                    console.log(`[${this.nickname}]请先实名认证再提现`)
-                }
-            } else if(state==0){
-                console.log(`[${this.nickname}]没有可提现余额，自动尝试填写邀请码`)
-                await $.wait(500)
-                await this.submitCode()
-                await $.wait(1000)
-                await this.getInfo(1)
-            }
+        if(result.code == 0) {
+            this.valid = true
+            this.isSign = result.data.signIs
+            let signStr = this.isSign ? '已' : '未'
+            console.log(`账号[${this.index}]登录成功，今天${signStr}签到`)
+            if(this.isSign) return;
+            await $.wait(500)
+            await this.signIn()
         } else {
-            console.log(`账号[${this.index}]查询失败: ${result.em}`)
+            console.log(`账号[${this.index}]登录失败，请尝试重新捉token: ${result.msg}`)
         }
     }
 
-    async submitCode() {
-        let url = `https://api.imkaka.com/v1/app/invite/submitCode`
-        let body = `code=${taskCode['invite']}`
-        let urlObject = populateUrlObject(url,this.cookie,body)
+    async signIn() {
+        let url = `https://club.biqr.cn/api/signIn/integralSignIn`
+        let body = ``
+        let urlObject = populateUrlObject(url,this.token,body)
         await httpRequest('post',urlObject)
         let result = httpResult;
         if(!result) return
         //console.log(result)
+        console.log(`账号[${this.index}]签到：${result.msg}`)
+    }
+
+    async luckydraw() {
+        let url = `https://club.biqr.cn/api/game/turntable/open`
+        let body = ``
+        let urlObject = populateUrlObject(url,this.token,body)
+        await httpRequest('post',urlObject)
+        let result = httpResult;
+        if(!result) return
+        //console.log(result)
+        if(result.code == 0) {
+            console.log(`账号[${this.index}]消耗50积分抽奖获得：${result.data.name}`)
+        } else {
+            console.log(`账号[${this.index}]抽奖失败: ${result.msg}`)
+        }
+    }
+
+    async getMemberInfo() {
+        let url = `https://club.biqr.cn/api/member/getMemberInfo`
+        let body = ``
+        let urlObject = populateUrlObject(url,this.token,body)
+        await httpRequest('get',urlObject)
+        let result = httpResult;
+        if(!result) return
+        //console.log(result)
+        if(result.code == 0) {
+            this.nickname = result.data.nickname
+            this.integral = result.data.integral
+        } else {
+            console.log(`账号[${this.index}]查询积分失败: ${result.msg}`)
+        }
+    }
+
+    async userTask() {
+        console.log(`\n================ 开始账号[${this.index}] ================`)
+        await this.getSignInStatus()
+        if(!this.valid) return;
+        await $.wait(500)
+        await this.getMemberInfo()
+        if(DO_LUCKYDRAW && this.integral>=50) {
+            await $.wait(500)
+            await this.luckydraw()
+        }
+        console.log(`账号[${this.index}] 【${this.nickname}】当前积分：${this.integral}`)
     }
 }
 
@@ -107,12 +127,15 @@ class UserInfo {
     if (typeof $request !== "undefined") {
         await GetRewrite()
     }else {
-        await getTaskUrl()
         if(!(await checkEnv())) return;
 
+        let drawStr = DO_LUCKYDRAW ? '自动抽奖' : '不抽奖'
+        console.log(`当前设置抽奖开关为：${drawStr}`)
+        console.log('每次抽奖需要消耗50积分，有可能抽不中')
+        console.log('如果需要自动抽奖，请设置变量ksfcysDraw为true，否则设置为false')
         for(let user of userList) {
-            await user.getInfo(0);
-            await $.wait(200);
+            await user.userTask();
+            await $.wait(300);
         }
     }
 })()
@@ -121,19 +144,19 @@ class UserInfo {
 
 ///////////////////////////////////////////////////////////////////
 async function GetRewrite() {
-    if($request.url.indexOf(`user/index/`) > -1) {
-        let ck = $request.headers.Cookie
+    if($request.url.indexOf(`member/getMemberInfo`) > -1) {
+        let ck = $request.headers.Token
 
         if(userCookie) {
             if(userCookie.indexOf(ck) == -1) {
                 userCookie = userCookie + '@' + ck
-                $.setdata(userCookie, 'kakaCookie');
+                $.setdata(userCookie, 'ksfcysToken');
                 ckList = userCookie.split('@')
-                $.msg(jsname+` 获取第${ckList.length}个ck成功: ${ck}`)
+                $.msg(jsname+` 获取第${ckList.length}个Token成功: ${ck}`)
             }
         } else {
-            $.setdata(ck, 'kakaCookie');
-            $.msg(jsname+` 获取第1个ck成功: ${ck}`)
+            $.setdata(ck, 'ksfcysToken');
+            $.msg(jsname+` 获取第1个Token成功: ${ck}`)
         }
     }
 }
@@ -156,7 +179,7 @@ async function checkEnv() {
 //通知
 async function showmsg() {
     if(!notifyStr) return;
-    const notify = $.isNode() ? require('./sendNotify') : '';
+    const notify = $.isNode() ? require('../sendNotify') : '';
     if(!notify) return;
     notifyBody = jsname + "运行通知\n\n" + notifyStr
     if (notifyFlag == 1) {
@@ -184,18 +207,17 @@ async function pushDear(str) {
     console.log(`\n========== PushDear 通知发送${retStr} ==========\n`)
 }
 ////////////////////////////////////////////////////////////////////
-function populateUrlObject(url,cookie,body=''){
+function populateUrlObject(url,token,body=''){
     let host = url.replace('//','/').split('/')[1]
     let urlObject = {
         url: url,
         headers: {
             'Host': host,
-            'Accept' : '*/*',
-            'Connection' : 'keep-alive',
-            'Cookie' : cookie,
-            'User-Agent' : 'ViewChat/1.6.6 iOS/219 (iPhone 12; iOS 15.0; zh_CN; iPhone13,2; S2)',
-            'Accept-Language' : 'zh-Hans-CN;q=1.0',
-            'Accept-Encoding' : 'br;q=1.0, gzip;q=0.9, deflate;q=0.8',
+            'Connection': 'Keep-Alive',
+            'Token': token,
+            'Accept' : 'application/json, text/plain, */*',
+            'Accept-Encoding' : 'gzip,compress,br,deflate',
+            'User-Agent' : 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.18(0x1800122d) NetType/WIFI Language/zh_CN',
         },
     }
     if(body) urlObject.body = body
@@ -205,7 +227,7 @@ function populateUrlObject(url,cookie,body=''){
 async function httpRequest(method,url) {
     httpResult = null
     if(method == 'post') {
-        url.headers['Content-Type'] =  'application/x-www-form-urlencoded; charset=utf-8'
+        url.headers['Content-Type'] =  'application/x-www-form-urlencoded;'
         url.headers['Content-Length'] = url.body ? url.body.length : 0
     }
     return new Promise((resolve) => {
@@ -228,22 +250,6 @@ async function httpRequest(method,url) {
             }
         });
     });
-}
-
-async function getTaskUrl() {
-    let ret = ''
-    let urlObject = {
-        url: taskUrl,
-        headers: '',
-    }
-    await httpRequest('get',urlObject)
-    let result = httpResult;
-    if(!result) return ret;
-
-    for(let tasks in result[codeName]) {
-        taskCode[tasks] = result[codeName][tasks]
-    }
-    return ret;
 }
 
 function safeGet(data) {

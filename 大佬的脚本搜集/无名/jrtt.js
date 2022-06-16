@@ -47,7 +47,7 @@ jrtt = type=cron,cronexp="5,35 8-23 * * *",wake-system=1,script-path=https://raw
 */
 
 const $ = new Env('今日头条极速版')
-const notify = $.isNode() ?require('./sendNotify') : '';
+const notify = $.isNode() ?require('../sendNotify') : '';
 $.idx = ($.idx = ($.getval("jrttcount") || "1") - 1) > 0 ? `${$.idx + 1}` : ""; // 账号扩展字符
 const signurlArr = [],signkeyArr=[]
 const farmurlArr = [],farmkeyArr=[]

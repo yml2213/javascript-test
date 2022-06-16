@@ -387,7 +387,7 @@ function Env(name, env) {
 			if (!this.notifyStr) return;
 			let notifyBody = this.name + " 运行通知\n\n" + this.notifyStr
 			if ($.isNode()) {
-				var notify = require('./sendNotify');
+				var notify = require('../sendNotify');
 				console.log('\n============== 推送 ==============')
 				await notify.sendNotify(this.name, notifyBody);
 			} else {

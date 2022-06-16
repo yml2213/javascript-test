@@ -12,7 +12,7 @@ boxjs地址:https://gitee.com/gossh520/script/raw/master/byxiaopeng.boxjs.json
 //#联兴实业
 // 10 8 * * * https://gitee.com/gossh520/script/raw/master/lxsyapp.js, tag=联兴实业, enabled=true
 const $ = new Env('联兴实业APP签到');
-const notify = $.isNode() ? require('./sendNotify') : '';
+const notify = $.isNode() ? require('../sendNotify') : '';
 let status;
 status = (status = ($.getval("lxsystatus") || "1")) > 1 ? `${status}` : ""; // 账号扩展字符
 let lxsyckArr = [];

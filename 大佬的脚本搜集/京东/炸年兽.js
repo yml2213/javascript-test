@@ -4,7 +4,7 @@ TG https://t.me/aaron_scriptsG
 33 0,6-23/2 * * * jd_travel.js
 */
 const $ = new Env('炸年兽');
-const notify = $.isNode() ? require('./sendNotify') : '';
+const notify = $.isNode() ? require('../sendNotify') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
 let cookiesArr = [], cookie = '', message, helpCodeArr = [], expandHelpArr = [], helpPinArr = [], wxCookie = "";
 let wxCookieArr = process.env.WXCookie?.split("@") || []

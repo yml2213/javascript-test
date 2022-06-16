@@ -11,7 +11,7 @@ boxjs地址:https://gitee.com/gossh520/script/raw/master/byxiaopeng.boxjs.json
 //#亿享云
 // 10 8 * * * https://gitee.com/gossh520/script/raw/master/yxyapp.js, tag=亿享云, enabled=true
 const $ = new Env('亿享云APP签到');
-const notify = $.isNode() ? require('./sendNotify') : '';
+const notify = $.isNode() ? require('../sendNotify') : '';
 let status;
 status = (status = ($.getval("yxystatus") || "1")) > 1 ? `${status}` : ""; // 账号扩展字符
 let yxyPhoneArr = [];

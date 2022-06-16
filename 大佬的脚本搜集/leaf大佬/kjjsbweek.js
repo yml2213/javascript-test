@@ -14,7 +14,7 @@ var request = require("request");
 let status;
 status = (status = ($.getval("hfhxstatus") || "1")) > 1 ? `${status}` : ""; // 账号扩展字符
 let ksjsbCookie1Arr = [], hfhxcount = ''
-const notify = $.isNode() ? require('./sendNotify') : '';
+const notify = $.isNode() ? require('../sendNotify') : '';
 let ksjsbCookie1 = $.isNode() ? (process.env.ksjsbCookie1 ? process.env.ksjsbCookie1 : "") : ($.getdata('ksjsbCookie1') ? $.getdata('ksjsbCookie1') : "")
 let allMessage = '';
 let ksjsbCookie1s = ""

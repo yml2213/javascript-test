@@ -6,7 +6,7 @@ const $ = Env(jsname)
 const logDebug = 0
 
 const notifyFlag = 1; //0为关闭通知，1为打开通知,默认为1
-const notify = $.isNode() ? require('./sendNotify') : '';    // 通知相关
+const notify = $.isNode() ? require('../sendNotify') : '';    // 通知相关
 let notifyStr = ''
 
 let httpResult       //global buffer
