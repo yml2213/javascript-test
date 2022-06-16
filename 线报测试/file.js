@@ -1,27 +1,12 @@
-var fs = require("fs");
-
-// 异步读取
-fs.readFile('线报测试/input.txt', function (err, data) {
-	if (err) {
-		return console.error(err);
+const fs = require("fs")
+// 创建目录
+fs.mkdir("./test", (err) => {
+	// console.log(err);
+	if (err && err.code === "EEXIST") {
+		console.log("目录已经存在")
 	}
-	console.log("异步读取: " + data.toString());
-});
+})
 
-// 同步读取
-var data = fs.readFileSync('线报测试/input.txt');
-console.log("同步读取: " + data.toString());
-
-console.log("程序执行完毕。");
-
-
-
-// const fs = require('fs')
-
-// fs.readFile('/Users/joe/test.txt', 'utf8', (err, data) => {
-// 	if (err) {
-// 		console.error(err)
-// 		return
-// 	}
-// 	console.log(data)
+// fs.writeFile("./test/aa.txt", "hello world", err => {
+// 	console.log(err);
 // })

@@ -225,7 +225,7 @@ async function zrw(name, task_type) {
 		},
 		body: `biz_content=${biz}&signature=${sign}`
 	};
-	let result = await httpPost(Options, `做任务`);
+	let result = await httpPost(Options, name);
 
 
 	if (result.code == 200) {
@@ -262,7 +262,7 @@ async function lqjl(name, task_type) {
 		},
 		body: `biz_content=${biz}&signature=${sign}`
 	};
-	let result = await httpPost(Options, `领取任务`);
+	let result = await httpPost(Options, name);
 
 
 	if (result.code == 200) {
@@ -328,7 +328,7 @@ async function getCks(ck, str) {
 			}
 			resolve(ckArr)
 		} else {
-			console.log(` :未填写变量 ${str}`)
+			console.log(` : 未填写变量 ${str}`)
 		}
 	}
 	)
