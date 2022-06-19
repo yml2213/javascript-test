@@ -141,7 +141,7 @@ async function signIn() {
 	let ts = ts10();
 	let salt_data = randomszxx(16);
 	let salt = MD5Encrypt(`${salt_data}80`);
-	
+
 	console.log();
 }
 
@@ -221,7 +221,7 @@ function Version_Check(name) {
 		}
 		$.get(url, async (err, resp, data) => {
 			try {
-				let VersionCheck = resp.body.match(/VersionCheck = "([\d\.]+)"/)[1]
+				VersionCheck = resp.body.match(/VersionCheck = "([\d\.]+)"/)[1]
 			} catch (e) {
 				$.logErr(e, resp);
 			} finally {

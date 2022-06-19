@@ -582,7 +582,7 @@ function Version_Check1(name) {
 	};
 
 	request(options, function (error, response) {
-		let VersionCheck = response.body.match(/VersionCheck = "([\d\.]+)"/)[1]
+		VersionCheck = response.body.match(/VersionCheck = "([\d\.]+)"/)[1]
 		console.log(VersionCheck);
 		console.log(`测试测试`);
 
@@ -597,7 +597,7 @@ function Version_Check(name) {
 		}
 		$.get(url, async (err, resp, data) => {
 			try {
-				let VersionCheck = resp.body.match(/VersionCheck = "([\d\.]+)"/)[1]
+				VersionCheck = resp.body.match(/VersionCheck = "([\d\.]+)"/)[1]
 			} catch (e) {
 				$.logErr(e, resp);
 			} finally {

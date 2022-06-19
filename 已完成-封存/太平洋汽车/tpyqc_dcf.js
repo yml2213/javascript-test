@@ -1,50 +1,25 @@
-/**
- * 脚本地址:  https://raw.githubusercontent.com/yml2213/javascript/master/gjjjhyjlb/gjjjhyjlb.js
- * 转载请留信息,谢谢
- *
- * 顾家家居会员俱乐部  小程序
- *
- * cron 20 7,12  * * *  yml2213_javascript_master/gjjjhyjlb.js
- *
- * 6-12		完成 签到 任务 (圈x v2p兼容测试中)
- *
- * 感谢所有测试人员
- * ========= 青龙--配置文件 =========
- * 变量格式: export gjjjhyjlb_data='X-Customer & X-Token @ X-Customer & X-Token '   ,多账号用 换行 或 @ 分割
- * 抓包 club-server/front/member/home  包, 找到 X - Token ,X - Customer 即可
- * ========= 重写 (测试中,有问题群里 @ 我吧) =========
- * url:   club-server/front/member/home
- * 类型:   script-request-header
- * 路径:   https://raw.githubusercontent.com/yml2213/javascript/master/gjjjhyjlb/gjjjhyjlb.js
- * 域名:   mc.kukahome.com
- * ====================================
- * tg频道: https://t.me/yml2213_tg
- * tg群组: https://t.me/yml_tg
- *
- */
-
-const $ = new Env("顾家家居会员俱乐部");
+const $ = new Env("太平洋汽车");
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; //0为关闭通知,1为打开通知,默认为1
-const debug = 0; //0为关闭调试,1为打开调试,默认为0
+const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
+const debug = 0			//0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
-let ckStr =
-	($.isNode() ? process.env.gjjjhyjlb_data : $.getdata("gjjjhyjlb_data")) || "";
+let ckStr = ($.isNode() ? process.env.tpyqcck : $.getdata("tpyqcck")) || "";
 let msg, ck;
-let ck_status = true;
-let host = "mc.kukahome.com";
-let hostname = "https://" + host;
+// let ck_status = true;
+//let host = "h5.guang.com";
+//let hostname = "https://" + host;
+//let bizIdArr = [2739855, 2701988, 2726811, 2720166, 2720167, 2720168];
+//let hc_bizIdArr = [2045, 2043, 2047,2048];
 //---------------------------------------------------------------------------------------------------------
-let VersionCheck = "0.1.3";
-let Change = "增加圈x v2p兼容,自行测试吧!";
-let thank = `\n感谢 心雨 的投稿\n`;
+let VersionCheck = "0.0.1";
+let Change = "支持QX、青龙";
+let thank = `\n感谢XX\n`;
 //---------------------------------------------------------------------------------------------------------
 
 async function tips(ckArr) {
-	let Version_latest = await Version_Check("gjjjhyjlb");
-	let Version = `\n📌 本地脚本: V 0.1.3  远程仓库脚本: V ${Version_latest}`;
-	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
-	DoubleLog(`${thank}`);
+	//let Version = `\n📌 本地脚本: V 0.0.2 `;
+	//DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
+	//DoubleLog(`${thank}`);
 	await wyy();
 	DoubleLog(`\n========== 共找到 ${ckArr.length} 个账号 ==========`);
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
@@ -52,9 +27,10 @@ async function tips(ckArr) {
 
 !(async () => {
 	if (typeof $request !== "undefined") {
+		// 严格不相等
 		await GetRewrite();
 	} else {
-		let ckArr = await Variable_Check(ckStr, "gjjjhyjlb_data");
+		let ckArr = await Variable_Check(ckStr, "tpyqcck");
 		await tips(ckArr);
 		for (let index = 0; index < ckArr.length; index++) {
 			let num = index + 1;
@@ -70,161 +46,145 @@ async function tips(ckArr) {
 	.finally(() => $.done());
 
 async function start() {
-	console.log("\n开始 搜索");
-	await search();
-
-	// if (ck_status) {
-	// 	console.log("\n开始 签到信息");
-	// 	await sign_info();
-	// }
+	console.log(`\n📝开始抽奖📝\n`)
+	await tpyqccj();
+	await $.wait(1000);
+	//console.log(`\n🚶步数兑换积分🚶\n`)
+	//await lmdhbs();
+	//await $.wait(1000);
+	//console.log(`\n💎获取账户信息💎\n`)
+	//await lmzh();
+	//await $.wait(1000);
 }
 
 // 重写 测试中
-// https://mc.kukahome.com/club-server/front/member/home
 async function GetRewrite() {
-	if ($request.url.indexOf("club-server/front/member/home") > -1) {
-		let ck_az = $request.headers.Authorization;
-		let ck_id = $request.headers["X-Customer"];
-		ck = `${ck_id}&${ck_az}`;
+	if ($request.url.indexOf("discount/api/activity/lottery") > -1) {
+		const ck = $request.headers['Cookie']
 		if (ckStr) {
-			if (ckStr.indexOf(ck_id) == -1) {
-				// 找不到返回 -1
+			if (ckStr.indexOf(ck) == -1) { // 找不到返回 -1
 				ckStr = ckStr + "@" + ck;
-				$.setdata(ckStr, "gjjjhyjlb_data");
+				$.setdata(ckStr, "tpyqcck");
 				ckList = ckStr.split("@");
-				$.msg($.name + ` 获取第${ckList.length}个 ck 成功: ${ck}`);
+				$.msg($.name + ` 获取第${ckList.length}个 ck 成功: ${ck} ,不用请自行关闭重写!`);
 			}
 		} else {
-			$.setdata(ck, "gjjjhyjlb_data");
-			$.msg($.name + ` 获取第1个 ck 成功: ${ck}`);
+			$.setdata(ck, "tpyqcck");
+			$.msg($.name + ` 获取第1个 ck 成功: ${ck} ,不用请自行关闭重写!`);
 		}
 	}
 }
 
-/**
- * 搜索    httpPost
- * https://mc.kukahome.com/club-server/front/member/personalCenter
- * https://mc.kukahome.com/club-server/front/member/memberInformation
- *
- */
-async function search() {
-	let Option = {
-		url: `https://dl1.vanlicity.cn/usbook?m=p&xlei=MA==&page=1`,
-		headers: {
-		},
-		body: 'yema=1&ming=15339956683&mima=qm123456&uid=2435&soss=%E5%A4%AA%E7%A9%BA%E9%83%A8%E9%98%9F&fulei='
-	};
-	let result = await httpPost(Option, `搜索`);
-
-	if (result.yema == 1) {
-		console.log(result.lb);
-	} else {
-		DoubleLog(`搜索: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
-		return (ck_status = false);
-	}
-}
 
 /**
- * 签到信息    httpPost
- * https://mc.kukahome.com/club-server/front/member/calendar
+ * 通用任务  签到 直播 分会场    post
+ * https://h5.guang.com/live/ump/roll-dice-general/post-finish-panel-task/dice
  */
-async function sign_info() {
-	let Option = {
-		url: `${hostname}/club-server/front/member/calendar`,
-		headers: {
-			Host: host,
-			"X-Customer": ck[0],
-			brandCode: "K001",
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ membershipId: ck[0], authorization: ck[1] }),
-	};
-	let result = await httpPost(Option, `签到信息`);
 
-	// console.log(result);
-	if (result.membershipId) {
-		if (result.isTodaySigned == false) {
-			DoubleLog(`签到信息: 今天还未签到 ,去签到喽!`);
-			await wait(2);
-			await signIn();
-		} else if (result.isTodaySigned == true) {
-			DoubleLog(`签到信息: 今天已经签到了 ,明天再来吧!`);
+function tpyqccj(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		let url = {
+			url: 'https://act1.pcauto.com.cn/discount/api/activity/lottery',
+			headers: {
+				'Cookie': `${ck[0]}`,
+				'Content-Type': `application/json`,
+				'Connection': `keep-alive`,
+				'Referer': `https://www1.pcauto.com.cn/zt/discount-topics/app-wap/index.html`,
+				'Accept-Encoding': `gzip, deflate, br`,
+				'Origin': `https://www1.pcauto.com.cn`,
+				'Host': `act1.pcauto.com.cn`
+			},
+			body: `{"actId": "19","phone": "1043074152"}`,
 		}
-	} else {
-		DoubleLog(`签到信息: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
-	}
+		$.post(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+				DoubleLog(`\n 抽奖结果: ${result.data.msg}\n`);
+				//console.log(data);
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
 }
 
-/**
- * 签到    httpRequest
- * https://mc.kukahome.com/club-server/front/member/signIn
- */
-async function signIn() {
-	let Option = {
-		method: "POST",
-		url: `${hostname}/club-server/front/member/signIn`,
-		headers: {
-			Host: host,
-			"X-Customer": ck[0],
-			brandCode: "K001",
-			"content-type": "application/json",
-		},
-		body: JSON.stringify({
-			identityType: "mobile",
-			membershipId: ck[0],
-			customerId: customerId,
-			authorization: ck[1],
-		}),
-	};
-	let result = await httpRequest(Option, `签到`);
 
-	if (result.code == 200) {
-		DoubleLog(`签到: 成功 🎉`);
-		await wait(3);
-		await user_info(2);
-	} else if (result.code == 400) {
-		DoubleLog(`签到信息: ${result.message}`);
-	} else {
-		DoubleLog(`签到: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
-	}
+/*
+ function lmdhbs() {
+	return new Promise((resolve) => {
+		let url = {
+			url: 'https://miniprogram.api.miotech.com/api/mp2c/user/redeem-points',
+			headers: {
+'Cookie' : `${ck[0]}`,
+'content-type' : `application/json`,
+'Connection' : `keep-alive`,
+'Referer' : `https://servicewechat.com/wx3279a0b1782e2d93/128/page-frame.html`,
+'Accept-Encoding' : `gzip,compress,br,deflate`,
+'Host' : `miniprogram.api.miotech.com`
+	 },
+	  
+	    }
+		
+		$.get(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+   
+//console.log(data)
+			
+				  
+				   DoubleLog(`\n 兑换成功:获得${result.data}积分 \n`);
+				
+	    }
+	      catch (e) {
+				console.log(e)
+			} finally {
+				resolve()
+				//console.log(idnum);
+			}
+		}, timeout = 3 * 1000)
+	})
 }
 
-/**
- * 签到    httpPost
- * https://mc.kukahome.com/club-server/front/member/signIn
- */
-async function signIn1() {
-	let Option = {
-		url: `${hostname}/club-server/front/member/signIn`,
-		headers: {
-			Host: host,
-			"X-Customer": ck[0],
-			brandCode: "K001",
-			"content-type": "application/json",
-		},
-		body: JSON.stringify({
-			identityType: "mobile",
-			membershipId: ck[0],
-			customerId: customerId,
-			authorization: ck[1],
-		}),
-	};
-	let result = await httpPost(Option, `签到`);
 
-	if (result.code == 200) {
-		DoubleLog(`签到: 成功 🎉`);
-		await wait(3);
-		await user_info(2);
-	} else if (result.code == 400) {
-		DoubleLog(`签到信息: ${result.message}`);
-	} else {
-		DoubleLog(`签到: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
-	}
+function lmzh(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		let url = {
+			url: 'https://miniprogram.api.miotech.com/api/mp2c/user/profile',
+			headers: {
+'Cookie' : `${ck[0]}`,
+'content-type' : `application/json`,
+'Connection' : `keep-alive`,
+'Referer' : `https://servicewechat.com/wx3279a0b1782e2d93/128/page-frame.html`,
+'Accept-Encoding' : `gzip,compress,br,deflate`,
+'Host' : `miniprogram.api.miotech.com`
+	 },
+	  
+	    }
+		
+		$.get(url, async (error, response, data) => {
+			try {
+				
+				let result = JSON.parse(data);
+	DoubleLog(`\n 用户名: ${result.data.nickName}\n\n 现有积分: ${result.data.balanceOfPoints}\n`);
+			} catch (e) {
+				console.log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
 }
+*/
+
+
+
+
+
+
+
+
 
 
 
@@ -253,6 +213,8 @@ async function Variable_Check(ck, Variables) {
 		}
 	});
 }
+
+
 
 /**
  * 获取远程版本
@@ -302,7 +264,12 @@ async function SendMsg(message) {
  * 双平台log输出
  */
 function DoubleLog(data) {
-	if (data) {
+	if ($.isNode()) {
+		if (data) {
+			console.log(`    ${data}`);
+			msg += `\n    ${data}`;
+		}
+	} else {
 		console.log(`    ${data}`);
 		msg += `\n    ${data}`;
 	}
@@ -463,6 +430,58 @@ function wyy() {
 	});
 }
 
+
+/**
+ * env post get 请求  通用请求
+ */
+async function PublicRequests(method, getUrlObject, tip, timeout = 3) {
+	return new Promise((resolve) => {
+		let url = getUrlObject;
+		if (!tip) {
+			let tmp = arguments.callee.toString();
+			let re = /function\s*(\w*)/i;
+			let matches = re.exec(tmp);
+			tip = matches[1];
+		}
+		if (debug) {
+			console.log(
+				`\n 【debug】=============== 这是 ${tip} 请求 url ===============`
+			);
+			console.log(url);
+		}
+
+		$[method](url, async (err, resp, data) => {
+			try {
+				if (debug) {
+					console.log(
+						`\n\n 【debug】===============这是 ${tip} 返回data==============`
+					);
+					console.log(data);
+					console.log(
+						`\n 【debug】=============这是 ${tip} json解析后数据============`
+					);
+					console.log(JSON.parse(data));
+				}
+				let result = JSON.parse(data);
+				if (result == undefined) {
+					return;
+				} else {
+					resolve(result);
+				}
+			} catch (e) {
+				console.log(err, resp);
+				console.log(`\n ${tip} 失败了!请稍后尝试!!`);
+				msg = `\n ${tip} 失败了!请稍后尝试!!`;
+			} finally {
+				resolve();
+			}
+		},
+			timeout
+		);
+	});
+}
+
+
 /**
  * get请求
  */
@@ -546,6 +565,7 @@ async function httpPost(postUrlObject, tip, timeout = 3) {
 					);
 					console.log(JSON.parse(data));
 				}
+				// let result = data;
 				let result = JSON.parse(data);
 				if (result == undefined) {
 					return;
@@ -568,9 +588,9 @@ async function httpPost(postUrlObject, tip, timeout = 3) {
 /**
  * 网络请求 (get, post等)
  */
-async function httpRequest(postOptionsObject, tip, timeout = 3) {
+async function httpRequest(postOptionssObject, tip, timeout = 3) {
 	return new Promise((resolve) => {
-		let Options = postOptionsObject;
+		let Optionss = postOptionssObject;
 		let request = require("request");
 		if (!tip) {
 			let tmp = arguments.callee.toString();
@@ -582,10 +602,10 @@ async function httpRequest(postOptionsObject, tip, timeout = 3) {
 			console.log(
 				`\n 【debug】=============== 这是 ${tip} 请求 信息 ===============`
 			);
-			console.log(Options);
+			console.log(Optionss);
 		}
 
-		request(Options, async (err, resp, data) => {
+		request(Optionss, async (err, resp, data) => {
 			try {
 				if (debug) {
 					console.log(
@@ -613,6 +633,57 @@ async function httpRequest(postOptionsObject, tip, timeout = 3) {
 }
 
 /**
+ * tom 大佬的任务请求
+ */
+async function taskRequest(method, taskurl, taskheader, taskbody) {
+	return new Promise(async (resolve) => {
+		let url = {
+			url: taskurl,
+			headers: taskheader,
+			body: taskbody,
+			timeout: 5000,
+		};
+		if (debug) {
+			console.log(
+				`\n 【debug】=============== 这是 ${S} 请求 url ===============`
+			);
+			console.log(url);
+		}
+
+		$[method](url, (err, resp, data) => {
+			try {
+				if (debug) {
+					console.log(
+						`\n\n 【debug】===============这是 ${S} 返回data==============`
+					);
+					console.log(data);
+					console.log(`======`);
+					console.log(JSON.parse(data));
+				}
+				if (err) {
+					console.log(`${JSON.stringify(err)}`);
+				} else {
+					if (data) {
+						if (data.indexOf(`<body>`) >= 0) {
+							DATA = data;
+						} else {
+							DATA = JSON.parse(data);
+						}
+					} else {
+						console.log(`服务器返回数据为空`);
+					}
+				}
+			} catch (e) {
+				$.logErr(e, resp);
+			} finally {
+				resolve();
+			}
+		});
+	});
+}
+
+
+/**
  * debug调试
  */
 function debugLog(...args) {
@@ -632,295 +703,218 @@ function debugLog(...args) {
 //     }()
 // }
 
+// md5
+function MD5Encrypt(a) {
+	function b(a, b) {
+		return (a << b) | (a >>> (32 - b));
+	}
+	function c(a, b) {
+		var c, d, e, f, g;
+		return (
+			(e = 2147483648 & a),
+			(f = 2147483648 & b),
+			(c = 1073741824 & a),
+			(d = 1073741824 & b),
+			(g = (1073741823 & a) + (1073741823 & b)),
+			c & d
+				? 2147483648 ^ g ^ e ^ f
+				: c | d
+					? 1073741824 & g
+						? 3221225472 ^ g ^ e ^ f
+						: 1073741824 ^ g ^ e ^ f
+					: g ^ e ^ f
+		);
+	}
+	function d(a, b, c) {
+		return (a & b) | (~a & c);
+	}
+	function e(a, b, c) {
+		return (a & c) | (b & ~c);
+	}
+	function f(a, b, c) {
+		return a ^ b ^ c;
+	}
+	function g(a, b, c) {
+		return b ^ (a | ~c);
+	}
+	function h(a, e, f, g, h, i, j) {
+		return (a = c(a, c(c(d(e, f, g), h), j))), c(b(a, i), e);
+	}
+	function i(a, d, f, g, h, i, j) {
+		return (a = c(a, c(c(e(d, f, g), h), j))), c(b(a, i), d);
+	}
+	function j(a, d, e, g, h, i, j) {
+		return (a = c(a, c(c(f(d, e, g), h), j))), c(b(a, i), d);
+	}
+	function k(a, d, e, f, h, i, j) {
+		return (a = c(a, c(c(g(d, e, f), h), j))), c(b(a, i), d);
+	}
+	function l(a) {
+		for (
+			var b,
+			c = a.length,
+			d = c + 8,
+			e = (d - (d % 64)) / 64,
+			f = 16 * (e + 1),
+			g = new Array(f - 1),
+			h = 0,
+			i = 0;
+			c > i;
 
-
-
-
-// 完整 Env
-
-
-function Env(name, env) {
-	"undefined" != typeof process && JSON.stringify(process.env).indexOf("GITHUB") > -1 && process.exit(0);
-	return new class {
-		constructor(name, env) {
-			this.name = name
-			this.notifyStr = ''
-			this.startTime = (new Date).getTime()
-			Object.assign(this, env)
-			console.log(`${this.name} 开始运行：\n`)
+		)
+			(b = (i - (i % 4)) / 4),
+				(h = (i % 4) * 8),
+				(g[b] = g[b] | (a.charCodeAt(i) << h)),
+				i++;
+		return (
+			(b = (i - (i % 4)) / 4),
+			(h = (i % 4) * 8),
+			(g[b] = g[b] | (128 << h)),
+			(g[f - 2] = c << 3),
+			(g[f - 1] = c >>> 29),
+			g
+		);
+	}
+	function m(a) {
+		var b,
+			c,
+			d = "",
+			e = "";
+		for (c = 0; 3 >= c; c++)
+			(b = (a >>> (8 * c)) & 255),
+				(e = "0" + b.toString(16)),
+				(d += e.substr(e.length - 2, 2));
+		return d;
+	}
+	function n(a) {
+		a = a.replace(/\r\n/g, "\n");
+		for (var b = "", c = 0; c < a.length; c++) {
+			var d = a.charCodeAt(c);
+			128 > d
+				? (b += String.fromCharCode(d))
+				: d > 127 && 2048 > d
+					? ((b += String.fromCharCode((d >> 6) | 192)),
+						(b += String.fromCharCode((63 & d) | 128)))
+					: ((b += String.fromCharCode((d >> 12) | 224)),
+						(b += String.fromCharCode(((d >> 6) & 63) | 128)),
+						(b += String.fromCharCode((63 & d) | 128)));
 		}
-		isNode() {
-			return "undefined" != typeof module && !!module.exports
-		}
-		isQuanX() {
-			return "undefined" != typeof $task
-		}
-		isSurge() {
-			return "undefined" != typeof $httpClient && "undefined" == typeof $loon
-		}
-		isLoon() {
-			return "undefined" != typeof $loon
-		}
-		getdata(t) {
-			let e = this.getval(t);
-			if (/^@/.test(t)) {
-				const [, s, i] = /^@(.*?)\.(.*?)$/.exec(t),
-					r = s ? this.getval(s) : "";
-				if (r)
-					try {
-						const t = JSON.parse(r);
-						e = t ? this.lodash_get(t, i, "") : e
-					} catch (t) {
-						e = ""
-					}
-			}
-			return e
-		}
-		setdata(t, e) {
-			let s = !1;
-			if (/^@/.test(e)) {
-				const [, i, r] = /^@(.*?)\.(.*?)$/.exec(e),
-					o = this.getval(i),
-					h = i ? "null" === o ? null : o || "{}" : "{}";
-				try {
-					const e = JSON.parse(h);
-					this.lodash_set(e, r, t),
-						s = this.setval(JSON.stringify(e), i)
-				} catch (e) {
-					const o = {};
-					this.lodash_set(o, r, t),
-						s = this.setval(JSON.stringify(o), i)
-				}
-			}
-			elses = this.setval(t, e);
-			return s
-		}
-		getval(t) {
-			return this.isSurge() || this.isLoon() ? $persistentStore.read(t) : this.isQuanX() ? $prefs.valueForKey(t) : this.isNode() ? (this.data = this.loaddata(), this.data[t]) : this.data && this.data[t] || null
-		}
-		setval(t, e) {
-			return this.isSurge() || this.isLoon() ? $persistentStore.write(t, e) : this.isQuanX() ? $prefs.setValueForKey(t, e) : this.isNode() ? (this.data = this.loaddata(), this.data[e] = t, this.writedata(), !0) : this.data && this.data[e] || null
-		}
-		send(m, t, e = (() => { })) {
-			if (m != 'get' && m != 'post' && m != 'put' && m != 'delete') {
-				console.log(`无效的http方法：${m}`);
-				return;
-			}
-			if (m == 'get' && t.headers) {
-				delete t.headers["Content-Type"];
-				delete t.headers["Content-Length"];
-			} else if (t.body && t.headers) {
-				if (!t.headers["Content-Type"]) t.headers["Content-Type"] = "application/x-www-form-urlencoded";
-			}
-			if (this.isSurge() || this.isLoon()) {
-				if (this.isSurge() && this.isNeedRewrite) {
-					t.headers = t.headers || {};
-					Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 });
-				}
-				let conf = {
-					method: m,
-					url: t.url,
-					headers: t.headers,
-					timeout: t.timeout,
-					data: t.body
-				};
-				if (m == 'get') delete conf.data
-				$axios(conf).then(t => {
-					const {
-						status: i,
-						request: q,
-						headers: r,
-						data: o
-					} = t;
-					e(null, q, {
-						statusCode: i,
-						headers: r,
-						body: o
-					});
-				}).catch(err => console.log(err))
-			} else if (this.isQuanX()) {
-				t.method = m.toUpperCase(), this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, {
-					hints: !1
-				})),
-					$task.fetch(t).then(t => {
-						const {
-							statusCode: i,
-							request: q,
-							headers: r,
-							body: o
-						} = t;
-						e(null, q, {
-							statusCode: i,
-							headers: r,
-							body: o
-						})
-					}, t => e(t))
-			} else if (this.isNode()) {
-				this.got = this.got ? this.got : require("got");
-				const {
-					url: s,
-					...i
-				} = t;
-				this.instance = this.got.extend({
-					followRedirect: false
-				});
-				this.instance[m](s, i).then(t => {
-					const {
-						statusCode: i,
-						request: q,
-						headers: r,
-						body: o
-					} = t;
-					e(null, q, {
-						statusCode: i,
-						headers: r,
-						body: o
-					})
-				}, t => {
-					const {
-						message: s,
-						response: i
-					} = t;
-					e(s, i, i && i.body)
-				})
-			}
-		}
-		time(t) {
-			let e = {
-				"M+": (new Date).getMonth() + 1,
-				"d+": (new Date).getDate(),
-				"h+": (new Date).getHours(),
-				"m+": (new Date).getMinutes(),
-				"s+": (new Date).getSeconds(),
-				"q+": Math.floor(((new Date).getMonth() + 3) / 3),
-				S: (new Date).getMilliseconds()
-			};
-			/(y+)/.test(t) && (t = t.replace(RegExp.$1, ((new Date).getFullYear() + "").substr(4 - RegExp.$1.length)));
-			for (let s in e)
-				new RegExp("(" + s + ")").test(t) && (t = t.replace(RegExp.$1, 1 == RegExp.$1.length ? e[s] : ("00" + e[s]).substr(("" + e[s]).length)));
-			return t
-		}
-		async showmsg() {
-			if (!this.notifyStr) return;
-			let notifyBody = this.name + " 运行通知\n\n" + this.notifyStr
-			if ($.isNode()) {
-				var notify = require('../sendNotify');
-				console.log('\n============== 推送 ==============')
-				await notify.sendNotify(this.name, notifyBody);
-			} else {
-				this.msg(notifyBody);
-			}
-		}
-		logAndNotify(str) {
-			console.log(str)
-			this.notifyStr += str
-			this.notifyStr += '\n'
-		}
-		msg(e = t, s = "", i = "", r) {
-			const o = t => {
-				if (!t)
-					return t;
-				if ("string" == typeof t)
-					return this.isLoon() ? t : this.isQuanX() ? {
-						"open-url": t
-					}
-						: this.isSurge() ? {
-							url: t
-						}
-							: void 0;
-				if ("object" == typeof t) {
-					if (this.isLoon()) {
-						let e = t.openUrl || t.url || t["open-url"],
-							s = t.mediaUrl || t["media-url"];
-						return {
-							openUrl: e,
-							mediaUrl: s
-						}
-					}
-					if (this.isQuanX()) {
-						let e = t["open-url"] || t.url || t.openUrl,
-							s = t["media-url"] || t.mediaUrl;
-						return {
-							"open-url": e,
-							"media-url": s
-						}
-					}
-					if (this.isSurge()) {
-						let e = t.url || t.openUrl || t["open-url"];
-						return {
-							url: e
-						}
-					}
-				}
-			};
-			this.isMute || (this.isSurge() || this.isLoon() ? $notification.post(e, s, i, o(r)) : this.isQuanX() && $notify(e, s, i, o(r)));
-			let h = ["", "============== 系统通知 =============="];
-			h.push(e),
-				s && h.push(s),
-				i && h.push(i),
-				console.log(h.join("\n"))
-		}
-		getMin(a, b) {
-			return ((a < b) ? a : b)
-		}
-		getMax(a, b) {
-			return ((a < b) ? b : a)
-		}
-		padStr(num, length, padding = '0') {
-			let numStr = String(num)
-			let numPad = (length > numStr.length) ? (length - numStr.length) : 0
-			let retStr = ''
-			for (let i = 0; i < numPad; i++) {
-				retStr += padding
-			}
-			retStr += numStr
-			return retStr;
-		}
-		json2str(obj, encodeUrl = false) {
-			let ret = []
-			for (let keys of Object.keys(obj).sort()) {
-				let v = obj[keys]
-				if (v && encodeUrl) v = encodeURIComponent(v)
-				ret.push(keys + '=' + v)
-			}
-			return ret.join('&');
-		}
-		str2json(str, decodeUrl = false) {
-			let ret = {}
-			for (let item of str.split('&')) {
-				if (!item) continue;
-				let kv = item.split('=')
-				if (kv.length < 2) continue;
-				if (decodeUrl) {
-					ret[kv[0]] = decodeURIComponent(kv[1])
-				} else {
-					ret[kv[0]] = kv[1]
-				}
-			}
-			return ret;
-		}
-		randomString(len, charset = 'abcdef0123456789') {
-			let str = '';
-			for (i = 0; i < len; i++) {
-				str += charset.charAt(Math.floor(Math.random() * charset.length));
-			}
-			return str;
-		}
-		wait(t) {
-			return new Promise(e => setTimeout(e, t))
-		}
-		done(t = {}) {
-			const e = (new Date).getTime(),
-				s = (e - this.startTime) / 1e3;
-			console.log(`\n${this.name} 运行结束，共运行了 ${s} 秒！`)
-			if (this.isSurge() || this.isQuanX() || this.isLoon()) $done(t)
-		}
-	}(name, env)
+		return b;
+	}
+	var o,
+		p,
+		q,
+		r,
+		s,
+		t,
+		u,
+		v,
+		w,
+		x = [],
+		y = 7,
+		z = 12,
+		A = 17,
+		B = 22,
+		C = 5,
+		D = 9,
+		E = 14,
+		F = 20,
+		G = 4,
+		H = 11,
+		I = 16,
+		J = 23,
+		K = 6,
+		L = 10,
+		M = 15,
+		N = 21;
+	for (
+		a = n(a),
+		x = l(a),
+		t = 1732584193,
+		u = 4023233417,
+		v = 2562383102,
+		w = 271733878,
+		o = 0;
+		o < x.length;
+		o += 16
+	)
+		(p = t),
+			(q = u),
+			(r = v),
+			(s = w),
+			(t = h(t, u, v, w, x[o + 0], y, 3614090360)),
+			(w = h(w, t, u, v, x[o + 1], z, 3905402710)),
+			(v = h(v, w, t, u, x[o + 2], A, 606105819)),
+			(u = h(u, v, w, t, x[o + 3], B, 3250441966)),
+			(t = h(t, u, v, w, x[o + 4], y, 4118548399)),
+			(w = h(w, t, u, v, x[o + 5], z, 1200080426)),
+			(v = h(v, w, t, u, x[o + 6], A, 2821735955)),
+			(u = h(u, v, w, t, x[o + 7], B, 4249261313)),
+			(t = h(t, u, v, w, x[o + 8], y, 1770035416)),
+			(w = h(w, t, u, v, x[o + 9], z, 2336552879)),
+			(v = h(v, w, t, u, x[o + 10], A, 4294925233)),
+			(u = h(u, v, w, t, x[o + 11], B, 2304563134)),
+			(t = h(t, u, v, w, x[o + 12], y, 1804603682)),
+			(w = h(w, t, u, v, x[o + 13], z, 4254626195)),
+			(v = h(v, w, t, u, x[o + 14], A, 2792965006)),
+			(u = h(u, v, w, t, x[o + 15], B, 1236535329)),
+			(t = i(t, u, v, w, x[o + 1], C, 4129170786)),
+			(w = i(w, t, u, v, x[o + 6], D, 3225465664)),
+			(v = i(v, w, t, u, x[o + 11], E, 643717713)),
+			(u = i(u, v, w, t, x[o + 0], F, 3921069994)),
+			(t = i(t, u, v, w, x[o + 5], C, 3593408605)),
+			(w = i(w, t, u, v, x[o + 10], D, 38016083)),
+			(v = i(v, w, t, u, x[o + 15], E, 3634488961)),
+			(u = i(u, v, w, t, x[o + 4], F, 3889429448)),
+			(t = i(t, u, v, w, x[o + 9], C, 568446438)),
+			(w = i(w, t, u, v, x[o + 14], D, 3275163606)),
+			(v = i(v, w, t, u, x[o + 3], E, 4107603335)),
+			(u = i(u, v, w, t, x[o + 8], F, 1163531501)),
+			(t = i(t, u, v, w, x[o + 13], C, 2850285829)),
+			(w = i(w, t, u, v, x[o + 2], D, 4243563512)),
+			(v = i(v, w, t, u, x[o + 7], E, 1735328473)),
+			(u = i(u, v, w, t, x[o + 12], F, 2368359562)),
+			(t = j(t, u, v, w, x[o + 5], G, 4294588738)),
+			(w = j(w, t, u, v, x[o + 8], H, 2272392833)),
+			(v = j(v, w, t, u, x[o + 11], I, 1839030562)),
+			(u = j(u, v, w, t, x[o + 14], J, 4259657740)),
+			(t = j(t, u, v, w, x[o + 1], G, 2763975236)),
+			(w = j(w, t, u, v, x[o + 4], H, 1272893353)),
+			(v = j(v, w, t, u, x[o + 7], I, 4139469664)),
+			(u = j(u, v, w, t, x[o + 10], J, 3200236656)),
+			(t = j(t, u, v, w, x[o + 13], G, 681279174)),
+			(w = j(w, t, u, v, x[o + 0], H, 3936430074)),
+			(v = j(v, w, t, u, x[o + 3], I, 3572445317)),
+			(u = j(u, v, w, t, x[o + 6], J, 76029189)),
+			(t = j(t, u, v, w, x[o + 9], G, 3654602809)),
+			(w = j(w, t, u, v, x[o + 12], H, 3873151461)),
+			(v = j(v, w, t, u, x[o + 15], I, 530742520)),
+			(u = j(u, v, w, t, x[o + 2], J, 3299628645)),
+			(t = k(t, u, v, w, x[o + 0], K, 4096336452)),
+			(w = k(w, t, u, v, x[o + 7], L, 1126891415)),
+			(v = k(v, w, t, u, x[o + 14], M, 2878612391)),
+			(u = k(u, v, w, t, x[o + 5], N, 4237533241)),
+			(t = k(t, u, v, w, x[o + 12], K, 1700485571)),
+			(w = k(w, t, u, v, x[o + 3], L, 2399980690)),
+			(v = k(v, w, t, u, x[o + 10], M, 4293915773)),
+			(u = k(u, v, w, t, x[o + 1], N, 2240044497)),
+			(t = k(t, u, v, w, x[o + 8], K, 1873313359)),
+			(w = k(w, t, u, v, x[o + 15], L, 4264355552)),
+			(v = k(v, w, t, u, x[o + 6], M, 2734768916)),
+			(u = k(u, v, w, t, x[o + 13], N, 1309151649)),
+			(t = k(t, u, v, w, x[o + 4], K, 4149444226)),
+			(w = k(w, t, u, v, x[o + 11], L, 3174756917)),
+			(v = k(v, w, t, u, x[o + 2], M, 718787259)),
+			(u = k(u, v, w, t, x[o + 9], N, 3951481745)),
+			(t = c(t, p)),
+			(u = c(u, q)),
+			(v = c(v, r)),
+			(w = c(w, s));
+	var O = m(t) + m(u) + m(v) + m(w);
+	return O.toLowerCase();
 }
 
-
-
-
+// 完整 Env
 function Env(t, e) {
 	"undefined" != typeof process &&
 		JSON.stringify(process.env).indexOf("GITHUB") > -1 &&
@@ -1329,7 +1323,5 @@ function Env(t, e) {
 		}
 	})(t, e);
 }
-
-
 
 //#endregion

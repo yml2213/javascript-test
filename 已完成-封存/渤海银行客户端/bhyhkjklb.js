@@ -27,7 +27,7 @@
 const $ = new Env("渤海银行客户俱乐部");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
-const debug = 1			//0为关闭调试,1为打开调试,默认为0
+const debug = 0			//0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
 let ckStr = ($.isNode() ? process.env.bhyhkjklb_data : $.getdata('bhyhkjklb_data')) || '';
 let msg, ck;
@@ -35,14 +35,14 @@ let ck_status = true;
 // let host = 'mc.kukahome.com';
 // let hostname = 'https://' + host;
 //---------------------------------------------------------------------------------------------------------
-let VersionCheck = "0.1.3"
+let VersionCheck = "0.1.4"
 let Change = '增加圈x v2p兼容,自行测试吧!'
 let thank = `\n感谢 心雨 的投稿\n`
 //---------------------------------------------------------------------------------------------------------
 
 async function tips(ckArr) {
 	let Version_latest = await Version_Check('bhyhkjklb');
-	let Version = `\n📌 本地脚本: V 0.1.3  远程仓库脚本: V ${Version_latest}`
+	let Version = `\n📌 本地脚本: V 0.1.4  远程仓库脚本: V ${Version_latest}`
 	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
 	DoubleLog(`${thank}`);
 	await wyy();
@@ -289,13 +289,13 @@ async function Variable_Check(ck, Variables) {
 function Version_Check(name) {
 	return new Promise((resolve) => {
 		let url = {
-			url: `https://raw.gh.fakev.cn/yml2213/javascript/master/${name}/${name}.js`,
+			url: `http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/${name}.js`,
 		}
 		$.get(url, async (err, resp, data) => {
 			try {
-				let VersionCheck = resp.body.match(/VersionCheck = "([\d\.]+)"/)[1]
+				VersionCheck = resp.body.match(/VersionCheck = "([\d\.]+)"/)[1]
 			} catch (e) {
-				$.logErr(e, resp);
+				$.logErr(err, resp);
 			} finally {
 				resolve(VersionCheck)
 			}
