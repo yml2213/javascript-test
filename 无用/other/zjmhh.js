@@ -5,7 +5,7 @@ cron "18 7 * * *"
 
 const $ = new Env('诸君梦幻盒');
 // const host = 'sign.dftoutiao.com';
-const notify = $.isNode() ? require('../sendNotify') : '';
+const notify = $.isNode() ? require('./sendNotify') : '';
 // let dfttua = process.env.dfttua;
 // let body = process.env.dfttqdbd;
 
@@ -23,21 +23,21 @@ const notify = $.isNode() ? require('../sendNotify') : '';
 //这里是要执行的代码     ====== 如果有您不需要的  请自行注释  使用 // 注释就行 ========
 async function yml() {
     await wyy();
-    zjmhhqd2();
-    zjmhhqd3();
-    zjmhhqd4();
-    zjmhhqd5();
-    zjmhhqd6();
-    zjmhhqd7();
-    zjmhhqd8();
-    zjmhhqd8();
-    zjmhhqd9();
-    zjmhhqd10();
-    zjmhhqd11();
-    zjmhhqd12();
-    zjmhhqd13();
-    zjmhhqd14();
-    zjmhhqd15();
+
+    zhrj();
+    zhyx();
+
+    mtxz();
+    sdtd();
+    yjlm();
+
+    fjdm();
+    ohft();
+    cshf();
+
+    gfgg();
+    qzzq();
+    jyjb();
 
 //每日网抑云
     function wyy(timeout = 3 * 1000) {
@@ -63,7 +63,7 @@ async function yml() {
 
 
 // 综合软件 签到
-function zjmhhqd2(timeout = 0) {
+function zhrj(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
@@ -104,7 +104,7 @@ function zjmhhqd2(timeout = 0) {
 
 
 // 综合游戏 签到
-function zjmhhqd3(timeout = 0) {
+function zhyx(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
@@ -144,48 +144,10 @@ function zjmhhqd3(timeout = 0) {
 }
 
 
-// 头像壁纸 签到
-function zjmhhqd4(timeout = 0) {
-    return new Promise((resolve) => {
-        let url = {
-            url: `http://api.xctd8.com/users/forum.json`,
-            headers: {
-                'Token': 'e03d3c6003783201',
-                'Sign': '709dc492640fe8d4db91d8a25a6d5baa',
-            },
-            body: 'type=signIn&pid=29',
-        }
-        // console.log(url);
 
-        $.post(url, async (err, resp, data) => {
-            try {
 
-                // console.log(`输出data开始===================`);
-                // console.log(data);
-                // console.log(`输出data结束===================`);
-
-                result = JSON.parse(data);
-                if (result.code === 1) {
-                    $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行 头像壁纸:${result.message} ✅ `);
-                    await $.wait(5 * 1000);
-                } else {
-                    $.log(`\n【🎉 恭喜个屁 🎉】执行 头像壁纸 ,${result.message}`);
-                    await $.wait(2 * 1000);
-
-                }
-            } catch (e) {
-                $.logErr(e, resp);
-            } finally {
-                resolve()
-            }
-        }, timeout)
-
-    })
-
-}
-
-// 美图cos 签到
-function zjmhhqd5(timeout = 0) {
+// 美图写真 签到
+function mtxz(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
@@ -225,7 +187,7 @@ function zjmhhqd5(timeout = 0) {
 }
 
 // 沙雕天地 签到
-function zjmhhqd6(timeout = 0) {
+function sdtd(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
@@ -265,7 +227,7 @@ function zjmhhqd6(timeout = 0) {
 }
 
 // 夜间栏目 签到
-function zjmhhqd7(timeout = 0) {
+function yjlm(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
@@ -304,48 +266,10 @@ function zjmhhqd7(timeout = 0) {
 
 }
 
-// ASMR 签到
-function zjmhhqd8(timeout = 0) {
-    return new Promise((resolve) => {
-        let url = {
-            url: `http://api.xctd8.com/users/forum.json`,
-            headers: {
-                'Token': 'e03d3c6003783201',
-                'Sign': '28caafe862ec36fa0b952b924c9fd3b6',
-            },
-            body: 'type=signIn&pid=25',
-        }
-        // console.log(url);
 
-        $.post(url, async (err, resp, data) => {
-            try {
-
-                // console.log(`输出data开始===================`);
-                // console.log(data);
-                // console.log(`输出data结束===================`);
-
-                result = JSON.parse(data);
-                if (result.code === 1) {
-                    $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行 ASMR:${result.message} ✅ `);
-                    await $.wait(5 * 1000);
-                } else {
-                    $.log(`\n【🎉 恭喜个屁 🎉】执行 ASMR,${result.message}`);
-                    await $.wait(2 * 1000);
-
-                }
-            } catch (e) {
-                $.logErr(e, resp);
-            } finally {
-                resolve()
-            }
-        }, timeout)
-
-    })
-
-}
 
 // 番剧动漫 签到
-function zjmhhqd9(timeout = 0) {
+function fjdm(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
@@ -369,7 +293,7 @@ function zjmhhqd9(timeout = 0) {
                     $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行 番剧动漫:${result.message} ✅ `);
                     await $.wait(5 * 1000);
                 } else {
-                    $.log(`\n【🎉 恭喜个屁 🎉】执行番剧动漫,${result.message}`);
+                    $.log(`\n【🎉 恭喜个屁 🎉】执行 番剧动漫 ,${result.message}`);
                     await $.wait(2 * 1000);
 
                 }
@@ -384,10 +308,8 @@ function zjmhhqd9(timeout = 0) {
 
 }
 
-
-
 // 欧皇附体 签到
-function zjmhhqd10(timeout = 0) {
+function ohft(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
@@ -426,87 +348,8 @@ function zjmhhqd10(timeout = 0) {
 
 }
 
-
-// 交友扩列 签到
-function zjmhhqd11(timeout = 0) {
-    return new Promise((resolve) => {
-        let url = {
-            url: `http://api.xctd8.com/users/forum.json`,
-            headers: {
-                'Token': 'e03d3c6003783201',
-                'Sign': '7501312f80ca82cb696efb61fd03e22a',
-            },
-            body: 'type=signIn&pid=37',
-        }
-        // console.log(url);
-
-        $.post(url, async (err, resp, data) => {
-            try {
-
-                // console.log(`输出data开始===================`);
-                // console.log(data);
-                // console.log(`输出data结束===================`);
-
-                result = JSON.parse(data);
-                if (result.code === 1) {
-                    $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行交友扩列:${result.message} ✅ `);
-                    await $.wait(5 * 1000)
-                } else {
-                    $.log(`\n【🎉 恭喜个屁 🎉】执行 交友扩列 ,${result.message}`);
-                    await $.wait(2 * 1000);
-                }
-            } catch (e) {
-                $.logErr(e, resp);
-            } finally {
-                resolve()
-            }
-        }, timeout)
-
-    })
-
-}
-
-// 官方公告 签到
-function zjmhhqd12(timeout = 0) {
-    return new Promise((resolve) => {
-        let url = {
-            url: `http://api.xctd8.com/users/forum.json`,
-            headers: {
-                'Token': 'e03d3c6003783201',
-                'Sign': '3429ed0fec2353bf8fd8ded91ccf8976',
-            },
-            body: 'type=signIn&pid=23',
-        }
-        // console.log(url);
-
-        $.post(url, async (err, resp, data) => {
-            try {
-
-                // console.log(`输出data开始===================`);
-                // console.log(data);
-                // console.log(`输出data结束===================`);
-
-                result = JSON.parse(data);
-                if (result.code === 1) {
-                    $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行交友扩列:${result.message} ✅ `);
-                    await $.wait(5 * 1000)
-                } else {
-                    $.log(`\n【🎉 恭喜个屁 🎉】执行 官方公告 ,${result.message}`);
-                    await $.wait(2 * 1000);
-                }
-            } catch (e) {
-                $.logErr(e, resp);
-            } finally {
-                resolve()
-            }
-        }, timeout)
-
-    })
-
-}
-
 // 吹水混分 签到
-function zjmhhqd13(timeout = 0) {
+function cshf(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
@@ -544,8 +387,50 @@ function zjmhhqd13(timeout = 0) {
 
 }
 
+
+
+// 官方公告 签到
+function gfgg(timeout = 0) {
+    return new Promise((resolve) => {
+        let url = {
+            url: `http://api.xctd8.com/users/forum.json`,
+            headers: {
+                'Token': 'e03d3c6003783201',
+                'Sign': '3429ed0fec2353bf8fd8ded91ccf8976',
+            },
+            body: 'type=signIn&pid=23',
+        }
+        // console.log(url);
+
+        $.post(url, async (err, resp, data) => {
+            try {
+
+                // console.log(`输出data开始===================`);
+                // console.log(data);
+                // console.log(`输出data结束===================`);
+
+                result = JSON.parse(data);
+                if (result.code === 1) {
+                    $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】执行交友扩列:${result.message} ✅ `);
+                    await $.wait(5 * 1000)
+                } else {
+                    $.log(`\n【🎉 恭喜个屁 🎉】执行 官方公告 ,${result.message}`);
+                    await $.wait(2 * 1000);
+                }
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+
+    })
+
+}
+
+
 // 求助专区 签到
-function zjmhhqd14(timeout = 0) {
+function qzzq(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
@@ -584,7 +469,7 @@ function zjmhhqd14(timeout = 0) {
 }
 
 // 建议举报 签到
-function zjmhhqd15(timeout = 0) {
+function jyjb(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
             url: `http://api.xctd8.com/users/forum.json`,
