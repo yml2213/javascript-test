@@ -10,7 +10,6 @@
  * 5-30		完成 签到  资讯阅读  分享资讯  资讯点赞  本地服务 任务
  * 5-31		增加社区任务,修复一个任务bug
  * 6-1		增加评论任务,基本完成所有任务,测试无 bug直接转正式基本
- * 6-1		修改运行逻辑 ,leaf大佬 nb ,破音
  *
  *
  * 感谢所有测试人员
@@ -36,14 +35,17 @@ let host = "vapp.tmuyun.com";
 let hostname = "https://" + host;
 let salt = 'FR*r!isE5W'
 let ck_status = "";
+let new_id = "";
+let user_name = "";
+let Community_new_id = "";
 ///////////////////////////////////////////////////////////////////
-let VersionCheck = "0.2.3"
+let VersionCheck = "0.1.3"
 let thank = `\n 感谢 xx 的投稿`
 ///////////////////////////////////////////////////////////////////
 
 async function tips(ckArr) {
 	let Version_latest = await Version_Check('baiguan');
-	let Version = `\n本地脚本:V0.2.3     远程仓库脚本:V${Version_latest}\n`
+	let Version = `\n本地脚本:V0.1.3     远程仓库脚本:V${Version_latest}\n`
 	console.log(`${Version}`);
 	msg += `${Version}`
 
@@ -78,13 +80,16 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("\n开始 用户信息");
+	console.log("开始 用户信息");
 	await user_info();
 
-	if (!ck_status) {
-		console.log("\n开始 任务列表");
+	if (ck_status) {
+		console.log("开始 任务列表");
 		await task_list();
 	}
+
+	// await new_Comment();
+
 }
 
 
@@ -147,32 +152,112 @@ async function task_list() {
 	let result = await httpGet(url, `任务列表`);
 
 	if (result.code == 0) {
-		taskArr = result.data.rst.user_task_list;
-		if (taskArr[0].finish_times < taskArr[0].frequency) {
+		if (result.data.rst.user_task_list[0].finish_times < result.data.rst.user_task_list[0].frequency) {
 			console.log(`    签到: ${result.data.rst.nick_name} 未签到 ,去签到喽!`);
 			msg += `\n    签到: ${result.data.rst.nick_name} 未签到 ,去签到喽!`;
 			console.log(`开始 签到`);
 			await signIn();
-		} else if (taskArr[0].finish_times == taskArr[0].frequency) {
+		} else if (result.data.rst.user_task_list[0].finish_times == result.data.rst.user_task_list[0].frequency) {
 			console.log(`    签到: ${result.data.rst.nick_name} 今天已经签到了 ,明天再来吧!`);
 			msg += `\n    签到: ${result.data.rst.nick_name} 今天已经签到了 ,明天再来吧!`;
 		}
 
-		for (let index = 1; index < taskArr.length; index++) {
-			let name = taskArr[index].name;
-			let task_type = taskArr[index].member_task_type;
-			if (taskArr[index].finish_times < taskArr[index].frequency) {
-				console.log(`    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`);
-				msg += `\n    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`;
-				let num = taskArr[index].frequency - taskArr[index].finish_times;
-				for (let j = 0; j < num; j++) {
-					console.log(`    开始第 ${j + 1} 次 ${name}`);
-					await dotask(name, task_type);
-				}
-			} else if (taskArr[index].finish_times == taskArr[index].frequency) {
-				console.log(`    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`);
-				msg += `\n    ${name}:  ${taskArr[index].finish_times} / ${taskArr[index].frequency}`;
+		if (result.data.rst.user_task_list[1].finish_times < result.data.rst.user_task_list[1].frequency) {
+			console.log(`    新闻资讯阅读: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[1].finish_times}/${result.data.rst.user_task_list[1].frequency}`);
+			msg += `\n    新闻资讯阅读: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[1].finish_times}/${result.data.rst.user_task_list[1].frequency}`;
+			let num = result.data.rst.user_task_list[1].frequency - result.data.rst.user_task_list[1].finish_times;
+			// console.log(num);
+			for (let j = 0; j < num; j++) {
+				console.log(`    开始第 ${j + 1} 次 新闻资讯阅读`);
+				await read_new();
 			}
+		} else if (result.data.rst.user_task_list[1].finish_times == result.data.rst.user_task_list[1].frequency) {
+			console.log(`    新闻资讯阅读: ${result.data.rst.nick_name} ,完成了,明天再来吧!`);
+			msg += `\n    新闻资讯阅读: ${result.data.rst.nick_name} ,完成了,明天再来吧!`;
+		}
+
+		if (result.data.rst.user_task_list[2].finish_times < result.data.rst.user_task_list[2].frequency) {
+			console.log(`    分享资讯给好友: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[2].finish_times}/${result.data.rst.user_task_list[2].frequency}`);
+			msg += `\n    分享资讯给好友: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[2].finish_times}/${result.data.rst.user_task_list[2].frequency}`;
+			let num = result.data.rst.user_task_list[2].frequency - result.data.rst.user_task_list[2].finish_times;
+			// console.log(num);
+			for (let j = 0; j < num; j++) {
+				console.log(`    开始 开始第 ${j + 1} 次 分享资讯给好友`);
+				await dotask('分享资讯给好友', '3');
+			}
+		} else if (result.data.rst.user_task_list[2].finish_times == result.data.rst.user_task_list[2].frequency) {
+			console.log(`    分享资讯给好友: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`);
+			msg += `\n    分享资讯给好友: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`;
+		}
+
+		if (result.data.rst.user_task_list[3].finish_times < result.data.rst.user_task_list[3].frequency) {
+			console.log(`    新闻资讯评论: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[3].finish_times}/${result.data.rst.user_task_list[3].frequency}`);
+			msg += `\n    新闻资讯评论: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[3].finish_times}/${result.data.rst.user_task_list[3].frequency}`;
+			let num = result.data.rst.user_task_list[3].frequency - result.data.rst.user_task_list[3].finish_times;
+			// console.log(num);
+			for (let j = 0; j < num; j++) {
+				console.log(`    开始 开始第 ${j + 1} 次 新闻资讯评论`);
+				await new_Comment();
+			}
+		} else if (result.data.rst.user_task_list[3].finish_times == result.data.rst.user_task_list[3].frequency) {
+			console.log(`    新闻资讯评论: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`);
+			msg += `\n    新闻资讯评论: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`;
+		}
+
+		if (result.data.rst.user_task_list[4].finish_times < result.data.rst.user_task_list[4].frequency) {
+			console.log(`    新闻资讯点赞: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[4].finish_times}/${result.data.rst.user_task_list[4].frequency}`);
+			msg += `\n    新闻资讯点赞: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[4].finish_times}/${result.data.rst.user_task_list[4].frequency}`;
+			let num = result.data.rst.user_task_list[4].frequency - result.data.rst.user_task_list[4].finish_times;
+			// console.log(num);
+			for (let j = 0; j < num; j++) {
+				console.log(`    开始 开始第 ${j + 1} 次 次新闻资讯点赞`);
+				await new_like();
+			}
+		} else if (result.data.rst.user_task_list[4].finish_times == result.data.rst.user_task_list[4].frequency) {
+			console.log(`    新闻资讯点赞: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`);
+			msg += `\n    新闻资讯点赞: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`;
+		}
+
+		if (result.data.rst.user_task_list[5].finish_times < result.data.rst.user_task_list[5].frequency) {
+			console.log(`    使用本地服务: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[5].finish_times}/${result.data.rst.user_task_list[5].frequency}`);
+			msg += `\n    使用本地服务: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[5].finish_times}/${result.data.rst.user_task_list[5].frequency}`;
+			let num = result.data.rst.user_task_list[5].frequency - result.data.rst.user_task_list[5].finish_times;
+			// console.log(num);
+			for (let j = 0; j < num; j++) {
+				console.log(`    开始 开始第 ${j + 1} 次 使用本地服务`);
+				await dotask('使用本地服务', '6');
+			}
+		} else if (result.data.rst.user_task_list[5].finish_times == result.data.rst.user_task_list[5].frequency) {
+			console.log(`    使用本地服务: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`);
+			msg += `\n    使用本地服务: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`;
+		}
+
+		if (result.data.rst.user_task_list[7].finish_times < result.data.rst.user_task_list[7].frequency) {
+			console.log(`    社区帖子分享: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[7].finish_times}/${result.data.rst.user_task_list[7].frequency}`);
+			msg += `\n    社区帖子分享: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[7].finish_times}/${result.data.rst.user_task_list[7].frequency}`;
+			let num = result.data.rst.user_task_list[7].frequency - result.data.rst.user_task_list[7].finish_times;
+			// console.log(num);
+			for (let j = 0; j < num; j++) {
+				console.log(`    开始 开始第 ${j + 1} 次 社区帖子分享`);
+				await Community_share();
+			}
+		} else if (result.data.rst.user_task_list[7].finish_times == result.data.rst.user_task_list[7].frequency) {
+			console.log(`    社区帖子分享: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`);
+			msg += `\n    社区帖子分享: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`;
+		}
+
+		if (result.data.rst.user_task_list[8].finish_times < result.data.rst.user_task_list[8].frequency) {
+			console.log(`    社区帖子点赞: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[8].finish_times}/${result.data.rst.user_task_list[8].frequency}`);
+			msg += `\n    社区帖子点赞: 进度 ${result.data.rst.nick_name} , ${result.data.rst.user_task_list[8].finish_times}/${result.data.rst.user_task_list[8].frequency}`;
+			let num = result.data.rst.user_task_list[8].frequency - result.data.rst.user_task_list[8].finish_times;
+			// console.log(num);
+			for (let j = 0; j < num; j++) {
+				console.log(`    开始 开始第 ${j + 1} 次 社区帖子点赞`);
+				await Community_like();
+			}
+		} else if (result.data.rst.user_task_list[8].finish_times == result.data.rst.user_task_list[8].frequency) {
+			console.log(`    社区帖子点赞: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`);
+			msg += `\n    社区帖子点赞: ${result.data.rst.nick_name} ,完成了 ,明天再来吧!`;
 		}
 
 	} else {
@@ -218,12 +303,213 @@ async function signIn() {
 }
 
 
+/**
+ * 文章列表    httpGet
+ * https://vapp.tmuyun.com/api/article/channel_list?channel_id=606566eaad61a43e7054b600&isDiangHao=false&is_new=true&list_count=500&size=10
+ * /api/article/channel_list&&6294ba9bfe3fc15cbf96bbcc&&49a8982b-07ed-44ea-af61-858c4b4d0a8d&&1653915400372&&FR*r!isE5W&&44
+ */
+async function new_list() {
+	let ts = ts13();
+	let _data = `/api/article/channel_list&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/article/channel_list?channel_id=606566eaad61a43e7054b600&isDiangHao=false&is_new=true&list_count=500&size=10`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+	};
+	let result = await httpGet(url, `文章列表`);
+
+	if (result.code == 0) {
+		console.log(`    文章列表: 成功`);
+		// msg += `\n    文章列表: 成功`;
+		await wait(3);
+		let num = randomInt(1, 9);
+		new_id = result.data.article_list[num].id;
+	} else {
+		console.log(`    文章列表: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    文章列表: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
 
 
 /**
- * 通用任务接口  httpPost 
+ * 新闻资讯阅读    httpGet
+ * https://vapp.tmuyun.com/api/article/detail?id=1455826
  */
-async function dotask(name, task_type) {
+async function read_new() {
+	await new_list();
+	let ts = ts13();
+	let _data = `/api/article/detail&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	let num_time = randomInt(3000, 20000)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/article/detail?id=${new_id}`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+	};
+	let result = await httpGet(url, `新闻资讯阅读`);
+
+	if (result.code == 0) {
+		console.log(`    新闻资讯阅读: 成功`);
+		msg += `\n    新闻资讯阅读: 成功`;
+		await wait(3);
+	} else {
+		console.log(`    新闻资讯阅读: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    新闻资讯阅读: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+
+/**
+ * 新闻资讯评论    httpPost
+ * https://vapp.tmuyun.com/api/comment/create
+ */
+async function new_Comment() {
+	await new_list();
+	let ts = ts13();
+	let _data = `/api/comment/create&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	let Comment_textArr = ["支持", 6666, "点赞", "越来越好了"];
+	let num = randomInt(1, 4);
+	let Comment_text = Comment_textArr[num];
+	let url = {
+		url: `${hostname}/api/comment/create`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+		form: {
+			'channel_article_id': new_id,
+			'content': Comment_text,
+		}
+	};
+	let result = await httpPost(url, `新闻资讯评论`);
+
+	if (result.code == 0) {
+		console.log(`    新闻资讯评论: 成功`);
+		msg += `\n    新闻资讯评论: 成功`;
+		await wait(3);
+		await Comment_list(new_id);
+	} else {
+		console.log(`    新闻资讯评论: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    新闻资讯评论: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+/**
+ * 获取评论列表    httpGet
+ * https://vapp.tmuyun.com/api/comment/list?channel_article_id=1455280
+ */
+async function Comment_list(new_id) {
+	let ts = ts13();
+	let _data = `/api/comment/list&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	let num_time = randomInt(3000, 20000)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/comment/list?channel_article_id=${new_id}`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+	};
+	let result = await httpGet(url, `获取评论列表`);
+
+	if (result.code == 0 && result.data.comment_count > 0) {
+		console.log(`    获取评论列表: 成功`);
+		// msg += `\n    获取评论列表: 成功`;
+		for (let index = 0; index < result.data.comment_list.length; index++) {
+			let data = result.data.comment_list[index];
+			// console.log(data.nick_name);
+			if (user_name == data.nick_name) {
+				commentID = data.id;
+				await wait(2);
+				await delete_comment(commentID);
+			}
+		}
+
+	} else {
+		console.log(`    获取评论列表: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    获取评论列表: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+
+
+/**
+ * 删除评论    httpPost
+ * https://vapp.tmuyun.com/api/comment/delete
+ */
+async function delete_comment(commentID) {
+	let ts = ts13();
+	let _data = `/api/comment/delete&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	let url = {
+		url: `${hostname}/api/comment/delete`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+		form: {
+			'comment_id': commentID,
+		}
+	};
+	let result = await httpPost(url, `删除评论`);
+
+	if (result.code == 0) {
+		console.log(`    删除评论: 成功`);
+		msg += `\n    删除评论: 成功`;
+	} else {
+		console.log(`    删除评论: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    删除评论: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+
+
+
+
+/**
+ * 分享资讯给好友 3    使用本地服务 6   httpPost
+ * https://vapp.tmuyun.com/api/user_mumber/doTask
+ */
+async function dotask(name, num) {
+	await new_list();
 	let ts = ts13();
 	let _data = `/api/user_mumber/doTask&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
 	let sign = sha256_Encrypt(_data)
@@ -239,25 +525,174 @@ async function dotask(name, task_type) {
 			'Host': host,
 		},
 		form: {
-			'memberType': task_type,
-			'member_type': task_type
+			'memberType': num,
+			'member_type': num
 		}
 	};
 	let result = await httpPost(url, name);
 
 	if (result.code == 0) {
-		console.log(`    ${name}: 成功`);
-		msg += `\n    ${name}: 成功`;
+		console.log(`    分享资讯给好友: 成功`);
+		msg += `\n    分享资讯给好友: 成功`;
 		await wait(3);
 	} else {
-		console.log(`    ${name}: 失败 ❌ 了呢,原因未知!`);
+		console.log(`    分享资讯给好友: 失败 ❌ 了呢,原因未知!`);
 		console.log(result);
-		msg += `\n    ${name}: 失败 ❌ 了呢,原因未知!}`;
+		msg += `\n    分享资讯给好友: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+/**
+ * 新闻资讯点赞    httpPost
+ * https://vapp.tmuyun.com/api/user_mumber/doTask
+ */
+async function new_like() {
+	await new_list();
+	let ts = ts13();
+	let _data = `/api/favorite/like&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/favorite/like`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+		form: {
+			'action': 'true',
+			'id': new_id
+		}
+	};
+	let result = await httpPost(url, `新闻资讯点赞`);
+
+	if (result.code == 0) {
+		console.log(`    新闻资讯点赞: 成功`);
+		msg += `\n    新闻资讯点赞: 成功`;
+		await wait(3);
+	} else {
+		console.log(`    新闻资讯点赞: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    新闻资讯点赞: 失败 ❌ 了呢,原因未知!}`;
 	}
 }
 
 
 
+/**
+ * 社区帖子列表    httpGet
+ * https://vapp.tmuyun.com/api/forum/thread_list?forum_id=174
+ */
+async function Community_new_list() {
+	let ts = ts13();
+	let _data = `/api/forum/thread_list&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	// console.log(sign);
+	let url = {
+		url: `${hostname}/api/forum/thread_list?forum_id=174`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+	};
+	let result = await httpGet(url, `社区帖子列表`);
+
+	if (result.code == 0) {
+		console.log(`    社区帖子列表: 成功`);
+		msg += `\n    社区帖子列表: 成功`;
+		await wait(3);
+		let num = randomInt(1, 9);
+		Community_new_id = result.data.thread_list[num].id;
+	} else {
+		console.log(`    社区帖子列表: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    社区帖子列表: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+
+/**
+ * 社区帖子分享    httppost
+ * https://vapp.tmuyun.com/api/user_mumber/doTask?member_type=14&target_id=21452
+ */
+async function Community_share() {
+	await Community_new_list();
+	let ts = ts13();
+	let _data = `/api/user_mumber/doTask&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	let url = {
+		url: `${hostname}/api/user_mumber/doTask?member_type=14&target_id=${Community_new_id}`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+		form: {}
+	}
+	let result = await httpPost(url, `社区帖子分享`);
+
+	if (result.code == 0) {
+		console.log(`    社区帖子分享: 成功`);
+		msg += `\n    社区帖子分享: 成功`;
+		await wait(3);
+	} else {
+		console.log(`    社区帖子分享: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    社区帖子分享: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
+
+
+
+
+/**
+ * 社区帖子点赞    httppost
+ * https://vapp.tmuyun.com/api/forum/like
+ */
+async function Community_like() {
+	await Community_new_list();
+	let ts = ts13();
+	let _data = `/api/forum/like&&${ck[0]}&&${ck[1]}&&${ts}&&${salt}&&44`
+	let sign = sha256_Encrypt(_data)
+	let url = {
+		url: `${hostname}/api/forum/like`,
+		headers: {
+			'X-SESSION-ID': ck[0],
+			'X-REQUEST-ID': ck[1],
+			'X-TIMESTAMP': ts,
+			'X-SIGNATURE': sign,
+			'X-TENANT-ID': '44',
+			'Host': host,
+		},
+		form: {
+			'target_type': '1',
+			'target_id': Community_new_id
+		}
+	}
+	let result = await httpPost(url, `社区帖子点赞`);
+
+	if (result.code == 0) {
+		console.log(`    社区帖子点赞: 成功`);
+		msg += `\n    社区帖子点赞: 成功`;
+		await wait(3);
+	} else {
+		console.log(`    社区帖子点赞: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+		msg += `\n    社区帖子点赞: 失败 ❌ 了呢,原因未知!}`;
+	}
+}
 
 
 
@@ -546,18 +981,6 @@ function debugLog(...args) {
 }
 
 
-/**
- * 双平台log输出
- */
-function DoubleLog(data) {
-	if (data) {
-		console.log(`    ${data}`);
-		msg += `\n    ${data}`;
-	}
-}
-
-
-
 /* SHA256 logical functions */
 function rotateRight(n, x) {
 	return ((x >>> n) | (x << (32 - n)));
@@ -759,10 +1182,6 @@ function sha256_Encrypt(data) {
 	sha256_final();
 	return sha256_encode_hex();
 }
-
-
-
-
 
 
 // 忽略
