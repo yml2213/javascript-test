@@ -1,71 +1,22 @@
-/**
- * 脚本地址:  https://raw.githubusercontent.com/yml2213/javascript/master/xtwly/xtwly.js
- * 转载请留信息,谢谢
- * 
- *
- * 新天威旅游  小程序
- *
- * cron 10 7 * * *  yml2213_javascript_master/xtwly.js
- *
- * 7-3		签到 ,群友说实物发货,自己玩把
- *
- * 感谢所有测试人员
- * ========= 青龙--配置文件 =========
- * 变量格式: export xtwly_data='user-login-token @ user-login-token'   ,多账号用 换行 或 @ 分割
- * 抓包 www.xtwtour.com , 找到 user-login-token 即可
- * ========= 重写 (测试中,有问题群里 @ 我吧) =========
- * url:   activity/normal/sign_in/get_sign_in_user
- * 类型:   script-request-body
- * 路径:   https://raw.githubusercontent.com/yml2213/javascript/master/xtwly/xtwly.js
- * 域名:   www.xtwtour.com
- * ====================================
- * tg频道: https://t.me/yml2213_tg  
- */
 
-const $ = new Env("新天威旅游");
+const $ = new Env("诸君梦幻盒");
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 const debug = 0			//0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
-let ckStr = ($.isNode() ? process.env.xtwly_data : $.getdata('xtwly_data')) || '';
 let msg, ck;
-let ck_status = true;
-let host = 'www.xtwtour.com';
-let hostname = 'https://' + host;
+let host = 'api.xctd8.com';
+let hostname = 'http://' + host;
 
-//---------------------------------------------------------------------------------------------------------
-let VersionCheck = "0.0.1"
-let Change = '签到 ,群友说实物发货,自己玩把!'
-let thank = `\n感谢 群友 的投稿\n`
-//---------------------------------------------------------------------------------------------------------
-
-async function tips(ckArr) {
-	let Version_latest = await Version_Check('xtwly', '1');
-	let Version = `\n📌 本地脚本: V 0.0.1  远程仓库脚本: V ${Version_latest}`
-	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
-	DoubleLog(`${thank}`);
-	await wyy();
-	DoubleLog(`\n========== 共找到 ${ckArr.length} 个账号 ==========`);
-	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
-}
 
 
 !(async () => {
-	if (typeof $request !== "undefined") {  // 严格不相等
-		await GetRewrite();
-		// console.log(`暂时无重写!`);
-	} else {
-		let ckArr = await checkEnv(ckStr, "xtwly_data");
-		await tips(ckArr);
-		for (let index = 0; index < ckArr.length; index++) {
-			let num = index + 1;
-			DoubleLog(`\n-------- 开始【第 ${num} 个账号】--------`);
-			ck = ckArr[index].split("&");
-			debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
-			await start();
-		}
-		await SendMsg(msg);
-	}
+
+	await wyy();
+
+	await start();
+
+	await SendMsg(msg);
 
 })()
 	.catch((e) => $.logErr(e))
@@ -74,93 +25,63 @@ async function tips(ckArr) {
 
 async function start() {
 
-	console.log("\n开始 签到信息");
-	await sign_info();
+	let dataArr = [
+		{ '综合软件': 'b154ba5c095da7bd8353acb0a7af8eb0&34' },
+		{ '综合游戏': 'a578d6963393a0d72a1c900de5f1f79a&27' },
+		{ '美图写真': '4908a1e380e8da9d85442ced5a1f8ca5&22' },
+		{ '沙雕天地': '041c2704ff667bb7dbf7cea2304761c0&28' },
 
-	// if (ck_status) {
-	// 	console.log("开始 任务列表");
-	// 	await task_list();
+		{ '夜间栏目': 'ae6a59074ad14f20f854f3eac466be27&30' },
+		{ '番剧动漫': 'a7f8c91f8729761ac10b1fe158be4bd6&32' },
+		{ '欧皇附体': '884907b7487d6f28f3772e100173a302&31' },
+		{ '吹水混分': '45c6442d4f7a216b8cb6261d52eb60fd&24' },
 
-	// }
+		{ '官方公告': '3429ed0fec2353bf8fd8ded91ccf8976&23' },
+		{ '求助专区': '2026a26be252af34d4c6737a34b14135&33' },
+		{ '建议举报': '204cc7d5ab171066ac2f722badba4532&35' }
+	];
 
-}
-
-// 重写 测试中
-// https://www.xtwtour.com/api/activity/normal/sign_in/get_sign_in_user
-async function GetRewrite() {
-	if ($request.url.indexOf("activity/normal/sign_in/get_sign_in_user") > -1) {
-		ck = $request.headers.user - login - tokenn;
-		if (ckStr) {
-			if (ckStr.indexOf(ck) == -1) {  // 找不到返回 -1
-				ckStr = ckStr + "@" + ck;
-				$.setdata(ckStr, "xtwly_data");
-				ckList = ckStr.split("@");
-				$.msg($.name + ` 获取第${ckList.length}个 ck 成功: ${ck}`);
-			}
-		} else {
-			$.setdata(ck, "xtwly_data");
-			$.msg($.name + ` 获取第1个 ck 成功: ${ck}`);
+	for (const item of dataArr) {
+		// console.log(item)
+		for (let key in item) { //数组对象遍历
+			// console.log(key); //获取key
+			// console.log(item[key]) //获取key的值
+			data = item[key].split("&");
+			// console.log(data[0]);
+			// console.log(data[1]);
+			await doSign(key, data[0], data[1]);
 		}
 	}
 }
-
-
-
-/**
- * 签到信息    httpPost
- */
-async function sign_info() {
-	try {
-		let Option = {
-			url: `${hostname}/api/activity/normal/sign_in/get_sign_in_user`,
-			headers: {
-				'user-login-token': ck[0],
-				'Host': host,
-			},
-			body: JSON.stringify({})
-		};
-		let result = await httpPost(Option, `签到信息`);
-
-		if (result?.code == 0) {
-			await signIn();
-		} else {
-			DoubleLog(`签到信息: 失败 ❌ 了呢,原因未知!`);
-			console.log(result);
-			return ck_status = false;
-		}
-	} catch (error) {
-		console.log(error)
-	}
-}
-
-
-
-
-
 
 
 /**
  * 签到    httpPost
  */
-async function signIn() {
+async function doSign(name, sign, num) {
 	try {
 		let url = {
-			url: `${hostname}/api/activity/normal/sign_in/create`,
+			url: `${hostname}/users/forum.json`,
 			headers: {
-				'user-login-token': ck[0],
-				'Host': host,
+				'Token': 'dcd37b51d94bb8ab',
+				'Sign': sign,
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'user-agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/89.0.4389.72 MQQBrowser/6.2 TBS/046011 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)',
 			},
-			body: JSON.stringify({})
-
-
+			form: {
+				'type': 'signIn',
+				'pid': num
+			}
 		};
-		let result = await httpPost(url, `签到`);
+		let result = await httpPost(url, name);
 
-		if (result.code == 0) {
-			DoubleLog(`签到: ${result?.msg} ,获得积分 ${result?.data}`);
+		if (result.code == 1) {
+			DoubleLog(`${name}:${result.message} ✅`);
 			await wait(3);
+		} else if (result.code == 0) {
+			DoubleLog(`${name}:${result.message} `);
 		} else {
-			DoubleLog(`签到: 失败 ❌ 了呢,原因未知!`);
+			DoubleLog(`${name} : 失败 ❌ 了呢 ,${result.message}`);
 			console.log(result);
 		}
 	} catch (error) {
