@@ -1,5 +1,5 @@
 /**
- * 脚本地址:   http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/mtyd.js
+ * 脚本地址:   https://raw.githubusercontent.com/yml2213/javascript/master/mtyd/mtyd.js
  * 转载请留信息,谢谢
  * 
  * 下载地址: https://h5.metayunduan.com/invitation.html?code=auPX0ipk   邀请码(auPX0ipk)
@@ -9,7 +9,7 @@
  *
  * cron 10 7 * * *  yml2213_javascript_master/mtyd.js
  *
- * 7-3		领取每日任务
+ * 7-3		领取每日任务 ,自己看日志 ,正常就行
  *
  * 感谢所有测试人员
  * ========= 青龙--配置文件 =========
@@ -39,7 +39,7 @@ let thank = `\n感谢 群友 的投稿\n`
 //---------------------------------------------------------------------------------------------------------
 
 async function tips(ckArr) {
-	let Version_latest = await Version_Check('mtyd', '2');
+	let Version_latest = await Version_Check('mtyd', '1');
 	let Version = `\n📌 本地脚本: V 0.0.1  远程仓库脚本: V ${Version_latest}`
 	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
 	// DoubleLog(`${thank}`);
