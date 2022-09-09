@@ -7,9 +7,9 @@
  *
  * 土巴兔装修  app
  *
- * cron 10 7,12 * * *  yml2213_javascript_master/tbt.js
+ * cron 10 7,12 * * *  tbt.js
  *
- * 7-3		领取每日任务 ,自己看日志 ,正常就行
+ * 9.10		完成部分任务
  *
  * ========= 青龙--配置文件 =========
  * 变量格式: export tbt='ticket @ ticket'   ,多账号用 换行 或 @ 分割
