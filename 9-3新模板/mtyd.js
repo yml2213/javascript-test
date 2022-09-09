@@ -14,8 +14,6 @@
  * ========= 青龙--配置文件 =========
  * 变量格式: export mtyd='x-auth-token @ x-auth-token'   ,多账号用 换行 或 @ 分割
  * 抓包 api.metayunduan.com , 找到 x-auth-token 即可
- * ========= 重写 (测试中,有问题群里 @ 我吧) =========
- * 无
  * ====================================
  * tg频道: https://t.me/yml2213_tg  
  */
@@ -26,7 +24,7 @@ const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 const debug = 0			//0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
-let ckStr = ($.isNode() ? process.env.mtyd : $.getdata(mtyd)) || '';
+let ckStr = process.env[alias_name];
 let msg, ck;
 let ck_status = true;
 let host = 'api.metayunduan.com';
@@ -77,22 +75,22 @@ async function user_info() {
 		console.log(ck[0]);
 
 
-		// let Option = {
-		// 	url: `${hostname}/user/platform/detail`,
-		// 	headers: {
-		// 		'x-auth-token': ck[0],
-		// 		'Host': host,
-		// 	},
-		// };
-		// let result = await httpGet(Option, `用户信息`);
+		let Option = {
+			url: `${hostname}/user/platform/detail`,
+			headers: {
+				'x-auth-token': ck[0],
+				'Host': host,
+			},
+		};
+		let result = await httpGet(Option, `用户信息`);
 
-		// if (result.code == 0) {
-		// 	DoubleLog(`欢迎光临 ${result?.data?.userName} 🎉  ,总玄铁: ${result?.data?.darksteelQty} ,可交易玄铁 ${result?.data?.validDarksteelQty} ,锁仓玄铁 ${result?.data?.invalidDarksteelQty} ,邀请码 ${result?.data?.inviteCode}`);
-		// } else {
-		// 	DoubleLog(`用户信息: 失败 ❌ 了呢,原因未知!`);
-		// 	console.log(result);
-		// 	return ck_status = false;
-		// }
+		if (result.code == 0) {
+			DoubleLog(`欢迎光临 ${result?.data?.userName} 🎉  ,总玄铁: ${result?.data?.darksteelQty} ,可交易玄铁 ${result?.data?.validDarksteelQty} ,锁仓玄铁 ${result?.data?.invalidDarksteelQty} ,邀请码 ${result?.data?.inviteCode}`);
+		} else {
+			DoubleLog(`用户信息: 失败 ❌ 了呢,原因未知!`);
+			console.log(result);
+			return ck_status = false;
+		}
 	} catch (error) {
 		console.log(error)
 	}
@@ -459,7 +457,7 @@ function wyy() {
 			try {
 				data = JSON.parse(data);
 				// console.log(data);
-				console.log(`网抑云时间: ${data.data.Content}  by--${data.data.Music}`)
+				// console.log(`网抑云时间: ${data.data.Content}  by--${data.data.Music}`)
 				msg = `[网抑云时间]: ${data.data.Content}  by--${data.data.Music}`
 				// DoubleLog(`[网抑云时间]: ${data.data.Content}  by--${data.data.Music}`);
 			} catch (e) {
