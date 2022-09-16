@@ -106,21 +106,17 @@ async function task_list(name) {
  */
 async function do_task(name) {
 
-	switch (name) {
-		case name == '摇晃手机 舞力全开':
-			await dance();
-			break;
-		case name == '预约视频号直播':
-			await video();
-			break;
-		case name == '浏览好物 10秒':
-			await browse();
-			break;
-		case name == '分享活动页面1次':
-			await share();
-			break;
-		default:
-			break;
+	if (name == '摇晃手机 舞力全开') {
+		await dance()
+	}
+	else if (name == '预约视频号直播') {
+		await video()
+	}
+	else if (name == '浏览好物 10秒') {
+		await browse()
+	}
+	else if (name == '分享活动页面1次') {
+		await share()
 	}
 
 }
