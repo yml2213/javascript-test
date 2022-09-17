@@ -318,7 +318,7 @@ async function account(name) {
 
 	if (result.errcode == 0) {
 		DoubleLog(`${name}:${result.msg}：当前${result.data.account}元！`);
-		if (result.data.account > '1.00') {
+		if (result.data.account >= '1.00') {
 			DoubleLog(`您的余额充足，开始提现`);
 			await cash()
 		}
