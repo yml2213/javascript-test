@@ -101,34 +101,35 @@ function getUA() {
 	$.build = ["167814", "167841", "167853"][randomNum(0, 2)]
 	$.appVersion = buildMap[$.build]
 	return `jdapp;iPhone;${$.appVersion};${$.osVersion};${$.UUID};M/5.0;${network};ADID/;model/${$.mobile};addressid/;appBuild/${$.build};jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS ${$.osVersion.replace(/\./g, "_")} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;`
-}
+	function randomString(min, max = 0) {
+		var str = "", range = min, arr = [...Array(36).keys()].map(k => k.toString(36));
 
-
-function randomString(min, max = 0) {
-	var str = "", range = min, arr = [...Array(36).keys()].map(k => k.toString(36));
-
-	if (max) {
-		range = Math.floor(Math.random() * (max - min + 1) + min);
-	}
-
-	for (let i = 0; i < range;) {
-		let randomString = Math.random().toString(16).substring(2)
-		if ((range - i) > randomString.length) {
-			str += randomString
-			i += randomString.length
-		} else {
-			str += randomString.slice(i - range)
-			i += randomString.length
+		if (max) {
+			range = Math.floor(Math.random() * (max - min + 1) + min);
 		}
+
+		for (let i = 0; i < range;) {
+			let randomString = Math.random().toString(16).substring(2)
+			if ((range - i) > randomString.length) {
+				str += randomString
+				i += randomString.length
+			} else {
+				str += randomString.slice(i - range)
+				i += randomString.length
+			}
+		}
+		return str;
 	}
-	return str;
+
+	function randomNum(min, max) {
+		if (arguments.length === 0) return Math.random()
+		if (!max) max = 10 ** (Math.log(min) * Math.LOG10E + 1 | 0) - 1
+		return Math.floor(Math.random() * (max - min + 1) + min);
+	}
 }
 
-function randomNum(min, max) {
-	if (arguments.length === 0) return Math.random()
-	if (!max) max = 10 ** (Math.log(min) * Math.LOG10E + 1 | 0) - 1
-	return Math.floor(Math.random() * (max - min + 1) + min);
-}
+
+
 
 
 
