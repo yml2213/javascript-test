@@ -67,7 +67,7 @@ async function start() {
 
 // 注册
 async function gljdreg(name) {
-	console.log(`\n开始 ${name}`);
+	console.log(`\n开始 第${index}次${name}`);
 	await get_code('获取验证码');
 	try {
 		let url = `https://app.gelinjiudianzq.com/api/v1/user/register`
