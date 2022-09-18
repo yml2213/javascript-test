@@ -1,32 +1,38 @@
 /**
- * 
- * 科勒优选  小程序(舞力全开活动)
+ * 格林酒店-注册机
+ * cron 10 7 * * *  gljd.js
  *
- * cron 10 7 * * *  klyx.js
+ * 9-18		盘子, 自己0薅玩, 坑了钱别来找我
  *
- * 7-3		领取每日任务 ,自己看日志 ,正常就行
- *
- * ========= 青龙--配置文件 =========
- * 
-# 科勒优选
-export klyx='xcx_openid & activeId的值 & 城市名'
+ * ========= 青龙--配置文件-贴心复制区域 =========
+ 
+# 格林酒店
+export gljd='xcx_openid & activeId的值 & 城市名'
 
- * 
  * 多账号用 换行 或 @ 分割
  * 抓包 kohler-mini.brandsh.cn , 找到 xcx_openid , activeId, 城市名汉字  即可
  * ====================================
  * tg频道: https://t.me/yml2213_tg  
  */
 
-const $ = new Env("科勒优选");
-const alias_name = 'klyx'
+
+//-------------------- 配置区域 --------------------
+const reg_num = '20'  //注册数量
+const regcode = '7f8350' //邀请码
+const pw = 'gljd123654'  //密码
+// -----------------------------------------------
+
+
+const $ = new Env("格林酒店-注册机");
+const alias_name = 'gljd'
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
-const debug = 1		    //0为关闭调试,1为打开调试,默认为0
+const debug = 0		    //0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
 let ckStr = process.env[alias_name];
 let msg, ck;
 let ck_status = true;
+let userinfo = ''
 //---------------------------------------------------------------------------------------------------------
 let VersionCheck = "0.0.1"
 let Change = '领取每日任务!'
@@ -46,29 +52,41 @@ async function tips(ckArr) {
 
 
 async function start() {
-	// await init('初始化');
-
-	// await task_list('任务列表');
-
-	await account('查询余额');
-
+	for (let index = 0; index < reg_num; index++) {
+		await gljdreg('开始注册');
+	}
+	console.log(`账号信息\n\n`);
+	console.log(userinfo);
+	console.log(`\n\n`);
 }
 
 
-async function account(name) {
+
+
+
+
+// 注册
+async function gljdreg(name) {
 	console.log(`\n开始 ${name}`);
+	await get_code('获取验证码');
 	try {
-		let url = `https://kohler-mini.brandsh.cn/mini.php/fissionCustom/lotteryPage`
-		let body = `xcx_openid=${ck[0]}&activeId=${ck[1]}&city=${ck[2]}`
+		let url = `https://app.gelinjiudianzq.com/api/v1/user/register`
+		phone_code = await phone('获取手机号')
+		console.log(phone_code);
+		let body = `{"captcha_code":"${code}","captcha_id":"${code_id}","password":"${pw}","reg_code":"${regcode}","tel":"${phone_code}"}`
 		let urlObject = populateUrlObject(url, body)
 		await httpRequest('post', urlObject, name)
 		let result = httpResult;
 		if (!result) return
-		console.log(result)
-		if (result.result == 1) {
-			console.log(`签到成功: ${result.msg}`)
+		// console.log(result)
+		if (result.expire_sec) {
+			console.log(`注册成功`);
+			userinfo += `${phone_code}&${pw}\n`
+			console.log(`等待 10 s`);
+			await wait(10)
+			// console.log(`账号信息:    ${phone_code}&${pw}`);
 		} else {
-			console.log(`签到失败: ${result.msg}`)
+			console.log(`注册失败!`)
 		}
 	} catch (e) {
 		console.log(e)
@@ -79,64 +97,87 @@ async function account(name) {
 
 
 
-
-
-
-
-
-
-/**
- * 查询余额   httpPost
- */
-// async function account(name) {
-// 	DoubleLog(`\n开始 ${name}`)
-// 	let Option = {
-// 		url: `${hostname}/mini.php/fissionCustom/lotteryPage`,
-// 		headers: klyx_headers,
-// 		body: `xcx_openid=${ck[0]}&activeId=${ck[1]}&city=${ck[2]}`
-// 	};
-// 	let result = await httpPost(Option, name);
-
-// 	if (result.errcode == 0) {
-// 		DoubleLog(`${name}:${result.msg}：当前${result.data.account}元！`);
-// 		if (result.data.account >= '1.00') {
-// 			DoubleLog(`您的余额充足，开始提现`);
-// 			await cash()
-// 		}
-// 		else {
-// 			DoubleLog(`您的余额不足`);
-// 		}
-// 	} else {
-// 		DoubleLog(`查询余额: 失败 ❌ 了呢,原因未知!`);
-// 		console.log(result);
-// 	}
-// }
-
-/**
- * 提现   httpPost
- */
-async function cash() {
-	let Option = {
-		url: `${hostname}/mini.php/fission/getReawrd`,
-		headers: {
-			'Host': host,
-			'Content-Length': '52',
-			'Content-Type': 'application/x-www-form-urlencoded',
-		},
-		body: 'xcx_openid=' + ck[0] + '&activeId=' + ck[1]
-	};
-	let result = await httpPost(Option, `提现`);
-
-	if (result.errcode == 1) {
-		DoubleLog(`提现:${result.msg}`);
-		await wait(5);
-	} else {
-		DoubleLog(`提现: 失败 ❌ 了呢,原因未知!`);
-		console.log(result);
+// 获取验证码
+async function get_code(name) {
+	console.log(`\n开始 ${name}`);
+	try {
+		let url = `https://app.gelinjiudianzq.com/api/v1/captcha?`
+		let urlObject = populateUrlObject(url)
+		await httpRequest('get', urlObject, name)
+		let result = httpResult;
+		if (!result) return
+		// console.log(result)
+		if (result.id) {
+			code_base64 = result.base64.split(',')[1]
+			code_id = result.id
+			// console.log(code_base64);
+			console.log(`验证码获取成功`)
+			await recognition_coed('识别验证码', code_base64)
+		} else {
+			console.log(`签到失败: ${result.msg}`)
+		}
+	} catch (e) {
+		console.log(e)
 	}
 }
 
+// 识别验证码
+async function recognition_coed(name, code_base64) {
+	console.log(`\n开始 ${name}`);
+	try {
+		let url = `http://81.70.196.85:9898/ocr/b64/json`
+		let body = `${code_base64}`
+		let urlObject = populateUrlObject(url, body)
+		await httpRequest('post', urlObject, name)
+		let result = httpResult;
+		if (!result) return
+		// console.log(result)
+		if (result.status == 200 && result.msg == '') {
+			code = result.result;
+			if (code.length == 4) {
+				DoubleLog(`识别成功:${code}`);
+				return code
+			} else {
+				DoubleLog(`识别失败: ${result.msg}`)
+			}
+		} else if (result.msg != '') {
+			DoubleLog(`识别失败: ${result.msg}`)
+		} else {
+			DoubleLog(`未知错误!`)
+		}
+	} catch (e) {
+		console.log(e)
+	}
+}
 
+// 随机手机号
+async function phone() {
+	let a = new Array(
+		"130",
+		"131",
+		"132",
+		"133",
+		"135",
+		"136",
+		"137",
+		"138",
+		"139",
+		"151",
+		"152",
+		"158",
+		"166",
+		"170",
+		"177",
+		"179",
+		"181",
+		"187",
+		"189"
+	),
+		d = parseInt(a.length * Math.random()),
+		b = a[d];
+	for (let c = 0; c < 8; c++) b += Math.floor(10 * Math.random());
+	return b;
+}
 
 
 
@@ -843,11 +884,5 @@ function Env(name, env) {
 }
 
 
-
-
-
-
-// // 完整 Env
-// function Env(t, e) { "undefined" != typeof process && JSON.stringify(process.env).indexOf("GITHUB") > -1 && process.exit(0); class s { constructor(t) { this.env = t } send(t, e = "GET") { t = "string" == typeof t ? { url: t } : t; let s = this.get; return "POST" === e && (s = this.post), new Promise((e, i) => { s.call(this, t, (t, s, r) => { t ? i(t) : e(s) }) }) } get(t) { return this.send.call(this.env, t) } post(t) { return this.send.call(this.env, t, "POST") } } return new class { constructor(t, e) { this.name = t, this.http = new s(this), this.data = null, this.dataFile = "box.dat", this.logs = [], this.isMute = !1, this.isNeedRewrite = !1, this.logSeparator = "\n", this.startTime = (new Date).getTime(), Object.assign(this, e), this.log("", `🔔${this.name}, 开始!`) } isNode() { return "undefined" != typeof module && !!module.exports } isQuanX() { return "undefined" != typeof $task } isSurge() { return "undefined" != typeof $httpClient && "undefined" == typeof $loon } isLoon() { return "undefined" != typeof $loon } toObj(t, e = null) { try { return JSON.parse(t) } catch { return e } } toStr(t, e = null) { try { return JSON.stringify(t) } catch { return e } } getjson(t, e) { let s = e; const i = this.getdata(t); if (i) try { s = JSON.parse(this.getdata(t)) } catch { } return s } setjson(t, e) { try { return this.setdata(JSON.stringify(t), e) } catch { return !1 } } getScript(t) { return new Promise(e => { this.get({ url: t }, (t, s, i) => e(i)) }) } runScript(t, e) { return new Promise(s => { let i = this.getdata("@chavy_boxjs_userCfgs.httpapi"); i = i ? i.replace(/\n/g, "").trim() : i; let r = this.getdata("@chavy_boxjs_userCfgs.httpapi_timeout"); r = r ? 1 * r : 20, r = e && e.timeout ? e.timeout : r; const [o, h] = i.split("@"), n = { url: `http://${h}/v1/scripting/evaluate`, body: { script_text: t, mock_type: "cron", timeout: r }, headers: { "X-Key": o, Accept: "*/*" } }; this.post(n, (t, e, i) => s(i)) }).catch(t => this.logErr(t)) } loaddata() { if (!this.isNode()) return {}; { this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path"); const t = this.path.resolve(this.dataFile), e = this.path.resolve(process.cwd(), this.dataFile), s = this.fs.existsSync(t), i = !s && this.fs.existsSync(e); if (!s && !i) return {}; { const i = s ? t : e; try { return JSON.parse(this.fs.readFileSync(i)) } catch (t) { return {} } } } } writedata() { if (this.isNode()) { this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path"); const t = this.path.resolve(this.dataFile), e = this.path.resolve(process.cwd(), this.dataFile), s = this.fs.existsSync(t), i = !s && this.fs.existsSync(e), r = JSON.stringify(this.data); s ? this.fs.writeFileSync(t, r) : i ? this.fs.writeFileSync(e, r) : this.fs.writeFileSync(t, r) } } lodash_get(t, e, s) { const i = e.replace(/\[(\d+)\]/g, ".$1").split("."); let r = t; for (const t of i) if (r = Object(r)[t], void 0 === r) return s; return r } lodash_set(t, e, s) { return Object(t) !== t ? t : (Array.isArray(e) || (e = e.toString().match(/[^.[\]]+/g) || []), e.slice(0, -1).reduce((t, s, i) => Object(t[s]) === t[s] ? t[s] : t[s] = Math.abs(e[i + 1]) >> 0 == +e[i + 1] ? [] : {}, t)[e[e.length - 1]] = s, t) } getdata(t) { let e = this.getval(t); if (/^@/.test(t)) { const [, s, i] = /^@(.*?)\.(.*?)$/.exec(t), r = s ? this.getval(s) : ""; if (r) try { const t = JSON.parse(r); e = t ? this.lodash_get(t, i, "") : e } catch (t) { e = "" } } return e } setdata(t, e) { let s = !1; if (/^@/.test(e)) { const [, i, r] = /^@(.*?)\.(.*?)$/.exec(e), o = this.getval(i), h = i ? "null" === o ? null : o || "{}" : "{}"; try { const e = JSON.parse(h); this.lodash_set(e, r, t), s = this.setval(JSON.stringify(e), i) } catch (e) { const o = {}; this.lodash_set(o, r, t), s = this.setval(JSON.stringify(o), i) } } else s = this.setval(t, e); return s } getval(t) { return this.isSurge() || this.isLoon() ? $persistentStore.read(t) : this.isQuanX() ? $prefs.valueForKey(t) : this.isNode() ? (this.data = this.loaddata(), this.data[t]) : this.data && this.data[t] || null } setval(t, e) { return this.isSurge() || this.isLoon() ? $persistentStore.write(t, e) : this.isQuanX() ? $prefs.setValueForKey(t, e) : this.isNode() ? (this.data = this.loaddata(), this.data[e] = t, this.writedata(), !0) : this.data && this.data[e] || null } initGotEnv(t) { this.got = this.got ? this.got : require("got"), this.cktough = this.cktough ? this.cktough : require("tough-cookie"), this.ckjar = this.ckjar ? this.ckjar : new this.cktough.CookieJar, t && (t.headers = t.headers ? t.headers : {}, void 0 === t.headers.Cookie && void 0 === t.cookieJar && (t.cookieJar = this.ckjar)) } get(t, e = (() => { })) { t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.get(t, (t, s, i) => { !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i) })) : this.isQuanX() ? (this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => e(t))) : this.isNode() && (this.initGotEnv(t), this.got(t).on("redirect", (t, e) => { try { if (t.headers["set-cookie"]) { const s = t.headers["set-cookie"].map(this.cktough.Cookie.parse).toString(); s && this.ckjar.setCookieSync(s, null), e.cookieJar = this.ckjar } } catch (t) { this.logErr(t) } }).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => { const { message: s, response: i } = t; e(s, i, i && i.body) })) } post(t, e = (() => { })) { if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.post(t, (t, s, i) => { !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i) }); else if (this.isQuanX()) t.method = "POST", this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => e(t)); else if (this.isNode()) { this.initGotEnv(t); const { url: s, ...i } = t; this.got.post(s, i).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => { const { message: s, response: i } = t; e(s, i, i && i.body) }) } } time(t, e = null) { const s = e ? new Date(e) : new Date; let i = { "M+": s.getMonth() + 1, "d+": s.getDate(), "H+": s.getHours(), "m+": s.getMinutes(), "s+": s.getSeconds(), "q+": Math.floor((s.getMonth() + 3) / 3), S: s.getMilliseconds() }; /(y+)/.test(t) && (t = t.replace(RegExp.$1, (s.getFullYear() + "").substr(4 - RegExp.$1.length))); for (let e in i) new RegExp("(" + e + ")").test(t) && (t = t.replace(RegExp.$1, 1 == RegExp.$1.length ? i[e] : ("00" + i[e]).substr(("" + i[e]).length))); return t } msg(e = t, s = "", i = "", r) { const o = t => { if (!t) return t; if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? { "open-url": t } : this.isSurge() ? { url: t } : void 0; if ("object" == typeof t) { if (this.isLoon()) { let e = t.openUrl || t.url || t["open-url"], s = t.mediaUrl || t["media-url"]; return { openUrl: e, mediaUrl: s } } if (this.isQuanX()) { let e = t["open-url"] || t.url || t.openUrl, s = t["media-url"] || t.mediaUrl; return { "open-url": e, "media-url": s } } if (this.isSurge()) { let e = t.url || t.openUrl || t["open-url"]; return { url: e } } } }; if (this.isMute || (this.isSurge() || this.isLoon() ? $notification.post(e, s, i, o(r)) : this.isQuanX() && $notify(e, s, i, o(r))), !this.isMuteLog) { let t = ["", "==============📣系统通知📣=============="]; t.push(e), s && t.push(s), i && t.push(i), console.log(t.join("\n")), this.logs = this.logs.concat(t) } } log(...t) { t.length > 0 && (this.logs = [...this.logs, ...t]), console.log(t.join(this.logSeparator)) } logErr(t, e) { const s = !this.isSurge() && !this.isQuanX() && !this.isLoon(); s ? this.log("", `❗️${this.name}, 错误!`, t.stack) : this.log("", `❗️${this.name}, 错误!`, t) } wait(t) { return new Promise(e => setTimeout(e, t)) } done(t = {}) { const e = (new Date).getTime(), s = (e - this.startTime) / 1e3; this.log("", `🔔${this.name}, 结束! 🕛 ${s} 秒`), this.log(), (this.isSurge() || this.isQuanX() || this.isLoon()) && $done(t) } }(t, e) }
 
   //#endregion
