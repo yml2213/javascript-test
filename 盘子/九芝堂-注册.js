@@ -92,7 +92,6 @@ async function kzjb() {
 		user = getMoble()
 
 
-		//ck = MD5_Encrypt(`${user}`).slice(0, 26)
 		await login()
 		await $.wait(3000)
 
