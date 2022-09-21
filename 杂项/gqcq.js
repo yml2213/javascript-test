@@ -563,7 +563,7 @@ function Version_Check(name, type) {
  */
 function phone_num(phone_num) {
 	if (phone_num.length == 11) {
-		data = phone_num.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+		let data = phone_num.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
 		return data;
 	} else {
 		return phone_num;
