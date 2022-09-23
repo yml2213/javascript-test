@@ -53,7 +53,7 @@ async function tips(ckArr) {
 
 async function start() {
 	for (let index = 0; index < reg_num; index++) {
-		await gljdreg('开始注册');
+		await gljdreg('开始注册', index);
 	}
 	console.log(`账号信息\n\n`);
 	console.log(userinfo);
@@ -66,8 +66,8 @@ async function start() {
 
 
 // 注册
-async function gljdreg(name) {
-	console.log(`\n开始 第${index}次${name}`);
+async function gljdreg(name, index) {
+	console.log(`\n开始 第${index + 1}次${name}`);
 	await get_code('获取验证码');
 	try {
 		let url = `https://app.gelinjiudianzq.com/api/v1/user/register`
