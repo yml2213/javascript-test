@@ -1,29 +1,24 @@
 /*
-走进海南  app 
+喜来登  app 
  
-cron 10 7 * * *  zjhn.js
+cron 10 7 * * *  xld.js
  
 9-22		资金盘，自己0薅   被坑了别找我
+9-23		修复错误
+------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
+# 喜来登
+export xld=" phone & pwd @ phone & pwd "
 
-  
+
 多账号用 换行 或 @ 分割
-抓包 gsp.gacmotor.com , 找到 token 即可
-====================================
+
 tg频道: https://t.me/yml2213_tg  
 
 */
 
 
-//-------------------- 配置区域 --------------------
-const reg_num = '10'  //注册数量
-const regcode = '2560385' //邀请码
-const pw = 'zjhn123654'  //密码
-// -----------------------------------------------
-
-
-
-const $ = new Env("走进海南-注册机");
-const alias_name = 'zjhn'
+const $ = new Env("喜来登");
+const alias_name = 'xld'
 const request = require('request');
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
@@ -32,8 +27,6 @@ const debug = 0			//0为关闭调试,1为打开调试,默认为0
 let ckStr = process.env[alias_name];
 let msg, ck;
 let ck_status = true;
-let userinfo = ''
-
 //---------------------------------------------------------------------------------------------------------
 let VersionCheck = "0.1"
 let Change = '资金盘，自己0薅玩'
@@ -51,56 +44,71 @@ async function tips(ckArr) {
 }
 
 async function start() {
-	for (let index = 0; index < reg_num; index++) {
-		await gljdreg('开始注册');
+	await login('登录');
+
+	if (ck_status) {
+		await sign_info('签到查询');
+		await prize_info('转盘次数');
+		await user_info('用户信息');
 	}
-	console.log(`账号信息\n\n`);
-	console.log(userinfo);
-	console.log(`\n\n`);
+
 }
 
 
 
 
 
-
-// 开始注册   httpPost
-async function gljdreg(name) {
+// 登录   httpPost
+async function login(name) {
 	DoubleLog(`\n开始 ${name}`);
 	try {
-		phone_code = await phone('获取手机号')
-		let path = '/api/PlayerVue/Register'
-		let data_ = get_data((path).toLowerCase())
 		let Options = {
-			url: `https://api.hinan8.com${path}?b8ef038bdc27fc47a5087ce0f63e7622=${data_}`,
+			url: `https://app.xilaidengjiudianbrs.com/api/v1/user/login`,
 			headers: {
-				'Content-Type': 'application/json',
-				'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Mobile Safari/537.36'
+				"content-type": "application/json; charset=utf-8",
 			},
-			body: JSON.stringify({
-				'ACode': 'reg',
-				'checkCode': '',
-				'mobilecode': '',
-				'recommend': regcode,
-				'password': pw,
-				'rePassword': pw,
-				'tel': '',
-				'username': phone_code,
-				'valiImgKey': '',
-				'mobileCode': '',
-				'messageId': '',
-				'djs': 60
-			})
+			body: '{"password":"xld123654","username":"17759552286"}'
 		};
 		let result = await httpPost(Options, name);
 
 		// console.log(result);
+		if (result.expire_sec) {
+			DoubleLog(`${name}: 成功, 时间:${result.expire_time}}`);
+			Token = result.token
+			await wait(3)
+		} else {
+			DoubleLog(`${name}: 失败❌了呢`);
+			console.log(result);
+			return ck_status = false;
+		}
+	} catch (error) {
+		console.log(error);
+	}
 
-		if (result.code == 200) {
-			DoubleLog(`${name}: ${result.msg} `);
-			userinfo += `${phone_code}&${pw}\n`
-			console.log(`等待 10 s`);
-			await wait(10)
+
+}
+
+
+
+// 签到查询   httpGet  
+async function sign_info(name) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `https://app.xilaidengjiudianbrs.com/api/v1/sign`,
+			headers: {
+				"content-type": "application/json; charset=utf-8",
+				"authorization": `Bearer ${Token}`,
+			},
+		};
+		let result = await httpGet(Options, name);
+
+		// console.log(result);
+		if (result.is_today_sign == false) {
+			DoubleLog(`${name}: 没有签到,去签到`);
+			await do_sign('签到');
+		} else if (result.is_today_sign == true) {
+			DoubleLog(`${name}: 已签到`);
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
@@ -112,71 +120,122 @@ async function gljdreg(name) {
 
 }
 
-// 随机手机号
-async function phone() {
-	let a = new Array(
-		"130",
-		"131",
-		"132",
-		"133",
-		"135",
-		"136",
-		"137",
-		"138",
-		"139",
-		"151",
-		"152",
-		"158",
-		"166",
-		"170",
-		"177",
-		"179",
-		"181",
-		"187",
-		"189"
-	),
-		d = parseInt(a.length * Math.random()),
-		b = a[d];
-	for (let c = 0; c < 8; c++) b += Math.floor(10 * Math.random());
-	return b;
-}
+// 执行签到   httpGet
+async function do_sign(name) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `https://app.xilaidengjiudianbrs.com/api/v1/sign`,
+			headers: {
+				"content-type": "application/json; charset=utf-8",
+				"authorization": `Bearer ${Token}`,
+			},
+			body: {}
+		};
+		let result = await httpPost(Options, name);
 
-
-
-
-
-
-
-function get_data(e) {
-	let m = 'eb15bc2f2b6a1ec91c2411be7a1501a5';
-	let ts = ts10();
-	let u = '0';
-	let o = d();
-	let t = MD5Encrypt(e + "-" + ts + "-" + o + "-" + u + "-" + m)
-	let data_ = (ts + "-" + o + "-" + u + "-" + t)
-	// console.log(data_);
-	return data_
-
-	function d() {
-		for (var n = [], i = "0123456789abcdef", e = 0; e < 36; e++)
-			n[e] = i.substr(Math.floor(16 * Math.random()), 1);
-		n[14] = "4",
-			n[19] = i.substr(3 & n[19] | 8, 1);
-		var a = n.join("");
-		return a
+		// console.log(result);
+		if (!res.data.hasOwnProperty('error')) {
+			DoubleLog(`${name}: 获得${result.msg}元`);
+		} else if (result.error == 3) {
+			DoubleLog(`${name}: ${result.msg}`);
+		} else {
+			DoubleLog(`${name}: 失败❌了呢`);
+			console.log(result);
+		}
+	} catch (error) {
+		console.log(error);
 	}
 }
 
 
 
 
+// 转盘次数   httpGet
+async function prize_info(name) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `https://app.xilaidengjiudianbrs.com/api/v1/user-prize-num`,
+			headers: {
+				"content-type": "application/json; charset=utf-8",
+				"authorization": `Bearer ${Token}`,
+			},
+		};
+		let result = await httpGet(Options, name);
+
+		// console.log(result);
+		if (result.count > 0) {
+			DoubleLog(`${name}: ${result.count}次`);
+			await do_prize('转盘');
+		} else if (result.count == 0) {
+			DoubleLog(`${name}: 没次数了 ,明天再来吧!`);
+		} else {
+			DoubleLog(`${name}: 失败❌了呢`);
+			console.log(result);
+		}
+	} catch (error) {
+		console.log(error);
+	}
+
+
+}
 
 
 
+// 执行转盘   httpGet
+async function do_prize(name) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `https://app.xilaidengjiudianbrs.com/api/v1/user-prize`,
+			headers: {
+				"content-type": "application/json; charset=utf-8",
+				"authorization": `Bearer ${Token}`,
+			},
+			body: {}
+		};
+		let result = await httpPost(Options, name);
+
+		console.log(result);
+		if (result.id) {
+			DoubleLog(`${name}: 获得${result.remarks}---${result.integral}元`);
+		} else if (result.error == 3) {
+			DoubleLog(`${name}: ${result.msg}`);
+		} else {
+			DoubleLog(`${name}: 失败❌了呢`);
+			console.log(result);
+		}
+	} catch (error) {
+		console.log(error);
+	}
+}
 
 
+// 用户信息  https://app.xilaidengjiudianbrs.com/api/v1/user/center?
+async function user_info(name) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `https://app.xilaidengjiudianbrs.com/api/v1/user/center?`,
+			headers: {
+				"content-type": "application/json; charset=utf-8",
+				"authorization": `Bearer ${Token}`,
+			},
+		};
+		let result = await httpGet(Options, name);
 
-
+		// console.log(result);
+		if (result.account) {
+			DoubleLog(`${name}: 成功!\n欢迎:${result.account}, 余额:${(result.balance)}元, 可提现余额:${(result.cash_balance)}元, 邀请码:${(result.code)}`);
+		} else {
+			DoubleLog(`${name}: 失败❌了呢`);
+			console.log(result);
+		}
+	} catch (error) {
+		console.log(error);
+	}
+}
 
 
 
@@ -302,7 +361,7 @@ async function SendMsg(message) {
 	if (!message) return;
 	if (Notify > 0) {
 		if ($.isNode()) {
-			var notify = require("../杂项/sendNotify");
+			var notify = require("./sendNotify");
 			await notify.sendNotify($.name, message);
 		} else {
 			// $.msg(message);
