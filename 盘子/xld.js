@@ -67,7 +67,7 @@ async function login(name) {
 			headers: {
 				"content-type": "application/json; charset=utf-8",
 			},
-			body: '{"password":"xld123654","username":"17759552286"}'
+			body: `{"password":"${ck[1]}","username":"${ck[0]}"}`
 		};
 		let result = await httpPost(Options, name);
 
@@ -120,7 +120,7 @@ async function sign_info(name) {
 
 }
 
-// 执行签到   httpGet
+// 执行签到   httpPost
 async function do_sign(name) {
 	DoubleLog(`\n开始 ${name}`);
 	try {
@@ -130,12 +130,12 @@ async function do_sign(name) {
 				"content-type": "application/json; charset=utf-8",
 				"authorization": `Bearer ${Token}`,
 			},
-			body: {}
+			body: '{}'
 		};
 		let result = await httpPost(Options, name);
 
 		// console.log(result);
-		if (!res.data.hasOwnProperty('error')) {
+		if (!result.hasOwnProperty('error')) {
 			DoubleLog(`${name}: 获得${result.msg}元`);
 		} else if (result.error == 3) {
 			DoubleLog(`${name}: ${result.msg}`);
@@ -183,7 +183,7 @@ async function prize_info(name) {
 
 
 
-// 执行转盘   httpGet
+// 执行转盘   httpPost
 async function do_prize(name) {
 	DoubleLog(`\n开始 ${name}`);
 	try {
@@ -193,11 +193,11 @@ async function do_prize(name) {
 				"content-type": "application/json; charset=utf-8",
 				"authorization": `Bearer ${Token}`,
 			},
-			body: {}
+			body: '{}'
 		};
 		let result = await httpPost(Options, name);
 
-		console.log(result);
+		// console.log(result);
 		if (result.id) {
 			DoubleLog(`${name}: 获得${result.remarks}---${result.integral}元`);
 		} else if (result.error == 3) {
@@ -227,7 +227,7 @@ async function user_info(name) {
 
 		// console.log(result);
 		if (result.account) {
-			DoubleLog(`${name}: 成功!\n欢迎:${result.account}, 余额:${(result.balance)}元, 可提现余额:${(result.cash_balance)}元, 邀请码:${(result.code)}`);
+			DoubleLog(`${name}: 成功!\n    欢迎:${result.account}, 余额:${(result.balance)}元, 可提现余额:${(result.cash_balance)}元, 邀请码:${(result.code)}`);
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
