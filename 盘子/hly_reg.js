@@ -1,6 +1,6 @@
 /**
- * 格林酒店-注册机
- * cron 10 7 * * *  gljd.js
+ * 好利源-注册机
+ * cron 10 7 * * *  hly.js
  *
  * 9-18		盘子, 自己0薅玩, 坑了钱别来找我
  *
@@ -9,19 +9,19 @@
 
 
 //-------------------- 配置区域 --------------------
-const reg_num = '50'  			//注册数量
-let regcode = 'e6e8de' 			//邀请码  ['b28cc2,17adf1,c02f59,c06005,cd5eb3' ]
-let host = 'app.gelinjiuidnaq.com'
-let hostname = 'https://' + host
+const reg_num = '4'  			//注册数量
+let regcode = '' 				//邀请码  
+let host = '45.207.56.36:19911/'
+let hostname = 'http://' + host
 // -----------------------------------------------
 
 
-const $ = new Env("格林酒店-注册机");
-const alias_name = 'gljd'
+const $ = new Env("好利源-注册机");
+const alias_name = 'hly'
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 const debug = 0		    //0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
-let msg, ck, new_regcode;
+let msg, ck;
 let userinfo = ''
 let index = ''
 //---------------------------------------------------------------------------------------------------------
@@ -32,9 +32,8 @@ let Change = '领取每日任务!'
 
 async function start() {
 	index = 0
-	await gljdreg('开始注册', index, regcode);
 	for (index; index < reg_num; index++) {
-		await gljdreg('开始注册', index, new_regcode);
+		await hlyreg('开始注册', index);
 	}
 	console.log(`账号信息\n\n`);
 	console.log(userinfo);
@@ -46,37 +45,32 @@ async function start() {
 
 
 
-// 注册
-async function gljdreg(name, index, regcode) {
-	console.log(`\n================================================\n开始 第${index + 1}次${name} ,本次注册邀请码为 ${regcode}`);
+// 注册 
+async function hlyreg(name, index) {
+	console.log(`\n================================================\n开始 第${index + 1}次${name}`);
 	await get_code('获取验证码');
 	let phone_code = phone();
 	let pw = randomszxx(8);
 	try {
 		let Options = {
-			url: `${hostname}/api/v1/user/register`,
+			url: `${hostname}/index/shen/zhuce`,
 			headers: {
 				"content-type": "application/json; charset=utf-8",
 			},
-			body: `{"captcha_code":"${code}","captcha_id":"${code_id}","password":"${pw}","reg_code":"${regcode}","tel":"${phone_code}"}`
+			body: `phone=${phone_code}&password=${pw}&pwd2=${pw}&top=&qq=&codes=${code}`
 		};
 		let result = await httpPost(Options, name);
 
-		// console.log(result);
-		if (!result.hasOwnProperty('error')) {
+		console.log(result);
+		if (result.code == 1) {
 			console.log(`注册成功 , ${phone_code}&${pw}`);
 			userinfo += `${phone_code}&${pw}\n`
 			console.log(`等待 5 s`);
 			await wait(5);
-			await login('登录-获取新邀请码', pw, phone_code);
-			return new_regcode
 
-		} else if (result.hasOwnProperty('error')) {
-			console.log(`注册失败了，再试一次！`);
-			DoubleLog(result.msg)
-			await gljdreg('开始注册', index, regcode);
 		} else {
-			console.log(`注册失败，未知原因!`)
+			console.log(`注册失败，再试一次`)
+			await hlyreg('开始注册', index);
 		}
 	} catch (e) {
 		console.log(e)
@@ -90,65 +84,6 @@ async function gljdreg(name, index, regcode) {
 
 
 
-// 登录   httpPost
-async function login(name, pw, phone_code) {
-	DoubleLog(`\n开始 ${name}`);
-	try {
-		let Options = {
-			url: `${hostname}/api/v1/user/login`,
-			headers: {
-				"content-type": "application/json; charset=utf-8",
-			},
-			body: `{"password":"${pw}","username":"${phone_code}"}`
-		};
-		let result = await httpPost(Options, name);
-
-		// console.log(result);
-		if (result.expire_sec) {
-			DoubleLog(`${name}: 成功, 时间:${result.expire_time}}`);
-			let Token = result.token
-			await wait(3)
-			await user_info('获取邀请码', Token);
-			return new_regcode
-		} else {
-			DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-			return ck_status = false;
-		}
-	} catch (error) {
-		console.log(error);
-	}
-
-
-}
-
-
-// 用户信息  
-async function user_info(name, Token) {
-	DoubleLog(`\n开始 ${name}`);
-	try {
-		let Options = {
-			url: `${hostname}/api/v1/user/center?`,
-			headers: {
-				"content-type": "application/json; charset=utf-8",
-				"authorization": `Bearer ${Token}`,
-			},
-		};
-		let result = await httpGet(Options, name);
-
-		// console.log(result);
-		if (result.account) {
-			DoubleLog(`${name}: 成功!\n    欢迎:${result.account} 邀请码:${(result.code)}`);
-			new_regcode = result.code
-			return new_regcode
-		} else {
-			DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	} catch (error) {
-		console.log(error);
-	}
-}
 
 
 
@@ -159,19 +94,17 @@ async function get_code(name) {
 	// console.log(`\n开始 ${name}`);
 	try {
 		let Options = {
-			url: `${hostname}/api/v1/captcha?`,
+			url: `${hostname}/index/login/smsRand`,
 			headers: {
-				"content-type": "application/json; charset=utf-8",
+				"Content-Type": "application/json; charset=utf-8",
 			},
 		};
 		let result = await httpGet(Options, name);
 
-		if (result.id) {
-			code_base64 = result.base64.split(',')[1]
-			code_id = result.id
-			// console.log(code_base64);
-			console.log(`验证码获取成功`)
-			await recognition_coed('识别验证码', code_base64)
+		if (result.code == 1) {
+			code = result.data
+			return code
+
 		} else {
 			console.log(`${name}: ${result.msg}`)
 		}
@@ -200,11 +133,11 @@ async function recognition_coed(name, code_base64) {
 				return code
 			} else {
 				DoubleLog(`识别失败1: ${result.msg}`);
-				await gljdreg('开始注册', index, regcode);
+				await hlyreg('开始注册', index, regcode);
 			}
 		} else if (result.msg != '') {
 			DoubleLog(`识别失败2: ${result.msg}`);
-			await gljdreg('开始注册', index, regcode);
+			await hlyreg('开始注册', index, regcode);
 		} else {
 			DoubleLog(`未知错误!`)
 		}

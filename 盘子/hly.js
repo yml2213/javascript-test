@@ -1,119 +1,89 @@
-/**
- * 格林酒店-注册机
- * cron 10 7 * * *  gljd.js
- *
- * 9-18		盘子, 自己0薅玩, 坑了钱别来找我
- *
- * tg频道: https://t.me/yml2213_tg  
- */
+/*
+好利源  app 
+cron 10 7 * * *  hly.js
 
 
-//-------------------- 配置区域 --------------------
-const reg_num = '50'  			//注册数量
-let regcode = 'e6e8de' 			//邀请码  ['b28cc2,17adf1,c02f59,c06005,cd5eb3' ]
-let host = 'app.gelinjiuidnaq.com'
-let hostname = 'https://' + host
-// -----------------------------------------------
+https://yq.hly6342.com/index/user
+ 
+
+------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
+# 好利源
+export hly=" phone & pwd @ phone & pwd "
 
 
-const $ = new Env("格林酒店-注册机");
-const alias_name = 'gljd'
+多账号用 换行 或 @ 分割
+
+tg频道: https://t.me/yml2213_tg  
+
+*/
+
+
+const $ = new Env("好利源");
+const alias_name = 'hly'
+const request = require('request');
+const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
-const debug = 0		    //0为关闭调试,1为打开调试,默认为0
+const debug = 0			//0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
-let msg, ck, new_regcode;
-let userinfo = ''
-let index = ''
+let ckStr = process.env[alias_name];
+let msg, ck;
+let ck_status = 1;
+let host = '45.207.56.36:19911'
+let hostname = 'http://' + host
 //---------------------------------------------------------------------------------------------------------
-let VersionCheck = "0.0.1"
-let Change = '领取每日任务!'
+let VersionCheck = "0.1"
+let Change = '资金盘，自己0薅玩'
+let thank = `\n感谢 群友 的投稿\n`
 //---------------------------------------------------------------------------------------------------------
 
+async function tips(ckArr) {
+	// let Version_latest = await Version_Check(alias_name, '1');
+	let Version = `\n📌 本地脚本: V ${VersionCheck}`
+	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
+	// DoubleLog(`${thank}`);
+	await wyy();
+	DoubleLog(`\n========== 共找到 ${ckArr.length} 个账号 ==========`);
+	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
+}
 
 async function start() {
-	index = 0
-	await gljdreg('开始注册', index, regcode);
-	for (index; index < reg_num; index++) {
-		await gljdreg('开始注册', index, new_regcode);
-	}
-	console.log(`账号信息\n\n`);
-	console.log(userinfo);
-	console.log(`\n\n`);
+	await login('登录');
 
+	if (ck_status) {
+		await do_sign('签到');
+		await user_info('用户信息');
+	}
 
 }
 
 
 
 
-// 注册
-async function gljdreg(name, index, regcode) {
-	console.log(`\n================================================\n开始 第${index + 1}次${name} ,本次注册邀请码为 ${regcode}`);
-	await get_code('获取验证码');
-	let phone_code = phone();
-	let pw = randomszxx(8);
-	try {
-		let Options = {
-			url: `${hostname}/api/v1/user/register`,
-			headers: {
-				"content-type": "application/json; charset=utf-8",
-			},
-			body: `{"captcha_code":"${code}","captcha_id":"${code_id}","password":"${pw}","reg_code":"${regcode}","tel":"${phone_code}"}`
-		};
-		let result = await httpPost(Options, name);
 
-		// console.log(result);
-		if (!result.hasOwnProperty('error')) {
-			console.log(`注册成功 , ${phone_code}&${pw}`);
-			userinfo += `${phone_code}&${pw}\n`
-			console.log(`等待 5 s`);
-			await wait(5);
-			await login('登录-获取新邀请码', pw, phone_code);
-			return new_regcode
-
-		} else if (result.hasOwnProperty('error')) {
-			console.log(`注册失败了，再试一次！`);
-			DoubleLog(result.msg)
-			await gljdreg('开始注册', index, regcode);
-		} else {
-			console.log(`注册失败，未知原因!`)
-		}
-	} catch (e) {
-		console.log(e)
-	}
-}
-
-
-
-
-
-
-
-
-// 登录   httpPost
-async function login(name, pw, phone_code) {
+// 登录    post  
+async function login(name) {
 	DoubleLog(`\n开始 ${name}`);
 	try {
+		random_data = randomszxx(26);
 		let Options = {
-			url: `${hostname}/api/v1/user/login`,
+			url: `${hostname}/index/shen/logi`,
 			headers: {
-				"content-type": "application/json; charset=utf-8",
+				'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)',
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+				'Cookie': `sa674f99a=${random_data}`,
 			},
-			body: `{"password":"${pw}","username":"${phone_code}"}`
+			body: `phone=${ck[0]}&password=${ck[1]}`
 		};
-		let result = await httpPost(Options, name);
+		let result = await httpRequest('post', Options, name);
 
-		// console.log(result);
-		if (result.expire_sec) {
-			DoubleLog(`${name}: 成功, 时间:${result.expire_time}}`);
-			let Token = result.token
+		if (result.code == 1) {
+			DoubleLog(`${name}: ${result.info}`);
 			await wait(3)
-			await user_info('获取邀请码', Token);
-			return new_regcode
+			return ck_status = 1;
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
-			return ck_status = false;
+			return ck_status = 0;
 		}
 	} catch (error) {
 		console.log(error);
@@ -123,24 +93,26 @@ async function login(name, pw, phone_code) {
 }
 
 
-// 用户信息  
-async function user_info(name, Token) {
+// 执行签到   httpPost
+async function do_sign(name) {
 	DoubleLog(`\n开始 ${name}`);
 	try {
 		let Options = {
-			url: `${hostname}/api/v1/user/center?`,
+			url: `${hostname}/index/user/sign`,
 			headers: {
 				"content-type": "application/json; charset=utf-8",
-				"authorization": `Bearer ${Token}`,
+				'Cookie': `sa674f99a=${random_data}`,
 			},
+			body: 'phone=1'
 		};
-		let result = await httpGet(Options, name);
+		// let result = await httpPost(Options, name);
+		let result = await httpRequest('post', Options, name);
 
 		// console.log(result);
-		if (result.account) {
-			DoubleLog(`${name}: 成功!\n    欢迎:${result.account} 邀请码:${(result.code)}`);
-			new_regcode = result.code
-			return new_regcode
+		if (result.code == 1) {
+			DoubleLog(`${name}: ${result.info}`);
+		} else if (result.code == 0) {
+			DoubleLog(`${name}: ${result.info}`);
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
@@ -154,96 +126,55 @@ async function user_info(name, Token) {
 
 
 
-// 获取验证码
-async function get_code(name) {
-	// console.log(`\n开始 ${name}`);
+
+// 用户信息   httpGet
+async function user_info(name) {
+	DoubleLog(`\n开始 ${name}`);
 	try {
 		let Options = {
-			url: `${hostname}/api/v1/captcha?`,
+			url: `${hostname}/index/user`,
 			headers: {
-				"content-type": "application/json; charset=utf-8",
+				"Content-Type": "application/json; charset=utf-8",
+				'Cookie': `sa674f99a=${random_data}`,
 			},
 		};
-		let result = await httpGet(Options, name);
+		let result = await httpRequest('get', Options, name);
 
-		if (result.id) {
-			code_base64 = result.base64.split(',')[1]
-			code_id = result.id
-			// console.log(code_base64);
-			console.log(`验证码获取成功`)
-			await recognition_coed('识别验证码', code_base64)
-		} else {
-			console.log(`${name}: ${result.msg}`)
-		}
-	} catch (e) {
-		console.log(e)
+		// console.log(result);
+		let data_ = result.split('总资产')
+		let data_1 = data_[1].split('元</div>')
+		// console.log(data_1[0]);
+		DoubleLog(`余额:${data_1[0]}元`)
+
+	} catch (error) {
+		console.log(`=================`);
+		console.log(error);
 	}
-}
 
-// 识别验证码
-async function recognition_coed(name, code_base64) {
-	console.log(`\n开始 ${name}`);
-	try {
-		let Options = {
-			url: `http://81.70.196.85:9898/ocr/b64/json`,
-			headers: {
-				"content-type": "application/json; charset=utf-8",
-			},
-			body: `${code_base64}`
-		};
-		let result = await httpPost(Options, name);
 
-		if (result.status == 200 && result.msg == '') {
-			code = result.result;
-			if (code.length == 4) {
-				DoubleLog(`识别成功:${code}`);
-				return code
-			} else {
-				DoubleLog(`识别失败1: ${result.msg}`);
-				await gljdreg('开始注册', index, regcode);
-			}
-		} else if (result.msg != '') {
-			DoubleLog(`识别失败2: ${result.msg}`);
-			await gljdreg('开始注册', index, regcode);
-		} else {
-			DoubleLog(`未知错误!`)
-		}
-	} catch (e) {
-		console.log(e)
-	}
-}
-
-// 随机手机号
-function phone() {
-	let a = new Array(
-		"130",
-		"131",
-		"132",
-		"133",
-		"135",
-		"136",
-		"137",
-		"138",
-		"139",
-		"151",
-		"152",
-		"158",
-		"166",
-		"170",
-		"177",
-		"179",
-		"181",
-		"187",
-		"189"
-	),
-		d = parseInt(a.length * Math.random()),
-		b = a[d];
-	for (let c = 0; c < 8; c++) b += Math.floor(10 * Math.random());
-	return b;
 }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// md5
+function MD5Encrypt(a) { function b(a, b) { return a << b | a >>> 32 - b } function c(a, b) { var c, d, e, f, g; return e = 2147483648 & a, f = 2147483648 & b, c = 1073741824 & a, d = 1073741824 & b, g = (1073741823 & a) + (1073741823 & b), c & d ? 2147483648 ^ g ^ e ^ f : c | d ? 1073741824 & g ? 3221225472 ^ g ^ e ^ f : 1073741824 ^ g ^ e ^ f : g ^ e ^ f } function d(a, b, c) { return a & b | ~a & c } function e(a, b, c) { return a & c | b & ~c } function f(a, b, c) { return a ^ b ^ c } function g(a, b, c) { return b ^ (a | ~c) } function h(a, e, f, g, h, i, j) { return a = c(a, c(c(d(e, f, g), h), j)), c(b(a, i), e) } function i(a, d, f, g, h, i, j) { return a = c(a, c(c(e(d, f, g), h), j)), c(b(a, i), d) } function j(a, d, e, g, h, i, j) { return a = c(a, c(c(f(d, e, g), h), j)), c(b(a, i), d) } function k(a, d, e, f, h, i, j) { return a = c(a, c(c(g(d, e, f), h), j)), c(b(a, i), d) } function l(a) { for (var b, c = a.length, d = c + 8, e = (d - d % 64) / 64, f = 16 * (e + 1), g = new Array(f - 1), h = 0, i = 0; c > i;)b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | a.charCodeAt(i) << h, i++; return b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | 128 << h, g[f - 2] = c << 3, g[f - 1] = c >>> 29, g } function m(a) { var b, c, d = "", e = ""; for (c = 0; 3 >= c; c++)b = a >>> 8 * c & 255, e = "0" + b.toString(16), d += e.substr(e.length - 2, 2); return d } function n(a) { a = a.replace(/\r\n/g, "\n"); for (var b = "", c = 0; c < a.length; c++) { var d = a.charCodeAt(c); 128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(d >> 6 | 192), b += String.fromCharCode(63 & d | 128)) : (b += String.fromCharCode(d >> 12 | 224), b += String.fromCharCode(d >> 6 & 63 | 128), b += String.fromCharCode(63 & d | 128)) } return b } var o, p, q, r, s, t, u, v, w, x = [], y = 7, z = 12, A = 17, B = 22, C = 5, D = 9, E = 14, F = 20, G = 4, H = 11, I = 16, J = 23, K = 6, L = 10, M = 15, N = 21; for (a = n(a), x = l(a), t = 1732584193, u = 4023233417, v = 2562383102, w = 271733878, o = 0; o < x.length; o += 16)p = t, q = u, r = v, s = w, t = h(t, u, v, w, x[o + 0], y, 3614090360), w = h(w, t, u, v, x[o + 1], z, 3905402710), v = h(v, w, t, u, x[o + 2], A, 606105819), u = h(u, v, w, t, x[o + 3], B, 3250441966), t = h(t, u, v, w, x[o + 4], y, 4118548399), w = h(w, t, u, v, x[o + 5], z, 1200080426), v = h(v, w, t, u, x[o + 6], A, 2821735955), u = h(u, v, w, t, x[o + 7], B, 4249261313), t = h(t, u, v, w, x[o + 8], y, 1770035416), w = h(w, t, u, v, x[o + 9], z, 2336552879), v = h(v, w, t, u, x[o + 10], A, 4294925233), u = h(u, v, w, t, x[o + 11], B, 2304563134), t = h(t, u, v, w, x[o + 12], y, 1804603682), w = h(w, t, u, v, x[o + 13], z, 4254626195), v = h(v, w, t, u, x[o + 14], A, 2792965006), u = h(u, v, w, t, x[o + 15], B, 1236535329), t = i(t, u, v, w, x[o + 1], C, 4129170786), w = i(w, t, u, v, x[o + 6], D, 3225465664), v = i(v, w, t, u, x[o + 11], E, 643717713), u = i(u, v, w, t, x[o + 0], F, 3921069994), t = i(t, u, v, w, x[o + 5], C, 3593408605), w = i(w, t, u, v, x[o + 10], D, 38016083), v = i(v, w, t, u, x[o + 15], E, 3634488961), u = i(u, v, w, t, x[o + 4], F, 3889429448), t = i(t, u, v, w, x[o + 9], C, 568446438), w = i(w, t, u, v, x[o + 14], D, 3275163606), v = i(v, w, t, u, x[o + 3], E, 4107603335), u = i(u, v, w, t, x[o + 8], F, 1163531501), t = i(t, u, v, w, x[o + 13], C, 2850285829), w = i(w, t, u, v, x[o + 2], D, 4243563512), v = i(v, w, t, u, x[o + 7], E, 1735328473), u = i(u, v, w, t, x[o + 12], F, 2368359562), t = j(t, u, v, w, x[o + 5], G, 4294588738), w = j(w, t, u, v, x[o + 8], H, 2272392833), v = j(v, w, t, u, x[o + 11], I, 1839030562), u = j(u, v, w, t, x[o + 14], J, 4259657740), t = j(t, u, v, w, x[o + 1], G, 2763975236), w = j(w, t, u, v, x[o + 4], H, 1272893353), v = j(v, w, t, u, x[o + 7], I, 4139469664), u = j(u, v, w, t, x[o + 10], J, 3200236656), t = j(t, u, v, w, x[o + 13], G, 681279174), w = j(w, t, u, v, x[o + 0], H, 3936430074), v = j(v, w, t, u, x[o + 3], I, 3572445317), u = j(u, v, w, t, x[o + 6], J, 76029189), t = j(t, u, v, w, x[o + 9], G, 3654602809), w = j(w, t, u, v, x[o + 12], H, 3873151461), v = j(v, w, t, u, x[o + 15], I, 530742520), u = j(u, v, w, t, x[o + 2], J, 3299628645), t = k(t, u, v, w, x[o + 0], K, 4096336452), w = k(w, t, u, v, x[o + 7], L, 1126891415), v = k(v, w, t, u, x[o + 14], M, 2878612391), u = k(u, v, w, t, x[o + 5], N, 4237533241), t = k(t, u, v, w, x[o + 12], K, 1700485571), w = k(w, t, u, v, x[o + 3], L, 2399980690), v = k(v, w, t, u, x[o + 10], M, 4293915773), u = k(u, v, w, t, x[o + 1], N, 2240044497), t = k(t, u, v, w, x[o + 8], K, 1873313359), w = k(w, t, u, v, x[o + 15], L, 4264355552), v = k(v, w, t, u, x[o + 6], M, 2734768916), u = k(u, v, w, t, x[o + 13], N, 1309151649), t = k(t, u, v, w, x[o + 4], K, 4149444226), w = k(w, t, u, v, x[o + 11], L, 3174756917), v = k(v, w, t, u, x[o + 2], M, 718787259), u = k(u, v, w, t, x[o + 9], N, 3951481745), t = c(t, p), u = c(u, q), v = c(v, r), w = c(w, s); var O = m(t) + m(u) + m(v) + m(w); return O.toLowerCase() }
 
 
 // #region ********************************************************  固定代码  ********************************************************
@@ -254,8 +185,16 @@ function phone() {
  * 账号处理
  */
 !(async () => {
-	await start();
-
+	let ckArr = await checkEnv(ckStr, alias_name);
+	await tips(ckArr);
+	for (let index = 0; index < ckArr.length; index++) {
+		let num = index + 1;
+		DoubleLog(`\n-------- 开始【第 ${num} 个账号】--------`);
+		ck = ckArr[index].split("&");
+		debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
+		await start();
+	}
+	await SendMsg(msg);
 })()
 	.catch((e) => $.logErr(e))
 	.finally(() => $.done());
@@ -547,11 +486,16 @@ function wyy() {
 	})
 }
 
+
+
+
+// 
 /**
- * get请求
+ * 测试get post合一
  */
-async function httpGet(getUrlObject, tip, timeout = 3) {
+async function httpRequest(type, getUrlObject, tip, timeout = 3) {
 	return new Promise((resolve) => {
+		let method = type;
 		let url = getUrlObject;
 		if (!tip) {
 			let tmp = arguments.callee.toString();
@@ -563,125 +507,109 @@ async function httpGet(getUrlObject, tip, timeout = 3) {
 			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
 			console.log(url);
 		}
+		let get_arr = ['get', 'Get', 'GET']
+		let post_arr = ['post', 'Post', 'POST']
 
-		$.get(
-			url,
-			async (err, resp, data) => {
-				try {
-					if (debug) {
-						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-						console.log(data);
-						console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
-						console.log(JSON.parse(data));
-					}
-					let result = JSON.parse(data);
-					if (result == undefined) {
-						return;
-					} else {
-						resolve(result);
-					}
+		if (get_arr.indexOf(method) > -1) {
+			$.get(
+				url,
+				async (err, resp, data) => {
+					try {
+						if (debug) {
+							console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+							console.log(data);
+							console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
+							console.log(JSON.parse(data));
+						}
+						// console.log(typeof (data));
 
-				} catch (e) {
-					console.log(err, resp);
-					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg = `\n ${tip} 失败了!请稍后尝试!!`
-				} finally {
-					resolve();
-				}
-			},
-			timeout
-		);
+						if (typeof data == 'string') {
+							if (isJsonString(data)) {
+								let result = JSON.parse(data);
+								resolve(result);
+							} else {
+								let result = data;
+								resolve(result);
+							}
+							function isJsonString(str) {
+								if (typeof str == 'string') {
+									try {
+										if (typeof JSON.parse(str) == "object") {
+											return true;
+										}
+									} catch (e) {
+										return false;
+									}
+								}
+								return false;
+							}
+						} else {
+							let result = data;
+							resolve(result);
+						}
+					} catch (e) {
+						console.log(err, resp);
+						DoubleLog(`\n ${tip} 失败了!请稍后尝试!!`)
+					} finally {
+						resolve();
+					}
+				},
+				timeout
+			);
+		} else if (post_arr.indexOf(method) > -1) {
+			$.post(
+				url,
+				async (err, resp, data) => {
+					try {
+						if (debug) {
+							console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+							console.log(data);
+							console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
+							console.log(JSON.parse(data));
+						}
+						// console.log(typeof (data));
+
+						if (typeof data == 'string') {
+							if (isJsonString(data)) {
+								let result = JSON.parse(data);
+								resolve(result);
+							} else {
+								let result = data;
+								resolve(result);
+							}
+							function isJsonString(str) {
+								if (typeof str == 'string') {
+									try {
+										if (typeof JSON.parse(str) == "object") {
+											return true;
+										}
+									} catch (e) {
+										return false;
+									}
+								}
+								return false;
+							}
+						} else {
+							let result = data;
+							resolve(result);
+						}
+					} catch (e) {
+						console.log(err, resp);
+						DoubleLog(`\n ${tip} 失败了!请稍后尝试!!`)
+					} finally {
+						resolve();
+					}
+				},
+				timeout
+			);
+		} else {
+			console.log(`为止请求类型，请自行排查！`);
+		}
 	});
 }
 
-/**
- * post请求
- */
-async function httpPost(postUrlObject, tip, timeout = 3) {
-	return new Promise((resolve) => {
-		let url = postUrlObject;
-		if (!tip) {
-			let tmp = arguments.callee.toString();
-			let re = /function\s*(\w*)/i;
-			let matches = re.exec(tmp);
-			tip = matches[1];
-		}
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
-			console.log(url);
-		}
 
-		$.post(
-			url,
-			async (err, resp, data) => {
-				try {
-					if (debug) {
-						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-						console.log(data);
-						console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
-						console.log(JSON.parse(data));
-					}
-					let result = JSON.parse(data);
-					if (result == undefined) {
-						return;
-					} else {
-						resolve(result);
-					}
 
-				} catch (e) {
-					console.log(err, resp);
-					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg = `\n ${tip} 失败了!请稍后尝试!!`
-				} finally {
-					resolve();
-				}
-			},
-			timeout
-		);
-	});
-}
-
-/**
- * 网络请求 (get, post等)
- */
-async function httpRequest(postOptionsObject, tip, timeout = 3) {
-	return new Promise((resolve) => {
-
-		let Options = postOptionsObject;
-		let request = require('request');
-		if (!tip) {
-			let tmp = arguments.callee.toString();
-			let re = /function\s*(\w*)/i;
-			let matches = re.exec(tmp);
-			tip = matches[1];
-		}
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 ${tip} 请求 信息 ===============`);
-			console.log(Options);
-		}
-
-		request(Options, async (err, resp, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 ${tip} 返回数据==============`);
-					console.log(data);
-					console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
-					console.log(JSON.parse(data));
-				}
-				let result = JSON.parse(data);
-				if (!result) return;
-				resolve(result);
-			} catch (e) {
-				console.log(err, resp);
-				console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-				msg = `\n ${tip} 失败了!请稍后尝试!!`
-			} finally {
-				resolve();
-			}
-		}), timeout
-
-	});
-}
 
 
 /**

@@ -9,10 +9,10 @@
 
 
 //-------------------- 配置区域 --------------------
-const reg_num = '50'  			//注册数量
-let regcode = 'e6e8de' 			//邀请码  ['b28cc2,17adf1,c02f59,c06005,cd5eb3' ]
-let host = 'app.gelinjiuidnaq.com'
-let hostname = 'https://' + host
+const reg_num = '1'  			//注册数量
+let regcode = '' 			//邀请码  
+let host = 'www.mgzqxj.cn'
+let hostname = 'http://' + host
 // -----------------------------------------------
 
 
@@ -32,9 +32,8 @@ let Change = '领取每日任务!'
 
 async function start() {
 	index = 0
-	await gljdreg('开始注册', index, regcode);
 	for (index; index < reg_num; index++) {
-		await gljdreg('开始注册', index, new_regcode);
+		await gljdreg('开始注册', index);
 	}
 	console.log(`账号信息\n\n`);
 	console.log(userinfo);
@@ -46,37 +45,35 @@ async function start() {
 
 
 
-// 注册
-async function gljdreg(name, index, regcode) {
-	console.log(`\n================================================\n开始 第${index + 1}次${name} ,本次注册邀请码为 ${regcode}`);
+// 注册   {"mobile":"13754658888","password":"dshb123456","spassword":"dshb123456","image_code":"4618","ssid":"fcdc5cded1e4c410"}
+async function gljdreg(name, index) {
+	console.log(`\n================================================\n开始 第${index + 1}次${name}`);
+	await get_ssid('获取 ssid');
 	await get_code('获取验证码');
 	let phone_code = phone();
 	let pw = randomszxx(8);
 	try {
 		let Options = {
-			url: `${hostname}/api/v1/user/register`,
+			url: `${hostname}/api/api/register`,
 			headers: {
-				"content-type": "application/json; charset=utf-8",
+				"Content-Type": "application/x-www-form-urlencoded",
 			},
-			body: `{"captcha_code":"${code}","captcha_id":"${code_id}","password":"${pw}","reg_code":"${regcode}","tel":"${phone_code}"}`
+			// body: `{"mobile":"${code}","captcha_id":"${code_id}","password":"${pw}","reg_code":"","tel":"${phone_code}"}`
+			body: `{"mobile":"${phone_code}","password":"${pw}","spassword":"${pw}","image_code":"${code}","ssid":"${ssid}"}`
+
 		};
 		let result = await httpPost(Options, name);
 
 		// console.log(result);
-		if (!result.hasOwnProperty('error')) {
+		if (result.code == 200) {
 			console.log(`注册成功 , ${phone_code}&${pw}`);
 			userinfo += `${phone_code}&${pw}\n`
 			console.log(`等待 5 s`);
 			await wait(5);
-			await login('登录-获取新邀请码', pw, phone_code);
-			return new_regcode
-
-		} else if (result.hasOwnProperty('error')) {
-			console.log(`注册失败了，再试一次！`);
-			DoubleLog(result.msg)
-			await gljdreg('开始注册', index, regcode);
 		} else {
-			console.log(`注册失败，未知原因!`)
+			console.log(`注册失败了，再试一次！`);
+			// await gljdreg('开始注册', index);
+			DoubleLog(result)
 		}
 	} catch (e) {
 		console.log(e)
@@ -90,57 +87,24 @@ async function gljdreg(name, index, regcode) {
 
 
 
-// 登录   httpPost
-async function login(name, pw, phone_code) {
+
+// 获取 ssid 
+async function get_ssid(name) {
 	DoubleLog(`\n开始 ${name}`);
 	try {
 		let Options = {
-			url: `${hostname}/api/v1/user/login`,
+			url: `${hostname}/api/api/config`,
 			headers: {
 				"content-type": "application/json; charset=utf-8",
-			},
-			body: `{"password":"${pw}","username":"${phone_code}"}`
-		};
-		let result = await httpPost(Options, name);
-
-		// console.log(result);
-		if (result.expire_sec) {
-			DoubleLog(`${name}: 成功, 时间:${result.expire_time}}`);
-			let Token = result.token
-			await wait(3)
-			await user_info('获取邀请码', Token);
-			return new_regcode
-		} else {
-			DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-			return ck_status = false;
-		}
-	} catch (error) {
-		console.log(error);
-	}
-
-
-}
-
-
-// 用户信息  
-async function user_info(name, Token) {
-	DoubleLog(`\n开始 ${name}`);
-	try {
-		let Options = {
-			url: `${hostname}/api/v1/user/center?`,
-			headers: {
-				"content-type": "application/json; charset=utf-8",
-				"authorization": `Bearer ${Token}`,
 			},
 		};
 		let result = await httpGet(Options, name);
 
 		// console.log(result);
-		if (result.account) {
-			DoubleLog(`${name}: 成功!\n    欢迎:${result.account} 邀请码:${(result.code)}`);
-			new_regcode = result.code
-			return new_regcode
+		if (result.code == 200) {
+			DoubleLog(`${name}: 成功!`);
+			ssid = result.data.ssid
+			return ssid
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
@@ -152,23 +116,23 @@ async function user_info(name, Token) {
 
 
 
-
-
-// 获取验证码
+// 获取验证码  http://www.mgzqxj.cn/api/api/imageCode
 async function get_code(name) {
 	// console.log(`\n开始 ${name}`);
 	try {
 		let Options = {
-			url: `${hostname}/api/v1/captcha?`,
+			url: `${hostname}/api/api/imageCode`,
 			headers: {
-				"content-type": "application/json; charset=utf-8",
+				"Content-Type": "application/json; charset=utf-8",
 			},
+			body: `{"ssid":"${ssid}"}`
 		};
-		let result = await httpGet(Options, name);
+		let result = await httpPost(Options, name);
 
-		if (result.id) {
-			code_base64 = result.base64.split(',')[1]
-			code_id = result.id
+		// console.log(result);
+		if (result.code == 200) {
+			code_base64 = result.data.code.split(',')[1]
+			ssid = result.ssid
 			// console.log(code_base64);
 			console.log(`验证码获取成功`)
 			await recognition_coed('识别验证码', code_base64)
