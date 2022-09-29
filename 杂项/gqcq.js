@@ -10,11 +10,13 @@
  * 9-12         修复抽奖，增加签到宝箱开启
  * 9-21         增加用户信息输出
  * 9-22			修复开宝箱错误
+ * 9-28			修复删除帖子错误
+ * 9-29			增加了快递信息查询,不用来回看了
  *
  * ========= 青龙--配置文件--贴心复制区域 =========
  
 # 广汽传祺
-export gqcq_data='token @ token'
+export gqcq='token @ token'
 
  * 
  * 多账号用 换行 或 @ 分割
@@ -34,7 +36,7 @@ let ckStr = process.env[alias_name];
 let msg, ck;
 let ck_status = true;
 //---------------------------------------------------------------------------------------------------------
-let VersionCheck = "1.1.4"
+let VersionCheck = "1.2.6"
 let Change = '修复开宝箱错误'
 let thank = `\n感谢 群友 的投稿\n`
 //---------------------------------------------------------------------------------------------------------
@@ -44,7 +46,7 @@ async function tips(ckArr) {
 	let Version = `\n📌 本地脚本: V ${VersionCheck}  远程仓库脚本: V ${Version_latest}`
 	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
 	// DoubleLog(`${thank}`);
-	await wyy();
+	await yiyan();
 	DoubleLog(`\n========== 共找到 ${ckArr.length} 个账号 ==========`);
 	debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
@@ -56,6 +58,7 @@ async function start() {
 		await task_list('任务列表');
 		await unopenlist('宝箱查询');
 		await Points_Enquiry('积分查询');
+		await express_check('快递查询');
 	}
 
 }
@@ -150,6 +153,50 @@ async function Points_Enquiry(name) {
 		console.log(error);
 	}
 }
+
+
+// 快递查询 	httpGet  https://gsp.gacmotor.com/gateway/app-api/shop/shoporder/exchangelist?current=1&size=20&type=2&queryTimeType=0&vin=
+async function express_check(name) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `${hostname}/gateway/app-api/shop/shoporder/exchangelist?current=1&size=20&type=2&queryTimeType=0&vin=`,
+			headers: cq_headers2
+		};
+		let result = await httpGet(Options, name);
+
+		// console.log(result);
+		if (result.errorCode == 200) {
+			DoubleLog(`${name}:您当前有 ${result.data.total} 个快递 📦`);
+			if (result.data.total > 0) {
+				let express = result.data.records
+				for (let index = 0; index < express.length; index++) {
+					let commodityName = express[index].commodityName
+					let createDate = express[index].createDate
+					let orderStatusStr = express[index].orderStatusStr
+					let logisticsCompany = express[index].logisticsCompany
+					let trackingNumber = express[index].trackingNumber
+					if (express[index].orderStatus == 1) {
+						DoubleLog(`快递信息: \n    ${commodityName}: 创建时间:${createDate}, 当前状态:${orderStatusStr}`)
+					} else if (express[index].orderStatus == 2) {
+						DoubleLog(`快递信息: \n    ${commodityName}: 创建时间:${createDate}, 当前状态:${orderStatusStr}, 快递公司:${logisticsCompany}, 单号: ${trackingNumber}`)
+					} else if (express[index].orderStatus == 3) {
+						DoubleLog(`快递信息: \n    ${commodityName}: 创建时间:${createDate}, 当前状态:${orderStatusStr}`)
+					}
+				}
+			} else if (result.data.total == 0) {
+				DoubleLog(`您当前无快递信息`)
+			}
+		} else {
+			DoubleLog(`${name}:失败 ❌ 了呢,原因未知！`);
+			console.log(result);
+			return ck_status = false;
+		}
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 
 
 
@@ -368,7 +415,7 @@ async function add_comment(name) {
 		if (result.errorCode == 20000) {
 			DoubleLog(`评论帖子: 评论 ${topic_id} 帖子 ${result.errorMessage}`);
 			await wait(2);
-			await delete_topic();
+			await delete_topic('删除帖子');
 		} else {
 			DoubleLog(`评论帖子: 失败 ❌ 了呢,原因未知!`);
 			console.log(result);
@@ -760,20 +807,20 @@ function wait(n) {
 
 
 /**
- * 每日网抑云
+ * 一言
  */
-function wyy() {
+function yiyan() {
 	return new Promise((resolve) => {
 		let url = {
-			url: `https://api.qqsuu.cn/api/comment?format=json`,
+			url: `https://v1.hitokoto.cn/`,
 		}
 		$.get(url, async (err, resp, data) => {
 			try {
+				// console.log(data);
 				data = JSON.parse(data);
-				content = data.data[0].content
-				source = data.data[0].source
-				msg = `[网抑云时间]: ${content}  by--${source}`
-				DoubleLog(msg);
+				msg = `[一言]: ${data.hitokoto}  by--${data.from}`
+				console.log(msg);
+				msg += `\nmsg`;
 			} catch (e) {
 				$.logErr(e, resp);
 			} finally {
@@ -782,6 +829,8 @@ function wyy() {
 		}, timeout = 3)
 	})
 }
+
+
 
 /**
  * get请求
