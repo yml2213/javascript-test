@@ -32,7 +32,7 @@ let host = 'book.kuaishou.com'
 let hostname = 'https://' + host
 //---------------------------------------------------------------------------------------------------------
 let VersionCheck = "0.1"
-let Change = '资金盘，自己0薅玩'
+let Change = '内部脚本,严谨外传!\n内部脚本,严谨外传!\n内部脚本,严谨外传!'
 let thank = `\n感谢 群友 的投稿\n`
 //---------------------------------------------------------------------------------------------------------
 
@@ -51,8 +51,8 @@ async function start() {
 	await task_list('任务列表');
 
 	if (ck_status) {
-		// await task_list('任务列表');
-		// await do_sign('签到');
+		await box_info('宝箱信息');
+		// await open_box('开宝箱');
 		// await user_info('用户信息');
 	}
 
@@ -63,9 +63,10 @@ async function start() {
 async function init(name) {
 	DoubleLog(`\n开始 ${name}`);
 	ks_book_hd = {
+		'Content-Type': 'application/json',
 		'Cookie': ck[0],
 		'Host': host,
-		'content-type': 'application/json'
+
 	}
 }
 
@@ -175,9 +176,72 @@ async function user_info(name) {
 }
 
 
+// 宝箱信息   httpGet
+async function box_info(name) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `${hostname}/rest/wd/book/encourage/treasureBox/info`,
+			headers: ks_book_hd
+		};
+		let result = await httpRequest('get', Options, name);
+
+		// console.log(result);
+		if (result.data.status == 2) {
+			DoubleLog(`${name}: ${result.data.rewardCount} 金币宝箱冷却中, 时间:${result.data.treasureCurrentTaskRemainSeconds} 秒`)
+		} else if (result.data.status == 3) {
+			DoubleLog(`${name}: 可以开宝箱, 去也!`)
+			let token = result.data.token
+			await open_box('开宝箱', token)
+		}
+
+
+	} catch (error) {
+		console.log(`=================`);
+		console.log(error);
+	}
+
+
+}
 
 
 
+
+// 开宝箱   post   https://book.kuaishou.com/rest/wd/book/encourage/treasureBox/report
+async function open_box(name, token) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `${hostname}/rest/wd/book/encourage/treasureBox/report`,
+			headers: {
+				'Content-Type': 'application/json',
+				'Cookie': ck[0],
+				'Host': host,
+			},
+			body: JSON.stringify({
+				"taskToken": `${token}`
+			})
+		};
+		let result = await httpRequest('post', Options, name);
+
+		// console.log(result);
+		if (result.result == 1) {
+			DoubleLog(`${name}: 获得金币${result.data.rewardCount}, ${result.data.dialog.closeBubble}`)
+		} else if (result.result == 302102) {
+			DoubleLog(`${name}: 还在冷却中!`)
+		} else {
+			DoubleLog(`${name}: 失败❌了呢`);
+			console.log(result);
+		}
+
+
+	} catch (error) {
+		console.log(`=================`);
+		console.log(error);
+	}
+
+
+}
 
 
 
