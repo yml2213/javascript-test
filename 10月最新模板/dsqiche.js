@@ -754,9 +754,6 @@ function yiyan() {
 	})
 }
 
-
-
-
 // 
 /**
  * 测试get post合一
@@ -877,9 +874,6 @@ async function httpRequest(type, getUrlObject, tip, timeout = 3) {
 }
 
 
-
-
-
 /**
  * debug调试
  */
@@ -888,8 +882,6 @@ function debugLog(...args) {
 		console.log(...args);
 	}
 }
-
-
 
 
 
