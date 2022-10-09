@@ -15,13 +15,12 @@ tg频道: https://t.me/yml2213_tg
 
 */
 
-const utils = require("../../javascript/utils/utils");
+const utils = require("./utils");
 const $ = new Env("ds汽车");
 const alias_name = "dsqiche";
 // const request = require('request');
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; 			//0为关闭通知,1为打开通知,默认为1
-const debug = 0; 			//0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
 let ckStr = process.env[alias_name];
 let msg, ck;
@@ -35,11 +34,10 @@ let thank = `\n感谢 心雨大佬脚本\n`;
 async function tips(ckArr) {
 	// let Version_latest = await Version_Check(alias_name, '1');
 	let Version = `\n📌 本地脚本: V ${VersionCheck}`;
-	utils.DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
-	utils.DoubleLog(`${thank}`);
-	await utils.yiyan();
-	utils.DoubleLog(`\n========== 共找到 ${ckArr.length} 个账号 ==========`);
-	utils.debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
+	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
+	DoubleLog(`${thank}`);
+	await utils.yiyan()
+	DoubleLog(`\n========== 共找到 ${ckArr.length} 个账号 ==========`);
 }
 
 async function start() {
@@ -47,8 +45,8 @@ async function start() {
 	await login("登录");
 	if (ck_status) {
 		await user_info("用户信息");
-		// await signin("签到");
-		// await task_list("任务列表");
+		await signin("签到");
+		await task_list("任务列表");
 	}
 }
 
@@ -57,7 +55,7 @@ async function init(name) {
 	if (!name) {
 		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
 	}
-	utils.DoubleLog(`\n开始 ${name}`);
+	DoubleLog(`\n开始 ${name}`);
 	host = "act-client.o2o.mpsa.cn";
 	hostname = "https://" + host;
 	ds_hd = {
@@ -66,357 +64,303 @@ async function init(name) {
 	};
 }
 
+
 // 登录    post
 async function login(name) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	utils.DoubleLog(`\n开始 ${name}`);
-	try {
-		let options = {
-			method: "post",
-			url: `https://customer-passport-org.o2o.mpsa.cn/api/v1/uaa/mobile/token`,
-			headers: {
-				Host: "customer-passport-org.o2o.mpsa.cn",
-				"Content-Type": "application/json",
-				"User-Agent": "okhttp/3.14.0",
-			},
-			body: JSON.stringify({
-				password: `${ck[1]}`,
-				source: 2,
-				tenantId: "0",
-				username: `${ck[0]}`,
-			}),
-		};
-		let result = await utils.httpRequest(options, name, debug);
+	let options = {
+		method: "post",
+		url: `https://customer-passport-org.o2o.mpsa.cn/api/v1/uaa/mobile/token`,
+		headers: {
+			Host: "customer-passport-org.o2o.mpsa.cn",
+			"Content-Type": "application/json",
+			"User-Agent": "okhttp/3.14.0",
+		},
+		body: JSON.stringify({
+			password: `${ck[1]}`,
+			source: 2,
+			tenantId: "0",
+			username: `${ck[0]}`,
+		}),
+	};
+	let result = await network_request(name, options);
 
-		// console.log(result);
-		if (result.status == 200) {
-			utils.DoubleLog(`${name}:${result.message}`);
-			accessToken = result.data.accessToken;
-			accountId = result.data.openId;
-			await utils.wait(5);
-			return (ck_status = 1);
-		} else {
-			utils.DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-			return (ck_status = 0);
-		}
-	} catch (error) {
-		console.log(error);
+	// console.log(result);
+	if (result.status == 200) {
+		DoubleLog(`${name}:${result.message}`);
+		accessToken = result.data.accessToken;
+		accountId = result.data.openId;
+		await utils.wait(5);
+		return (ck_status = 1);
+	} else {
+		DoubleLog(`${name}: 失败❌了呢`);
+		console.log(result);
 		return (ck_status = 0);
 	}
 }
 
 // 签到    post
 async function signin(name) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	utils.DoubleLog(`\n开始 ${name}`);
-	try {
-		await get_actid("获取id");
-		let options = {
-			method: "post",
-			url: `${hostname}/api/v1/activity/sign-in/sign-in?activityId=${actid}&access_token=${accessToken}`,
-			headers: ds_hd,
-			body: JSON.stringify({
-				password: `${ck[1]}`,
-				source: 2,
-				tenantId: "0",
-				username: `${ck[0]}`,
-			}),
-		};
-		let result = await utils.httpRequest(options, name, debug);
 
-		if (result.status == 200) {
-			utils.DoubleLog(`${name}:${result.message}`);
-			await utils.wait(5);
-		} else if (result.status == 400) {
-			utils.DoubleLog(`${name}:${result.message}`);
-		} else {
-			utils.DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	} catch (error) {
-		console.log(error);
+	await get_actid("获取id");
+	let options = {
+		method: "post",
+		url: `${hostname}/api/v1/activity/sign-in/sign-in?activityId=${actid}&access_token=${accessToken}`,
+		headers: ds_hd,
+		body: JSON.stringify({
+			password: `${ck[1]}`,
+			source: 2,
+			tenantId: "0",
+			username: `${ck[0]}`,
+		}),
+	};
+	let result = await network_request(name, options);
+
+	if (result.status == 200) {
+		DoubleLog(`${name}:${result.message}`);
+		await utils.wait(5);
+	} else if (result.status == 400) {
+		DoubleLog(`${name}:${result.message}`);
+	} else {
+		DoubleLog(`${name}: 失败❌了呢`);
+		console.log(result);
 	}
 }
 
 // 获取签到活动 id    get
 async function get_actid(name) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	utils.DoubleLog(`\n开始 ${name}`);
-	try {
-		let options = {
-			method: "get",
-			url: ` https://act-client.o2o.mpsa.cn/api/v1/activity/sign-in/index?access_token=${accessToken}&tenantId=0&activityEntrance=1`,
-			headers: ds_hd,
-		};
-		let result = await utils.httpRequest(options, name, debug);
-
-		// console.log(result);
-		if (result.status == 200) {
-			// utils.DoubleLog(`${name}:${result.message}`);
-			actid = result.data.activityInfo.id;
-			return actid;
-		} else {
-			utils.DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	} catch (error) {
-		console.log(error);
+	let options = {
+		method: "get",
+		url: ` https://act-client.o2o.mpsa.cn/api/v1/activity/sign-in/index?access_token=${accessToken}&tenantId=0&activityEntrance=1`,
+		headers: ds_hd,
+	};
+	let result = await network_request(name, options);
+	// console.log(result);
+	if (result.status == 200) {
+		// DoubleLog(`${name}:${result.message}`);
+		actid = result.data.activityInfo.id;
+		return actid;
+	} else {
+		DoubleLog(`${name}: 失败❌了呢`);
+		console.log(result);
 	}
 }
 
 // 任务列表    get
 async function task_list(name) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	utils.DoubleLog(`\n开始 ${name}`);
-	try {
-		let options = {
-			method: "get",
-			url: `${hostname}/api/v1/activity/sign-in/assignments?activityId=${actid}&access_token=${accessToken}`,
-			headers: {
-				Host: "act-client.o2o.mpsa.cn",
-				"accept-language": "zh-cn",
-			},
-		};
-		let result = await utils.httpRequest(options, name, debug);
 
-		if (result.status == 200) {
-			let tasks = result.data;
-			for (let index = 0; index < tasks.length; index++) {
-				let bizName = tasks[index].bizName;
-				let task_id = tasks[index].id;
-				let task_status = tasks[index].status;
-				if (task_id == 244 && task_status == 1) {
-					await browse(bizName); //浏览文章
-				} else if (task_id == 244 && task_status == 2) {
-					utils.DoubleLog(`${bizName}:已完成`);
-				}
-				if (task_id == 242 && task_status == 1) {
-					await comment(bizName); //发布资讯评论
-				} else if (task_id == 242 && task_status == 2) {
-					utils.DoubleLog(`${bizName}:已完成`);
-				}
+	let options = {
+		method: "get",
+		url: `${hostname}/api/v1/activity/sign-in/assignments?activityId=${actid}&access_token=${accessToken}`,
+		headers: {
+			Host: "act-client.o2o.mpsa.cn",
+			"accept-language": "zh-cn",
+		},
+	};
+	let result = await network_request(name, options);
+
+	if (result.status == 200) {
+		let tasks = result.data;
+		for (let index = 0; index < tasks.length; index++) {
+			let bizName = tasks[index].bizName;
+			let task_id = tasks[index].id;
+			let task_status = tasks[index].status;
+			if (task_id == 244 && task_status == 1) {
+				await browse(bizName); //浏览文章
+			} else if (task_id == 244 && task_status == 2) {
+				DoubleLog(`${bizName}:已完成`);
 			}
-		} else {
-			utils.DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-			return (ck_status = 0);
+			if (task_id == 242 && task_status == 1) {
+				await comment(bizName); //发布资讯评论
+			} else if (task_id == 242 && task_status == 2) {
+				DoubleLog(`${bizName}:已完成`);
+			}
 		}
-	} catch (error) {
-		console.log(error);
+	} else {
+		DoubleLog(`${name}: 失败❌了呢`);
+		console.log(result);
+		return (ck_status = 0);
 	}
 }
 
 // 浏览文章
 async function browse(name) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	utils.DoubleLog(`\n开始 ${name}`);
-	try {
-		await article_list("文章列表");
-		let options = {
-			method: "get",
-			url: `https://ucontent-business.o2o.mpsa.cn/api/v1/ucontent/comment/business/comments/cnt?relaCodes=${art_id}&typeCode=article-comment&tenant=0&access_token=${accessToken}`,
-			headers: {
-				Host: "ucontent-business.o2o.mpsa.cn",
-				"Accept-Language": "zh-cn",
-			},
-		};
-		let result = await utils.httpRequest(options, name, debug);
 
-		// console.log(result);
-		if (result.status == 200) {
-			utils.DoubleLog(`${name}:${result.message}`);
-			await utils.wait(10);
-			await browse_award("浏览文章奖励");
-		} else {
-			utils.DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	} catch (error) {
-		console.log(error);
+	await article_list("文章列表");
+	let options = {
+		method: "get",
+		url: `https://ucontent-business.o2o.mpsa.cn/api/v1/ucontent/comment/business/comments/cnt?relaCodes=${art_id}&typeCode=article-comment&tenant=0&access_token=${accessToken}`,
+		headers: {
+			Host: "ucontent-business.o2o.mpsa.cn",
+			"Accept-Language": "zh-cn",
+		},
+	};
+	let result = await network_request(name, options);
+
+	// console.log(result);
+	if (result.status == 200) {
+		DoubleLog(`${name}:${result.message}`);
+		await utils.wait(10);
+		await browse_award("浏览文章奖励");
+	} else {
+		DoubleLog(`${name}: 失败❌了呢`);
+		console.log(result);
 	}
 }
 
 // 文章列表
 async function article_list(name) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	utils.DoubleLog(`\n开始 ${name}`);
-	try {
-		let pageNo = utils.randomInt(1, 10);
-		let options = {
-			method: "get",
-			url: `https://mini-app.o2o.mpsa.cn/api/v1/pgc/information?pageNo=${pageNo}&pageSize=10&classifyIds=1447941448073740290&tenantId=0`,
-			headers: {
-				Host: "mini-app.o2o.mpsa.cn",
-				"Accept-Language": "zh-cn",
-			},
-		};
-		let result = await utils.httpRequest(options, name, debug);
 
-		// console.log(result);
-		if (result.status == 200) {
-			utils.DoubleLog(`${name}:${result.message}`);
-			let unm = utils.randomInt(0, 9);
-			art_id = result.data.data[unm].id;
-			return art_id;
-		} else {
-			utils.DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	} catch (error) {
-		console.log(error);
+	let pageNo = utils.randomInt(1, 10);
+	let options = {
+		method: "get",
+		url: `https://mini-app.o2o.mpsa.cn/api/v1/pgc/information?pageNo=${pageNo}&pageSize=10&classifyIds=1447941448073740290&tenantId=0`,
+		headers: {
+			Host: "mini-app.o2o.mpsa.cn",
+			"Accept-Language": "zh-cn",
+		},
+	};
+	let result = await network_request(name, options);
+
+	// console.log(result);
+	if (result.status == 200) {
+		DoubleLog(`${name}:${result.message}`);
+		let unm = utils.randomInt(0, 9);
+		art_id = result.data.data[unm].id;
+		return art_id;
+	} else {
+		DoubleLog(`${name}: 失败❌了呢`);
+		console.log(result);
 	}
 }
 
 // 浏览文章奖励
 async function browse_award(name) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	utils.DoubleLog(`\n开始 ${name}`);
-	try {
-		let options = {
-			method: "post",
-			url: `https://mini-app.o2o.mpsa.cn/api/v1/activity/sign-in/read-content?access_token=${accessToken}`,
-			headers: {
-				Host: "mini-app.o2o.mpsa.cn",
-				"Content-Length": "16",
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ tenantId: "0" }),
-		};
-		let result = await utils.httpRequest(options, name, debug);
 
-		// console.log(result);
-		if (result.status == 200) {
-			utils.DoubleLog(`${name}:${result.message}`);
-		} else {
-			utils.DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	} catch (error) {
-		console.log(error);
+	let options = {
+		method: "post",
+		url: `https://mini-app.o2o.mpsa.cn/api/v1/activity/sign-in/read-content?access_token=${accessToken}`,
+		headers: {
+			Host: "mini-app.o2o.mpsa.cn",
+			"Content-Length": "16",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ tenantId: "0" }),
+	};
+	let result = await network_request(name, options);
+
+	// console.log(result);
+	if (result.status == 200) {
+		DoubleLog(`${name}:${result.message}`);
+	} else {
+		DoubleLog(`${name}: 失败❌了呢`);
+		console.log(result);
 	}
 }
 
 // 发布资讯评论		post
 async function comment(name) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	utils.DoubleLog(`\n开始 ${name}`);
-	try {
-		await article_list("文章列表");
-		await daily_one_word("获取评论内容");
-		let options = {
-			method: "post",
-			url: `https://ucontent-business.o2o.mpsa.cn/api/v1/ucontent/comment/business/comment?access_token=${accessToken}`,
-			headers: {
-				Host: "ucontent-business.o2o.mpsa.cn",
-				"Content-Length": "350",
-				"Content-Type": "application/json",
-				"Accept-Language": "zh-cn",
-			},
-			body: JSON.stringify({
-				relaTypeCode: "article-comment",
-				tenant: "0",
-				operationCode: "create",
-				moduleTypeCode: "comment",
-				channel: "h5",
-				accountType: "10",
-				level: 1,
-				relaCode: `${art_id}`,
-				content: `${one_word}`,
-				accountId: `${accountId}`,
-				logicalParentId: 0,
-				displayParentId: 0,
-			}),
-		};
-		let result = await utils.httpRequest(options, name, debug);
 
-		// console.log(result);
-		if (result.status == 200) {
-			utils.DoubleLog(`${name}:${result.message}`);
-			await utils.wait(5);
-		} else {
-			utils.DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	} catch (error) {
-		console.log(error);
+	await article_list("文章列表");
+	await daily_one_word("获取评论内容");
+	let options = {
+		method: "post",
+		url: `https://ucontent-business.o2o.mpsa.cn/api/v1/ucontent/comment/business/comment?access_token=${accessToken}`,
+		headers: {
+			Host: "ucontent-business.o2o.mpsa.cn",
+			"Content-Length": "350",
+			"Content-Type": "application/json",
+			"Accept-Language": "zh-cn",
+		},
+		body: JSON.stringify({
+			relaTypeCode: "article-comment",
+			tenant: "0",
+			operationCode: "create",
+			moduleTypeCode: "comment",
+			channel: "h5",
+			accountType: "10",
+			level: 1,
+			relaCode: `${art_id}`,
+			content: `${one_word}`,
+			accountId: `${accountId}`,
+			logicalParentId: 0,
+			displayParentId: 0,
+		}),
+	};
+	let result = await network_request(name, options);
+
+	// console.log(result);
+	if (result.status == 200) {
+		DoubleLog(`${name}:${result.message}`);
+		await utils.wait(5);
+	} else {
+		DoubleLog(`${name}: 失败❌了呢`);
+		console.log(result);
 	}
 }
 
 // 获取评论内容
 async function daily_one_word(name) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	utils.DoubleLog(`\n开始 ${name}`);
-	try {
-		let options = {
-			method: "get",
-			url: `https://v1.jinrishici.com/all.json`,
-			headers: {},
-		};
-		let result = await utils.httpRequest(options, name, debug);
 
-		// console.log(result);
-		if (result) {
-			one_word = `${result.content} ---来自${result.author}`;
-			console.log(one_word);
-			return one_word;
-		} else {
-			utils.DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	} catch (error) {
-		console.log(error);
+	let options = {
+		method: "get",
+		url: `https://v1.jinrishici.com/all.json`,
+		headers: {},
+	};
+	let result = await network_request(name, options);
+
+	// console.log(result);
+	if (result) {
+		one_word = `${result.content} ---来自${result.author}`;
+		console.log(one_word);
+		return one_word;
+	} else {
+		DoubleLog(`${name}: 失败❌了呢`);
+		console.log(result);
 	}
 }
 
 // 用户信息   httpGet
 async function user_info(name) {
+
+	let options = {
+		method: "get",
+		url: `https://mini-app.o2o.mpsa.cn/api/v1/user/user-detail?access_token=${accessToken}`,
+		headers: {
+			Host: "mini-app.o2o.mpsa.cn",
+			"Accept-Language": "zh-cn",
+		},
+	};
+	let result = await network_request(name, options);
+
+	if (result.status == 200) {
+		DoubleLog(
+			`用户信息:${result.message},手机号${utils.phone_num(
+				result.data.mobile
+			)}`
+		);
+		await utils.wait(2);
+	} else {
+		DoubleLog(`用户信息: 失败 ❌ 了呢,原因未知!`);
+		console.log(result);
+	}
+}
+
+
+
+// 网络请求   network_request
+async function network_request(name, options) {
 	if (!name) {
 		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
 	}
-	utils.DoubleLog(`\n开始 ${name}`);
+	DoubleLog(`\n开始 ${name}`);
 	try {
-		let options = {
-			method: "get",
-			url: `https://mini-app.o2o.mpsa.cn/api/v1/user/user-detail?access_token=${accessToken}`,
-			headers: {
-				Host: "mini-app.o2o.mpsa.cn",
-				"Accept-Language": "zh-cn",
-			},
-		};
-		let result = await utils.httpRequest(options, name, debug);
-
-		if (result.status == 200) {
-			utils.DoubleLog(
-				`用户信息:${result.message},手机号${utils.phone_num(
-					result.data.mobile
-				)}`
-			);
-			await utils.wait(2);
-		} else {
-			utils.DoubleLog(`用户信息: 失败 ❌ 了呢,原因未知!`);
-			console.log(result);
+		let result = await utils.httpRequest(name, options);
+		if (result) {
+			return result
+		} {
+			DoubleLog(`未知错误(1`)
 		}
 	} catch (error) {
-		console.log(`=================`);
 		console.log(error);
 	}
 }
@@ -433,14 +377,13 @@ async function user_info(name) {
 	await tips(ckArr);
 	for (let index = 0; index < ckArr.length; index++) {
 		let num = index + 1;
-		utils.DoubleLog(`\n-------- 开始【第 ${num} 个账号】--------`);
+		DoubleLog(`\n-------- 开始【第 ${num} 个账号】--------`);
 		ck = ckArr[index].split("&");
-		utils.debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
 		await start();
 	}
 	await SendMsg(msg);
 })()
-	.catch((e) => $.logErr(e))
+	.catch((e) => console.log(e))
 	.finally(() => $.done());
 
 /**
@@ -453,15 +396,20 @@ async function SendMsg(message) {
 			var notify = require("./sendNotify");
 			await notify.sendNotify($.name, message);
 		} else {
-			// $.msg(message);
-			$.msg($.name, "", message);
+			console.log($.name, "", message);
 		}
 	} else {
 		console.log(message);
 	}
 }
 
-
+/**
+ * 双平台log输出
+ */
+function DoubleLog(data) {
+	console.log(`    ${data}`);
+	msg += `\n    ${data}`;
+}
 
 // 精简 Env
 function Env(name, e) {
