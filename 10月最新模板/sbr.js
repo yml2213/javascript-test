@@ -58,7 +58,7 @@ async function start() {
 	}
 }
 
-let host, hostname, apiname, sbr_hd;
+let host, hostname, apiname, sbr_hd, _id;
 class Sbr {
 	constructor(token, cookie) {
 		this.token = token;
@@ -513,4 +513,3 @@ function Env(name, e) {
 }
 
 //#endregion
-

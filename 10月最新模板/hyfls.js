@@ -2,18 +2,15 @@
 汇源福利社  小程序 
 cron 10 7 * * *  hyfls.js
 
-7.13   		完成 签到, 偷大米, 浏览菜谱 任务
-10.11		更新抽奖
+10.11		完成签到,抽奖,抢购(自己添加自己的地址)
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
 # 汇源福利社
-export hyfls=" token & cookie @ token & cookie "
+export hyfls=" token  @ token  "
 
-抓  api/login/auto-login  中的参数   token   跟cookie
+抓  https://huiyuan.timingmar.com  中的参数   token 
 多账号用 换行 或 @ 分割
 
-报错的自己下载 utils.js  放在脚本同级目录下
-报错的自己下载 utils.js  放在脚本同级目录下
 报错的自己下载 utils.js  放在脚本同级目录下
 
 tg频道: https://t.me/yml2213_tg  
@@ -30,8 +27,8 @@ let ckStr = process.env[alias_name];
 let msg, ck;
 let ck_status = 1;
 //---------------------------------------------------------------------------------------------------------
-let VersionCheck = "0.3";
-let Change = "\n报错的自己下载 utils.js  放在脚本同级目录下\n报错的自己下载 utils.js  放在脚本同级目录下\n报错的自己下载 utils.js  放在脚本同级目录下";
+let VersionCheck = "0.1";
+let Change = "\n报错的自己下载 utils.js  放在脚本同级目录下\n完成签到,抽奖";
 let thank = `\n感谢 心雨大佬脚本\n`;
 //---------------------------------------------------------------------------------------------------------
 
@@ -45,24 +42,22 @@ async function tips(ckArr) {
 }
 
 async function start() {
-	const hyfls = new Sbr(ck[0], ck[1]);
+	const hyfls = new Hyfls(ck[0]);
 	await hyfls.init("初始化");
-	await hyfls.login("登录刷新");
-	await hyfls.user_info("用户信息");
+	// await hyfls.user_info("用户信息");
 	if (ck_status) {
+		await hyfls.rush_lucky("抢购幸运产品");
 		await hyfls.sign_info("签到查询");
-		await hyfls.task_list("任务列表");
-		await hyfls.prize_Info("抽奖信息");
-		await hyfls.get_index_info("获取可收取大米信息");
-		await hyfls.rice_num("查询大米数量");
+		await hyfls.prize_Info("盲盒抽奖", 6);
+		await hyfls.prize_Info("碎片抽奖", 8);
+		await hyfls.coin_num("查询汇源币");
 	}
 }
 
-let host, hostname, apiname, hyfls_hd;
-class Sbr {
-	constructor(token, cookie) {
+let host, hostname, apiname, hyfls_hd, lucky_id, lucky_price, add_id;
+class Hyfls {
+	constructor(token) {
 		this.token = token;
-		this.cookie = cookie;
 	}
 	// 初始化
 	async init(name) {
@@ -70,25 +65,16 @@ class Sbr {
 			name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
 		}
 		DoubleLog(`\n开始 ${name}`);
-		host = "growrice.supor.com";
+		host = "huiyuan.timingmar.com";
 		hostname = "https://" + host;
-		apiname = `${hostname}/rice/backend/public/index.php/api`
+		apiname = `${hostname}/hy-api`
 		hyfls_hd = {
-			"Content-Type": "application/x-www-form-urlencoded",
+			"Content-Type": "application/json",
 			'Host': this.host,
-			'Cookie': this.cookie,
+			'access_token': this.token,
 		}
 	}
 
-	// 登录    post
-	async login(name) {
-		let options = {
-			method: "get",
-			url: `${apiname}/login/auto-login?token=${this.token}`,
-			headers: hyfls_hd,
-		};
-		let result = await network_request(name, options);
-	}
 
 	// 用户信息   httpGet
 	async user_info(name) {
@@ -117,15 +103,15 @@ class Sbr {
 	async sign_info(name) {
 		let options = {
 			method: "get",
-			url: `${apiname}/signIn/sign-list`,
+			url: `${apiname}/mc/eu/getSignInDays`,
 			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
-		if (result.data.is_sign == false) {
+		if (result.data.isSingIn == 0) {
 			DoubleLog(`${name}: 未签到 ,去签到喽!`);
 			await this.do_sign("签到")
-		} else if (result.data.is_sign == true) {
+		} else if (result.data.isSingIn == 1) {
 			DoubleLog(`${name}: 已签到, 明天再来吧!`);
 		} else {
 			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
@@ -133,24 +119,21 @@ class Sbr {
 		}
 	}
 
-
-
-	// 签到    post
+	// 签到    get  https://huiyuan.timingmar.com/hy-api/mc/eu/signIn
 	async do_sign(name) {
 		let options = {
-			method: "post",
-			url: `${apiname}/signIn/sign`,
+			method: "get",
+			url: `${apiname}/mc/eu/signIn`,
 			headers: hyfls_hd,
-			body: `https://growrice.supor.com/rice/backend/public/index.php/api/signIn/sign`,
 		};
 		let result = await network_request(name, options);
 
-		if (result.code == 1) {
-			DoubleLog(`${name}:${result.msg} ,获得 ${result.data.get_rice_num} 大米`);
+		if (result.code == 200) {
+			DoubleLog(`${name}:${result.message}, 签到时间:${utils.tmtoDate(result.data.lastSignInTime)}, 累计签到天数:${result.data.signDays} 天`);
+			utils.tmtoDate
 			await utils.wait(3);
-
-		} else if (result.code == 0) {
-			DoubleLog(`${name}:${result.msg}`);
+		} else if (result.code == 400) {
+			DoubleLog(`${name}:${result.message}`);
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
@@ -158,250 +141,162 @@ class Sbr {
 	}
 
 
-	// 任务列表    get   
-	async task_list(name) {
+	// 幸运产品列表    get 开启时间:2022-10-11 23:00:00
+	async lucky_list(name) {
 		let options = {
 			method: "get",
-			url: `${apiname}/task/index`,
+			url: `${apiname}/mc/lucky/goods/user/getTodayLuckyGoods`,
 			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
-
-		// console.log(result);
-		if (result.code == 1) {
-			DoubleLog(`${name}:${result.msg}`);
-			let tasks = result.data
-			for (let index = 0; index < tasks.length; index++) {
-				let _id, name, is_finish
-				[_id, name, is_finish] = [tasks[index].id, tasks[index].name, tasks[index].is_finish]
-
-				if (_id == 6 && is_finish == false) {
-					await this.get_rice("偷大米")
-				} else if (_id == 6 && is_finish == true) {
-					DoubleLog(`今天无法偷大米了, 明天再来吧!`)
-				}
-				if (_id == 8 && tasks[index].list[0].is_finish == false) {
-					await this.browse_recipes("浏览菜谱")
-				} else if (_id == 8 && tasks[index].list[0].is_finish == true) {
-					DoubleLog(`今天完成 浏览菜谱 了, 明天再来吧!`)
-				}
-
-
-			}
-		} else if (result.code == 0) {
-			DoubleLog(`${name}:${result.msg}`);
+		if (result.code == 200) {
+			DoubleLog(`${name}:${result.message}, 产品id:${result.data.id}, ${result.data.contentDescribe}\n    ${result.data.remark}--价格:${result.data.price}\n    开启时间:${utils.tmtoDate(result.data.openTime)}`);
+			lucky_id = result.data.id
+			lucky_price = result.data.price
+			return lucky_id
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
 		}
 	}
 
-	// 偷好友大米
-	async get_rice(name) {
-		await this.get_id("获取好友大米id")
-		for (let index = 0; index < _id_list.length; index++) {
-			let _id = _id_list[index]
+	// 获取地址id    get https://huiyuan.timingmar.com/hy-api/mc/eu/address/list
+	async get_add_id(name) {
+		let options = {
+			method: "get",
+			url: `${apiname}/mc/eu/address/list`,
+			headers: hyfls_hd,
+		};
+		let result = await network_request(name, options);
+
+		if (result.code == 200 && result.data.list.length > 0) {
+			DoubleLog(`${name}: ${result.message}, 将使用该地址:${JSON.stringify(result.data.list[0])}`);
+			add_id = result.data.list[0].id
+			return add_id
+		} else if (result.code == 200 && result.data.list.length == 0) {
+			DoubleLog(`${name}: 请自行增加收货地址!`)
+			return add_id = false
+		} else {
+			DoubleLog(`${name}: 失败❌了呢`);
+			console.log(result);
+		}
+	}
+
+	// 抢购幸运产品    post  https://huiyuan.timingmar.com/hy-api/mc/lucky/goods/user/submit/order
+	async rush_lucky(name) {
+		await this.lucky_list('幸运产品列表')
+		await this.get_add_id('获取地址id')
+		if (add_id) {
 			let options = {
 				method: "post",
-				url: `${apiname}/users/get-rice`,
+				url: `${apiname}/mc/lucky/goods/user/submit/order`,
 				headers: hyfls_hd,
-				body: `&friend_id=${_id}`,
+				body: JSON.stringify({
+					"luckyGoodsId": lucky_id,
+					"quantity": "1",
+					"euCouponId": null,
+					"totalPayFee": lucky_price,
+					"loader": true,
+					"remarks": "",
+					"addressId": add_id,
+					"statusNow": 2
+				})
 			};
 			let result = await network_request(name, options);
 
-			if (result.code == 1) {
-				DoubleLog(`${name}:${result.msg} , 当前已有 ${result.data.sign_rice_num} 大米`);
-				await utils.wait(5);
-			} else if (result.code == 0) {
-				DoubleLog(`${name}:${result.msg}`);
+			if (result.code == 200) {
+				DoubleLog(`${name}:可能成功了, 自己去列表看看吧!`);
+				DoubleLog(`${name}:${result}`);
+			} else if (result.code == 400) {
+				DoubleLog(`${name}:${result.message}`);
 			} else {
 				DoubleLog(`${name}: 失败❌了呢`);
 				console.log(result);
 			}
-
+		} else {
+			DoubleLog(`${name}: 请自行增加收货地址!`)
 		}
 
 	}
 
 
-	// 获取好友大米id
-	async get_id(name) {
+	// 抽奖信息		get  https://huiyuan.timingmar.com/hy-api/lottery/activity/time?id=6&noLoad=true
+	// https://huiyuan.timingmar.com/hy-api/lottery/activity/time?id=6&noLoad=true
+	async prize_Info(name, type) {
 		let options = {
 			method: "get",
-			url: `${apiname}/users/same-city-list`,
+			url: `${apiname}/lottery/activity/time?id=${type}&noLoad=true`,
 			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
 		// console.log(result);
-		if (result.code == 1) {
-			_list = result.data
-			// console.log(_list);
-
-			let arr1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-			let out = [];
-			for (let i = 0; i < 3; i++) {
-				var index = parseInt(Math.random() * arr1.length);
-				out = out.concat(arr1.splice(index, 1));
-			}
-			// console.log(out);
-			_id_list = []
-			for (let index = 0; index < out.length; index++) {
-				let _id = _list[out[index]].id
-				_id_list.push(_id)
-			}
-			// console.log(_id_list);
-
-			return _id_list;
+		if (result.code == 201 && result.data.num > 0) {
+			DoubleLog(`${name}, 抽奖次数 ${result.data.num} 次`)
+			await this.do_prize(`开始 ${name}`, type)
+		} else if (result.code == 201 && result.data.num == 0) {
+			DoubleLog(`${name}：暂时无 ${name} 次数！`)
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
 		}
 	}
 
-	// 浏览菜谱  https://growrice.supor.com/rice/backend/public/index.php/api/task/link-task
-	async browse_recipes(name) {
-		let options = {
-			method: "post",
-			url: `${apiname}/task/link-task`,
-			headers: hyfls_hd,
-			body: `&id=8&other_id=3`,
-		};
-		let result = await network_request(name, options);
-
-		// console.log(result);
-		if (result.code == 1) {
-			DoubleLog(`${name}:${result.msg}`);
-			await utils.wait(3)
-		} else {
-			DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	}
-
-	// 获取可收取大米信息		get
-	async get_index_info(name) {
+	// 抽奖  https://huiyuan.timingmar.com/hy-api/lottery/activity/get-prize?id=8&noLoad=true&prizeChannel=1  碎片
+	// https://huiyuan.timingmar.com/hy-api/lottery/activity/get-prize?id=6&noLoad=true&prizeChannel=1   盲盒
+	async do_prize(name, type) {
 		let options = {
 			method: "get",
-			url: `${apiname}/index/index`,
+			url: `${apiname}/lottery/activity/get-prize?id=${type}&noLoad=true&prizeChannel=1`,
 			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
-		// console.log(result);
-		let rice_list = result.data.rice_list
-		if (result.code == 1 && rice_list.length > 0) {
-			for (let index = 0; index < rice_list.length; index++) {
-				[_id, num, collect_name] = [rice_list[index].id, rice_list[index].num, rice_list[index].name]
-				await this.collect_rice("收大米", _id, num, collect_name)
+		console.log(result);
+		if (type == 6) {
+			if (result.code == 201) {
+				let gitBoxVO = result.data.gitBoxVO
+				DoubleLog(`${name}: 获得爆爆珠: ${result.data.bullCoin} 个\n    获得 ${gitBoxVO.name} , 奖品别名: ${gitBoxVO.remark}, 奖品描述: ${gitBoxVO.priceDesc}`);
+				await utils.wait(3)
+			} else if (result.code == 400) {
+				DoubleLog(`${name}: ${result.message}`);
+			} else {
+				DoubleLog(`${name}: 失败❌了呢`);
+				console.log(result);
 			}
-		} else if (result.code == 1 && rice_list.length == 0) {
-			DoubleLog(`${name}, 没有可以收获的大米`)
-
-		} else if (result.code == 2) {
-			DoubleLog(`${result['msg']}, 请自己先打开一次小程序,种大米后在执行脚本!`)
-		} else {
-			DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
+		} else if (type == 8) {
+			if (result.code == 201) {
+				let fragmentsDrawVo = result.data.fragmentsDrawVo
+				DoubleLog(`${name}:  获得爆爆珠: ${result.data.bullCoin} 个\n    获得 ${fragmentsDrawVo.fragmentsName} , 奖品id: ${fragmentsDrawVo.packageId}, 奖品名字: ${fragmentsDrawVo.prizeName}`);
+				await utils.wait(3)
+			} else if (result.code == 400) {
+				DoubleLog(`${name}: ${result.message}`);
+			} else {
+				DoubleLog(`${name}: 失败❌了呢`);
+				console.log(result);
+			}
 		}
 	}
 
-	// 收大米
-	async collect_rice(name, _id, num, collect_name) {
-		let options = {
-			method: "post",
-			url: `${apiname}/index/collect-rice`,
-			headers: hyfls_hd,
-			body: `&id=${_id}`,
-		};
-		let result = await network_request(name, options);
 
-		// console.log(result);
-		if (result.code == 1) {
-			DoubleLog(`${name}: 收取 ${collect_name} ${num} 大米, ${result.msg}`);
-			await utils.wait(5)
-		} else if (result.code == 0) {
-			DoubleLog(`${name}: ${result.msg}`);
-		} else {
-			DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	}
-
-	// 抽奖信息		get
-	async prize_Info(name) {
+	// 查询汇源币		get   https://huiyuan.timingmar.com/hy-api/mc/eu/login/user/integral
+	async coin_num(name) {
 		let options = {
 			method: "get",
-			url: `${apiname}/prize/index`,
+			url: `${apiname}/mc/eu/login/user/integral`,
 			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
 		// console.log(result);
-		if (result.code == 1) {
-			DoubleLog(`${name}, 抽奖券${result.data.draw_num_1}张, 高级抽奖券${result.data.draw_num_2}张`)
-			if (result.data.draw_num_1 > 0) {
-				await this.prize('普通抽奖', '1')
-			}
-			if (result.data.draw_num_2 > 0) {
-				await this.prize('高级抽奖', '2')
-			}
-			if (result.data.draw_num_1 == 0 && result.data.draw_num_2 == 0) {
-				DoubleLog(`${name}：暂时无抽奖次数！`)
-			}
-
+		if (result.code == 200) {
+			DoubleLog(`${name}, 现在有 ${result.data.integral} 汇源币`)
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
 		}
 	}
-
-	// 抽奖  https://growrice.supor.com/rice/backend/public/index.php/api/prize/draw
-	async prize(name, type) {
-		let options = {
-			method: "post",
-			url: `${apiname}/prize/draw`,
-			headers: hyfls_hd,
-			body: `cate=${type}`,
-		};
-		let result = await network_request(name, options);
-
-		// console.log(result);
-		if (result.code == 1) {
-			let prize_info = result.data.prize_info
-			DoubleLog(`${name}: 获得 ${prize_info.prize_name} , 奖品id: ${prize_info.prize_id}, 奖品类型: ${prize_info.prize_type}, 奖品数量: ${prize_info.prize_value}`);
-			await utils.wait(5)
-			await this.prize_Info('抽奖信息')
-		} else if (result.code == 0) {
-			DoubleLog(`${name}: ${result.msg}`);
-			await this.prize_Info('抽奖信息')
-		} else {
-			DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	}
-
-
-	// 查询大米数量		get   https://growrice.supor.com/rice/backend/public/index.php/api/index/granary?&page=1&pagesize=10
-	async rice_num(name) {
-		let options = {
-			method: "get",
-			url: `${apiname}/index/granary?&page=1&pagesize=10`,
-			headers: hyfls_hd,
-		};
-		let result = await network_request(name, options);
-
-		// console.log(result);
-		if (result.code == 1) {
-			DoubleLog(`${name}, 现在有${result.data.rice_num} 大米 , 累计获取 ${result.data.total_num} 大米`)
-		} else {
-			DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	}
-
-
 }
 
 
