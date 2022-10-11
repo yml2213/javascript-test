@@ -1,13 +1,13 @@
 /*
-苏泊尔会员中心  小程序 
-cron 10 7 * * *  sbr.js
+汇源福利社  小程序 
+cron 10 7 * * *  hyfls.js
 
 7.13   		完成 签到, 偷大米, 浏览菜谱 任务
 10.11		更新抽奖
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 苏泊尔
-export sbr=" token & cookie @ token & cookie "
+# 汇源福利社
+export hyfls=" token & cookie @ token & cookie "
 
 抓  api/login/auto-login  中的参数   token   跟cookie
 多账号用 换行 或 @ 分割
@@ -20,8 +20,8 @@ tg频道: https://t.me/yml2213_tg
 
 */
 const utils = require("./utils");
-const $ = new Env("苏泊尔");
-const alias_name = "sbr";
+const $ = new Env("汇源福利社");
+const alias_name = "hyfls";
 // const request = require('request');
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; 			//0为关闭通知,1为打开通知,默认为1
@@ -45,20 +45,20 @@ async function tips(ckArr) {
 }
 
 async function start() {
-	const sbr = new Sbr(ck[0], ck[1]);
-	await sbr.init("初始化");
-	await sbr.login("登录刷新");
-	await sbr.user_info("用户信息");
+	const hyfls = new Sbr(ck[0], ck[1]);
+	await hyfls.init("初始化");
+	await hyfls.login("登录刷新");
+	await hyfls.user_info("用户信息");
 	if (ck_status) {
-		await sbr.sign_info("签到查询");
-		await sbr.task_list("任务列表");
-		await sbr.prize_Info("抽奖信息");
-		await sbr.get_index_info("获取可收取大米信息");
-		await sbr.rice_num("查询大米数量");
+		await hyfls.sign_info("签到查询");
+		await hyfls.task_list("任务列表");
+		await hyfls.prize_Info("抽奖信息");
+		await hyfls.get_index_info("获取可收取大米信息");
+		await hyfls.rice_num("查询大米数量");
 	}
 }
 
-let host, hostname, apiname, sbr_hd;
+let host, hostname, apiname, hyfls_hd;
 class Sbr {
 	constructor(token, cookie) {
 		this.token = token;
@@ -73,7 +73,7 @@ class Sbr {
 		host = "growrice.supor.com";
 		hostname = "https://" + host;
 		apiname = `${hostname}/rice/backend/public/index.php/api`
-		sbr_hd = {
+		hyfls_hd = {
 			"Content-Type": "application/x-www-form-urlencoded",
 			'Host': this.host,
 			'Cookie': this.cookie,
@@ -85,7 +85,7 @@ class Sbr {
 		let options = {
 			method: "get",
 			url: `${apiname}/login/auto-login?token=${this.token}`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 	}
@@ -96,7 +96,7 @@ class Sbr {
 		let options = {
 			method: "get",
 			url: `${apiname}/users/get-user-info`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
@@ -118,7 +118,7 @@ class Sbr {
 		let options = {
 			method: "get",
 			url: `${apiname}/signIn/sign-list`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
@@ -140,7 +140,7 @@ class Sbr {
 		let options = {
 			method: "post",
 			url: `${apiname}/signIn/sign`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 			body: `https://growrice.supor.com/rice/backend/public/index.php/api/signIn/sign`,
 		};
 		let result = await network_request(name, options);
@@ -163,7 +163,7 @@ class Sbr {
 		let options = {
 			method: "get",
 			url: `${apiname}/task/index`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
@@ -205,7 +205,7 @@ class Sbr {
 			let options = {
 				method: "post",
 				url: `${apiname}/users/get-rice`,
-				headers: sbr_hd,
+				headers: hyfls_hd,
 				body: `&friend_id=${_id}`,
 			};
 			let result = await network_request(name, options);
@@ -230,7 +230,7 @@ class Sbr {
 		let options = {
 			method: "get",
 			url: `${apiname}/users/same-city-list`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
@@ -265,7 +265,7 @@ class Sbr {
 		let options = {
 			method: "post",
 			url: `${apiname}/task/link-task`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 			body: `&id=8&other_id=3`,
 		};
 		let result = await network_request(name, options);
@@ -285,7 +285,7 @@ class Sbr {
 		let options = {
 			method: "get",
 			url: `${apiname}/index/index`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
@@ -312,7 +312,7 @@ class Sbr {
 		let options = {
 			method: "post",
 			url: `${apiname}/index/collect-rice`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 			body: `&id=${_id}`,
 		};
 		let result = await network_request(name, options);
@@ -334,7 +334,7 @@ class Sbr {
 		let options = {
 			method: "get",
 			url: `${apiname}/prize/index`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
@@ -362,7 +362,7 @@ class Sbr {
 		let options = {
 			method: "post",
 			url: `${apiname}/prize/draw`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 			body: `cate=${type}`,
 		};
 		let result = await network_request(name, options);
@@ -388,7 +388,7 @@ class Sbr {
 		let options = {
 			method: "get",
 			url: `${apiname}/index/granary?&page=1&pagesize=10`,
-			headers: sbr_hd,
+			headers: hyfls_hd,
 		};
 		let result = await network_request(name, options);
 
