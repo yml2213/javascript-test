@@ -6,9 +6,9 @@ cron 10 7 * * *  hyfls.js
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
 # 汇源福利社
-export hyfls=" token  @ token  "
+export hyfls=" access_token  @ access_token  "
 
-抓  https://huiyuan.timingmar.com  中的参数   token 
+抓  https://huiyuan.timingmar.com  中的参数   access_token 
 多账号用 换行 或 @ 分割
 
 报错的自己下载 utils.js  放在脚本同级目录下
