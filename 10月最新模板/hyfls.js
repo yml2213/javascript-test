@@ -43,8 +43,8 @@ async function tips(ckArr) {
 
 async function start() {
 	const hyfls = new Hyfls(ck[0]);
+	await hyfls.login("登录—刷新token");
 	await hyfls.init("初始化");
-	// await hyfls.user_info("用户信息");
 	if (ck_status) {
 		await hyfls.rush_lucky("抢购幸运产品");
 		await hyfls.sign_info("签到查询");
@@ -54,11 +54,45 @@ async function start() {
 	}
 }
 
-let host, hostname, apiname, hyfls_hd, lucky_id, lucky_price, add_id;
+let host, hostname, apiname, hyfls_hd, lucky_id, lucky_price, add_id, token;
 class Hyfls {
-	constructor(token) {
-		this.token = token;
+	constructor(jsCode) {
+		this.jsCode = jsCode;
 	}
+
+
+	// 登录—刷新token   get
+	async login(name) {
+		let options = {
+			method: "post",
+			url: `https://huiyuan.timingmar.com/hy-api/wechat/applet/login/new-login`,
+			headers: {
+				'Host': 'huiyuan.timingmar.com',
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify({
+				"jsCode": this.jsCode,
+				"inviterCode": ""
+			})
+
+		};
+		let result = await network_request(name, options);
+
+		if (result.code == 200) {
+			DoubleLog(`${name}: ${result.message} , 欢迎 ${result.data.nickname}, 手机号 ${utils.phone_num(result.data.phoneNum)}\n    您的新token为(自行添加到易语言):\n${result.data.token}`);
+			token = result.data.token
+			await utils.wait(2);
+		} else if (result.code == 9001) {
+			DoubleLog(`${name}: ${result.message}`);
+			ck_status = 0
+		} else {
+			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
+			console.log(result);
+			ck_status = 0
+		}
+	}
+
+
 	// 初始化
 	async init(name) {
 		if (!name) {
@@ -71,33 +105,12 @@ class Hyfls {
 		hyfls_hd = {
 			"Content-Type": "application/json",
 			'Host': this.host,
-			'access_token': this.token,
+			'access_token': token,
 		}
 	}
 
 
-	// 用户信息   httpGet
-	async user_info(name) {
 
-		let options = {
-			method: "get",
-			url: `${apiname}/users/get-user-info`,
-			headers: hyfls_hd,
-		};
-		let result = await network_request(name, options);
-
-		if (result.code == 1) {
-			DoubleLog(`${name}: ${result.msg} , 欢迎 ${result.data.nickname}`);
-			await utils.wait(2);
-		} else if (result.code == 0) {
-			DoubleLog(`${name}: ${result.msg}`);
-			ck_status = 0
-		} else {
-			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
-			console.log(result);
-			ck_status = 0
-		}
-	}
 
 	// 签到信息   get
 	async sign_info(name) {
@@ -253,7 +266,7 @@ class Hyfls {
 		};
 		let result = await network_request(name, options);
 
-		console.log(result);
+		// console.log(result);
 		if (type == 6) {
 			if (result.code == 201) {
 				let gitBoxVO = result.data.gitBoxVO
