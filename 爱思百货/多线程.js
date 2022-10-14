@@ -1,4 +1,3 @@
-const { wait } = require("./utils");
 
 
 function delay(interval) {

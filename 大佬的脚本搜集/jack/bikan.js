@@ -146,6 +146,8 @@ class UserInfo {
 		}
 	}
 }
+
+
 !(async () => {
 	if (typeof $request !== "undefined") {
 		await GetRewrite();
@@ -171,6 +173,9 @@ class UserInfo {
 	.catch((e) => console.log(e))
 	.finally(() => $.done());
 
+
+
+	
 ///////////////////////////////////////////////////////////////////
 async function GetRewrite() {
 	$request.url.indexOf("api.ibreader.com/api/user/userInfo") > -1 &&

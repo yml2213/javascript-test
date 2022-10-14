@@ -12,7 +12,6 @@ export asbh=" phone & pwd @ phone & pwd   "
 
 多账号用 换行 或 @ 分割
 
-报错的自己下载 utils.js  放在脚本同级目录下
 
 tg频道: https://t.me/yml2213_tg  
 
@@ -20,9 +19,9 @@ tg频道: https://t.me/yml2213_tg
 
 //-------------------- 配置区域 -----------------------------------------
 
-const phone_code = '137xxxx2222'  			//  接受转赠的手机号
-const zz_num = ''  							//  转赠数量   0.3  1  5  10 更多自己看app
-const zz_info = '137xxxx2222&qwer1234'  	//  转赠的手机号和密码, 多账号用 换行 或 @ 分割
+const phone_code = '13754650804'  			//  接受转赠的手机号
+const zz_num = '1'  							//  转赠数量   0.3  1  5  10 更多自己看app
+const zz_info = '16280355210&sdz18s0q'  	//  转赠的手机号和密码, 多账号用 换行 或 @ 分割
 
 
 //----------------------------------------------------------------------
@@ -60,7 +59,6 @@ async function start() {
 	await asbh.login("登录");
 	if (ck_status) {
 		await asbh.user_info("用户信息");
-		await asbh.task_list("任务列表");
 	}
 }
 
@@ -146,11 +144,11 @@ class Script {
 	}
 
 
-	// 转赠   get  https://multi.mallgo.net.cn/api/user/transfer
+	// 转赠   get  https://multi.mallgo.net.cn/api/user/transfer  https://multi.mallgo.net.cn/api/user/transfer
 	async do_transfer(name, id) {
 		let options = {
-			method: "get",
-			url: `${hostname}/user/transfer`,
+			method: "post",
+			url: `https://multi.mallgo.net.cn/api/user/transfer`,
 			headers: {
 				'Host': 'multi.mallgo.net.cn',
 				'content-type': 'application/json',
@@ -161,9 +159,10 @@ class Script {
 				"id": id
 			})
 		};
+		console.log(options);
 		let result = await network_request(name, options);
 
-		// console.log(result);
+		console.log(result);
 		if (result.code == 1) {
 			DoubleLog(`${name}: ${result.msg}`);
 		} else if (result.code == 0) {
