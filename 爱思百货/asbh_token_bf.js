@@ -1,10 +1,11 @@
 /*
-爱思百货--并发版  app
+爱思百货_token--并发版  app
 
 cron 10 8,10,12 * * *  asbh.js
 
 10.12		看视频,换猫豆
 10.13		优化流程，缩短任务间隔
+10.16		token并发版
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
 # 爱思百货
@@ -27,7 +28,7 @@ let envSplitor = ["@", "\n"];
 
 let msg = ck = token = "";
 
-let userCookie = process.env.asbh;
+let userCookie = process.env.asbh2;
 let userList = [];
 let userIdx = 0;
 let userCount = 0;
@@ -40,52 +41,12 @@ class UserInfo {
 		this.valid = false;
 		this.cFlag = true;
 		try {
-			this.token = token;
-			ck = str.split("&");
-			this.phone = ck[0];
-			this.pwd = ck[1];
+			this.token = str;
 			// console.log(cthis.phone, this.pwd);
 		} catch (e) { }
 	}
-	async login(name) {
-		try {
-			let options = {
-				method: "post",
-				url: `https://multi.mallgo.net.cn/api/account/login`,
-				headers: {
-					Host: "multi.mallgo.net.cn",
-					"content-type": "application/json",
-					// 'token': token
-				},
-				body: JSON.stringify({
-					mobile: this.phone,
-					password: this.pwd,
-					client: 6,
-				}),
-			};
-			let result = await network_request(name, options);
 
-			// console.log(result);
-			if (result.code == 1) {
-				DoubleLog(`账号[${this.index}] ${name}: ${result.msg}`);
-				this.token = result.data.token;
-				await wait(2);
-				await this.user_info("用户信息");
-			} else if (result.code == 0) {
-				console.log(`===`);
-				DoubleLog(`账号[${this.index}] ${name}: ${result.msg}`);
-			} else {
-				DoubleLog(`账号[${this.index}] ${name}: 失败 ❌ 了呢,原因未知!`);
-				console.log(result);
-			}
-		} catch (e) {
-			console.log(e);
-		} finally {
-			return Promise.resolve(1);
-		}
-	}
 
-	// 用户信息  get    https://multi.mallgo.net.cn/api/user/center
 	async user_info(name) {
 		let options = {
 			method: "get",
@@ -100,11 +61,7 @@ class UserInfo {
 
 		// console.log(result);
 		if (result.code == 1) {
-			DoubleLog(
-				`账号[${this.index}] ${name}: 欢迎 ${result.data.nickname
-				}, 手机号 ${utils.phone_num(result.data.mobile)}, 余额 ${result.data.user_money
-				}, 等级 ${result.data.level}, 邀请码 ${result.data.distribution_code}`
-			);
+			DoubleLog(`\n账号[${this.index}] ${name}: 欢迎 ${result.data.nickname}, 手机号 ${utils.phone_num(result.data.mobile)}, 余额 ${result.data.user_money}, 等级 ${result.data.level}, 邀请码 ${result.data.distribution_code}`);
 		} else {
 			DoubleLog(`账号[${this.index}] ${name}: 失败 ❌ 了呢,原因未知!`);
 			console.log(result);

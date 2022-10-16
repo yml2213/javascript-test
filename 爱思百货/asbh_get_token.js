@@ -1,48 +1,35 @@
 /*
-爱思百货_转赠  app
+爱思百货  app  
 
-接受转增   每个号一天两次
-转增别人   每个号一月两次
-
-cron 10 8,10,12 * * *  asbh.js
+cron 10 8,10,12,14 * * *  asbh.js
 
 10.12		看视频,换猫豆
 10.13		优化流程，缩短任务间隔
+10.14       修复任务错误问题
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 爱思百货_转赠
+# 爱思百货
 export asbh=" phone & pwd @ phone & pwd   "
 
 多账号用 换行 或 @ 分割
 
+报错的自己下载 utils.js  放在脚本同级目录下
 
 tg频道: https://t.me/yml2213_tg  
 
 */
-
-//-------------------- 配置区域 -----------------------------------------
-
-const phone_code = '15339956683'  			//  接受转赠的手机号  15614832213 梦里梦     
-const zz_num = '1'  							//  转赠数量   0.3  1  5  10 更多自己看app
-const zz_info = '16283181910&z3za8yg6'  	//  转赠的手机号和密码, 多账号用 换行 或 @ 分割
-
-
-//----------------------------------------------------------------------
-
-
-
-
 const utils = require("./utils");
-const $ = new Env("爱思百货_转赠");
+const $ = new Env("爱思百货");
 const alias_name = "asbh";
+// const request = require('request');
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; 			//0为关闭通知,1为打开通知,默认为1
 //---------------------------------------------------------------------------------------------------------
-let ckStr = zz_info
+let ckStr = process.env[alias_name];
 let msg, ck;
 let ck_status = 1;
 //---------------------------------------------------------------------------------------------------------
-let VersionCheck = "0.2";
+let VersionCheck = "0.3";
 let Change = "\n报错的自己下载 utils.js  放在脚本同级目录下\n完成签到,抽奖";
 let thank = `\n感谢 心雨大佬脚本\n`;
 //---------------------------------------------------------------------------------------------------------
@@ -60,12 +47,13 @@ async function start() {
 	const asbh = new Script(ck[0], ck[1]);
 	await asbh.init("初始化");
 	await asbh.login("登录");
-	if (ck_status) {
-		await asbh.user_info("用户信息");
-	}
 }
 
-let token, hostname, host, asbh_hd
+DoubleLog(`账号token信息\n`)
+DoubleLog(token_info)
+DoubleLog(`\n\n`);
+
+let token, hostname, host, asbh_hd, token_info = ''
 class Script {
 	constructor(phone, pwd) {
 		this.phone = phone
@@ -104,7 +92,8 @@ class Script {
 		if (result.code == 1) {
 			DoubleLog(`${name}: ${result.msg}`);
 			token = result.data.token
-			await utils.wait(2);
+			token_info += `${token}\n`
+			await wait(2);
 			ck_status = 1
 		} else if (result.code == 0) {
 			DoubleLog(`${name}: ${result.msg}`);
@@ -133,13 +122,6 @@ class Script {
 		// console.log(result);
 		if (result.code == 1) {
 			DoubleLog(`${name}: 欢迎 ${result.data.nickname}, 手机号 ${utils.phone_num(result.data.mobile)}, 余额 ${result.data.user_money}, 等级 ${result.data.level}, 邀请码 ${result.data.distribution_code}`);
-			if (result.data.user_money >= zz_num) {
-				DoubleLog(`转赠检查: 余额充足, 可以继续`)
-				await this.transfer('转赠分配')
-			} else {
-				DoubleLog(`转赠检查: 余额不足, 转赠个屁!`)
-			}
-
 		} else {
 			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
 			console.log(result);
@@ -147,51 +129,12 @@ class Script {
 	}
 
 
-	// 转赠   get  https://multi.mallgo.net.cn/api/user/transfer  https://multi.mallgo.net.cn/api/user/transfer
-	async do_transfer(name, id) {
-		let options = {
-			method: "post",
-			url: `https://multi.mallgo.net.cn/api/user/transfer`,
-			headers: {
-				'Host': 'multi.mallgo.net.cn',
-				'content-type': 'application/json',
-				'token': token
-			},
-			body: JSON.stringify({
-				"mobile": phone_code,
-				"id": id
-			})
-		};
-		console.log(options);
-		let result = await network_request(name, options);
-
-		console.log(result);
-		if (result.code == 1) {
-			DoubleLog(`${name}: ${result.msg}`);
-		} else if (result.code == 0) {
-			DoubleLog(`${name}: ${result.msg}`);
-		} else {
-			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
-			console.log(result);
-		}
-	}
 
 
-	// 转赠分配     0.3  1  5  10 更多自己看app
-	async transfer(name) {
 
-		if (zz_num == 0.3) {
-			await this.do_transfer('开始转赠', 1)
-		} else if (zz_num == 1) {
-			await this.do_transfer('开始转赠', 2)
-		} else if (zz_num == 5) {
-			await this.do_transfer('开始转赠', 3)
-		} else if (zz_num == 10) {
-			await this.do_transfer('开始转赠', 6)
-		} else {
-			DoubleLog(`更大数额没写, 自己搞吧!`)
-		}
-	}
+
+
+
 
 }
 
@@ -244,6 +187,17 @@ async function SendMsg(message) {
 		console.log(message);
 	}
 }
+
+/**
+ * 等待 X 秒
+ */
+function wait(n) {
+	return new Promise(function (resolve) {
+		setTimeout(resolve, n * 1000);
+	});
+}
+
+
 
 /**
  * 双平台log输出

@@ -63,7 +63,7 @@ async function start() {
 	}
 }
 
-let my_token = mobile = code = reg_data = ''
+let my_token = mobile = code = reg_data = user_token = ''
 class Asbh_reg {
 	constructor(apiName, pwd) {
 		this.apiName = apiName
@@ -220,7 +220,8 @@ class Asbh_reg {
 		// console.log(result);
 		if (result.code == 1) {
 			DoubleLog(`成功: 本次账号信息: ${mobile}&${pwd}`)
-			reg_data += `${mobile}&${pwd}\n`
+			user_token = result.data.token
+			reg_data += `${mobile}&${pwd}$${user_token}\n`
 			console.log(`\n${reg_data}\n`);
 		} else {
 			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);

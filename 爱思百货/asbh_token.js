@@ -1,8 +1,5 @@
 /*
-爱思百货_转赠  app
-
-接受转增   每个号一天两次
-转增别人   每个号一月两次
+爱思百货  app
 
 cron 10 8,10,12 * * *  asbh.js
 
@@ -10,35 +7,26 @@ cron 10 8,10,12 * * *  asbh.js
 10.13		优化流程，缩短任务间隔
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 爱思百货_转赠
-export asbh=" phone & pwd @ phone & pwd   "
+# 爱思百货
+export asbh2=" token "
 
 多账号用 换行 或 @ 分割
 
+报错的自己下载 utils.js  放在脚本同级目录下
 
 tg频道: https://t.me/yml2213_tg  
 
 */
 
-//-------------------- 配置区域 -----------------------------------------
-
-const phone_code = '15339956683'  			//  接受转赠的手机号  15614832213 梦里梦     
-const zz_num = '1'  							//  转赠数量   0.3  1  5  10 更多自己看app
-const zz_info = '16283181910&z3za8yg6'  	//  转赠的手机号和密码, 多账号用 换行 或 @ 分割
-
-
-//----------------------------------------------------------------------
-
-
-
 
 const utils = require("./utils");
-const $ = new Env("爱思百货_转赠");
-const alias_name = "asbh";
+const $ = new Env("爱思百货");
+const alias_name = "asbh2";
+// const request = require('request');
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; 			//0为关闭通知,1为打开通知,默认为1
 //---------------------------------------------------------------------------------------------------------
-let ckStr = zz_info
+let ckStr = process.env[alias_name];
 let msg, ck;
 let ck_status = 1;
 //---------------------------------------------------------------------------------------------------------
@@ -57,19 +45,19 @@ async function tips(ckArr) {
 }
 
 async function start() {
-	const asbh = new Script(ck[0], ck[1]);
+	const asbh = new Script(ck[0]);
 	await asbh.init("初始化");
-	await asbh.login("登录");
+	//	await asbh.login("登录");
 	if (ck_status) {
 		await asbh.user_info("用户信息");
+		await asbh.task_list("任务列表");
 	}
 }
 
-let token, hostname, host, asbh_hd
+let hostname, host
 class Script {
-	constructor(phone, pwd) {
-		this.phone = phone
-		this.pwd = pwd
+	constructor(token) {
+		this.token = token
 	}
 	// 初始化
 	async init(name) {
@@ -79,41 +67,7 @@ class Script {
 		DoubleLog(`\n开始 ${name}`)
 		host = "multi.mallgo.net.cn"
 		hostname = "https://" + host
-
-		asbh_hd = {
-			'Host': 'multi.mallgo.net.cn',
-			'content-type': 'application/json'
-		}
-	}
-
-
-	// 登录   post
-	async login(name) {
-		let options = {
-			method: "post",
-			url: `${hostname}/api/account/login`,
-			headers: asbh_hd,
-			body: JSON.stringify({
-				"mobile": this.phone,
-				"password": this.pwd,
-				"client": 6
-			})
-		};
-		let result = await network_request(name, options);
-
-		if (result.code == 1) {
-			DoubleLog(`${name}: ${result.msg}`);
-			token = result.data.token
-			await utils.wait(2);
-			ck_status = 1
-		} else if (result.code == 0) {
-			DoubleLog(`${name}: ${result.msg}`);
-			ck_status = 0
-		} else {
-			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
-			console.log(result);
-			ck_status = 0
-		}
+		ck_status = 1
 	}
 
 
@@ -125,7 +79,7 @@ class Script {
 			headers: {
 				'Host': 'multi.mallgo.net.cn',
 				'content-type': 'application/json',
-				'token': token
+				'token': this.token
 			},
 		};
 		let result = await network_request(name, options);
@@ -133,13 +87,6 @@ class Script {
 		// console.log(result);
 		if (result.code == 1) {
 			DoubleLog(`${name}: 欢迎 ${result.data.nickname}, 手机号 ${utils.phone_num(result.data.mobile)}, 余额 ${result.data.user_money}, 等级 ${result.data.level}, 邀请码 ${result.data.distribution_code}`);
-			if (result.data.user_money >= zz_num) {
-				DoubleLog(`转赠检查: 余额充足, 可以继续`)
-				await this.transfer('转赠分配')
-			} else {
-				DoubleLog(`转赠检查: 余额不足, 转赠个屁!`)
-			}
-
 		} else {
 			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
 			console.log(result);
@@ -147,27 +94,29 @@ class Script {
 	}
 
 
-	// 转赠   get  https://multi.mallgo.net.cn/api/user/transfer  https://multi.mallgo.net.cn/api/user/transfer
-	async do_transfer(name, id) {
+	// 任务列表  get   https://multi.mallgo.net.cn/api/bountyTask/lists
+	async task_list(name) {
 		let options = {
-			method: "post",
-			url: `https://multi.mallgo.net.cn/api/user/transfer`,
+			method: "get",
+			url: `${hostname}/api/bountyTask/lists`,
 			headers: {
 				'Host': 'multi.mallgo.net.cn',
 				'content-type': 'application/json',
-				'token': token
+				'token': this.token
 			},
-			body: JSON.stringify({
-				"mobile": phone_code,
-				"id": id
-			})
 		};
-		console.log(options);
 		let result = await network_request(name, options);
 
-		console.log(result);
+		// console.log(result);
 		if (result.code == 1) {
-			DoubleLog(`${name}: ${result.msg}`);
+			let tasks = result.data
+			for (let index = 0; index < tasks.length; index++) {
+				DoubleLog(`${tasks[index].title}: ${tasks[index].period_start}--${tasks[index].period_end}, 完成情况:${tasks[index].accomplish}/${tasks[index].view_num}`)
+				let num = `${tasks[index].view_num - tasks[index].accomplish}`
+				if (num) {
+					await this.task(tasks[index].title, tasks[index].id, num)
+				}
+			}
 		} else if (result.code == 0) {
 			DoubleLog(`${name}: ${result.msg}`);
 		} else {
@@ -177,19 +126,98 @@ class Script {
 	}
 
 
-	// 转赠分配     0.3  1  5  10 更多自己看app
-	async transfer(name) {
+	// 任务分配   
+	async task(name, id, num) {
+		// console.log(`任务名字${name},  任务id${id},  任务剩余数量${num}\n`);
+		let body1 = {
+			"start_time": "06:00",
+			"end_time": "12:00",
+			"id": 1
+		}
+		let body2 = {
+			"start_time": "12:00",
+			"end_time": "18:00",
+			"id": 2
+		}
+		let body3 = {
+			"start_time": "18:00",
+			"end_time": "23:59",
+			"id": 3
+		}
 
-		if (zz_num == 0.3) {
-			await this.do_transfer('开始转赠', 1)
-		} else if (zz_num == 1) {
-			await this.do_transfer('开始转赠', 2)
-		} else if (zz_num == 5) {
-			await this.do_transfer('开始转赠', 3)
-		} else if (zz_num == 10) {
-			await this.do_transfer('开始转赠', 6)
+		if (id == 1 && num > 0) {
+			if (num == 2) {
+				await this.validityPeriod(name, body1, id, 65)
+				await this.validityPeriod(name, body1, id, 3)
+			} else if (num == 1) {
+				await this.validityPeriod(name, body1, id, 3)
+			}
+		} else if (id == 2 && num > 0) {
+			if (num == 2) {
+				await this.validityPeriod(name, body2, id, 65)
+				await this.validityPeriod(name, body2, id, 3)
+			} else if (num == 1) {
+				await this.validityPeriod(name, body2, id, 3)
+			}
+		} else if (id == 3 && num > 0) {
+			if (num == 2) {
+				await this.validityPeriod(name, body3, id, 65)
+				await this.validityPeriod(name, body3, id, 3)
+			} else if (num == 1) {
+				await this.validityPeriod(name, body3, id, 3)
+			}
+		}
+	}
+
+
+	// 看视频    post   https://multi.mallgo.net.cn/api/bountyTask/validityPeriod
+	async validityPeriod(name, body, id, wait_num) {
+		let options = {
+			method: "post",
+			url: `${hostname}/api/bountyTask/validityPeriod`,
+			headers: {
+				'Host': 'multi.mallgo.net.cn',
+				'content-type': 'application/json',
+				'token': this.token
+			},
+			body: JSON.stringify(body)
+		};
+		let result = await network_request(name, options);
+
+		if (result.code == 1) {
+			DoubleLog(`等待 5 秒`)
+			await utils.wait(5)
+			await this.browseAd(name, id, wait_num)
 		} else {
-			DoubleLog(`更大数额没写, 自己搞吧!`)
+			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
+			console.log(result);
+		}
+	}
+
+
+	// 看视频    post https://multi.mallgo.net.cn/api/bountyTask/browseAd
+	async browseAd(name, id, wait_num) {
+		let options = {
+			method: "post",
+			url: `${hostname}/api/bountyTask/browseAd`,
+			headers: {
+				'Host': 'multi.mallgo.net.cn',
+				'content-type': 'application/json',
+				'token': this.token
+			},
+			body: JSON.stringify({
+				"id": id
+			})
+		};
+		let result = await network_request(name, options);
+
+		if (result.code == 1) {
+			DoubleLog(`${name}: ${result.msg}`);
+			DoubleLog(`等待 ${wait_num} 秒`)
+			await utils.wait(wait_num)
+		} else {
+			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
+			console.log(result);
 		}
 	}
 
