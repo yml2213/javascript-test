@@ -1,49 +1,29 @@
 /*
-模板  app
+通晟泰  app
 
-cron 10 8,10,12 * * *  sft.js
-
-
+cron 10 8,10 * * *  tst.js
 
 ========= 青龙--配置文件-贴心复制区域  ========= 
-# 索菲特
-export sft=' phone# pwd ' 
+# 通晟泰
+export tst=' phone# pwd ' 
 
 多账号用 换行 或 @ 分割, 报错的自己下载 utils.js, 放在脚本同级目录下
 
 tg频道: https://t.me/yml2213_tg  
 */
 const utils = require("./utils");
-const $ = new Env("索菲特");
-const ckName = 'sft'
-const fs = require('fs')
+const $ = new Env("通晟泰");
+const ckName = 'tst'
+let userCookie = process.env[ckName];
+
 let httpResult, httpReq, httpResp
-const ckFile1 = 'asft.txt'
-let userCookie = []
-try {
-	userCookie = userCookie.concat(fs.readFileSync(`./${ckFile1}`, 'utf-8').split('\n') || [])
-	console.log(`ck文件[ ${ckFile1} ]加载成功`)
-	this.mxr = true
-} catch (e) {
-	console.log(`未发现本地文件 调用青龙环境变量`)
-	this.mxr = false
-}
-let mxr = this.mxr
-if (this.mxr == false) {
-	try {
-		userCookie = userCookie.concat((($.isNode() ? process.env[ckName] : $.getdata(ckName)) || '')?.split('\n') || [])
-		console.log(`环境变量[ ${ckName} ]加载成功`)
-	} catch (e) {
-		//console.log(e)
-	}
-}
 let userList = []
 let userIdx = 0
 let userCount = 0
 ///////////////////////////////////////////////////////////////////
 
 async function start() {
-	console.log('\n================== Login ==================\n')
+	console.log('\n================== 登录 ==================\n')
 	taskall = []
 	for (let user of userList) {
 		taskall.push(user.login())
@@ -81,10 +61,13 @@ class UserInfo {
 		}
 	}
 
+	// https://www.dixiadiguan.cn/api/v1/site/login?appId=tea&nonceStr=ns0VBJOd&time=1665983124&sign=ca20a94e638b27cdeb9f52ecc8c3adfe
+	// 'mobile=15339956683&password=tst123456&group=app&drive=1&phone_identifier=81a2aeafd57616ba428a83680bdebfb2'
 	async login() {
 		try {
-			let url = `https://api.suofeitejiudianzgt.com//login`
-			let body = `username=${this.ip}&password=${this.pa}`
+			let sign = this.sign()
+			let url = `https://www.dixiadiguan.cn/api/v1/site/login?appId=tea&nonceStr=ns0VBJOd&time=1665983124&sign=${sign}`
+			let body = `mobile=${this.ip}&password=${this.pa}`
 			let h = {}
 			let urlObject = popu(url, h, body)
 			await httpRequest('post', urlObject)
@@ -158,19 +141,11 @@ class UserInfo {
 	}
 
 	async sign() {
-		try {
-			let url = `https://api.suofeitejiudianzgt.com//sign`
-			let body = `integral=0`
-			let h = { 'Authorization': 'Bearer ' + this.token }
-			let urlObject = popu(url, h, body)
-			await httpRequest('post', urlObject)
-			let result = httpResult;
-			if (result.code == 0) console.log(`用户[${this.index}] ${result.data}`)
-			if (result.code !== 0) console.log(`用户[${this.index}] ` + result.msg)
-		} catch (e) {
-		} finally {
-			return Promise.resolve(1);
-		}
+		let ts = utils.ts10()
+		let nonceStr = utils.randomszdx(8)
+		let salt = 'e3de382b2bab1232s'
+		let sign = utils.MD5Encrypt(`appId=tea&nonceStr=${nonceStr}&time=${ts}${salt}`)
+		return sign
 	}
 
 	async prizeLog() {

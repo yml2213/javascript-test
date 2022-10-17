@@ -1,24 +1,23 @@
 /*
-模板  app
+@jack 索菲特  
 
-cron 10 8,10,12 * * *  sft.js
+安装 fs 依赖
 
+优先读取同目录下 asft.txt文件
 
+如果未发现本地文件 调用青龙环境变量
 
-========= 青龙--配置文件-贴心复制区域  ========= 
-# 索菲特
-export sft=' phone# pwd ' 
+填入 sftCookie 变量里面
 
-多账号用 换行 或 @ 分割, 报错的自己下载 utils.js, 放在脚本同级目录下
+多账户 @ 或者回车分割
 
-tg频道: https://t.me/yml2213_tg  
+手机号#密码
 */
-const utils = require("./utils");
 const $ = new Env("索菲特");
-const ckName = 'sft'
 const fs = require('fs')
 let httpResult, httpReq, httpResp
 const ckFile1 = 'asft.txt'
+const ckName = 'sftCookie'
 let userCookie = []
 try {
 	userCookie = userCookie.concat(fs.readFileSync(`./${ckFile1}`, 'utf-8').split('\n') || [])
@@ -41,33 +40,6 @@ let userList = []
 let userIdx = 0
 let userCount = 0
 ///////////////////////////////////////////////////////////////////
-
-async function start() {
-	console.log('\n================== Login ==================\n')
-	taskall = []
-	for (let user of userList) {
-		taskall.push(user.login())
-	}
-	await Promise.all(taskall)
-
-
-	taskall = []
-	for (let user of userList) {
-		taskall.push(user.sign())
-	}
-	await Promise.all(taskall)
-
-	console.log('\n================== Prize ==================\n')
-	taskall = []
-	for (let user of userList) {
-		taskall.push(user.prizeLog())
-	}
-	await Promise.all(taskall)
-
-}
-
-
-
 
 class UserInfo {
 	constructor(str) {
@@ -196,16 +168,43 @@ class UserInfo {
 }
 
 !(async () => {
-	if (!(await checkEnv())) return;
-	if (userList.length > 0) {
-		await start();
+	if (typeof $request !== "undefined") {
+		await GetRewrite()
+	} else {
+
+		if (!(await checkEnv())) return;
+		if (userList.length > 0) {
+			console.log('\n================== Login ==================\n')
+			taskall = []
+			for (let user of userList) {
+				taskall.push(user.login())
+			}
+			await Promise.all(taskall)
+		}
+		if (userList.length > 0) {
+			taskall = []
+			for (let user of userList) {
+				taskall.push(user.sign())
+			}
+			await Promise.all(taskall)
+		}
+		if (userList.length > 0) {
+			console.log('\n================== Prize ==================\n')
+			taskall = []
+			for (let user of userList) {
+				taskall.push(user.prizeLog())
+			}
+			await Promise.all(taskall)
+		}
 	}
 })()
 	.catch((e) => console.log(e))
 	.finally(() => $.done())
 
 ///////////////////////////////////////////////////////////////////
+async function GetRewrite() {
 
+}
 
 function checkEnv() {
 	if (userCookie) {

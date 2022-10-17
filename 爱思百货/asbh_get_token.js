@@ -94,7 +94,7 @@ class Script {
 			DoubleLog(`${name}: ${result.msg}`);
 			token = result.data.token
 			token_info += `${token}\n`
-			console.log(token_info);
+			// console.log(token_info);
 			await wait(2);
 			ck_status = 1
 		} else if (result.code == 0) {
