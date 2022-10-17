@@ -26,7 +26,7 @@ const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; 			//0为关闭通知,1为打开通知,默认为1
 //---------------------------------------------------------------------------------------------------------
 let ckStr = process.env[alias_name];
-let msg, ck;
+let msg, ck, token_info = '';
 let ck_status = 1;
 //---------------------------------------------------------------------------------------------------------
 let VersionCheck = "0.3";
@@ -47,13 +47,14 @@ async function start() {
 	const asbh = new Script(ck[0], ck[1]);
 	await asbh.init("初始化");
 	await asbh.login("登录");
+	DoubleLog(`账号token信息\n`)
+	DoubleLog(token_info)
+	DoubleLog(`\n\n`);
 }
 
-DoubleLog(`账号token信息\n`)
-DoubleLog(token_info)
-DoubleLog(`\n\n`);
 
-let token, hostname, host, asbh_hd, token_info = ''
+
+let token, hostname, host, asbh_hd
 class Script {
 	constructor(phone, pwd) {
 		this.phone = phone
@@ -93,6 +94,7 @@ class Script {
 			DoubleLog(`${name}: ${result.msg}`);
 			token = result.data.token
 			token_info += `${token}\n`
+			console.log(token_info);
 			await wait(2);
 			ck_status = 1
 		} else if (result.code == 0) {
@@ -106,27 +108,6 @@ class Script {
 	}
 
 
-	// 用户信息  get    https://multi.mallgo.net.cn/api/user/center
-	async user_info(name) {
-		let options = {
-			method: "get",
-			url: `${hostname}/api/user/center`,
-			headers: {
-				'Host': 'multi.mallgo.net.cn',
-				'content-type': 'application/json',
-				'token': token
-			},
-		};
-		let result = await network_request(name, options);
-
-		// console.log(result);
-		if (result.code == 1) {
-			DoubleLog(`${name}: 欢迎 ${result.data.nickname}, 手机号 ${utils.phone_num(result.data.mobile)}, 余额 ${result.data.user_money}, 等级 ${result.data.level}, 邀请码 ${result.data.distribution_code}`);
-		} else {
-			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
-			console.log(result);
-		}
-	}
 
 
 

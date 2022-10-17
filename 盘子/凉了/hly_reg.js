@@ -1,6 +1,6 @@
 /**
- * 格林酒店-注册机
- * cron 10 7 * * *  gljd.js
+ * 好利源-注册机
+ * cron 10 7 * * *  hly.js
  *
  * 9-18		盘子, 自己0薅玩, 坑了钱别来找我
  *
@@ -9,19 +9,19 @@
 
 
 //-------------------- 配置区域 --------------------
-const reg_num = '1'  			//注册数量
-let regcode = '' 			//邀请码  
-let host = 'www.mgzqxj.cn'
+const reg_num = '4'  			//注册数量
+let regcode = '' 				//邀请码  
+let host = '45.207.56.36:19911/'
 let hostname = 'http://' + host
 // -----------------------------------------------
 
 
-const $ = new Env("格林酒店-注册机");
-const alias_name = 'gljd'
+const $ = new Env("好利源-注册机");
+const alias_name = 'hly'
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 const debug = 0		    //0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
-let msg, ck, new_regcode;
+let msg, ck;
 let userinfo = ''
 let index = ''
 //---------------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ let Change = '领取每日任务!'
 async function start() {
 	index = 0
 	for (index; index < reg_num; index++) {
-		await gljdreg('开始注册', index);
+		await hlyreg('开始注册', index);
 	}
 	console.log(`账号信息\n\n`);
 	console.log(userinfo);
@@ -45,35 +45,32 @@ async function start() {
 
 
 
-// 注册   {"mobile":"13754658888","password":"dshb123456","spassword":"dshb123456","image_code":"4618","ssid":"fcdc5cded1e4c410"}
-async function gljdreg(name, index) {
+// 注册 
+async function hlyreg(name, index) {
 	console.log(`\n================================================\n开始 第${index + 1}次${name}`);
-	await get_ssid('获取 ssid');
 	await get_code('获取验证码');
 	let phone_code = phone();
 	let pw = randomszxx(8);
 	try {
 		let Options = {
-			url: `${hostname}/api/api/register`,
+			url: `${hostname}/index/shen/zhuce`,
 			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
+				"content-type": "application/json; charset=utf-8",
 			},
-			// body: `{"mobile":"${code}","captcha_id":"${code_id}","password":"${pw}","reg_code":"","tel":"${phone_code}"}`
-			body: `{"mobile":"${phone_code}","password":"${pw}","spassword":"${pw}","image_code":"${code}","ssid":"${ssid}"}`
-
+			body: `phone=${phone_code}&password=${pw}&pwd2=${pw}&top=&qq=&codes=${code}`
 		};
 		let result = await httpPost(Options, name);
 
-		// console.log(result);
-		if (result.code == 200) {
+		console.log(result);
+		if (result.code == 1) {
 			console.log(`注册成功 , ${phone_code}&${pw}`);
 			userinfo += `${phone_code}&${pw}\n`
 			console.log(`等待 5 s`);
 			await wait(5);
+
 		} else {
-			console.log(`注册失败了，再试一次！`);
-			// await gljdreg('开始注册', index);
-			DoubleLog(result)
+			console.log(`注册失败，再试一次`)
+			await hlyreg('开始注册', index);
 		}
 	} catch (e) {
 		console.log(e)
@@ -88,54 +85,26 @@ async function gljdreg(name, index) {
 
 
 
-// 获取 ssid 
-async function get_ssid(name) {
-	DoubleLog(`\n开始 ${name}`);
-	try {
-		let Options = {
-			url: `${hostname}/api/api/config`,
-			headers: {
-				"content-type": "application/json; charset=utf-8",
-			},
-		};
-		let result = await httpGet(Options, name);
-
-		// console.log(result);
-		if (result.code == 200) {
-			DoubleLog(`${name}: 成功!`);
-			ssid = result.data.ssid
-			return ssid
-		} else {
-			DoubleLog(`${name}: 失败❌了呢`);
-			console.log(result);
-		}
-	} catch (error) {
-		console.log(error);
-	}
-}
 
 
 
-// 获取验证码  http://www.mgzqxj.cn/api/api/imageCode
+
+// 获取验证码
 async function get_code(name) {
 	// console.log(`\n开始 ${name}`);
 	try {
 		let Options = {
-			url: `${hostname}/api/api/imageCode`,
+			url: `${hostname}/index/login/smsRand`,
 			headers: {
 				"Content-Type": "application/json; charset=utf-8",
 			},
-			body: `{"ssid":"${ssid}"}`
 		};
-		let result = await httpPost(Options, name);
+		let result = await httpGet(Options, name);
 
-		// console.log(result);
-		if (result.code == 200) {
-			code_base64 = result.data.code.split(',')[1]
-			ssid = result.ssid
-			// console.log(code_base64);
-			console.log(`验证码获取成功`)
-			await recognition_coed('识别验证码', code_base64)
+		if (result.code == 1) {
+			code = result.data
+			return code
+
 		} else {
 			console.log(`${name}: ${result.msg}`)
 		}
@@ -164,11 +133,11 @@ async function recognition_coed(name, code_base64) {
 				return code
 			} else {
 				DoubleLog(`识别失败1: ${result.msg}`);
-				await gljdreg('开始注册', index, regcode);
+				await hlyreg('开始注册', index, regcode);
 			}
 		} else if (result.msg != '') {
 			DoubleLog(`识别失败2: ${result.msg}`);
-			await gljdreg('开始注册', index, regcode);
+			await hlyreg('开始注册', index, regcode);
 		} else {
 			DoubleLog(`未知错误!`)
 		}
@@ -309,7 +278,7 @@ async function SendMsg(message) {
 	if (!message) return;
 	if (Notify > 0) {
 		if ($.isNode()) {
-			var notify = require("./sendNotify");
+			var notify = require("../sendNotify");
 			await notify.sendNotify($.name, message);
 		} else {
 			// $.msg(message);

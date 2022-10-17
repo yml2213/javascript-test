@@ -1,39 +1,34 @@
 /*
-走进海南  app 
+碳禾环保  app 
  
-cron 10 7 * * *  zjhn.js
+cron 10 7 * * *  thhb.js
  
 9-22		资金盘，自己0薅   被坑了别找我
+9-23		修复错误
+------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
+# 碳禾环保
+export thhb=" phone & pwd @ phone & pwd "
 
-  
+
 多账号用 换行 或 @ 分割
-抓包 gsp.gacmotor.com , 找到 token 即可
-====================================
+
 tg频道: https://t.me/yml2213_tg  
 
 */
 
 
-//-------------------- 配置区域 --------------------
-const reg_num = '10'  //注册数量
-const regcode = '2560385' //邀请码
-const pw = 'zjhn123654'  //密码
-// -----------------------------------------------
-
-
-
-const $ = new Env("走进海南-注册机");
-const alias_name = 'zjhn'
+const $ = new Env("碳禾环保");
+const alias_name = 'thhb'
 const request = require('request');
-const notify = $.isNode() ? require("./sendNotify") : "";
+const notify = $.isNode() ? require("../sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 const debug = 0			//0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
 let ckStr = process.env[alias_name];
 let msg, ck;
-let ck_status = true;
-let userinfo = ''
-
+let ck_status = 1;
+let host = '156.224.2.14:35633'
+let hostname = 'http://' + host
 //---------------------------------------------------------------------------------------------------------
 let VersionCheck = "0.1"
 let Change = '资金盘，自己0薅玩'
@@ -51,59 +46,43 @@ async function tips(ckArr) {
 }
 
 async function start() {
-	for (let index = 0; index < reg_num; index++) {
-		await gljdreg('开始注册');
+	await login('登录');
+
+	if (ck_status) {
+		await do_sign('签到');
+		await user_info('用户信息');
 	}
-	console.log(`账号信息\n\n`);
-	console.log(userinfo);
-	console.log(`\n\n`);
+
 }
 
 
 
 
 
-
-// 开始注册   httpPost
-async function gljdreg(name) {
+// 登录    post  
+async function login(name) {
 	DoubleLog(`\n开始 ${name}`);
 	try {
-		phone_code = await phone('获取手机号')
-		let path = '/api/PlayerVue/Register'
-		let data_ = get_data((path).toLowerCase())
+		random_data = randomszxx(26);
 		let Options = {
-			url: `https://api.hinan8.com${path}?b8ef038bdc27fc47a5087ce0f63e7622=${data_}`,
+			url: `${hostname}/index/shen/logi`,
 			headers: {
-				'Content-Type': 'application/json',
-				'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Mobile Safari/537.36'
+				'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)',
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+				'Cookie': `sfc298f13=${random_data}`,
 			},
-			body: JSON.stringify({
-				'ACode': 'reg',
-				'checkCode': '',
-				'mobilecode': '',
-				'recommend': regcode,
-				'password': pw,
-				'rePassword': pw,
-				'tel': '',
-				'username': phone_code,
-				'valiImgKey': '',
-				'mobileCode': '',
-				'messageId': '',
-				'djs': 60
-			})
+			body: `phone=${ck[0]}&password=${ck[1]}`
 		};
-		let result = await httpPost(Options, name);
+		let result = await httpRequest('post', Options, name);
 
-		// console.log(result);
-
-		if (result.code == 200) {
-			DoubleLog(`${name}: ${result.msg} `);
-			userinfo += `${phone_code}&${pw}\n`
-			console.log(`等待 10 s`);
-			await wait(10)
+		if (result.code == 1) {
+			DoubleLog(`${name}: ${result.info}`);
+			await wait(3)
+			return ck_status = 1;
 		} else {
 			DoubleLog(`${name}: 失败❌了呢`);
 			console.log(result);
+			return ck_status = 0;
 		}
 	} catch (error) {
 		console.log(error);
@@ -112,58 +91,33 @@ async function gljdreg(name) {
 
 }
 
-// 随机手机号
-async function phone() {
-	let a = new Array(
-		"130",
-		"131",
-		"132",
-		"133",
-		"135",
-		"136",
-		"137",
-		"138",
-		"139",
-		"151",
-		"152",
-		"158",
-		"166",
-		"170",
-		"177",
-		"179",
-		"181",
-		"187",
-		"189"
-	),
-		d = parseInt(a.length * Math.random()),
-		b = a[d];
-	for (let c = 0; c < 8; c++) b += Math.floor(10 * Math.random());
-	return b;
-}
 
+// 执行签到   httpPost
+async function do_sign(name) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `${hostname}/index/user/sign`,
+			headers: {
+				"content-type": "application/json; charset=utf-8",
+				'Cookie': `sfc298f13=${random_data}`,
+			},
+			body: 'phone=1'
+		};
+		// let result = await httpPost(Options, name);
+		let result = await httpRequest('post', Options, name);
 
-
-
-
-
-
-function get_data(e) {
-	let m = 'eb15bc2f2b6a1ec91c2411be7a1501a5';
-	let ts = ts10();
-	let u = '0';
-	let o = d();
-	let t = MD5Encrypt(e + "-" + ts + "-" + o + "-" + u + "-" + m)
-	let data_ = (ts + "-" + o + "-" + u + "-" + t)
-	// console.log(data_);
-	return data_
-
-	function d() {
-		for (var n = [], i = "0123456789abcdef", e = 0; e < 36; e++)
-			n[e] = i.substr(Math.floor(16 * Math.random()), 1);
-		n[14] = "4",
-			n[19] = i.substr(3 & n[19] | 8, 1);
-		var a = n.join("");
-		return a
+		// console.log(result);
+		if (result.code == 1) {
+			DoubleLog(`${name}: ${result.info}`);
+		} else if (result.code == 0) {
+			DoubleLog(`${name}: ${result.info}`);
+		} else {
+			DoubleLog(`${name}: 失败❌了呢`);
+			console.log(result);
+		}
+	} catch (error) {
+		console.log(error);
 	}
 }
 
@@ -171,6 +125,33 @@ function get_data(e) {
 
 
 
+
+// 用户信息   httpGet
+async function user_info(name) {
+	DoubleLog(`\n开始 ${name}`);
+	try {
+		let Options = {
+			url: `${hostname}/index/user`,
+			headers: {
+				"Content-Type": "application/json; charset=utf-8",
+				'Cookie': `sfc298f13=${random_data}`,
+			},
+		};
+		let result = await httpRequest('get', Options, name);
+
+		// console.log(result);
+		let data_ = result.split('余额:<i>')
+		let data_1 = data_[1].split('元</i>')
+		// console.log(data_1[0]);
+		DoubleLog(`余额:${data_1[0]}元`)
+
+	} catch (error) {
+		console.log(`=================`);
+		console.log(error);
+	}
+
+
+}
 
 
 
@@ -302,7 +283,7 @@ async function SendMsg(message) {
 	if (!message) return;
 	if (Notify > 0) {
 		if ($.isNode()) {
-			var notify = require("../杂项/sendNotify");
+			var notify = require("../sendNotify");
 			await notify.sendNotify($.name, message);
 		} else {
 			// $.msg(message);
@@ -504,11 +485,16 @@ function wyy() {
 	})
 }
 
+
+
+
+// 
 /**
- * get请求
+ * 测试get post合一
  */
-async function httpGet(getUrlObject, tip, timeout = 3) {
+async function httpRequest(type, getUrlObject, tip, timeout = 3) {
 	return new Promise((resolve) => {
+		let method = type;
 		let url = getUrlObject;
 		if (!tip) {
 			let tmp = arguments.callee.toString();
@@ -520,125 +506,109 @@ async function httpGet(getUrlObject, tip, timeout = 3) {
 			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
 			console.log(url);
 		}
+		let get_arr = ['get', 'Get', 'GET']
+		let post_arr = ['post', 'Post', 'POST']
 
-		$.get(
-			url,
-			async (err, resp, data) => {
-				try {
-					if (debug) {
-						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-						console.log(data);
-						console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
-						console.log(JSON.parse(data));
-					}
-					let result = JSON.parse(data);
-					if (result == undefined) {
-						return;
-					} else {
-						resolve(result);
-					}
+		if (get_arr.indexOf(method) > -1) {
+			$.get(
+				url,
+				async (err, resp, data) => {
+					try {
+						if (debug) {
+							console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+							console.log(data);
+							console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
+							console.log(JSON.parse(data));
+						}
+						// console.log(typeof (data));
 
-				} catch (e) {
-					console.log(err, resp);
-					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg = `\n ${tip} 失败了!请稍后尝试!!`
-				} finally {
-					resolve();
-				}
-			},
-			timeout
-		);
+						if (typeof data == 'string') {
+							if (isJsonString(data)) {
+								let result = JSON.parse(data);
+								resolve(result);
+							} else {
+								let result = data;
+								resolve(result);
+							}
+							function isJsonString(str) {
+								if (typeof str == 'string') {
+									try {
+										if (typeof JSON.parse(str) == "object") {
+											return true;
+										}
+									} catch (e) {
+										return false;
+									}
+								}
+								return false;
+							}
+						} else {
+							let result = data;
+							resolve(result);
+						}
+					} catch (e) {
+						console.log(err, resp);
+						DoubleLog(`\n ${tip} 失败了!请稍后尝试!!`)
+					} finally {
+						resolve();
+					}
+				},
+				timeout
+			);
+		} else if (post_arr.indexOf(method) > -1) {
+			$.post(
+				url,
+				async (err, resp, data) => {
+					try {
+						if (debug) {
+							console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
+							console.log(data);
+							console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
+							console.log(JSON.parse(data));
+						}
+						// console.log(typeof (data));
+
+						if (typeof data == 'string') {
+							if (isJsonString(data)) {
+								let result = JSON.parse(data);
+								resolve(result);
+							} else {
+								let result = data;
+								resolve(result);
+							}
+							function isJsonString(str) {
+								if (typeof str == 'string') {
+									try {
+										if (typeof JSON.parse(str) == "object") {
+											return true;
+										}
+									} catch (e) {
+										return false;
+									}
+								}
+								return false;
+							}
+						} else {
+							let result = data;
+							resolve(result);
+						}
+					} catch (e) {
+						console.log(err, resp);
+						DoubleLog(`\n ${tip} 失败了!请稍后尝试!!`)
+					} finally {
+						resolve();
+					}
+				},
+				timeout
+			);
+		} else {
+			console.log(`为止请求类型，请自行排查！`);
+		}
 	});
 }
 
-/**
- * post请求
- */
-async function httpPost(postUrlObject, tip, timeout = 3) {
-	return new Promise((resolve) => {
-		let url = postUrlObject;
-		if (!tip) {
-			let tmp = arguments.callee.toString();
-			let re = /function\s*(\w*)/i;
-			let matches = re.exec(tmp);
-			tip = matches[1];
-		}
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
-			console.log(url);
-		}
 
-		$.post(
-			url,
-			async (err, resp, data) => {
-				try {
-					if (debug) {
-						console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-						console.log(data);
-						console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
-						console.log(JSON.parse(data));
-					}
-					let result = JSON.parse(data);
-					if (result == undefined) {
-						return;
-					} else {
-						resolve(result);
-					}
 
-				} catch (e) {
-					console.log(err, resp);
-					console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-					msg = `\n ${tip} 失败了!请稍后尝试!!`
-				} finally {
-					resolve();
-				}
-			},
-			timeout
-		);
-	});
-}
-
-/**
- * 网络请求 (get, post等)
- */
-async function httpRequest(postOptionsObject, tip, timeout = 3) {
-	return new Promise((resolve) => {
-
-		let Options = postOptionsObject;
-		let request = require('request');
-		if (!tip) {
-			let tmp = arguments.callee.toString();
-			let re = /function\s*(\w*)/i;
-			let matches = re.exec(tmp);
-			tip = matches[1];
-		}
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 ${tip} 请求 信息 ===============`);
-			console.log(Options);
-		}
-
-		request(Options, async (err, resp, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 ${tip} 返回数据==============`);
-					console.log(data);
-					console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
-					console.log(JSON.parse(data));
-				}
-				let result = JSON.parse(data);
-				if (!result) return;
-				resolve(result);
-			} catch (e) {
-				console.log(err, resp);
-				console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-				msg = `\n ${tip} 失败了!请稍后尝试!!`
-			} finally {
-				resolve();
-			}
-		}), timeout
-
-	});
-}
 
 
 /**

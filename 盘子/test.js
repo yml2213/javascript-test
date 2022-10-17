@@ -13,5 +13,4 @@ if (get_arr.indexOf(method) > -1) {
 
 
 } else {
-	console.log(`未知请求类型，请自行排查！`);
-}
+	console.log(`未知请求类型，请自行排查！`);}

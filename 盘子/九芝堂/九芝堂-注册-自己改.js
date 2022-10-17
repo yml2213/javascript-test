@@ -18,7 +18,7 @@ const pw = 'jzt123654'  //密码
 
 const $ = new Env("九芝堂-注册机");
 const alias_name = 'jzt'
-const notify = $.isNode() ? require("./sendNotify") : "";
+const notify = $.isNode() ? require("../sendNotify") : "";
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 const debug = 0		    //0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
@@ -250,7 +250,7 @@ async function SendMsg(message) {
 	if (!message) return;
 	if (Notify > 0) {
 		if ($.isNode()) {
-			var notify = require("./sendNotify");
+			var notify = require("../sendNotify");
 			await notify.sendNotify($.name, message);
 		} else {
 			// $.msg(message);
