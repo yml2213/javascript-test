@@ -56,7 +56,7 @@ class UserInfo {
 					Host: "api.jinantimes.com.cn",
 				},
 			};
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result?.code == 200) {
@@ -123,7 +123,7 @@ class UserInfo {
 				},
 			};
 
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result?.code == 200) {
@@ -155,7 +155,7 @@ class UserInfo {
 				},
 			};
 
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result?.code == 200) {
@@ -186,7 +186,7 @@ class UserInfo {
 				},
 			};
 
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result?.code == 200) {
@@ -219,7 +219,7 @@ class UserInfo {
 				},
 			};
 
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result?.code == 200) {
@@ -260,7 +260,7 @@ class UserInfo {
 				},
 			};
 
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result?.code == 200) {
@@ -293,7 +293,7 @@ class UserInfo {
 				},
 			};
 
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result?.code == 200) {
@@ -326,7 +326,7 @@ class UserInfo {
 				},
 			};
 
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result?.code == 200) {
@@ -361,7 +361,7 @@ class UserInfo {
 				},
 			};
 
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result?.code == 200) {
@@ -388,7 +388,7 @@ class UserInfo {
 					'Host': "jfshop.jnbywh.cn",
 				},
 			};
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result) {
@@ -417,7 +417,7 @@ class UserInfo {
 					'X-Requested-With': 'XMLHttpRequest',
 				},
 			};
-			let result = await network_request(name, options);
+			let result = await httpRequest(name, options);
 
 			// console.log(result);
 			if (result.code == 1) {
@@ -510,8 +510,8 @@ function wait(n) {
 	});
 }
 
-// 网络请求   network_request
-async function network_request(name, options) {
+// 网络请求   httpRequest
+async function httpRequest(name, options) {
 	if (!name) {
 		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
 	}
