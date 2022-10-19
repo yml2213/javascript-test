@@ -1,19 +1,19 @@
 /*
-牛奶优选 	cron 10 8,10,12 * * *  nnyx.js
+百佳优选  		cron 10 8,10,12 * * *  nnyx.js
 
-http://niunai.mkjng.top:1003/			邀请码 88767832
+baijia.axwes.top    36859884
 
 ========= 青龙--配置文件--贴心复制区域  ========= 
-# 牛奶优选
-export nnyx=' 账号 & 密码 ' 
+# 百佳优选
+export bjyxck=' 账号 & 密码 ' 
 
 多账号用 换行 或 @ 分割
 tg频道: https://t.me/yml2213_tg  
 */
 
-const $ = new Env("牛奶优选")
+const $ = new Env("百佳优选")
 check_utils('utils.js')
-const ckName = 'nnyx'
+const ckName = 'bjyxck'
 //---------------------------------------------------------
 const notify = $.isNode() ? require("./sendNotify") : ""
 const Notify = 1		 //0为关闭通知,1为打开通知,默认为1
@@ -52,6 +52,7 @@ class UserInfo {
 			this.c = `{"iv":"O2mzL1YQX+YARSVKF3\/+vg==","value":"pamPkk0Bgdrv0ec044zfqIq6piZlGpz4Bx8D5ZcXpfB7fF\/2VhE\/mkcOtxcIpsRB","mac":"${this.d}"}`
 			this.cook = `laravel_session=${encodeURIComponent(base.encode(this.c))}`
 			// console.log(this.cook);
+
 		} catch (e) {
 
 		}
@@ -59,27 +60,29 @@ class UserInfo {
 	async login(name) {
 		let options = {
 			method: "Post",
-			url: `http://niunai.mkjng.top:1003/login.html`,
+			url: `http://baijia.axwes.top:1003/login.html`,
 			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-				'Cookie': 'laravel_session=eyJpdiI6Ilo3dm9HaVRFWG5Cd2o4YUZBYVZHMmc9PSIsInZhbHVlIjoiYXVDc3c0NnZvc3V2aEZ1UlFIVDVCNHMyZ3pYYXRQN3FTV3E4Z2UxQ1VKdWY2TnNzK1ZiSTBKUU1xZDgyeWtxYSIsIm1hYyI6ImExMzQ1NGMzZjZjYjE2MGFmOWU0MjI1YjEwOTQ4YTIyNWViYjFkMWM0OWI5OWNkZTM3ZjM2ZTQxMTM5ZDk2YzUifQ%3D%3D',
-				'X-Requested-With': 'XMLHttpRequest'
+				"X-Requested-With": "XMLHttpRequest",
+				"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+				'Cookie': 'laravel_session=eyJpdiI6IlJPbW5WZVM3ZUhMbjdTN1wvaTBZODZnPT0iLCJ2YWx1ZSI6IjZCcVNVZnYrTG9taDJ2cFNxSWNta2w0bzQrZklrVTZQd2JIeGFhXC9EXC9mRDFQNmV4UXBRWkJFUkVUV3hSbkYzMiIsIm1hYyI6ImI4M2E1ZjY4ZjY0OWNhZWFmYWFlN2EyM2VhZGFjMmEzMjU3YWRkZWUyZmRjYjRhMWIzOWYxZmE2NjRmMGRlNGYifQ%3D%3D',
+
 			},
-			body: `_token=AuBJTETPpDyRVrmgQYQPkWe0CZSP8JZN4rufVC1G&username=${this.ip}&password=${this.pa}`
+			body: `_token=ebwX9gFbg7IXn0mzypHBAqBgkCKWynr5s8nwgOzN&username=${this.ip}&password=${this.pa}`
 		};
 
 		let res = await login_Request(name, options);
-		// console.log(res);
+		//console.log(options);
+		// console.log(res.body);
 		let result = JSON.parse(res.body)
 
 		if (result.status == 0) {
+
 			console.log(`账号 [${this.index}] ` + result.msg)
 			this.y = res.headers['set-cookie'][1]
 			this.x = res.headers['set-cookie'][0].split('=')[1].split(';')[0]
 			// console.log(this.x);
 			await wait(2)
-			// await this.lottery('抽奖')
-			// await this.userindex('余额查询')
+
 		}
 		if (result.status !== 0) console.log(`账号 [${this.index}] ` + result)
 
@@ -89,7 +92,7 @@ class UserInfo {
 	async userindex(name) {
 		let options = {
 			method: "get",
-			url: `http://niunai.mkjng.top:1003/user/withdraw.html`,
+			url: `http://baijia.axwes.top:1003/user/withdraw.html`,
 			headers: {
 				'Cookie': this.y
 			},
@@ -103,11 +106,10 @@ class UserInfo {
 
 	}
 
-
 	async user_info(name) {
 		let options = {
 			method: "get",
-			url: `http://niunai.mkjng.top:1003/user/index.html`,
+			url: `http://baijia.axwes.top/user/index.html`,
 			headers: {
 				'Cookie': this.y
 			},
@@ -123,7 +125,7 @@ class UserInfo {
 	async lottery(name) {
 		let options = {
 			method: "get",
-			url: `http://niunai.mkjng.top:1003/user/wheel/click`,
+			url: `http://baijia.axwes.top:1003/user/wheel/click`,
 			headers: {
 				'Cookie': this.y
 			},
@@ -229,12 +231,8 @@ async function httpResult(name, options) {
 	// DoubleLog(`\n开始 ${name}`);
 	try {
 		let result = await utils.httpRequest(name, options)
-		if (result) {
-			return result;
-		}
-		{
-			DoubleLog(`未知错误(1`);
-		}
+		if (result) return result
+		else DoubleLog(`未知错误(1`);
 	} catch (error) {
 		console.log(error);
 	}
