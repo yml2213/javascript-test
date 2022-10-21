@@ -21,10 +21,11 @@ tg频道: https://t.me/yml2213_tg
 */
 
 //-------------------- 配置区域 -----------------------------------------
-
-const phone_code = '15339956683'  			//  接受转赠的手机号  15614832213 梦里梦     
-const zz_num = '1'  							//  转赠数量   0.3  1  5  10 更多自己看app
+//  接受转赠的手机号  梦里梦:15614832213        yml:15339956683    机器人： 13754650804
+const phone_code = '13754650804'  			
+const zz_num = '5'  							//  转赠数量   0.3  1  5  10 更多自己看app
 const zz_info = '16283181910&z3za8yg6'  	//  转赠的手机号和密码, 多账号用 换行 或 @ 分割
+const token_zz = '99272bbd5c298800a8793d45e9946113'  	//  转赠账号的 token
 
 
 //----------------------------------------------------------------------
@@ -59,7 +60,7 @@ async function tips(ckArr) {
 async function start() {
 	const asbh = new Script(ck[0], ck[1]);
 	await asbh.init("初始化");
-	await asbh.login("登录");
+	// await asbh.login("登录");
 	if (ck_status) {
 		await asbh.user_info("用户信息");
 	}
@@ -70,6 +71,7 @@ class Script {
 	constructor(phone, pwd) {
 		this.phone = phone
 		this.pwd = pwd
+		this.token_zz = token_zz
 	}
 	// 初始化
 	async init(name) {
@@ -125,7 +127,7 @@ class Script {
 			headers: {
 				'Host': 'multi.mallgo.net.cn',
 				'content-type': 'application/json',
-				'token': token
+				'token': this.token_zz
 			},
 		};
 		let result = await network_request(name, options);
@@ -155,7 +157,7 @@ class Script {
 			headers: {
 				'Host': 'multi.mallgo.net.cn',
 				'content-type': 'application/json',
-				'token': token
+				'token': this.token_zz
 			},
 			body: JSON.stringify({
 				"mobile": phone_code,

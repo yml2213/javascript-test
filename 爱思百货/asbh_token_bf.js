@@ -33,6 +33,8 @@ let userList = [];
 let userIdx = 0;
 let userCount = 0;
 
+let token_zz = ''
+
 ///////////////////////////////////////////////////////////////////
 class UserInfo {
 	constructor(str) {
@@ -62,6 +64,9 @@ class UserInfo {
 		// console.log(result);
 		if (result.code == 1) {
 			DoubleLog(`\n账号[${this.index}] ${name}: 欢迎 ${result.data.nickname}, 手机号 ${utils.phone_num(result.data.mobile)}, 余额 ${result.data.user_money}, 等级 ${result.data.level}, 邀请码 ${result.data.distribution_code}`);
+			if (result.data.user_money >= 5) {
+				token_zz += `${this.token}\n`
+			}
 		} else {
 			DoubleLog(`账号[${this.index}] ${name}: 失败 ❌ 了呢,原因未知!`);
 			console.log(result);
@@ -214,6 +219,11 @@ class UserInfo {
 			taskall.push(user.task_list("任务列表"));
 		}
 		await Promise.all(taskall);
+
+		console.log("\n-------------- 满5元的token --------------\n");
+		DoubleLog(token_zz)
+
+
 	}
 	await SendMsg(msg);
 })()
