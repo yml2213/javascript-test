@@ -36,30 +36,114 @@ let text = sign = ""
 
 async function start() {
 
-	for (let user of userList) {
-		console.log("\n================== 签到 ==================\n");
-		await user.do_sign('签到')
+	// for (let user of userList) {
+	// 	console.log("\n================== 签到 ==================\n");
+	// 	taskall = []
+	// 	for (let user of userList) {
+	// 		taskall.push(user.do_sign('签到'))
+	// 	}
+	// 	await Promise.all(taskall)
 
-		console.log("\n================== 健康打卡 ==================\n");
-		await user.freeSign('健康打卡')
+	// 	console.log("\n================== 健康打卡 ==================\n");
+	// 	taskall = []
+	// 	for (let user of userList) {
+	// 		taskall.push(user.freeSign('健康打卡'))
+	// 	}
+	// 	await Promise.all(taskall)
 
-		console.log("\n================== 拍一拍 ==================\n");
-		await user.beat_info('拍一拍')
+	// 	console.log("\n================== 拍一拍 ==================\n");
+	// 	taskall = []
+	// 	for (let user of userList) {
+	// 		taskall.push(user.beat_info('拍一拍'))
+	// 	}
+	// 	await Promise.all(taskall)
 
-		console.log("\n================== 抽奖 ==================\n");
-		await user.Lottery_info('抽奖')
+	// 	console.log("\n================== 抽奖 ==================\n");
+	// 	await user.Lottery_info('抽奖')
 
-		console.log("\n================== 集卡任务  ==================\n");
-		await user.daySignPunch('养生签到')
-		await user.photoPunch('养生饮劲酒')
-		await user.quizPunch('养生学堂答题')
-		await user.queryClubList('每日逛逛')
-		await user.card_info('卡片信息')
+	// 	console.log("\n================== 集卡任务  ==================\n");
+	// 	await user.daySignPunch('养生签到')
+	// 	await user.photoPunch('养生饮劲酒')
+	// 	await user.quizPunch('养生学堂答题')
+	// 	await user.queryClubList('每日逛逛')
+	// 	await user.card_info('卡片信息')
 
-		console.log("\n================== 查积分 ==================\n");
-		await user.queryCustIntegral('查积分')
+	// 	console.log("\n================== 查积分 ==================\n");
+	// 	await user.queryCustIntegral('查积分')
 
+	// }
+
+}
+
+
+
+async function start_bf() {
+
+	console.log("\n================== 签到 ==================\n");
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.do_sign('签到'))
 	}
+	await Promise.all(taskall)
+
+	console.log("\n================== 健康打卡 ==================\n");
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.freeSign('健康打卡'))
+	}
+	await Promise.all(taskall)
+
+	console.log("\n================== 拍一拍 ==================\n");
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.beat_info('拍一拍'))
+	}
+	await Promise.all(taskall)
+
+	console.log("\n================== 抽奖 ==================\n");
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.Lottery_info('抽奖'))
+	}
+	await Promise.all(taskall)
+
+	console.log("\n================== 集卡任务  ==================\n");
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.daySignPunch('养生签到'))
+	}
+	await Promise.all(taskall)
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.photoPunch('养生饮劲酒'))
+	}
+	await Promise.all(taskall)
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.quizPunch('养生学堂答题'))
+	}
+	await Promise.all(taskall)
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.queryClubList('每日逛逛'))
+	}
+	await Promise.all(taskall)
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.card_info('卡片信息'))
+	}
+	await Promise.all(taskall)
+
+	console.log("\n================== 查积分 ==================\n");
+	taskall = []
+	for (var user of userList) {
+		taskall.push(user.queryCustIntegral('查积分'))
+	}
+	await Promise.all(taskall)
+
+
+
+
 
 }
 
@@ -547,6 +631,8 @@ class UserInfo {
 	if (!(await checkEnv())) return;
 	if (userList.length > 0) {
 		await start();
+		await start_bf();
+
 	}
 	await SendMsg(msg);
 })()
