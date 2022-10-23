@@ -33,6 +33,7 @@ let base = new Base64()
 async function start() {
 
 	for (let user of userList) {
+		await user.init('初始化')
 		await user.login('登录')
 		await user.lottery('抽奖')
 		await user.user_info('用户名')
@@ -48,15 +49,35 @@ class UserInfo {
 			this.ck = str.split('&')
 			this.ip = this.ck[0]
 			this.pa = this.ck[1]
-			this.d = $.randomString(64, 'abcdefhijkmnprstwxyz2345678')
-			this.c = `{"iv":"O2mzL1YQX+YARSVKF3\/+vg==","value":"pamPkk0Bgdrv0ec044zfqIq6piZlGpz4Bx8D5ZcXpfB7fF\/2VhE\/mkcOtxcIpsRB","mac":"${this.d}"}`
-			this.cook = `laravel_session=${encodeURIComponent(base.encode(this.c))}`
-			// console.log(this.cook);
 
 		} catch (e) {
 
 		}
 	}
+
+	async init(name) {
+		let options = {
+			method: "get",
+			url: `http://baijia.axwes.top:1003/login.html?login=1`,
+			headers: {
+				"Pragma": "no-cache",
+				"Proxy-Connection": "keep-alive",
+				'Upgrade-Insecure-Requests': 1,
+			},
+		}
+
+		let res = await login_Request(name, options);
+		// console.log(res.body);
+		let result = res.body
+
+		if (result) {
+			this._token = result.split('_token:"')[1].split('",')[0]
+			this.y = res.headers['set-cookie'][1]
+		}
+	}
+
+
+
 	async login(name) {
 		let options = {
 			method: "Post",
@@ -64,10 +85,10 @@ class UserInfo {
 			headers: {
 				"X-Requested-With": "XMLHttpRequest",
 				"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-				'Cookie': 'laravel_session=eyJpdiI6IlJPbW5WZVM3ZUhMbjdTN1wvaTBZODZnPT0iLCJ2YWx1ZSI6IjZCcVNVZnYrTG9taDJ2cFNxSWNta2w0bzQrZklrVTZQd2JIeGFhXC9EXC9mRDFQNmV4UXBRWkJFUkVUV3hSbkYzMiIsIm1hYyI6ImI4M2E1ZjY4ZjY0OWNhZWFmYWFlN2EyM2VhZGFjMmEzMjU3YWRkZWUyZmRjYjRhMWIzOWYxZmE2NjRmMGRlNGYifQ%3D%3D',
+				'Cookie': this.y
 
 			},
-			body: `_token=ebwX9gFbg7IXn0mzypHBAqBgkCKWynr5s8nwgOzN&username=${this.ip}&password=${this.pa}`
+			body: `_token=${this._token}&username=${this.ip}&password=${this.pa}`
 		};
 
 		let res = await login_Request(name, options);
@@ -78,9 +99,7 @@ class UserInfo {
 		if (result.status == 0) {
 
 			console.log(`账号 [${this.index}] ` + result.msg)
-			this.y = res.headers['set-cookie'][1]
-			this.x = res.headers['set-cookie'][0].split('=')[1].split(';')[0]
-			// console.log(this.x);
+			// this.y = res.headers['set-cookie'][1]
 			await wait(2)
 
 		}
@@ -132,6 +151,7 @@ class UserInfo {
 		};
 		let result = await httpResult(name, options);
 		if (result.state == 0) DoubleLog(`账号 [${this.index}]  ${name}: ${result.msg}`)
+		else if (result.state == 1) console.log(result);
 	}
 
 
@@ -228,7 +248,7 @@ async function httpResult(name, options) {
 	if (!name) {
 		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
 	}
-	// DoubleLog(`\n开始 ${name}`);
+	DoubleLog(`\n开始 ${name}`);
 	try {
 		let result = await utils.httpRequest(name, options)
 		if (result) return result

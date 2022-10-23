@@ -47,11 +47,11 @@ async function start() {
 	const asbh = new Script(ck[0], ck[1]);
 	await asbh.init("初始化");
 	await asbh.login("登录");
-	DoubleLog(`账号token信息\n`)
-	DoubleLog(token_info)
-	DoubleLog(`\n\n`);
-}
 
+}
+// DoubleLog(`账号token信息\n`)
+// DoubleLog(token_info)
+// DoubleLog(`\n\n`);
 
 
 let token, hostname, host, asbh_hd
@@ -147,6 +147,10 @@ class Script {
 		ck = ckArr[index].split("&");
 		await start();
 	}
+	DoubleLog(`账号token信息\n`)
+	DoubleLog(token_info)
+	DoubleLog(`\n\n`);
+
 	await SendMsg(msg);
 })()
 	.catch((e) => console.log(e))

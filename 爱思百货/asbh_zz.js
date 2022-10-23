@@ -21,11 +21,11 @@ tg频道: https://t.me/yml2213_tg
 */
 
 //-------------------- 配置区域 -----------------------------------------
-//  接受转赠的手机号  梦里梦:15614832213        yml:15339956683    机器人： 13754650804
-const phone_code = '13754650804'  			
-const zz_num = '5'  							//  转赠数量   0.3  1  5  10 更多自己看app
+//  接受转赠的手机号  梦里梦:15614832213        yml:15339956683   
+const phone_code = '15614832213'
+const zz_num = '5'  							//  转赠数量   0.3  1  5  10 更多自己看app   机器人： 13754650804  暂时黑了
 const zz_info = '16283181910&z3za8yg6'  	//  转赠的手机号和密码, 多账号用 换行 或 @ 分割
-const token_zz = '99272bbd5c298800a8793d45e9946113'  	//  转赠账号的 token
+const token_zz = '2cf1eab4613111215ff779267b7ccb71'  	//  转赠账号的 token
 
 
 //----------------------------------------------------------------------
@@ -33,7 +33,7 @@ const token_zz = '99272bbd5c298800a8793d45e9946113'  	//  转赠账号的 token
 
 
 
-const utils = require("./utils");
+const utils = require("yml2213-utils");
 const $ = new Env("爱思百货_转赠");
 const alias_name = "asbh";
 const notify = $.isNode() ? require("./sendNotify") : "";
@@ -44,7 +44,7 @@ let msg, ck;
 let ck_status = 1;
 //---------------------------------------------------------------------------------------------------------
 let VersionCheck = "0.2";
-let Change = "\n报错的自己下载 utils.js  放在脚本同级目录下\n完成签到,抽奖";
+let Change = "\n完成签到,抽奖";
 let thank = `\n感谢 心雨大佬脚本\n`;
 //---------------------------------------------------------------------------------------------------------
 
@@ -164,10 +164,10 @@ class Script {
 				"id": id
 			})
 		};
-		console.log(options);
+		// console.log(options);
 		let result = await network_request(name, options);
 
-		console.log(result);
+		// console.log(result);
 		if (result.code == 1) {
 			DoubleLog(`${name}: ${result.msg}`);
 		} else if (result.code == 0) {

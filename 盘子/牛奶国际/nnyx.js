@@ -33,6 +33,7 @@ let base = new Base64()
 async function start() {
 
 	for (let user of userList) {
+		await user.init('初始化')
 		await user.login('登录')
 		await user.lottery('抽奖')
 		await user.user_info('用户名')
@@ -56,16 +57,40 @@ class UserInfo {
 
 		}
 	}
+
+	async init(name) {
+		let options = {
+			method: "get",
+			url: `http://niunai.mkjng.top:1003/login.html?login=1`,
+			headers: {
+				"Pragma": "no-cache",
+				"Proxy-Connection": "keep-alive",
+				'Upgrade-Insecure-Requests': 1,
+			},
+		}
+
+		let res = await login_Request(name, options);
+		// console.log(res.body);
+		let result = res.body
+
+		if (result) {
+			this._token = result.split('_token:"')[1].split('",')[0]
+			this.y = res.headers['set-cookie'][1]
+			// console.log(this._token, this.y);
+		}
+	}
+
+
 	async login(name) {
 		let options = {
 			method: "Post",
 			url: `http://niunai.mkjng.top:1003/login.html`,
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-				'Cookie': 'laravel_session=eyJpdiI6Ilo3dm9HaVRFWG5Cd2o4YUZBYVZHMmc9PSIsInZhbHVlIjoiYXVDc3c0NnZvc3V2aEZ1UlFIVDVCNHMyZ3pYYXRQN3FTV3E4Z2UxQ1VKdWY2TnNzK1ZiSTBKUU1xZDgyeWtxYSIsIm1hYyI6ImExMzQ1NGMzZjZjYjE2MGFmOWU0MjI1YjEwOTQ4YTIyNWViYjFkMWM0OWI5OWNkZTM3ZjM2ZTQxMTM5ZDk2YzUifQ%3D%3D',
+				'Cookie': this.y,
 				'X-Requested-With': 'XMLHttpRequest'
 			},
-			body: `_token=AuBJTETPpDyRVrmgQYQPkWe0CZSP8JZN4rufVC1G&username=${this.ip}&password=${this.pa}`
+			body: `_token=${this._token}&username=${this.ip}&password=${this.pa}`
 		};
 
 		let res = await login_Request(name, options);
@@ -74,12 +99,8 @@ class UserInfo {
 
 		if (result.status == 0) {
 			console.log(`账号 [${this.index}] ` + result.msg)
-			this.y = res.headers['set-cookie'][1]
-			this.x = res.headers['set-cookie'][0].split('=')[1].split(';')[0]
-			// console.log(this.x);
+			// this.y = res.headers['set-cookie'][1]
 			await wait(2)
-			// await this.lottery('抽奖')
-			// await this.userindex('余额查询')
 		}
 		if (result.status !== 0) console.log(`账号 [${this.index}] ` + result)
 
@@ -130,6 +151,8 @@ class UserInfo {
 		};
 		let result = await httpResult(name, options);
 		if (result.state == 0) DoubleLog(`账号 [${this.index}]  ${name}: ${result.msg}`)
+		else if (result.state == 1) console.log(result);
+
 	}
 
 
