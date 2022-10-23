@@ -17,7 +17,7 @@ tg频道: https://t.me/yml2213_tg
 
 
 const $ = new Env("劲有家");
-const ckName = "jyj";
+
 try {
 	check_utils()
 	var utils = require("./utils");

@@ -22,10 +22,11 @@ const phone_zz = '13326283457'    // 注册手机号
 
 
 
-const utils = require("./utils");
 const $ = new Env("爱思百货-注册机");
+const utils = require("yml2213-utils");
+
 const alias_name = "asbh_reg";
-// const request = require('request');
+
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; 			//0为关闭通知,1为打开通知,默认为1
 //---------------------------------------------------------------------------------------------------------
@@ -38,22 +39,15 @@ let Change = "\n自己注册米云的账号   然后填写自己 apiname  账号
 let thank = `\n感谢 心雨大佬脚本\n`;
 //---------------------------------------------------------------------------------------------------------
 
-async function tips(ckArr) {
-	// let Version_latest = await Version_Check(alias_name, '1');
-	let Version = `\n📌 本地脚本: V ${VersionCheck}`;
-	DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
-	// DoubleLog(`${thank}`);
-	await utils.yiyan()
-	DoubleLog(`\n========== 共找到 ${ckArr.length} 个账号 ==========`);
-}
+
 
 async function start() {
-	const asbh_reg = new Asbh_reg(ck[0], ck[1]);
+	const asbh_reg = new Asbh_reg();
 	// await asbh_reg.init("初始化");
 	await asbh_reg.login("获取my_token");
 	if (ck_status) {
 		for (index = 0; index < reg_num; index++) {
-			await asbh_reg.register("注册");
+			// await asbh_reg.register("注册");
 		}
 		DoubleLog(`账号信息\n\n`)
 		DoubleLog(reg_data)
@@ -65,75 +59,12 @@ async function start() {
 
 let my_token = mobile = code = reg_data = user_token = ''
 class Asbh_reg {
-	constructor(apiName, pwd) {
-		this.apiName = apiName
-		this.pwd = pwd
+	constructor() {
+
 	}
 
 
-	// 获取 my_token   get  http://api.miyun.pro/api/login?apiName=API账号&password=用户密码
-	async login(name) {
-		let options = {
-			method: "get",
-			url: `http://api.miyun.pro/api/login?apiName=${this.apiName}&password=${this.pwd}`,
-			headers: {},
-		};
-		let result = await network_request(name, options);
 
-		// console.log(result);
-		if (result.message == 'ok') {
-			DoubleLog(`${name}: ${result.message}`);
-			my_token = result.token
-			await this.my_user_info('查询米云余额')
-			ck_status = 1
-		} else {
-			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
-			console.log(result);
-			ck_status = 0
-		}
-	}
-	// 查询米云余额  get  http://api.miyun.pro/api/get_myinfo?token=登录返回token
-	async my_user_info(name) {
-		let options = {
-			method: "get",
-			url: `http://api.miyun.pro/api/get_myinfo?token=${my_token}`,
-			headers: {},
-		};
-		let result = await network_request(name, options);
-
-		// console.log(result);
-		if (result.message == 'ok') {
-			DoubleLog(`${name}: 当前余额:${result.money}`);
-			if (result.money == 0) {
-				ck_status = 0
-			}
-		} else {
-			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
-			console.log(result);
-			ck_status = 0
-		}
-	}
-
-	// 获取手机号  get  http://api.miyun.pro/api/get_mobile?token=你的token&project_id=项目ID
-	async get_phone_num(name) {
-		let options = {
-			method: "get",
-			url: `http://api.miyun.pro/api/get_mobile?token=${my_token}&project_id=69828`,
-			headers: {},
-		};
-		let result = await network_request(name, options);
-
-		// console.log(result);
-		if (result.message == 'ok' && result.mobile != "") {
-			DoubleLog(`${name}: 成功, 当前号码为 ${result.mobile}`);
-			mobile = result.mobile
-			return mobile
-		} else {
-			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`);
-			console.log(result);
-			await this.get_phone_num('获取手机号')
-		}
-	}
 
 
 	// 发送验证码  post    https://multi.mallgo.net.cn/api/sms/send
@@ -195,7 +126,7 @@ class Asbh_reg {
 	// 注册  post   https://multi.mallgo.net.cn/api/account/register
 	async register(name) {
 		console.log(`\n================================================\n开始 第${index + 1}次${name}`);
-		await this.get_phone_num('获取手机号')
+		mobile = phone_zz
 		await this.send_code('发送验证码')
 		await this.get_code('获取验证码')
 
@@ -250,14 +181,10 @@ class Asbh_reg {
  * 账号处理
  */
 !(async () => {
-	let ckArr = await utils.checkEnv(ckStr, alias_name);
-	await tips(ckArr);
-	for (let index = 0; index < ckArr.length; index++) {
-		let num = index + 1;
-		DoubleLog(`\n-------- 开始【第 ${num} 个账号】--------`);
-		ck = ckArr[index].split("&");
-		await start();
-	}
+	// let ckArr = await utils.checkEnv(ckStr, alias_name);
+	// await tips(ckArr);
+
+	await start();
 	await SendMsg(msg);
 })()
 	.catch((e) => console.log(e))
