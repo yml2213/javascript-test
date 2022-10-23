@@ -147,28 +147,31 @@ class UserInfo {
 			id: 3,
 		};
 		let h = utils.local_hours();
-		if (id == 1 && num > 0) {
-			if (num == 2) {
-				await this.validityPeriod(name, body1, id, 65);
-				await this.validityPeriod(name, body1, id, 3);
-			} else if (num == 1) {
-				await this.validityPeriod(name, body1, id, 3);
-			}
-		} else if (id == 2 && num > 0 && h > 9) {
-			if (num == 2) {
-				await this.validityPeriod(name, body2, id, 65);
-				await this.validityPeriod(name, body2, id, 3);
-			} else if (num == 1) {
-				await this.validityPeriod(name, body2, id, 3);
-			}
-		} else if (id == 3 && num > 0 && h > 11) {
-			if (num == 2) {
-				await this.validityPeriod(name, body3, id, 65);
-				await this.validityPeriod(name, body3, id, 3);
-			} else if (num == 1) {
-				await this.validityPeriod(name, body3, id, 3);
+		if (num > 0) {
+			if (id == 1) {
+				if (num == 2 && h > 6) {
+					await this.validityPeriod(name, body1, id, 65);
+					await this.validityPeriod(name, body1, id, 3);
+				} else if (num == 1) {
+					await this.validityPeriod(name, body1, id, 3);
+				}
+			} else if (id == 2 && h >= 7) {
+				if (num == 2) {
+					await this.validityPeriod(name, body2, id, 65);
+					await this.validityPeriod(name, body2, id, 3);
+				} else if (num == 1) {
+					await this.validityPeriod(name, body2, id, 3);
+				}
+			} else if (id == 3 && h >= 8) {
+				if (num == 2) {
+					await this.validityPeriod(name, body3, id, 65);
+					await this.validityPeriod(name, body3, id, 3);
+				} else if (num == 1) {
+					await this.validityPeriod(name, body3, id, 3);
+				}
 			}
 		}
+
 	}
 
 	// 看视频    post   https://multi.mallgo.net.cn/api/bountyTask/validityPeriod
