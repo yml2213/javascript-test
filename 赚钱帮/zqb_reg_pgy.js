@@ -40,14 +40,14 @@ let ck_status = 1;
 async function start() {
 	for (let user of userList) {
 		await user.login("登录-获取 pgy_token");
-		// if (ck_status) {
-		// 	for (index = 0; index < reg_num; index++) {
-		// 		await user.register("注册");
-		// 	}
-		// 	DoubleLog(`账号信息\n\n`)
-		// 	DoubleLog(reg_data)
-		// 	DoubleLog(`\n\n`);
-		// }
+		if (ck_status) {
+			for (index = 0; index < reg_num; index++) {
+				await user.register("注册");
+			}
+			DoubleLog(`账号信息\n\n`)
+			DoubleLog(reg_data)
+			DoubleLog(`\n\n`);
+		}
 	}
 }
 
