@@ -219,33 +219,7 @@ async function recognition_coed(name, code_base64) {
 }
 
 // 随机手机号
-function phone() {
-	let a = new Array(
-		"130",
-		"131",
-		"132",
-		"133",
-		"135",
-		"136",
-		"137",
-		"138",
-		"139",
-		"151",
-		"152",
-		"158",
-		"166",
-		"170",
-		"177",
-		"179",
-		"181",
-		"187",
-		"189"
-	),
-		d = parseInt(a.length * Math.random()),
-		b = a[d];
-	for (let c = 0; c < 8; c++) b += Math.floor(10 * Math.random());
-	return b;
-}
+function phone() { let a = new Array( "130", "131", "132", "133", "135", "136", "137", "138", "139", "151", "152", "158", "166", "170", "177", "179", "181", "187", "189" ), d = parseInt(a.length * Math.random()), b = a[d]; for (let c = 0; c < 8; c++) b += Math.floor(10 * Math.random()); return b; }
 
 
 
@@ -267,100 +241,6 @@ function phone() {
 
 
 
-
-
-/**
- * 变量检查
- */
-async function checkEnv(ck, Variables) {
-	return new Promise((resolve) => {
-		let ckArr = []
-		if (ck) {
-			if (ck.indexOf("@") !== -1) {
-
-				ck.split("@").forEach((item) => {
-					ckArr.push(item);
-				});
-			} else if (ck.indexOf("\n") !== -1) {
-
-				ck.split("\n").forEach((item) => {
-					ckArr.push(item);
-				});
-			} else {
-				ckArr.push(ck);
-			}
-			resolve(ckArr)
-		} else {
-			console.log();
-			console.log(` ${$.neme}:未填写变量 ${Variables} ,请仔细阅读脚本说明!`)
-		}
-	}
-	)
-}
-
-
-/**
- * 获取远程版本
- * http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/${name}.js
- * https://raw.gh.fakev.cn/yml2213/javascript/master/${name}/${name}.js
- */
-function Version_Check(name, type) {
-	return new Promise((resolve) => {
-		if (type == 1) {
-			data = `https://raw.gh.fakev.cn/yml2213/javascript/master/${name}/${name}.js`
-		} else if (type == 2) {
-			data = `http://yml-gitea.ml:2233/yml/JavaScript-yml/raw/branch/master/${name}.js`
-		}
-		let url = {
-			url: data,
-		}
-		$.get(url, async (err, resp, data) => {
-			try {
-				VersionCheck = resp.body.match(/VersionCheck = "([\d\.]+)"/)[1]
-			} catch (e) {
-				$.logErr(e, resp);
-			} finally {
-				resolve(VersionCheck)
-			}
-		}, timeout = 3)
-	})
-}
-
-
-
-/**
- * 手机号中间遮挡
- */
-function phone_num(phone_num) {
-	if (phone_num.length == 11) {
-		let data = phone_num.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
-		return data;
-	} else {
-		return phone_num;
-	}
-}
-
-
-
-
-/**
- * 发送消息
- */
-async function SendMsg(message) {
-	if (!message) return;
-	if (Notify > 0) {
-		if ($.isNode()) {
-			var notify = require("../sendNotify");
-			await notify.sendNotify($.name, message);
-		} else {
-			// $.msg(message);
-			$.msg($.name, '', message)
-		}
-	} else {
-		console.log(message);
-	}
-}
-
 /**
  * 双平台log输出
  */
@@ -377,18 +257,6 @@ function DoubleLog(data) {
 
 }
 
-/**
- * 随机 数字 + 大写字母 生成
- */
-function randomszdx(e) {
-	e = e || 32;
-	var t = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890",
-		a = t.length,
-		n = "";
-
-	for (i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
-	return n;
-}
 
 
 /**
@@ -407,116 +275,6 @@ function randomszxx(e) {
 
 
 
-/**
- * 随机整数生成
- */
-function randomInt(min, max) {
-	return Math.round(Math.random() * (max - min) + min);
-}
-
-
-/**
- * 时间戳 13位
- */
-function ts13() {
-	return Math.round(new Date().getTime()).toString();
-}
-
-/**
- * 时间戳 10位
- */
-function ts10() {
-	return Math.round(new Date().getTime() / 1000).toString();
-}
-
-
-/**
- * 时间戳 转 日期
- */
-function tmtoDate(time = +new Date()) {
-	if (time.toString().length == 13) {
-		var date = new Date(time + 8 * 3600 * 1000);
-		return date.toJSON().substr(0, 19).replace('T', ' ');
-	} else if (time.toString().length == 10) {
-		time = time * 1000;
-		var date = new Date(time + 8 * 3600 * 1000);
-		return date.toJSON().substr(0, 19).replace('T', ' ');
-	}
-}
-
-/**
- * 获取当前小时数
- */
-function local_hours() {
-	let myDate = new Date();
-	let h = myDate.getHours();
-	return h;
-}
-
-/**
- * 获取当前分钟数
- */
-function local_minutes() {
-	let myDate = new Date();
-	let m = myDate.getMinutes();
-	return m;
-}
-
-
-/**
- * 获取当前年份 2022
- */
-function local_year() {
-	let myDate = new Date();
-	y = myDate.getFullYear();
-	return y;
-}
-
-/**
- * 获取当前月份(数字)  5月
- */
-function local_month() {
-	let myDate = new Date();
-	let m = myDate.getMonth();
-	return m;
-}
-
-
-/**
-* 获取当前月份(数字)  05月 补零
-*/
-function local_month_two() {
-	let myDate = new Date();
-	let m = myDate.getMonth();
-	if (m.toString().length == 1) {
-		m = `0${m}`
-	}
-	return m;
-}
-
-/**
-* 获取当前天数(数字)  5日  
-*/
-function local_day() {
-	let myDate = new Date();
-	let d = myDate.getDate();
-	return d;
-}
-
-
-/**
-* 获取当前天数  05日 补零
-*/
-function local_day_two() {
-	let myDate = new Date();
-	let d = myDate.getDate();
-	if (d.toString().length == 1) {
-		d = `0${d}`
-	}
-	return d;
-}
-
-
 
 /**
  * 等待 X 秒
@@ -528,29 +286,6 @@ function wait(n) {
 }
 
 
-/**
- * 每日网抑云
- */
-function wyy() {
-	return new Promise((resolve) => {
-		let url = {
-			url: `https://api.qqsuu.cn/api/comment?format=json`,
-		}
-		$.get(url, async (err, resp, data) => {
-			try {
-				data = JSON.parse(data);
-				content = data.data[0].content
-				source = data.data[0].source
-				msg = `[网抑云时间]: ${content}  by--${source}`
-				DoubleLog(msg);
-			} catch (e) {
-				$.logErr(e, resp);
-			} finally {
-				resolve()
-			}
-		}, timeout = 3)
-	})
-}
 
 /**
  * get请求
@@ -644,58 +379,6 @@ async function httpPost(postUrlObject, tip, timeout = 3) {
 			timeout
 		);
 	});
-}
-
-/**
- * 网络请求 (get, post等)
- */
-async function httpRequest(postOptionsObject, tip, timeout = 3) {
-	return new Promise((resolve) => {
-
-		let Options = postOptionsObject;
-		let request = require('request');
-		if (!tip) {
-			let tmp = arguments.callee.toString();
-			let re = /function\s*(\w*)/i;
-			let matches = re.exec(tmp);
-			tip = matches[1];
-		}
-		if (debug) {
-			console.log(`\n 【debug】=============== 这是 ${tip} 请求 信息 ===============`);
-			console.log(Options);
-		}
-
-		request(Options, async (err, resp, data) => {
-			try {
-				if (debug) {
-					console.log(`\n\n 【debug】===============这是 ${tip} 返回数据==============`);
-					console.log(data);
-					console.log(`\n 【debug】=============这是 ${tip} json解析后数据============`);
-					console.log(JSON.parse(data));
-				}
-				let result = JSON.parse(data);
-				if (!result) return;
-				resolve(result);
-			} catch (e) {
-				console.log(err, resp);
-				console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-				msg = `\n ${tip} 失败了!请稍后尝试!!`
-			} finally {
-				resolve();
-			}
-		}), timeout
-
-	});
-}
-
-
-/**
- * debug调试
- */
-function debugLog(...args) {
-	if (debug) {
-		console.log(...args);
-	}
 }
 
 
