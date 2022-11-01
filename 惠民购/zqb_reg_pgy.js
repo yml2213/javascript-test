@@ -2,23 +2,24 @@
 赚钱帮-注册机 
 cron 10 8 * * *  zqb_reg.js
 
-10.12		自己注册 飞鱼 的账号   然后填写自己 用户名 username  密码 pwd   即可
+10.12		自己注册 蒲公英 的账号   然后填写自己 用户名 username  密码 pwd   即可
 
-飞鱼链接(带邀请): http://h5.haozhuma.com/reg.html?action=yml2213
+蒲公英链接(带邀请): http://www.dbnx.xyz:7391?inviteCode=E5C2SUIXHSHH
+
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 赚钱帮-注册机  飞鱼 username  pwd
-export zqb_reg_fy=" username & pwd "
+# 赚钱帮-注册机  蒲公英 username  pwd
+export zqb_reg=" username & pwd "
 
 多账号用 换行 或 @ 分割 ,  报错的自己安装  yml2213-utils 依赖
 tg频道: https://t.me/yml2213_tg  
 */
 
 //-------------------- 配置区域 --------------------
-const reg_num = 1; 		//注册数量
+const reg_num = 1		 //注册数量
 
 const utils = require("yml2213-utils");
 const $ = new Env("赚钱帮-注册机");
-const ckName = "zqb_reg_fy";
+const ckName = "zqb_reg";
 //-------------------- 一般不动变量区域 -------------------------------------
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; //0为关闭通知,1为打开通知,默认为1
@@ -38,15 +39,15 @@ let ck_status = 1;
 
 async function start() {
 	for (let user of userList) {
-		await user.login("登录-获取 fy_token");
-		// if (ck_status) {
-		// 	for (index = 0; index < reg_num; index++) {
-		// 		await user.register("注册");
-		// 	}
-		// 	DoubleLog(`账号信息\n\n`)
-		// 	DoubleLog(reg_data)
-		// 	DoubleLog(`\n\n`);
-		// }
+		await user.login("登录-获取 pgy_token");
+		if (ck_status) {
+			for (index = 0; index < reg_num; index++) {
+				await user.register("注册");
+			}
+			DoubleLog(`账号信息\n\n`)
+			DoubleLog(reg_data)
+			DoubleLog(`\n\n`);
+		}
 	}
 }
 
@@ -55,57 +56,57 @@ class UserInfo {
 		ck = str.split("&");
 		this.username = ck[0];
 		this.pwd = ck[1];
-		this.fy_api = "api.haozhuma.com";
-		this.sid = "54518";
+		this.sid = "19270";
 	}
-	// 获取 fy_token   get 
+	// 获取 pgy_token   get  http://www.dbnx.xyz:7923/api/v1/login?username=xxxx&password=xxxx
 	async login(name) {
 		let options = {
 			method: "get",
 			url: `http://www.dbnx.xyz:7923/api/v1/login?username=${this.username}&password=${this.pwd}`,
 			headers: {},
 		};
-		let result = await httpRequest(name, options);
+		let result = await http_Request(name, options);
 
 		// console.log(result);
 		if (result.code == 1000) {
 			DoubleLog(`${name}: ${result.msg}`);
 			this.pgy_token = result.data.token;
-			// await this.pgy_user_info("查询蒲公英余额");
+			await this.pgy_user_info("查询蒲公英余额");
 		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result); return ck_status == 0;
 	}
 
-	// 查询飞鱼余额  get  http://服务器地址/sms/?api=getSummary&token=令牌
-	async fy_user_info(name) {
+	// 查询蒲公英余额  get  http://www.dbnx.xyz:7923/api/v1/getbalance?token=登录时获取的token
+	async pgy_user_info(name) {
 		let options = {
 			method: "get",
-			url: `http://${this.fy_api}/sms/?api=getSummary&token=${this.fy_token}`,
+			url: `http://www.dbnx.xyz:7923/api/v1/getbalance?token=${this.pgy_token}`,
 			headers: {},
 		};
-		let result = await httpRequest(name, options);
+		let result = await http_Request(name, options);
 
 		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`${name}: 当前余额:${result.money}`);
-			if (result.money == 0) {
+		if (result.code == 1000) {
+			DoubleLog(`${name}: 当前余额:${result.data.balance}`);
+			if (result.data.balance == 0) {
 				return ck_status == 0;
 			}
 		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
 	}
 
-	// 获取手机号  get   http://服务器地址/sms/?api=getPhone&token=用户令牌&sid=项目ID&country_code=国家代码&Province=省份&
+	// 获取手机号  get   http://www.dbnx.xyz:7923/api/v1/getphonenumber?token=你的token&projectId=14197
 	async get_phone_num(name) {
 		let options = {
 			method: "get",
-			url: `http://${this.fy_api}/sms/?api=getPhone&token=${this.fy_token}&sid=${this.sid}&country_code=CN`,
+			url: `http://www.dbnx.xyz:7923/api/v1/getphonenumber?token=${this.pgy_token}&projectId=${this.sid}`,
 			headers: {},
 		};
-		let result = await httpRequest(name, options);
+		let result = await http_Request(name, options);
 
 		// console.log(result);
-		if (result.code == 0 && result.phone != "") {
-			DoubleLog(`${name}: ${result.msg}, 当前号码为 ${result.phone}`);
-			this.phone = result.phone;
+		if (result.code == 1000 && result.data.mobileNo != "") {
+			DoubleLog(`${name}: ${result.msg}, 当前号码为 ${result.data.mobileNo}`);
+			this.phone = result.data.mobileNo;
+			this.mid = result.data.mid;
 		} else {
 			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
 			await this.get_phone_num("\n重新获取手机号");
@@ -128,7 +129,7 @@ class UserInfo {
 				event: "register",
 			},
 		};
-		let result = await httpRequest(name, options);
+		let result = await http_Request(name, options);
 
 		// console.log(result);
 		if (result.code == 1) {
@@ -141,19 +142,19 @@ class UserInfo {
 		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
 	}
 
-	// 获取验证码  get    http://服务器地址/sms/?api=getMessage&token=用户令牌&sid=项目ID&country_code=国家代码&phone=手机号
+	// 获取验证码  get    http://www.dbnx.xyz:7923/api/v1/getsms?token=你的token&mid=xxxxx
 	async get_code(name) {
 		let options = {
 			method: "get",
-			url: `http://${this.fy_api}/sms/?api=getMessage&token=${this.fy_token}&sid=${this.sid}&country_code=CN&phone=${this.phone}`,
+			url: `http://www.dbnx.xyz:7923/api/v1/getsms?token=${this.pgy_token}&mid=${this.mid}`,
 			headers: {},
 		};
-		let result = await httpRequest(name, options);
+		let result = await http_Request(name, options);
 
 		console.log(result);
-		if (result.code == 0 && result.yzm != "") {
-			DoubleLog(`${name}: 成功, 当前号码 ${mobile}, 本次验证码 ${result.yzm}`);
-			this.code = result.yzm;
+		if (result.code == 1000 && result.data.SMS != "") {
+			DoubleLog(`${name}: 成功, 当前号码 ${this.phone}, 本次验证码 ${result.data.SMS}`);
+			this.code = result.data.SMS.split('验证码')[1].split('该')[0];
 		} else {
 			DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
 			await this.cancelRecv('释放手机号')
@@ -163,20 +164,18 @@ class UserInfo {
 		}
 	}
 
-	// 释放手机号  get    http://服务器地址/sms/?api=cancelRecv&token=用户令牌&sid=项目ID&country_code=国家代码&phone=手机号
+	// 释放手机号  get   http://www.dbnx.xyz:7923/api/v1/releasenumber?token=你的token&mid=xxxxxxx
 	async cancelRecv(name) {
 		let options = {
 			method: "get",
-			url: `http://${this.fy_api}/sms/?api=cancelRecv&token=${this.fy_token}&sid=${this.sid}&country_code=CN&phone=${this.phone}`,
+			url: `http://www.dbnx.xyz:7923/api/v1/releasenumber?token=${this.pgy_token}&mid=${this.mid}`,
 			headers: {},
 		};
-		let result = await httpRequest(name, options);
+		let result = await http_Request(name, options);
 
 		console.log(result);
-		if (result.code == 0) {
+		if (result.code == 1000) {
 			DoubleLog(`${name}: 成功, 当前号码 ${this.phone} 已释放`);
-		} else if (result.code == -1) {
-			DoubleLog(`${name}: 失败, 释放 ${this.phone} ---- ${result.msg} `);
 		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
 
 	}
@@ -210,7 +209,7 @@ class UserInfo {
 				client: 6,
 			},
 		};
-		let result = await httpRequest(name, options);
+		let result = await http_Request(name, options);
 
 		console.log(result);
 		if (result.code == 1) {
@@ -256,6 +255,107 @@ async function checkEnv() {
 }
 
 // =========================================== 不懂不要动 =========================================================
-function Env(name, e) { class s { constructor(name) { this.env = name; } } return new (class { constructor(name) { (this.name = name), (this.logs = []), (this.startTime = new Date().getTime()), this.log(`\n🔔${this.name}, 开始!`); } isNode() { return "undefined" != typeof module && !!module.exports; } log(...name) { name.length > 0 && (this.logs = [...this.logs, ...name]), console.log(name.join(this.logSeparator)); } done() { const e = new Date().getTime(), s = (e - this.startTime) / 1e3; this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`); } })(name, e); } async function httpRequest(name, options) { if (!name) { name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1]; } try { let result = await utils.httpRequest(name, options); if (result) { return result; } else { DoubleLog(`未知错误(1)`); } } catch (error) { console.log(error); } } async function SendMsg(message) { if (!message) return; if (Notify > 0) { if ($.isNode()) { var notify = require("./sendNotify"); await notify.sendNotify($.name, message); } else { console.log($.name, "", message); } } else { console.log(message); } } function wait(n) { return new Promise(function (resolve) { setTimeout(resolve, n * 1000); }); } function DoubleLog(data) { console.log(`    ${data}`); msg += `\n    ${data}`; }
+function Env(name, e) {
+	class s {
+		constructor(name) {
+			this.env = name;
+		}
+	}
+	return new (class {
+		constructor(name) {
+			(this.name = name),
+				(this.logs = []),
+				(this.startTime = new Date().getTime()),
+				this.log(`\n🔔${this.name}, 开始!`);
+		}
+		isNode() {
+			return "undefined" != typeof module && !!module.exports;
+		}
+		log(...name) {
+			name.length > 0 && (this.logs = [...this.logs, ...name]),
+				console.log(name.join(this.logSeparator));
+		}
+		done() {
+			const e = new Date().getTime(),
+				s = (e - this.startTime) / 1e3;
+			this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`);
+		}
+	})(name, e);
+}
+async function http_Request(name, options) {
+	const request = require('request')
+	if (!name) {
+		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
+	}
+	try {
+		request(options, function (error, response) {
+			if (error) throw new Error(error);
+			console.log(response.body);
+		});
+
+
+
+		// request(options, function (error, response) {
+		// 	if (error) {
+		// 		console.log(error);
+		// 		// throw new Error(error);
+		// 	}
+		// 	console.log(response);
+		// 	// response.body
+		// 	let data = response.body;
+		// 	// console.log(typeof (data));
+		// 	if (typeof data == "string") {
+		// 		if (isJsonString(data)) {
+		// 			let result = JSON.parse(data);
+		// 			resolve(result);
+		// 		} else {
+		// 			let result = data;
+		// 			resolve(result);
+		// 		}
+		// 		function isJsonString(str) {
+		// 			if (typeof str == "string") {
+		// 				try {
+		// 					if (typeof JSON.parse(str) == "object") {
+		// 						return true;
+		// 					}
+		// 				} catch (e) {
+		// 					return false;
+		// 				}
+		// 			}
+		// 			return false;
+		// 		}
+		// 	} else {
+		// 		let result = data;
+		// 		resolve(result);
+		// 	}
+
+		// });
+
+	} catch (error) {
+		console.log(error);
+	}
+}
+async function SendMsg(message) {
+	if (!message) return;
+	if (Notify > 0) {
+		if ($.isNode()) {
+			var notify = require("./sendNotify");
+			await notify.sendNotify($.name, message);
+		} else {
+			console.log($.name, "", message);
+		}
+	} else {
+		console.log(message);
+	}
+}
+function wait(n) {
+	return new Promise(function (resolve) {
+		setTimeout(resolve, n * 1000);
+	});
+}
+function DoubleLog(data) {
+	console.log(`    ${data}`);
+	msg += `\n    ${data}`;
+}
 
 //#endregion

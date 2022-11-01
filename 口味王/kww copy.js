@@ -1,29 +1,29 @@
 /*
-赚钱帮-注册机 
-cron 10 8 * * *  zqb_reg.js
+口味王  小程序 
+cron 10 7 * * *  kww.js
 
-10.12		自己注册 飞鱼 的账号   然后填写自己 用户名 username  密码 pwd   即可
+10.27				
 
-飞鱼链接(带邀请): http://h5.haozhuma.com/reg.html?action=yml2213
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 赚钱帮-注册机  飞鱼 username  pwd
-export zqb_reg_fy=" username & pwd "
+# 口味王
+export kww=" uid @ uid "
 
-多账号用 换行 或 @ 分割 ,  报错的自己安装  yml2213-utils 依赖
+
+多账号用 换行 或 @ 分割
+
 tg频道: https://t.me/yml2213_tg  
 */
 
-//-------------------- 配置区域 --------------------
-const reg_num = 1; 		//注册数量
+
 
 const utils = require("yml2213-utils");
-const $ = new Env("赚钱帮-注册机");
-const ckName = "zqb_reg_fy";
+const $ = new Env("口味王");
+const ckName = "kww";
 //-------------------- 一般不动变量区域 -------------------------------------
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; //0为关闭通知,1为打开通知,默认为1
+const Notify = 1;		 //0为关闭通知,1为打开通知,默认为1
 let envSplitor = ["@", "\n"];
-let ck = (msg = "");
+let ck = msg = "";
 // let httpRequest
 let userCookie = process.env[ckName];
 let userList = [];
@@ -34,43 +34,45 @@ let VersionCheck = "0.1";
 let ck_status = 1;
 // let token_zz_10 = ''
 //---------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------
+
 
 async function start() {
 	for (let user of userList) {
-		await user.login("登录-获取 fy_token");
-		// if (ck_status) {
-		// 	for (index = 0; index < reg_num; index++) {
-		// 		await user.register("注册");
-		// 	}
-		// 	DoubleLog(`账号信息\n\n`)
-		// 	DoubleLog(reg_data)
-		// 	DoubleLog(`\n\n`);
-		// }
+		await user.login('登录');
+		if (ck_status) {
+			// await user_info('用户信息');
+			// await signin('签到');
+			// await task_list('任务列表');
+		}
 	}
 }
 
 class UserInfo {
 	constructor(str) {
-		ck = str.split("&");
-		this.username = ck[0];
-		this.pwd = ck[1];
-		this.fy_api = "api.haozhuma.com";
-		this.sid = "54518";
+		// ck = str.split("&");
+		this.uid = str;
+		this.host = "89420.activity-20.m.duiba.com.cn";
+		this.hostname = 'https://' + this.host;
 	}
 	// 获取 fy_token   get 
 	async login(name) {
 		let options = {
 			method: "get",
-			url: `http://www.dbnx.xyz:7923/api/v1/login?username=${this.username}&password=${this.pwd}`,
-			headers: {},
+			url: `https://member.kwwblcj.com/member/api/info/?userKeys=v1.0&pageName=loginFreePlugin&formName=searchForm&uid=${this.uid}&levelCode=1&redirect=https%3A%2F%2F89420.activity-20.m.duiba.com.cn%2Fprojectx%2Fp85657820%2Findex.html%3FappID%3D89420`,
+			headers: {
+				'Host': 'member.kwwblcj.com',
+				'charset': 'utf-8',
+				'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4317 MMWEBSDK/20220903 Mobile Safari/537.36 MMWEBID/8801 MicroMessenger/8.0.28.2240(0x28001C3D) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android',
+				'Content-Type': 'application/json',
+				'Referer': 'https://servicewechat.com/wxfb0905b0787971ad/24/page-frame.html'
+			},
 		};
 		let result = await httpRequest(name, options);
 
-		// console.log(result);
-		if (result.code == 1000) {
+		console.log(result);
+		if (result.flag == 'T') {
 			DoubleLog(`${name}: ${result.msg}`);
-			this.pgy_token = result.data.token;
+			this.login_url = result.result;
 			// await this.pgy_user_info("查询蒲公英余额");
 		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result); return ck_status == 0;
 	}

@@ -25,17 +25,17 @@ tg频道: https://t.me/yml2213_tg
 
 /*
 
-1a7c90ebf90415d2c401836a0d583996
-4dab99d10942280aaf17ef5f2c9a2df9
+ 1cc4af19b35167c37b9fbbbe3dee6be1
+595faea5edeb8b8adee1ff409cde340b
 
 */
 
 //-------------------- 配置区域 -----------------------------------------
 //  接受转赠的手机号  梦里梦:15614832213      yml:15339956683   
-const phone_code = '15614832213'
+const phone_code = '15339956683'
 const zz_num = '5'  						//  转赠数量   0.3  1  5  10 更多自己看app    机器人： 13754650804  黑了
 const zz_info = '16283181910&z3za8yg6'  	//  转赠的手机号和密码, 多账号用 换行 或 @ 分割
-const token_zz = '4dab99d10942280aaf17ef5f2c9a2df9'  	//  转赠账号的 token
+const token_zz = '595faea5edeb8b8adee1ff409cde340b'  	//  转赠账号的 token
 //----------------------------------------------------------------------
 
 
