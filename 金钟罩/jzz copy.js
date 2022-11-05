@@ -53,29 +53,27 @@ let plarr = [
 
 async function start() {
 
-	if (userList.length > 0) {
-		console.log("\n------- 签到 -------\n");
-		taskall = [];
-		for (let user of userList) {
-			taskall.push(user.grxx("签到"));
-		}
-		await Promise.all(taskall);
-
-
-		console.log("\n------- 任务列表 -------\n");
-		taskall = [];
-		for (let user of userList) {
-			taskall.push(user.rw("任务列表"));
-		}
-		await Promise.all(taskall);
-
-		console.log("\n------- 平台积分查询 -------\n");
-		taskall = [];
-		for (let user of userList) {
-			taskall.push(user.sign_in_info("平台积分查询"));
-		}
-		await Promise.all(taskall);
+	console.log("\n------- 签到 -------\n");
+	taskall = [];
+	for (let user of userList) {
+		taskall.push(user.grxx("签到"));
 	}
+	await Promise.all(taskall);
+
+
+	console.log("\n------- 任务列表 -------\n");
+	taskall = [];
+	for (let user of userList) {
+		taskall.push(user.rw("任务列表"));
+	}
+	await Promise.all(taskall);
+
+	console.log("\n------- 平台积分查询 -------\n");
+	taskall = [];
+	for (let user of userList) {
+		taskall.push(user.sign_in_info("平台积分查询"));
+	}
+	await Promise.all(taskall);
 }
 
 class UserInfo {
