@@ -1,25 +1,24 @@
 /*
-资金盘!!!!  
-炬福臻选  三天换健康包  别人实测到货
-注册地址 :www.xwctldk.cn  邀请码联系我
-11.	7	
+掌上温岭      cron 10 8,10,12 * * *  zhwl.js
+
+11.7		yml改
+
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 金钟罩
-export jfzxck=" 手机号&密码"
+# 掌上温岭
+export zhwl_data=" phone & pwd "
 
 多账号用 换行 或 @ 分割 ,  报错的自己安装  yml2213-utils 依赖
 tg频道: https://t.me/yml2213_tg  
 */
 
 const utils = require("yml2213-utils");
-const $ = new Env("炬福臻选");
-const ckName = "jfzxck";
+const $ = new Env("掌上温岭");
+const ckName = "zhwl_data";
 //-------------------- 一般不动变量区域 -------------------------------------
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; //0为关闭通知,1为打开通知,默认为1
+const Notify = 1; 			// 通知 : 0关闭 1为打开
 let envSplitor = ["@", "\n"];
-let ck = (msg = "");
-// let httpRequest
+let ck = msg = "";
 let userCookie = process.env[ckName];
 let userList = [];
 let userIdx = 0;
@@ -28,153 +27,101 @@ let ck_status = 1;
 //---------------------- 自定义变量区域 -----------------------------------
 
 
+
 //---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
 
 async function start() {
 
-	if (userList.length > 0) {
-		console.log("\n------- 登录 -------\n");
-		taskall = [];
-		for (let user of userList) {
-			taskall.push(user.grxx("登录"));
-		}
-		await Promise.all(taskall);
-
-		console.log("\n------- 积分查询 -------\n");
-		taskall = [];
-		for (let user of userList) {
-			taskall.push(user.jfcx("积分查询"));
-		}
-		await Promise.all(taskall);
+	console.log("\n------- 登陆和签到 -------\n");
+	taskall = [];
+	for (let user of userList) {
+		taskall.push(user.cashck("登陆和签到"));
 	}
+	await Promise.all(taskall);
+
 }
 
 class UserInfo {
 	constructor(str) {
-		this.nickname = ++userIdx;
+		this.index = ++userIdx;
 		this.valid = false;
-		ck = str.split("&");
-		this.user = ck[0];
-		this.mima = ck[1];
-		this.ckValid = true;
+
+		let ck = str.split("&");
+		this.username = ck[0];
+		this.password = ck[1];
+
 	}
 
-	//个人信息
-	async grxx(name) {
+	//登录
+	async cashck(name) {
 		let options = {
-			method: "get",
-			url: `https://www.xwctldk.cn/api/api/config`,
+			method: "post",
+			url: `https://api.coincheckusq.xyz//login`,
 			headers: {
-				"Host": "www.xwctldk.cn",
-				"Connection": "keep-alive",
-				"Sec-Fetch-Dest": "empty",
-				"Accept": "*/*",
-				"X-Requested-With": "mark.via",
-				"Sec-Fetch-Site": "same-origin",
-				"Sec-Fetch-Mode": "cors"
+				"Host": "api.coincheckusq.xyz",
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			form: {
+				'username': this.username,
+				'password': this.password
 			}
 		};
 		let result = await httpRequest(name, options);
 
 		// console.log(result);
-		if (result.code == 200) {
-			this.ssid = result.data.ssid
-			await this.login("登录");
-		}
+		if (result.code == 0) {
+			DoubleLog(`账号 ${this.index}  ${name}:  ${result.msg}`);
+			this.token = result.data.token;
+			await this.sign("签到"), await this.total("余额");
+		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
 	}
 
-	// 登录
-	async login(name) {
-		let options = {
-			method: "post",
-			url: `https://www.xwctldk.cn/api/api/login`,
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: `{"username":"${this.user}","password":"${this.mima}","ssid":"${this.ssid}"}`,
-
-		};
-		// console.log(options);
-		let result = await httpRequest(name, options);
-		//console.log(result);
-		if (result.code == 200) {
-			DoubleLog(`${name}: 账号 ${this.user}  ${result.msg}`)
-			this.ssid = result.ssid
-			await this.sign("签到"), await this.zp("抽奖")
-		}
-	}
-
-	// 签到
 	async sign(name) {
 		let options = {
 			method: "post",
-			url: `https://www.xwctldk.cn/user/info/checkin2`,
+			url: `https://api.coincheckusq.xyz//sign`,
 			headers: {
-				"Host": "www.xwctldk.cn",
-				"Connection": "keep-alive",
-				"Content-Length": "27",
-				"Content-Type": "application/json;charset\u003dUTF-8"
+				"Host": "api.coincheckusq.xyz",
+				'authorization': `Bearer ${this.token}`
 			},
-			body: `{"ssid":"${this.ssid}"}`
+			body: `integral=0`
 		};
+		// console.log(options);
 		let result = await httpRequest(name, options);
 
 		// console.log(result);
-		if (result.code == 200) {
-			DoubleLog(`${name}: 账号 ${this.user}  ${result.msg}`);
-		} else if (result.code == 410) {
-			DoubleLog(`${name}: 账号 ${this.user}  ${result.msg}`);
-		}
+		if (result.code == 0) {
+			DoubleLog(`账号 ${this.index}  ${name}: ${result.data}`);
+		} else if (result.code == 1) {
+			DoubleLog(`账号 ${this.index}  ${name}: ${result.msg}`);
+		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
 	}
 
-	//转盘抽奖
-	async zp(name) {
+
+	async total(name) {
 		let options = {
-			method: "post",
-			url: `https://www.xwctldk.cn/user/prize/apply`,
+			method: "get",
+			url: `https://api.coincheckusq.xyz//total`,
 			headers: {
-				"Host": "www.xwctldk.cn",
-				"Connection": "keep-alive",
-				"Content-Length": "27",
-				"Content-Type": "application/json;charset\u003dUTF-8"
+				"Host": "api.coincheckusq.xyz",
+				'authorization': `Bearer ${this.token}`
 			},
-			body: `{"ssid":"${this.ssid}"}`
 		};
+		// console.log(options);
 		let result = await httpRequest(name, options);
 
 		// console.log(result);
-		if (result.code == 200) {
-			DoubleLog(`${name}: 账号 ${this.user}  ${result.msg}`);
-		} else if (result.code == 410) {
-			DoubleLog(`${name}: 账号 ${this.user}  ${result.msg}`);
-		}
+		if (result.code == 0) {
+			DoubleLog(`账号 ${this.index}  ${name}: 可提现 ${result.data.total_assets} 元`);
+		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
 	}
 
-	// 积分查询
-	async jfcx(name) {
-		let options = {
-			method: "post",
-			url: `https://www.xwctldk.cn/user/info/index`,
-			headers: {
-				"Host": "www.xwctldk.cn",
-				"Connection": "keep-alive",
-				"Content-Length": "27",
-				"Content-Type": "application/json;charset\u003dUTF-8"
-			},
-			body: `{"ssid":"${this.ssid}"}`
-		};
-		let result = await httpRequest(name, options);
 
-		// console.log(result);
-		if (result.code == 200) {
-			DoubleLog(`${name}: 账号 ${this.user}  积分${result.data.carbon_info.total_jlz} 余额${result.data.money}`);
-		} else if (result.code == 410) {
-			DoubleLog(`${name}: 账号 ${this.user}  ${result.msg}`);
-		}
-	}
+
 
 }
+
 
 
 // #region ********************************************************  固定代码  ********************************************************
