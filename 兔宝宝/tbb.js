@@ -1,132 +1,118 @@
 /*
-九芝堂  盘子 自己玩就行    cron 10 8,10,12 * * *  jzt.js
+兔宝宝  小程序
 
-11.7		yml改
+cron 10 8,10 * * *  tbb.js
 
-------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 九芝堂
-export jztck=" usrid & token "
+========= 青龙--配置文件--贴心复制区域  ========= 
+# 兔宝宝
+export tbb=' token & token ' 
 
-usrid 和 token
+抓  www.tubaobao.com  的 token
 
-多账号用 换行 或 @ 分割 ,  报错的自己安装  yml2213-utils 依赖
+多账号用 换行 或 @ 分割
 tg频道: https://t.me/yml2213_tg  
 */
 
+
 const utils = require("yml2213-utils");
-const $ = new Env("九芝堂");
-const ckName = "jztck";
+const $ = new Env("兔宝宝");
+const ckName = "tbb";
 //-------------------- 一般不动变量区域 -------------------------------------
 const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; 			// 通知 : 0关闭 1为打开
+const Notify = 1;		 //0为关闭通知,1为打开通知,默认为1
 let envSplitor = ["@", "\n"];
-let ck = msg = "";
+let ck = msg = '';
+let host, hostname;
 let userCookie = process.env[ckName];
 let userList = [];
 let userIdx = 0;
 let userCount = 0;
-let ck_status = 1;
 //---------------------- 自定义变量区域 -----------------------------------
 
-
-
-//---------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------
+let app_id = 14;
+let text = sign = '';
+//---------------------------------------------------------
 
 async function start() {
 
-	console.log("\n------- 登陆和签到 -------\n");
+
+	console.log('\n================== 用户信息 ==================\n');
 	taskall = [];
 	for (let user of userList) {
-		taskall.push(user.cashck("登陆和签到"));
+		taskall.push(user.user_info('用户信息'));
 	}
 	await Promise.all(taskall);
 
+
+
+
+
 }
+
 
 class UserInfo {
 	constructor(str) {
 		this.index = ++userIdx;
-		this.valid = false;
-
-		let ck = str.split("&");
-		this.usrid = ck[0];
-		this.token = ck[1];
-
+		this.token = str;
 	}
 
-	//登录
-	async cashck(name) {
+	async signin(name) { //签到
 		let options = {
 			method: "post",
-			url: `https://api.coincheckusq.xyz//login`,
+			url: `https://www.tubaobao.com/mini/index/sign`,
 			headers: {
-				"Host": "api.coincheckusq.xyz",
-				'Content-Type': 'application/x-www-form-urlencoded'
+				'charset': 'utf-8',
+				'content-type': 'application/x-www-form-urlencoded'
 			},
 			form: {
-				'username': this.username,
-				'password': this.password
+				'token': this.token
 			}
 		};
-		let result = await httpRequest(name, options);
 
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号 ${this.index}  ${name}:  ${result.msg}`);
-			this.token = result.data.token;
-			await this.sign("签到"), await this.total("余额");
-		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
+		// console.log(options);
+		let res = await httpRequest(name, options);
+
+		// console.log(res);
+		if (res.flag == 1) {
+			DoubleLog(`账号[${this.index}]  ${name}" ${res.msg}, 签到天数 ${result.data.day}, 其他:${res.extra}`);
+			await wait(2);
+		} else if (res.flag == -1) {
+			DoubleLog(`账号[${this.index}]  ${name}" ${res.msg}`);
+			await wait(2);
+		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(res);
+
 	}
 
-	async sign(name) {
+
+
+
+	async user_info(name) { // 用户信息
+
 		let options = {
 			method: "post",
-			url: `https://api.coincheckusq.xyz//sign`,
+			url: `https://www.tubaobao.com/mini/index/user_profile`,
 			headers: {
-				"Host": "api.coincheckusq.xyz",
-				'authorization': `Bearer ${this.token}`
+				'charset': 'utf-8',
+				'content-type': 'application/x-www-form-urlencoded'
 			},
-			body: `integral=0`
+			form: {
+				'token': this.token
+			}
 		};
+
 		// console.log(options);
-		let result = await httpRequest(name, options);
+		let res = await httpRequest(name, options);
 
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号 ${this.index}  ${name}: ${result.data}`);
-		} else if (result.code == 1) {
-			DoubleLog(`账号 ${this.index}  ${name}: ${result.msg}`);
-		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
+		// console.log(res);
+		if (res.flag == 1) {
+			DoubleLog(`账号[${this.index}]   ${res.data.user_nickname}, 手机号: ${utils.phone_num(res.data.user_phone)}, 积分 ${res.data.user_score}, 邀请码 ${res.data.user_invite_code} `);
+			await wait(2);
+			await this.signin('签到');
+		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(res);
 	}
-
-
-	async total(name) {
-		let options = {
-			method: "get",
-			url: `https://api.coincheckusq.xyz//total`,
-			headers: {
-				"Host": "api.coincheckusq.xyz",
-				'authorization': `Bearer ${this.token}`
-			},
-		};
-		// console.log(options);
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号 ${this.index}  ${name}: 可提现 ${result.data.total_assets} 元`);
-		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
-	}
-
-
 
 
 }
-
-
-
-// #region ********************************************************  固定代码  ********************************************************
 
 !(async () => {
 	if (!(await checkEnv())) return;
@@ -138,10 +124,14 @@ class UserInfo {
 	.catch((e) => console.log(e))
 	.finally(() => $.done());
 
-///////////////////////////////////////////////////////////////////
 
+// #region ********************************************************  固定代码  ********************************************************
+
+
+// 变量检查与处理
 async function checkEnv() {
 	if (userCookie) {
+		// console.log(userCookie);
 		let e = envSplitor[0];
 		for (let o of envSplitor)
 			if (userCookie.indexOf(o) > -1) {
@@ -149,9 +139,7 @@ async function checkEnv() {
 				break;
 			}
 		for (let n of userCookie.split(e)) n && userList.push(new UserInfo(n));
-		// console.log(n);
 		userCount = userList.length;
-		// console.log(userList);
 	} else {
 		console.log("未找到CK");
 		return;
@@ -159,7 +147,8 @@ async function checkEnv() {
 	return console.log(`共找到${userCount}个账号`), !0;
 }
 
+
+
 // =========================================== 不懂不要动 =========================================================
 function Env(name, e) { class s { constructor(name) { this.env = name; } } return new (class { constructor(name) { (this.name = name), (this.logs = []), (this.startTime = new Date().getTime()), this.log(`\n🔔${this.name}, 开始!`); } isNode() { return "undefined" != typeof module && !!module.exports; } log(...name) { name.length > 0 && (this.logs = [...this.logs, ...name]), console.log(name.join(this.logSeparator)); } done() { const e = new Date().getTime(), s = (e - this.startTime) / 1e3; this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`); } })(name, e); } async function httpRequest(name, options) { if (!name) { name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1]; } try { let result = await utils.httpRequest(name, options); if (result) { return result; } { DoubleLog(`未知错误(1)`); } } catch (error) { console.log(error); } } async function SendMsg(message) { if (!message) return; if (Notify > 0) { if ($.isNode()) { var notify = require("./sendNotify"); await notify.sendNotify($.name, message); } else { console.log($.name, "", message); } } else { console.log(message); } } function wait(n) { return new Promise(function (resolve) { setTimeout(resolve, n * 1000); }); } function DoubleLog(data) { console.log(`    ${data}`); msg += `\n    ${data}`; }
 
-//#endregion
