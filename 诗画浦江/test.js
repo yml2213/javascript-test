@@ -1,539 +1,292 @@
-/*
-诗画浦江  app
-
-cron 10 8,10 * * *  shpj.js
-
-========= 青龙--配置文件--贴心复制区域  ========= 
-# 诗画浦江
-export shpj=' x-session-id & x-request-id ' 
-
-
-多账号用 换行 或 @ 分割
-tg频道: https://t.me/yml2213_tg  
-*/
-
-const utils = require("yml2213-utils");
-const $ = new Env("诗画浦江"); // 1.名字改了
-const ckName = "shpj"; // 2. 英文名字改一下
-//-------------------- 一般不动变量区域 -------------------------------------      // 3. 不用管
-const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1; //0为关闭通知,1为打开通知,默认为1
-let envSplitor = ["@", "\n"];
-let ck = (msg = "");
-let host, hostname;
-let userCookie = process.env[ckName];
-let userList = [];
-let userIdx = 0;
-let userCount = 0;
-//---------------------- 自定义变量区域 -----------------------------------      // 4. 要杀变量自己加
-
-let app_id = 14;
-let text = (sign = "");
-//---------------------------------------------------------
-
-async function start() {
-	// 5. 开始任务区域   自己按照格式加
-
-	console.log("\n================== 用户信息 ==================\n");
-	taskall = [];
-	for (let user of userList) {
-		taskall.push(user.user_info("用户信息"));
-	}
-	await Promise.all(taskall);
-
-	console.log("\n================== 任务列表 ==================\n");
-	taskall = [];
-	for (let user of userList) {
-		taskall.push(user.task_list("任务列表"));
-	}
-	await Promise.all(taskall);
-}
-
-// 6. 一整个class   就是完整的任务
-class UserInfo {
-	constructor(str) {
-		// 7. 构造函数  处理变量等    用 this 挂在对象上
-		this.index = ++userIdx;
-		this.ck = str.split("&");
-		this.xs = this.ck[0];
-		this.xr = this.ck[1];
-		this.salt = "FR*r!isE5W";
-		this.id = app_id;
-		this.ts = utils.ts13();
-	}
-
-	// 8. 每个函数实现一个功能
-	async signin(name) {
-		//签到
-		let path = "/api/user_mumber/sign";
-		let sign = this.get_sign(path);
-
-		let options = {
-			//9. 就是组成请求的数据
-			method: "Get",
-			url: `https://vapp.tmuyun.com${path}`, // 9. url
-			headers: {
-				// 9. headers
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				Host: "vapp.tmuyun.com",
+a = {
+	"code": 0,
+	"msg": "success",
+	"data": {
+		"ordinary_tasks": [
+			{
+				"type": 1,
+				"type_name": "每日任务",
+				"tasks": [
+					{
+						"id": "324",
+						"title": "淘金小游戏",
+						"task_name": "panning_mini_game_entry",
+						"url": "https://papi.mama.cn/wap/game_mineral?source=1",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "122",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_panning_mini_game_entry",
+						"credits_desc": "+100",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "284",
+						"title": "社区创作",
+						"task_name": "lightpost_camp_index",
+						"url": "https://act.mama.cn/subject/index-id-lightpostcamp.html#/",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "103",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_lightpost_camp_index",
+						"credits_desc": "+1000",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "261",
+						"title": "社区回帖",
+						"task_name": "reply_zero_thread",
+						"url": "https://van.mama.cn/welfare/v6/welfare/index/indexV3#/post",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "102",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_reply_zero_thread",
+						"credits_desc": "+50",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "20",
+						"title": "上传宝宝照片",
+						"task_name": "write_pregnancy_record",
+						"url": "q://welfare?app=pt&task=write_pregnancy_record",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "101",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_write_pregnancy_record",
+						"credits_desc": "+30",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "23",
+						"title": "分享帖子",
+						"task_name": "share_thread",
+						"url": "q://welfare?app=pt&task=share_thread",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "80",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_share_thread",
+						"credits_desc": "+20",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "16",
+						"title": "分享知识",
+						"task_name": "share_knowledge",
+						"url": "https://papi.mama.cn/wap/knowledge/share_55.php?id=5265&days=6&rel=2",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "78",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_share_knowledge",
+						"credits_desc": "+20",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "236",
+						"title": "逛逛良品商城",
+						"task_name": "open_index",
+						"url": "https://www.mamagoods.cn/m/index?fm=337",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "72",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_mm_good_open_index",
+						"credits_desc": "+20",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "235",
+						"title": "浏览商品",
+						"task_name": "show_goods",
+						"url": "https://www.mamagoods.cn/m/index?fm=337",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "71",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_mm_good_show_goods",
+						"credits_desc": "+5",
+						"most_credits_desc": "每日封顶+15"
+					},
+					{
+						"id": "102",
+						"title": "逛孕育值得买",
+						"task_name": "first_inter",
+						"url": "https://mai.mama.cn/m/index?fm=220&pid=mm_32205165_8452130_144532982",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "69",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_must_buy_first_inter",
+						"credits_desc": "+10",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "100",
+						"title": "收藏优惠商品",
+						"task_name": "collect_good",
+						"url": "https://mai.mama.cn/m/index?fm=220&pid=mm_32205165_8452130_144532982",
+						"skip_desc": "任务暂停",
+						"done": 0,
+						"sort": "68",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_must_buy_collect_good",
+						"credits_desc": "+5",
+						"most_credits_desc": "每日封顶+15"
+					},
+					{
+						"id": "101",
+						"title": "分享优惠商品",
+						"task_name": "share_good",
+						"url": "https://mai.mama.cn/m/index?fm=220&pid=mm_32205165_8452130_144532982",
+						"skip_desc": "任务暂停",
+						"done": 0,
+						"sort": "66",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_must_buy_share_good",
+						"credits_desc": "+5",
+						"most_credits_desc": "每日封顶+15"
+					}
+				]
 			},
-		};
-
-		// console.log(options);
-		let result = await httpRequest(name, options); // 10. 请求返回 result
-
-		// console.log(result);
-		if (result.code == 0) {
-			// 11. 返回 result判断
-			DoubleLog(
-				`账号[${this.index}]  ${name}" ${result.data.reason}, 获得积分 ${result.data.signIntegral}`
-			);
-			await utils.wait(3);
-		} else
-			DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async user_info(name) {
-		// 用户信息
-		let path = "/api/user_mumber/account_detail";
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "Get",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				Host: "vapp.tmuyun.com",
+			{
+				"type": 2,
+				"type_name": "单次任务",
+				"tasks": [
+					{
+						"id": "58",
+						"title": "上传头像",
+						"task_name": "up_avatar",
+						"url": "q://welfare?task=up_avatar",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "0",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_state_up_avatar",
+						"credits_desc": "+10",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "263",
+						"title": "生成疫苗计划",
+						"task_name": "add_vaccin_plan",
+						"url": "q://new_vaccine_home",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "0",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_add_vaccin_plan",
+						"credits_desc": "+20",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "321",
+						"title": "购物清单添加商品",
+						"task_name": "collect_shoppinglist",
+						"url": "https://mai.mama.cn/list/index",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "0",
+						"todo_btn": 1,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_collect_shoppinglist",
+						"credits_desc": "+20",
+						"most_credits_desc": ""
+					}
+				]
 			},
-		};
-
-		// console.log(options);
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(
-				`账号[${this.index}]   ${result.data.rst.nick_name
-				}, 手机号: ${utils.phone_num(result.data.rst.mobile)}, 积分 ${result.data.rst.total_integral
-				}, 等级 ${result.data.rst.grade} ${result.data.rst.grade_name}`
-			);
-			this.nickname = result.data.rst.nick_name;
-		} else
-			DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	// 任务列表   completed 0 未完成	1 完成
-	async task_list(name) {
-		let path = "/api/user_mumber/numberCenter";
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "Get",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				Host: "vapp.tmuyun.com",
-			},
-		};
-
-		// console.log(options);
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			let tasks = result.data.rst.user_task_list;
-			// console.log(tasks);
-			for (const task of tasks) {
-				// completed 0 未完成	1 完成
-				this.task_name = task.name;
-				this.finish_times = task.finish_times;
-				this.frequency = task.frequency;
-				if (task.completed == 0) {
-					if (task.id == 133) {
-						// 每日签到
-						DoubleLog(
-							`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`
-						);
-						await this.signin(this.task_name);
+			{
+				"type": 3,
+				"type_name": "补充说明",
+				"tasks": [
+					{
+						"id": "75",
+						"title": "评价良品商品",
+						"task_name": "comment_goods",
+						"url": "",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "0",
+						"todo_btn": 0,
+						"sign_task": 0,
+						"count_id": "welfare_task_mm_good_comment_goods",
+						"credits_desc": "+10",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "82",
+						"title": "帖子置顶",
+						"task_name": "top_thread",
+						"url": "",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "0",
+						"todo_btn": 0,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_top_thread",
+						"credits_desc": "+200",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "83",
+						"title": "帖子被加精华",
+						"task_name": "set_digest",
+						"url": "",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "0",
+						"todo_btn": 0,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_set_digest",
+						"credits_desc": "+10000",
+						"most_credits_desc": ""
+					},
+					{
+						"id": "84",
+						"title": "帖子被推首页",
+						"task_name": "push_thread_index",
+						"url": "",
+						"skip_desc": "",
+						"done": 0,
+						"sort": "0",
+						"todo_btn": 0,
+						"sign_task": 0,
+						"count_id": "welfare_task_pt_push_thread_index",
+						"credits_desc": "+300",
+						"most_credits_desc": ""
 					}
-					if (task.id == 134) {
-						// 新闻资讯阅读
-						DoubleLog(
-							`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`
-						);
-						let num = this.frequency - this.finish_times;
-						for (let index = 0; index < num; index++) {
-							await this.read(this.task_name);
-						}
-					}
-					if (task.id == 135) {
-						// 分享资讯给好友
-						DoubleLog(
-							`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`
-						);
-						let num = this.frequency - this.finish_times;
-						for (let index = 0; index < num; index++) {
-							await this.share(this.task_name);
-						}
-					}
-					if (task.id == 136) {
-						// 新闻资讯评论
-						DoubleLog(
-							`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`
-						);
-						let num = this.frequency - this.finish_times;
-						for (let index = 0; index < num; index++) {
-							await this.comment(this.task_name);
-						}
-					}
-					if (task.id == 137) {
-						// 新闻资讯点赞
-						DoubleLog(
-							`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`
-						);
-						let num = this.frequency - this.finish_times;
-						for (let index = 0; index < num; index++) {
-							await this.like(this.task_name);
-						}
-					}
-					if (task.id == 138) {
-						// 使用本地服务
-						DoubleLog(
-							`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`
-						);
-						await this.local_srv(this.task_name);
-					}
-				} else DoubleLog(`${this.task_name}: 已完成`);
+				]
 			}
-		} else
-			DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async artic(name) {
-		// 获取文章
-		let path = "/api/article/channel_list";
-		let sign = this.get_sign(path);
-		let a = utils.randomInt(1, 5);
-
-		let options = {
-			method: "Get",
-			url: `https://vapp.tmuyun.com${path}?channel_id=5cc2ccbe1b011b18ee37591d&isDiFangHao=false&is_new=true&list_count=${a * 10
-				}&size=10&start=${this.ts}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				Host: "vapp.tmuyun.com",
-			},
-		};
-
-		// console.log(options);
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${name}, ok`);
-			let p = utils.randomInt(0, 9);
-			this.rid = result.data.article_list[p].id;
-		} else
-			DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async read(name) {
-		// 新闻资讯阅读
-		await this.artic("获取文章");
-
-		let path = "/api/article/detail";
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "Get",
-			url: `https://vapp.tmuyun.com${path}?id=${this.rid}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				Host: "vapp.tmuyun.com",
-			},
-		};
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(
-				`账号[${this.index}]   ${name}, 文章ID${this.rid} ${result.data.article.list_title}`
-			);
-			await wait(3);
-		} else
-			DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async share(name) {
-		// 分享资讯给好友
-		await this.artic("获取文章");
-
-		let path = "/api/user_mumber/doTask";
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "POST",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				Host: "vapp.tmuyun.com",
-				"Content-Type": `application/x-www-form-urlencoded`,
-			},
-			form: {
-				memberType: "3",
-				member_type: "3",
-			},
-		};
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${name} :文章ID ${this.rid}, ok}`);
-			await wait(3);
-		} else
-			DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async comment(name) {
-		// 新闻资讯评论
-		await this.artic("获取文章");
-
-		let path = "/api/comment/create";
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "POST",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				Host: "vapp.tmuyun.com",
-				"Content-Type": `application/x-www-form-urlencoded`,
-			},
-			form: {
-				channel_article_id: this.rid,
-				content: 1,
-			},
-		};
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${name} :文章ID ${this.rid}, ok}`);
-			await wait(3);
-		} else
-			DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async like(name) {
-		// 新闻资讯点赞
-		await this.artic("获取文章");
-
-		let path = "/api/favorite/like";
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "POST",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				Host: "vapp.tmuyun.com",
-				"Content-Type": `application/x-www-form-urlencoded`,
-			},
-			form: {
-				id: this.rid,
-				action: true,
-			},
-		};
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${name} :文章ID ${this.rid}, ok}`);
-			await wait(3);
-		} else
-			DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async local_srv(name) {
-		// 使用本地服务
-		await this.artic("获取文章");
-
-		let path = "/api/user_mumber/doTas";
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "POST",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				Host: "vapp.tmuyun.com",
-				"Content-Type": `application/x-www-form-urlencoded`,
-			},
-			form: {
-				memberType: 6,
-				member_type: 6,
-			},
-		};
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(
-				`账号[${this.index}]   ${name} : 成功 获得 ${result.data.score_notify.integral} 积分`
-			);
-			await wait(3);
-		} else
-			DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	get_sign(path) {
-		let _data = `${path}&&${this.xs}&&${this.xr}&&${this.ts}&&${this.salt}&&${this.id}`;
-		// console.log('_data: ', _data);
-		sign = utils.SHA256_Encrypt(_data);
-		return sign;
-	}
-}
-
-!(async () => {
-	if (!(await checkEnv())) return;
-	if (userList.length > 0) {
-		await start();
-	}
-	await SendMsg(msg);
-})()
-	.catch((e) => console.log(e))
-	.finally(() => $.done());
-
-// 下面的不用管了   全默认就行   记得装 yml2213-utils 依赖
-// #region ********************************************************  固定代码  ********************************************************
-
-// 变量检查与处理
-async function checkEnv() {
-	if (userCookie) {
-		// console.log(userCookie);
-		let e = envSplitor[0];
-		for (let o of envSplitor)
-			if (userCookie.indexOf(o) > -1) {
-				e = o;
-				break;
+		],
+		"earn_tasks": [
+			{
+				"id": "325",
+				"app_id": 3,
+				"title": "看视频赚金币",
+				"task_name": "reward_video",
+				"sort": 32767,
+				"done": 0,
+				"todo_btn": 1,
+				"count_id": "welfare_task_pt_reward_video",
+				"credits_desc": "+15",
+				"most_credits_desc": ""
 			}
-		for (let n of userCookie.split(e)) n && userList.push(new UserInfo(n));
-		userCount = userList.length;
-	} else {
-		console.log("未找到CK");
-		return;
+		]
 	}
-	return console.log(`共找到${userCount}个账号`), !0;
-}
-
-// =========================================== 不懂不要动 =========================================================
-function Env(name, e) {
-	class s {
-		constructor(name) {
-			this.env = name;
-		}
-	}
-	return new (class {
-		constructor(name) {
-			(this.name = name),
-				(this.logs = []),
-				(this.startTime = new Date().getTime()),
-				this.log(`\n🔔${this.name}, 开始!`);
-		}
-		isNode() {
-			return "undefined" != typeof module && !!module.exports;
-		}
-		log(...name) {
-			name.length > 0 && (this.logs = [...this.logs, ...name]),
-				console.log(name.join(this.logSeparator));
-		}
-		done() {
-			const e = new Date().getTime(),
-				s = (e - this.startTime) / 1e3;
-			this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`);
-		}
-	})(name, e);
-}
-async function httpRequest(name, options) {
-	if (!name) {
-		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
-	}
-	try {
-		let result = await utils.httpRequest(name, options);
-		if (result) {
-			return result;
-		}
-		{
-			DoubleLog(`未知错误(1)`);
-		}
-	} catch (error) {
-		console.log(error);
-	}
-}
-async function SendMsg(message) {
-	if (!message) return;
-	if (Notify > 0) {
-		if ($.isNode()) {
-			var notify = require("./sendNotify");
-			await notify.sendNotify($.name, message);
-		} else {
-			console.log($.name, "", message);
-		}
-	} else {
-		console.log(message);
-	}
-}
-function wait(n) {
-	return new Promise(function (resolve) {
-		setTimeout(resolve, n * 1000);
-	});
-}
-function DoubleLog(data) {
-	console.log(`    ${data}`);
-	msg += `\n    ${data}`;
-}
+};
