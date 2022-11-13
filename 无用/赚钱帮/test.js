@@ -1,33 +1,29 @@
 /*
-汇民购-注册机 
-cron 10 8 * * *  hmg_reg_fy.js
+赚钱帮-注册机 
+cron 10 8 * * *  zqb_reg.js
 
 10.12		自己注册 飞鱼 的账号   然后填写自己 用户名 username  密码 pwd   即可
 
 飞鱼链接(带邀请): http://h5.haozhuma.com/reg.html?action=yml2213
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 汇民购-注册机  飞鱼 username  pwd
-export hmg_reg_fy=" username & pwd "
+# 赚钱帮-注册机  飞鱼 username  pwd
+export zqb_reg_fy=" username & pwd "
 
 多账号用 换行 或 @ 分割 ,  报错的自己安装  yml2213-utils 依赖
 tg频道: https://t.me/yml2213_tg  
 */
 
 //-------------------- 配置区域 --------------------
-const reg_num = 1; 						 //注册数量
-const mid = 'MzMwMTUsMHJ2MWF3dmk='       // 自己的邀请码
-
-
-
+const reg_num = 1; 		//注册数量
 
 const utils = require("yml2213-utils");
-const $ = new Env("汇民购-注册机");
-const ckName = "hmg_reg_fy";
+const $ = new Env("赚钱帮-注册机");
+const ckName = "zqb_reg_fy";
 //-------------------- 一般不动变量区域 -------------------------------------
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; //0为关闭通知,1为打开通知,默认为1
 let envSplitor = ["@", "\n"];
-let ck = msg = "";
+let ck = (msg = "");
 // let httpRequest
 let userCookie = process.env[ckName];
 let userList = [];
@@ -36,8 +32,6 @@ let userCount = 0;
 //---------------------- 自定义变量区域 -----------------------------------
 let VersionCheck = "0.1";
 let ck_status = 1;
-let reg_data_pwd = ''
-let reg_data_token = ''
 // let token_zz_10 = ''
 //---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
@@ -45,17 +39,14 @@ let reg_data_token = ''
 async function start() {
 	for (let user of userList) {
 		await user.login("登录-获取 fy_token");
-		if (ck_status) {
-			for (index = 0; index < reg_num; index++) {
-				await user.register("注册");
-			}
-			DoubleLog(`账号密码信息\n\n`)
-			DoubleLog(reg_data_pwd)
-			DoubleLog(`\n\n`);
-			DoubleLog(`账号token信息\n\n`)
-			DoubleLog(reg_data_token)
-
-		}
+		// if (ck_status) {
+		// 	for (index = 0; index < reg_num; index++) {
+		// 		await user.register("注册");
+		// 	}
+		// 	DoubleLog(`账号信息\n\n`)
+		// 	DoubleLog(reg_data)
+		// 	DoubleLog(`\n\n`);
+		// }
 	}
 }
 
@@ -65,26 +56,23 @@ class UserInfo {
 		this.username = ck[0];
 		this.pwd = ck[1];
 		this.fy_api = "api.haozhuma.com";
-		this.sid = "54009";
-		this.mid = mid
+		this.sid = "54518";
 	}
-	//   http://api.haozhuma.com/sms/?api=login&user=yml2213&pass=yml12345678
-	// 获取 fy_token   get  http://服务器地址/sms/?api=login&user=用户名&pass=密码
+	// 获取 fy_token   get 
 	async login(name) {
 		let options = {
 			method: "get",
-			url: `http://${this.fy_api}/sms/?api=login&user=${this.username}&pass=${this.pwd}`,
+			url: `http://www.dbnx.xyz:7923/api/v1/login?username=${this.username}&password=${this.pwd}`,
 			headers: {},
 		};
 		let result = await httpRequest(name, options);
 
 		// console.log(result);
-		if (result.code == 0) {
+		if (result.code == 1000) {
 			DoubleLog(`${name}: ${result.msg}`);
-			this.fy_token = result.token;
-			await this.fy_user_info("查询飞鱼余额");
-		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
-		return ck_status == 0;
+			this.pgy_token = result.data.token;
+			// await this.pgy_user_info("查询蒲公英余额");
+		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result); return ck_status == 0;
 	}
 
 	// 查询飞鱼余额  get  http://服务器地址/sms/?api=getSummary&token=令牌
@@ -124,23 +112,28 @@ class UserInfo {
 		}
 	}
 
-	// 发送验证码  post    https://hmg.tykhrs.work/api/login/sms_verification_code?mobile=15339956683&type=login&sms_type=2
+	// 发送验证码  post    http://www.weihuitui.org.cn/index.php/api/sms/send
 	async send_code(name) {
 		let options = {
-			method: "get",
-			url: `https://hmg.tykhrs.work/api/login/sms_verification_code?mobile=${this.phone}&type=login&sms_type=2`,
+			method: "post",
+			url: `http://www.weihuitui.org.cn/index.php/api/sms/send`,
 			headers: {
-				'x-requested-with': 'com.tencent.mm',
-				'referer': `https://hmg.tykhrs.work/hmg/?mid=${this.mid}`,
-				'content-type': 'application/json;charset=UTF-8',
+				'Pragma': "no-cache",
+				"content-type": "application/x-www-form-urlencoded, application/x-www-form-urlencoded",
+				"Proxy-Connection": "akeep-alive"
+			},
+			form: {
+				mobile: this.phone,
+				type: 1,
+				event: "register",
 			},
 		};
 		let result = await httpRequest(name, options);
 
 		// console.log(result);
 		if (result.code == 1) {
-			DoubleLog(`${name}: ${result.msg}, 等待 30 秒`);
-			await wait(30);
+			DoubleLog(`${name}: ${result.msg}, 等待 50 秒`);
+			await wait(50);
 		} else if (result.code == 0) {
 			DoubleLog(`${name}: ${result.msg}, 等待 5 秒 ,尝试重新注册!`);
 			await wait(5);
@@ -190,23 +183,32 @@ class UserInfo {
 
 
 
-	// 注册  post   https://hmg.tykhrs.work/api/login/phone_register?pid=&mobile=15339956683&verification_code=902029&password=hmg123456&pwd=hmg123456
+	// 注册  post   http://www.weihuitui.org.cn/index.php/api/user/register
 	async register(name) {
-		console.log(`\n================================================\n开始 第${index + 1}次${name}`);
+		console.log(
+			`\n================================================\n开始 第${index + 1
+			}次${name}`
+		);
 		await this.get_phone_num("获取手机号");
 		await this.send_code("发送验证码");
 		await this.get_code("获取验证码");
 
 		let pwd = utils.randomszxx(8);
 		let options = {
-			method: "get",
-			url: `https://hmg.tykhrs.work/api/login/phone_register?pid=&mobile=${this.phone}&verification_code=${this.code}&password=${pwd}&pwd=${pwd}`,
+			method: "post",
+			url: `http://www.weihuitui.org.cn/index.php/api/user/register`,
 			headers: {
-				'x-requested-with': 'com.tencent.mm',
-				'referer': `https://hmg.tykhrs.work/hmg/?mid=${this.mid}`,
-				'content-type': 'application/json;charset=UTF-8',
+				Host: "www.weihuitui.org.cn",
+				"content-type":
+					"application/x-www-form-urlencoded, application/x-www-form-urlencoded",
+				// 'token': token
 			},
-
+			form: {
+				mobile: this.phone,
+				password: pwd,
+				code: this.code,
+				client: 6,
+			},
 		};
 		let result = await httpRequest(name, options);
 
@@ -214,12 +216,8 @@ class UserInfo {
 		if (result.code == 1) {
 			DoubleLog(`成功: 本次账号信息: ${this.phone}&${pwd}`);
 			let user_token = result.data.token;
-			reg_data_pwd += `${this.phone}&${pwd}\n`;
-			console.log(`\n${reg_data_pwd}\n`);
-
-			reg_data_token += `$${user_token}\n`;
-			console.log(`\n${reg_data_token}\n`);
-
+			reg_data += `${this.phone}&${pwd}$${user_token}\n`;
+			console.log(`\n${reg_data}\n`);
 		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
 	}
 }
@@ -258,6 +256,69 @@ async function checkEnv() {
 }
 
 // =========================================== 不懂不要动 =========================================================
-function Env(name, e) { class s { constructor(name) { this.env = name; } } return new (class { constructor(name) { (this.name = name), (this.logs = []), (this.startTime = new Date().getTime()), this.log(`\n🔔${this.name}, 开始!`); } isNode() { return "undefined" != typeof module && !!module.exports; } log(...name) { name.length > 0 && (this.logs = [...this.logs, ...name]), console.log(name.join(this.logSeparator)); } done() { const e = new Date().getTime(), s = (e - this.startTime) / 1e3; this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`); } })(name, e); } async function httpRequest(name, options) { if (!name) { name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1]; } try { let result = await utils.httpRequest(name, options); if (result) { return result; } { DoubleLog(`未知错误(1)`); } } catch (error) { console.log(error); } } async function SendMsg(message) { if (!message) return; if (Notify > 0) { if ($.isNode()) { var notify = require("./sendNotify"); await notify.sendNotify($.name, message); } else { console.log($.name, "", message); } } else { console.log(message); } } function wait(n) { return new Promise(function (resolve) { setTimeout(resolve, n * 1000); }); } function DoubleLog(data) { console.log(`    ${data}`); msg += `\n    ${data}`; }
+function Env(name, e) {
+	class s {
+		constructor(name) {
+			this.env = name;
+		}
+	}
+	return new (class {
+		constructor(name) {
+			(this.name = name),
+				(this.logs = []),
+				(this.startTime = new Date().getTime()),
+				this.log(`\n🔔${this.name}, 开始!`);
+		}
+		isNode() {
+			return "undefined" != typeof module && !!module.exports;
+		}
+		log(...name) {
+			name.length > 0 && (this.logs = [...this.logs, ...name]),
+				console.log(name.join(this.logSeparator));
+		}
+		done() {
+			const e = new Date().getTime(),
+				s = (e - this.startTime) / 1e3;
+			this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`);
+		}
+	})(name, e);
+}
+async function httpRequest(name, options) {
+	if (!name) {
+		name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1];
+	}
+	try {
+		let result = await utils.httpRequest(name, options);
+		if (result) {
+			return result;
+		} else {
+			DoubleLog(`未知错误(1)`);
+		}
+	} catch (error) {
+		console.log(error);
+	}
+}
+async function SendMsg(message) {
+	if (!message) return;
+	if (Notify > 0) {
+		if ($.isNode()) {
+			var notify = require("./sendNotify");
+			await notify.sendNotify($.name, message);
+		} else {
+			console.log($.name, "", message);
+		}
+	} else {
+		console.log(message);
+	}
+}
+function wait(n) {
+	return new Promise(function (resolve) {
+		setTimeout(resolve, n * 1000);
+	});
+}
+function DoubleLog(data) {
+	console.log(`    ${data}`);
+	msg += `\n    ${data}`;
+}
 
 //#endregion

@@ -21,19 +21,17 @@ const notify = $.isNode() ? require("./sendNotify") : ""
 const Notify = 1		 //0为关闭通知,1为打开通知,默认为1
 let envSplitor = ["@", "\n"];
 let ck = msg = ''
-let host, hostname
 let userCookie = process.env[ckName];
 let userList = []
 let userIdx = 0
 let userCount = 0
 //---------------------- 自定义变量区域 -----------------------------------
-
-let app_id = 14
+let app_id = 14;
+let salt = 'FR*r!isE5W';
 let text = sign = ''
 //---------------------------------------------------------
 
 async function start() {
-
 
 	console.log('\n================== 用户信息 ==================\n')
 	taskall = []
@@ -41,6 +39,14 @@ async function start() {
 		taskall.push(user.user_info('用户信息'))
 	}
 	await Promise.all(taskall)
+
+	// console.log('\n================== 签到 ==================\n')
+	// taskall = []
+	// for (let user of userList) {
+	// 	taskall.push(user.signin('签到'))
+	// }
+	// await Promise.all(taskall)
+
 
 	console.log('\n================== 任务列表 ==================\n')
 	taskall = []
@@ -60,7 +66,7 @@ class UserInfo {
 		this.ck = str.split('&')
 		this.xs = this.ck[0]
 		this.xr = this.ck[1]
-		this.salt = 'FR*r!isE5W'
+		this.salt = salt
 		this.id = app_id
 		this.ts = utils.ts13()
 	}
@@ -78,7 +84,7 @@ class UserInfo {
 				"X-TIMESTAMP": this.ts,
 				"X-SIGNATURE": sign,
 				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
+				"X-TENANT-ID": this.id,
 				'Host': 'vapp.tmuyun.com',
 			},
 		};
@@ -88,17 +94,14 @@ class UserInfo {
 
 		// console.log(result);
 		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]  ${name}" ${result.data.reason}, 获得积分 ${result.data.signIntegral}`);
-			await utils.wait(3);
+			DoubleLog(`账号[${this.index}]  ${name}: ${result.data.reason}, 获得 ${result.data.signIntegral} 积分`);
+			await wait(3);
 		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-
-
 
 
 	}
 
-
-	async user_info(name) { // 用户信息
+	async user_info(name) { //用户信息
 		let path = '/api/user_mumber/account_detail'
 		let sign = this.get_sign(path)
 
@@ -111,7 +114,7 @@ class UserInfo {
 				"X-TIMESTAMP": this.ts,
 				"X-SIGNATURE": sign,
 				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
+				"X-TENANT-ID": this.id,
 				'Host': 'vapp.tmuyun.com',
 			},
 		};
@@ -121,253 +124,8 @@ class UserInfo {
 
 		// console.log(result);
 		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${result.data.rst.nick_name}, 手机号: ${utils.phone_num(result.data.rst.mobile)}, 积分 ${result.data.rst.total_integral}, 等级 ${result.data.rst.grade} ${result.data.rst.grade_name}`);
-			this.nickname = result.data.rst.nick_name;
-
+			DoubleLog(`账号[${this.index}]  ${name}: ${result.data.rst.nick_name}, 手机号 ${utils.phone_num(result.data.rst.mobile)}, 积分 ${result.data.rst.total_integral} , 等级 ${result.data.rst.grade} ${result.data.rst.grade_name}`);
 		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-
-
-
-
-	}
-
-	// 任务列表   completed 0 未完成	1 完成
-	async task_list(name) {
-		let path = '/api/user_mumber/numberCenter'
-		let sign = this.get_sign(path)
-
-		let options = {
-			method: "Get",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				'Host': 'vapp.tmuyun.com',
-			},
-		};
-
-		// console.log(options);
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			let tasks = result.data.rst.user_task_list;
-			// console.log(tasks);
-			for (const task of tasks) { // completed 0 未完成	1 完成
-				this.task_name = task.name;
-				this.finish_times = task.finish_times;
-				this.frequency = task.frequency;
-				if (task.completed == 0) {
-					if (task.id == 133) {	// 每日签到
-						DoubleLog(`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`);
-						await this.signin(this.task_name);
-					}
-					if (task.id == 134) { // 新闻资讯阅读
-						DoubleLog(`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`);
-						let num = this.frequency - this.finish_times;
-						for (let index = 0; index < num; index++) {
-							await this.read(this.task_name);
-						}
-					}
-					if (task.id == 135) { // 分享资讯给好友
-						DoubleLog(`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`);
-						let num = this.frequency - this.finish_times;
-						for (let index = 0; index < num; index++) {
-							await this.share(this.task_name);
-						}
-					}
-					if (task.id == 136) { // 新闻资讯评论
-						DoubleLog(`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`);
-						let num = this.frequency - this.finish_times;
-						for (let index = 0; index < num; index++) {
-							await this.comment(this.task_name);
-						}
-					}
-					if (task.id == 137) { // 新闻资讯点赞
-						DoubleLog(`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`);
-						let num = this.frequency - this.finish_times;
-						for (let index = 0; index < num; index++) {
-							await this.like(this.task_name);
-						}
-					}
-					if (task.id == 138) { // 使用本地服务
-						DoubleLog(`账号 ${this.nickname} : ${this.task_name}----${this.finish_times}/${this.frequency}`);
-						await this.local_srv(this.task_name);
-					}
-
-				} else DoubleLog(`${this.task_name}: 已完成`);
-			}
-
-		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-
-	async artic(name) { // 获取文章
-		let path = '/api/article/channel_list'
-		let sign = this.get_sign(path);
-		let a = utils.randomInt(1, 5);
-
-		let options = {
-			method: "Get",
-			url: `https://vapp.tmuyun.com${path}?channel_id=5cc2ccbe1b011b18ee37591d&isDiFangHao=false&is_new=true&list_count=${a * 10}&size=10&start=${this.ts}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				'Host': 'vapp.tmuyun.com',
-			},
-		};
-
-		// console.log(options);
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${name}, ok`);
-			let p = utils.randomInt(0, 9);
-			this.rid = result.data.article_list[p].id;
-		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async read(name) { // 新闻资讯阅读
-		await this.artic('获取文章');
-
-		let path = '/api/article/detail'
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "Get",
-			url: `https://vapp.tmuyun.com${path}?id=${this.rid}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				'Host': 'vapp.tmuyun.com',
-			},
-		};
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${name}, 文章ID${this.rid} ${result.data.article.list_title}`);
-			await wait(3);
-		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async share(name) { // 分享资讯给好友
-		await this.artic('获取文章');
-
-		let path = '/api/user_mumber/doTask'
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "POST",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				'Host': 'vapp.tmuyun.com',
-				"Content-Type": `application/x-www-form-urlencoded`,
-			},
-			form: {
-				'memberType': '3',
-				'member_type': '3'
-			}
-		};
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${name} :文章ID ${this.rid}, ok}`);
-			await wait(3);
-		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async comment(name) { // 新闻资讯评论
-		await this.artic('获取文章');
-
-		let path = '/api/comment/create'
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "POST",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				'Host': 'vapp.tmuyun.com',
-				"Content-Type": `application/x-www-form-urlencoded`,
-			},
-			form: {
-				'channel_article_id': this.rid,
-				'content': 1
-			}
-		};
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${name} :文章ID ${this.rid}, ok}`);
-			await wait(3);
-		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async like(name) { // 新闻资讯点赞
-		await this.artic('获取文章');
-
-		let path = '/api/favorite/like'
-		let sign = this.get_sign(path);
-
-		let options = {
-			method: "POST",
-			url: `https://vapp.tmuyun.com${path}`,
-			headers: {
-				"X-SESSION-ID": this.xs,
-				"X-REQUEST-ID": this.xr,
-				"X-TIMESTAMP": this.ts,
-				"X-SIGNATURE": sign,
-				"Cache-Control": `no-cache`,
-				"X-TENANT-ID": `14`,
-				'Host': 'vapp.tmuyun.com',
-				"Content-Type": `application/x-www-form-urlencoded`,
-			},
-			form: {
-				'id': this.rid,
-				'action': true
-			}
-		};
-		let result = await httpRequest(name, options);
-
-		// console.log(result);
-		if (result.code == 0) {
-			DoubleLog(`账号[${this.index}]   ${name} :文章ID ${this.rid}, ok}`);
-			await wait(3);
-		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
-	}
-
-	async local_srv(name) { // 使用本地服务
-		await this.artic('获取文章');
-
-		let path = '/api/user_mumber/doTas'
-		let sign = this.get_sign(path);
 
 		let options = {
 			method: "POST",
@@ -396,6 +154,47 @@ class UserInfo {
 		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
 	}
 
+	async task_list(name) { //任务列表
+		let path = '/api/user_mumber/numberCenter'
+		let sign = this.get_sign(path)
+
+		let options = {
+			method: "Get",
+			url: `https://vapp.tmuyun.com${path}?is_new=1`,
+			headers: {
+				"X-SESSION-ID": this.xs,
+				"X-REQUEST-ID": this.xr,
+				"X-TIMESTAMP": this.ts,
+				"X-SIGNATURE": sign,
+				"Cache-Control": `no-cache`,
+				"X-TENANT-ID": this.id,
+				'Host': 'vapp.tmuyun.com',
+			},
+		};
+
+		// console.log(options);
+		let result = await httpRequest(name, options);
+
+		// console.log(result);
+		if (result.code == 0) {
+			let task_lists = result.data.rst.user_task_list;
+			for (const task of task_lists) {
+				this.id = task.id;
+				this.name = task.name;
+				this.completed = task.completed;  // 是否完成
+				this.member_task_type = task.member_task_type;
+				this.finish_times = task.finish_times;  // 已完成次数
+				this.frequency = task.frequency;        // 总次数
+				// console.log(this.id, this.name, this.completed, this.member_task_type);
+				let taak_num = this.frequency - this.finish_times;
+				DoubleLog(`账号[${this.index}]  ${name}: ${this.name}----${this.finish_times}/${this.frequency}`)
+
+			}
+			
+		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(result);
+
+
+	}
 
 
 	get_sign(path) {
@@ -444,6 +243,8 @@ async function checkEnv() {
 }
 
 
+// =========================================== 不懂不要动 =========================================================
+function Env(name, e) { class s { constructor(name) { this.env = name; } } return new (class { constructor(name) { (this.name = name), (this.logs = []), (this.startTime = new Date().getTime()), this.log(`\n🔔${this.name}, 开始!`); } isNode() { return "undefined" != typeof module && !!module.exports; } log(...name) { name.length > 0 && (this.logs = [...this.logs, ...name]), console.log(name.join(this.logSeparator)); } done() { const e = new Date().getTime(), s = (e - this.startTime) / 1e3; this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`); } })(name, e); } async function httpRequest(name, options) { if (!name) { name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1]; } try { let result = await utils.httpRequest(name, options); if (result) { return result; } { DoubleLog(`未知错误(1)`); } } catch (error) { console.log(error); } } async function SendMsg(message) { if (!message) return; if (Notify > 0) { if ($.isNode()) { var notify = require("./sendNotify"); await notify.sendNotify($.name, message); } else { console.log($.name, "", message); } } else { console.log(message); } } function wait(n) { return new Promise(function (resolve) { setTimeout(resolve, n * 1000); }); } function DoubleLog(data) { console.log(`    ${data}`); msg += `\n    ${data}`; }
 
 // =========================================== 不懂不要动 =========================================================
 function Env(name, e) { class s { constructor(name) { this.env = name; } } return new (class { constructor(name) { (this.name = name), (this.logs = []), (this.startTime = new Date().getTime()), this.log(`\n🔔${this.name}, 开始!`); } isNode() { return "undefined" != typeof module && !!module.exports; } log(...name) { name.length > 0 && (this.logs = [...this.logs, ...name]), console.log(name.join(this.logSeparator)); } done() { const e = new Date().getTime(), s = (e - this.startTime) / 1e3; this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`); } })(name, e); } async function httpRequest(name, options) { if (!name) { name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1]; } try { let result = await utils.httpRequest(name, options); if (result) { return result; } { DoubleLog(`未知错误(1)`); } } catch (error) { console.log(error); } } async function SendMsg(message) { if (!message) return; if (Notify > 0) { if ($.isNode()) { var notify = require("./sendNotify"); await notify.sendNotify($.name, message); } else { console.log($.name, "", message); } } else { console.log(message); } } function wait(n) { return new Promise(function (resolve) { setTimeout(resolve, n * 1000); }); } function DoubleLog(data) { console.log(`    ${data}`); msg += `\n    ${data}`; }

@@ -7,18 +7,18 @@ cron 10 8 * * *  zqb_reg.js
 飞鱼链接(带邀请): http://h5.haozhuma.com/reg.html?action=yml2213
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
 # 赚钱帮-注册机  飞鱼 username  pwd
-export zqb_reg_fy=" username & pwd "
+export zqb_reg=" username & pwd "
 
 多账号用 换行 或 @ 分割 ,  报错的自己安装  yml2213-utils 依赖
 tg频道: https://t.me/yml2213_tg  
 */
 
 //-------------------- 配置区域 --------------------
-const reg_num = 1; 		//注册数量
+const reg_num = 1; //注册数量
 
 const utils = require("yml2213-utils");
 const $ = new Env("赚钱帮-注册机");
-const ckName = "zqb_reg_fy";
+const ckName = "zqb_reg";
 //-------------------- 一般不动变量区域 -------------------------------------
 const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 1; //0为关闭通知,1为打开通知,默认为1
@@ -58,21 +58,23 @@ class UserInfo {
 		this.fy_api = "api.haozhuma.com";
 		this.sid = "54518";
 	}
-	// 获取 fy_token   get 
+	//   http://api.haozhuma.com/sms/?api=login&user=yml2213&pass=yml12345678
+	// 获取 fy_token   get  http://服务器地址/sms/?api=login&user=用户名&pass=密码
 	async login(name) {
 		let options = {
 			method: "get",
-			url: `http://www.dbnx.xyz:7923/api/v1/login?username=${this.username}&password=${this.pwd}`,
+			url: `http://${this.fy_api}/sms/?api=login&user=${this.username}&pass=${this.pwd}`,
 			headers: {},
 		};
 		let result = await httpRequest(name, options);
 
 		// console.log(result);
-		if (result.code == 1000) {
+		if (result.code == 0) {
 			DoubleLog(`${name}: ${result.msg}`);
-			this.pgy_token = result.data.token;
-			// await this.pgy_user_info("查询蒲公英余额");
-		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result); return ck_status == 0;
+			this.fy_token = result.token;
+			await this.fy_user_info("查询飞鱼余额");
+		} else DoubleLog(`${name}: 失败 ❌ 了呢,原因未知!`), console.log(result);
+		return ck_status == 0;
 	}
 
 	// 查询飞鱼余额  get  http://服务器地址/sms/?api=getSummary&token=令牌
@@ -256,6 +258,6 @@ async function checkEnv() {
 }
 
 // =========================================== 不懂不要动 =========================================================
-function Env(name, e) { class s { constructor(name) { this.env = name; } } return new (class { constructor(name) { (this.name = name), (this.logs = []), (this.startTime = new Date().getTime()), this.log(`\n🔔${this.name}, 开始!`); } isNode() { return "undefined" != typeof module && !!module.exports; } log(...name) { name.length > 0 && (this.logs = [...this.logs, ...name]), console.log(name.join(this.logSeparator)); } done() { const e = new Date().getTime(), s = (e - this.startTime) / 1e3; this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`); } })(name, e); } async function httpRequest(name, options) { if (!name) { name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1]; } try { let result = await utils.httpRequest(name, options); if (result) { return result; } else { DoubleLog(`未知错误(1)`); } } catch (error) { console.log(error); } } async function SendMsg(message) { if (!message) return; if (Notify > 0) { if ($.isNode()) { var notify = require("./sendNotify"); await notify.sendNotify($.name, message); } else { console.log($.name, "", message); } } else { console.log(message); } } function wait(n) { return new Promise(function (resolve) { setTimeout(resolve, n * 1000); }); } function DoubleLog(data) { console.log(`    ${data}`); msg += `\n    ${data}`; }
+function Env(name, e) { class s { constructor(name) { this.env = name; } } return new (class { constructor(name) { (this.name = name), (this.logs = []), (this.startTime = new Date().getTime()), this.log(`\n🔔${this.name}, 开始!`); } isNode() { return "undefined" != typeof module && !!module.exports; } log(...name) { name.length > 0 && (this.logs = [...this.logs, ...name]), console.log(name.join(this.logSeparator)); } done() { const e = new Date().getTime(), s = (e - this.startTime) / 1e3; this.log(`\n🔔${this.name}, 结束! 🕛 ${s} 秒`); } })(name, e); } async function httpRequest(name, options) { if (!name) { name = /function\s*(\w*)/i.exec(arguments.callee.toString())[1]; } try { let result = await utils.httpRequest(name, options); if (result) { return result; } { DoubleLog(`未知错误(1)`); } } catch (error) { console.log(error); } } async function SendMsg(message) { if (!message) return; if (Notify > 0) { if ($.isNode()) { var notify = require("./sendNotify"); await notify.sendNotify($.name, message); } else { console.log($.name, "", message); } } else { console.log(message); } } function wait(n) { return new Promise(function (resolve) { setTimeout(resolve, n * 1000); }); } function DoubleLog(data) { console.log(`    ${data}`); msg += `\n    ${data}`; }
 
 //#endregion
