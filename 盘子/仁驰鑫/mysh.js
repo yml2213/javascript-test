@@ -1,14 +1,14 @@
 /*
-玖月（圆云通）  app 
-cron 10 7 * * *  jiuyue.js
+仁驰鑫  app 
+cron 10 7 * * *  rcx.js
 
 
-https://yq.jiuyue6342.com/index/user
+https://yq.rcx6342.com/index/user
  
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 玖月（圆云通）
-export jiuyue=" phone & pwd @ phone & pwd "
+# 仁驰鑫
+export rcx=" phone & pwd @ phone & pwd "
 
 
 多账号用 换行 或 @ 分割
@@ -18,12 +18,12 @@ tg频道: https://t.me/yml2213_tg
 */
 
 
-const $ = new Env("玖月（圆云通）");
-const alias_name = 'jiuyue';
+const $ = new Env("仁驰鑫");
+const alias_name = 'rcx';
 const request = require('request');
 const notify = $.isNode() ? require("../sendNotify") : "";
 const Notify = 1; 		//0为关闭通知,1为打开通知,默认为1
-const debug = 1;			//0为关闭调试,1为打开调试,默认为0
+const debug = 0;			//0为关闭调试,1为打开调试,默认为0
 //---------------------------------------------------------------------------------------------------------
 let ckStr = process.env[alias_name];
 let msg, ck;
@@ -32,7 +32,7 @@ let host = 'plm88.renchixin88.com/';
 let hostname = 'https://' + host;
 //---------------------------------------------------------------------------------------------------------
 let VersionCheck = "0.1";
-let Change = '资金盘，自己0薅玩';
+let Change = '资金盘, 自己0薅玩';
 let thank = `\n感谢 群友 的投稿\n`;
 //---------------------------------------------------------------------------------------------------------
 
@@ -41,7 +41,6 @@ async function tips(ckArr) {
     let Version = `\n📌 本地脚本: V ${VersionCheck}`;
     DoubleLog(`${Version}\n📌 🆙 更新内容: ${Change}`);
     // DoubleLog(`${thank}`);
-    await wyy();
     DoubleLog(`\n========== 共找到 ${ckArr.length} 个账号 ==========`);
     debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
 }
@@ -52,13 +51,13 @@ async function start() {
     if (ck_status) {
         await do_sign('签到');
         let daka_arr = ['lscx', 'jyls', 'jyyd', 'jyys', 'jzjs', 'bfwb'];
-        // for (let index = 0; index < daka_arr.length; index++) {
-        // 	await do_daka('打卡', daka_arr[index]);
-        // }
-        await do_daka('打卡', 'jzjs');
+        for (let index = 0; index < daka_arr.length; index++) {
+            await do_daka('打卡', daka_arr[index]);
+        }
+        // await do_daka('打卡', 'lscx');
 
 
-        // await user_info('用户信息');
+        await user_info('用户信息');
     }
 
 }
@@ -75,6 +74,7 @@ async function login(name) {
         // random_data = randomszxx(26);
 
         let Options = {
+            method: "post",
             url: `${hostname}/Login/index`,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -82,18 +82,35 @@ async function login(name) {
             },
             body: `account=${ck[0]}&password=${ck[1]}`
         };
-        let result = await httpRequest('post', Options, name);
 
-        // console.log(result);
-        if (result.status == 1) {
-            DoubleLog(`${name}: ${result.msg}`);
-            await wait(3);
-            return ck_status = 1;
-        } else {
-            DoubleLog(`${name}: 失败❌了呢`);
-            console.log(result);
-            return ck_status = 0;
-        }
+        let res = await login_Request(Options);
+        console.log(res.body);
+        console.log(`==================`);
+        console.log(res);
+        let result = res.body;
+
+        // if (result) {
+        //     this._token = result.split('_token:"')[1].split('",')[0];
+        //     this.y = res.headers['set-cookie'][1];
+        //     // console.log(this._token, this.y);
+        // }
+
+
+
+        // let result = await httpRequest('post', Options, name);
+
+        // // console.log(result);
+        // if (result.status == 1) {
+        //     DoubleLog(`${name}: ${result.msg}`);
+        //     await wait(3);
+        //     return ck_status = 1;
+        // } else {
+        //     DoubleLog(`${name}: 失败❌了呢`);
+        //     console.log(result);
+        //     return ck_status = 0;
+        // }
+
+
     } catch (error) {
         console.log(error);
     }
@@ -122,7 +139,7 @@ async function do_daka(name, type) {
         console.log(result);
         if (result.code == 000) {
             DoubleLog(`${name}: ${result.msg}`);
-            await wait(2);
+            await wait(3);
         } else if (result.code == 002) {
             DoubleLog(`${name}: ${result.msg}`);
         } else {
@@ -183,10 +200,10 @@ async function user_info(name) {
         let result = await httpRequest('get', Options, name);
 
         // console.log(result);
-        let data_ = result.split('总资产');
-        let data_1 = data_[1].split('元</div>');
+        let data_ = result.split('<b id="jifen">');
+        let data_1 = data_[1].split('</b>个袋子');
         // console.log(data_1[0]);
-        DoubleLog(`余额:${data_1[0]}元`);
+        DoubleLog(`袋子:${data_1[0]} 个`);
 
     } catch (error) {
         console.log(`=================`);
@@ -202,6 +219,18 @@ async function user_info(name) {
 
 
 
+async function login_Request(options) {
+    return new Promise((resolve) => {
+
+        request(options, function (error, response) {
+            if (error) throw new Error(error);
+            // response.body
+            // console.log(response.headers['set-cookie']);
+            resolve(response);
+
+        });
+    });
+}
 
 
 
@@ -212,11 +241,6 @@ async function user_info(name) {
 
 
 
-
-
-
-// md5
-function MD5Encrypt(a) { function b(a, b) { return a << b | a >>> 32 - b; } function c(a, b) { var c, d, e, f, g; return e = 2147483648 & a, f = 2147483648 & b, c = 1073741824 & a, d = 1073741824 & b, g = (1073741823 & a) + (1073741823 & b), c & d ? 2147483648 ^ g ^ e ^ f : c | d ? 1073741824 & g ? 3221225472 ^ g ^ e ^ f : 1073741824 ^ g ^ e ^ f : g ^ e ^ f; } function d(a, b, c) { return a & b | ~a & c; } function e(a, b, c) { return a & c | b & ~c; } function f(a, b, c) { return a ^ b ^ c; } function g(a, b, c) { return b ^ (a | ~c); } function h(a, e, f, g, h, i, j) { return a = c(a, c(c(d(e, f, g), h), j)), c(b(a, i), e); } function i(a, d, f, g, h, i, j) { return a = c(a, c(c(e(d, f, g), h), j)), c(b(a, i), d); } function j(a, d, e, g, h, i, j) { return a = c(a, c(c(f(d, e, g), h), j)), c(b(a, i), d); } function k(a, d, e, f, h, i, j) { return a = c(a, c(c(g(d, e, f), h), j)), c(b(a, i), d); } function l(a) { for (var b, c = a.length, d = c + 8, e = (d - d % 64) / 64, f = 16 * (e + 1), g = new Array(f - 1), h = 0, i = 0; c > i;)b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | a.charCodeAt(i) << h, i++; return b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | 128 << h, g[f - 2] = c << 3, g[f - 1] = c >>> 29, g; } function m(a) { var b, c, d = "", e = ""; for (c = 0; 3 >= c; c++)b = a >>> 8 * c & 255, e = "0" + b.toString(16), d += e.substr(e.length - 2, 2); return d; } function n(a) { a = a.replace(/\r\n/g, "\n"); for (var b = "", c = 0; c < a.length; c++) { var d = a.charCodeAt(c); 128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(d >> 6 | 192), b += String.fromCharCode(63 & d | 128)) : (b += String.fromCharCode(d >> 12 | 224), b += String.fromCharCode(d >> 6 & 63 | 128), b += String.fromCharCode(63 & d | 128)); } return b; } var o, p, q, r, s, t, u, v, w, x = [], y = 7, z = 12, A = 17, B = 22, C = 5, D = 9, E = 14, F = 20, G = 4, H = 11, I = 16, J = 23, K = 6, L = 10, M = 15, N = 21; for (a = n(a), x = l(a), t = 1732584193, u = 4023233417, v = 2562383102, w = 271733878, o = 0; o < x.length; o += 16)p = t, q = u, r = v, s = w, t = h(t, u, v, w, x[o + 0], y, 3614090360), w = h(w, t, u, v, x[o + 1], z, 3905402710), v = h(v, w, t, u, x[o + 2], A, 606105819), u = h(u, v, w, t, x[o + 3], B, 3250441966), t = h(t, u, v, w, x[o + 4], y, 4118548399), w = h(w, t, u, v, x[o + 5], z, 1200080426), v = h(v, w, t, u, x[o + 6], A, 2821735955), u = h(u, v, w, t, x[o + 7], B, 4249261313), t = h(t, u, v, w, x[o + 8], y, 1770035416), w = h(w, t, u, v, x[o + 9], z, 2336552879), v = h(v, w, t, u, x[o + 10], A, 4294925233), u = h(u, v, w, t, x[o + 11], B, 2304563134), t = h(t, u, v, w, x[o + 12], y, 1804603682), w = h(w, t, u, v, x[o + 13], z, 4254626195), v = h(v, w, t, u, x[o + 14], A, 2792965006), u = h(u, v, w, t, x[o + 15], B, 1236535329), t = i(t, u, v, w, x[o + 1], C, 4129170786), w = i(w, t, u, v, x[o + 6], D, 3225465664), v = i(v, w, t, u, x[o + 11], E, 643717713), u = i(u, v, w, t, x[o + 0], F, 3921069994), t = i(t, u, v, w, x[o + 5], C, 3593408605), w = i(w, t, u, v, x[o + 10], D, 38016083), v = i(v, w, t, u, x[o + 15], E, 3634488961), u = i(u, v, w, t, x[o + 4], F, 3889429448), t = i(t, u, v, w, x[o + 9], C, 568446438), w = i(w, t, u, v, x[o + 14], D, 3275163606), v = i(v, w, t, u, x[o + 3], E, 4107603335), u = i(u, v, w, t, x[o + 8], F, 1163531501), t = i(t, u, v, w, x[o + 13], C, 2850285829), w = i(w, t, u, v, x[o + 2], D, 4243563512), v = i(v, w, t, u, x[o + 7], E, 1735328473), u = i(u, v, w, t, x[o + 12], F, 2368359562), t = j(t, u, v, w, x[o + 5], G, 4294588738), w = j(w, t, u, v, x[o + 8], H, 2272392833), v = j(v, w, t, u, x[o + 11], I, 1839030562), u = j(u, v, w, t, x[o + 14], J, 4259657740), t = j(t, u, v, w, x[o + 1], G, 2763975236), w = j(w, t, u, v, x[o + 4], H, 1272893353), v = j(v, w, t, u, x[o + 7], I, 4139469664), u = j(u, v, w, t, x[o + 10], J, 3200236656), t = j(t, u, v, w, x[o + 13], G, 681279174), w = j(w, t, u, v, x[o + 0], H, 3936430074), v = j(v, w, t, u, x[o + 3], I, 3572445317), u = j(u, v, w, t, x[o + 6], J, 76029189), t = j(t, u, v, w, x[o + 9], G, 3654602809), w = j(w, t, u, v, x[o + 12], H, 3873151461), v = j(v, w, t, u, x[o + 15], I, 530742520), u = j(u, v, w, t, x[o + 2], J, 3299628645), t = k(t, u, v, w, x[o + 0], K, 4096336452), w = k(w, t, u, v, x[o + 7], L, 1126891415), v = k(v, w, t, u, x[o + 14], M, 2878612391), u = k(u, v, w, t, x[o + 5], N, 4237533241), t = k(t, u, v, w, x[o + 12], K, 1700485571), w = k(w, t, u, v, x[o + 3], L, 2399980690), v = k(v, w, t, u, x[o + 10], M, 4293915773), u = k(u, v, w, t, x[o + 1], N, 2240044497), t = k(t, u, v, w, x[o + 8], K, 1873313359), w = k(w, t, u, v, x[o + 15], L, 4264355552), v = k(v, w, t, u, x[o + 6], M, 2734768916), u = k(u, v, w, t, x[o + 13], N, 1309151649), t = k(t, u, v, w, x[o + 4], K, 4149444226), w = k(w, t, u, v, x[o + 11], L, 3174756917), v = k(v, w, t, u, x[o + 2], M, 718787259), u = k(u, v, w, t, x[o + 9], N, 3951481745), t = c(t, p), u = c(u, q), v = c(v, r), w = c(w, s); var O = m(t) + m(u) + m(v) + m(w); return O.toLowerCase(); }
 
 
 // #region ********************************************************  固定代码  ********************************************************
@@ -504,29 +528,6 @@ function wait(n) {
 }
 
 
-/**
- * 每日网抑云
- */
-function wyy() {
-    return new Promise((resolve) => {
-        let url = {
-            url: `https://api.qqsuu.cn/api/comment?format=json`,
-        };
-        $.get(url, async (err, resp, data) => {
-            try {
-                data = JSON.parse(data);
-                content = data.data[0].content;
-                source = data.data[0].source;
-                msg = `[网抑云时间]: ${content}  by--${source}`;
-                DoubleLog(msg);
-            } catch (e) {
-                $.logErr(e, resp);
-            } finally {
-                resolve();
-            }
-        }, timeout = 3);
-    });
-}
 
 
 
