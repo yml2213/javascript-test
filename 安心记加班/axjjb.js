@@ -1,5 +1,5 @@
 /*
-安心记加班  app               cron 10 8,10 * * *  axjjb.js
+安心记加班  app               cron 10 7,10,17 * * *  axjjb.js
 
 ========= 青龙--配置文件--贴心复制区域  ========= 
 # 安心记加班
@@ -22,26 +22,66 @@ let msg = '';
 
 async function main(userInfo) {
 
+    doubleLog('\n================== 签到查询 ==================\n');
+    await userInfo.signInfo();
+
+    doubleLog('\n================== 扭蛋次数 ==================\n');
+    await userInfo.gachaNum();
+
     doubleLog('\n================== 抽奖次数 ==================\n');
     await userInfo.luckyNum();
-    // await userInfo.luckyDraw();
+
+    let h = $.ts('h');
+    if (h >= 16) {
+        doubleLog('\n================== 开宝箱 ==================\n');
+        let boxId = ["JJB_BOX_ONE", "JJB_BOX_TWO", "JJB_BOX_THREE", "JJB_BOX_FOUR"];
+        for (let index = 0; index < boxId.length; index++) {
+            await userInfo.openBox(boxId[index]);
+        }
+    }
+
+    let j = $.ts('h');
+    if (j >= 17 && j < 22) {
+        doubleLog('\n================== 下班打卡 ==================\n');
+        await userInfo.clock();
+
+        doubleLog('\n================== 领取任务列表金币 ==================\n');
+        let type = ["JJB_MONEY_CENTER_DIAL_1", "JJB_MONEY_CENTER_DIAL_2", "JJB_MONEY_CENTER_GACHA_1", "JJB_MONEY_CENTER_GACHA_2", "JJB_CLOCK_OUT_DAY_TASK_CLICK"];
+        for (let index = 0; index < type.length; index++) {
+            await userInfo.taskListCoin(type[index]);
+        }
+    }
+
+
+    doubleLog('\n================== 查询余额 ==================\n');
+    await userInfo.check();
+
 }
+
 
 class UserInfo {
     constructor(index, str) {
         this.index = index + 1;
         this.token = str;
-        this.host = `https://market-gateway.julanling.com`;
+        this.appVersion = '6.8.80';
+        this.appChannel = "xiaomi";
+        this.operatingSystem = "ANDROID";
+        this.os = "ANDROID";
+
         this.headers = {
             "authorization": `Bearer ${this.token}`,
             "Content-Type": "application/json",
             "x-requested-with": "com.julanling.app",
         };
+        this.headers2 = {
+            "authorization": `Bearer ${this.token}`,
+            "x-requested-with": "com.julanling.app",
+        };
         this.body = {
-            "appChannel": "xiaomi",
-            "appVersion": "6.8.80",
-            "operatingSystem": "ANDROID",
-            "os": "ANDROID"
+            "appChannel": this.appChannel,
+            "appVersion": this.appVersion,
+            "operatingSystem": this.operatingSystem,
+            "os": this.os
         };
     }
 
@@ -60,15 +100,36 @@ class UserInfo {
             let num = res.results.dialValidNum;
             await $.wait(3);
             for (let index = 0; index < num; index++) {
-                await this.luckyDraw();
+                await this.luckyDraw(index);
             }
 
-        }
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
 
     }
 
-    async luckyDraw() {
-        let name = "抽奖";
+    async gachaNum() {
+        let name = "扭蛋次数";
+        let options = {
+            method: "get",
+            url: `https://market-gateway.julanling.com/market-center/api2/gacha/index?version=6.8.80&os=ANDROID&appVersion=6.8.80`,
+            headers: this.headers2,
+        };
+
+        let res = await httpRequest(options);
+        // console.log(res);
+        if (res?.errorCode == 0) {
+            doubleLog(`账号[${this.index}] ${name}: 剩余 ${res?.results?.remainTimes} 次    活动时间 ${res?.results?.startDate}---${res?.results?.endDate}`);
+            let num = res.results.remainTimes;
+            await $.wait(3);
+            for (let index = 0; index < num; index++) {
+                await this.luckyDraw2(index);
+            }
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
+
+    }
+
+    async luckyDraw(index) {
+        let name = `第 ${index + 1} 次 抽奖`;
         let options = {
             method: "post",
             url: `https://market-gateway.julanling.com/market-center/api2/dial/luckyDraw`,
@@ -83,7 +144,28 @@ class UserInfo {
             this.bizNo = res?.results?.bizNo;
             await $.wait(3);
             await this.receiveDialCoin();
-        }
+        } else if (res?.results?.awardType == "ADVERT_ONE_PIC" || "GOLD_VIDEO" || "DOUBLE_VIDEO") {
+            doubleLog(`账号[${this.index}] ${name}: 没写, 应该是没东西!`);
+            await $.wait(3);
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
+
+    }
+
+    async luckyDraw2(index) { // 扭蛋
+        let name = `第 ${index + 1} 次 扭蛋`;
+        let options = {
+            method: "post",
+            url: `https://market-gateway.julanling.com/market-center/api2/gacha/luckyDraw`,
+            headers: this.headers,
+            body: JSON.stringify(this.body)
+        };
+        // console.log(options);
+        let res = await httpRequest(options);
+        // console.log(res?.results);
+        if (res?.errorCode == 0) {
+            doubleLog(`账号[${this.index}] ${name}: 获得 ${res?.results?.name}, id: ${res?.results?.totalChipNum} --- 进度: ${res?.results?.chips[0].chipNum}/10`);
+            await $.wait(3);
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
 
     }
 
@@ -95,10 +177,10 @@ class UserInfo {
             headers: this.headers,
             body: JSON.stringify({
                 "bizNo": this.bizNo,
-                "appChannel": "xiaomi",
-                "appVersion": "6.8.80",
-                "operatingSystem": "ANDROID",
-                "os": "ANDROID"
+                "appChannel": this.appChannel,
+                "appVersion": this.appVersion,
+                "operatingSystem": this.operatingSystem,
+                "os": this.os
             })
         };
 
@@ -107,7 +189,180 @@ class UserInfo {
         if (res?.errorCode == 0) {
             doubleLog(`账号[${this.index}] ${name}:  ${res?.results?.amount} 金币领取成功!`);
             await $.wait(1);
-        }
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
+    }
+
+    async openBox(type) {
+        let name = "开宝箱";
+        let options = {
+            method: "post",
+            url: `https://market-gateway.julanling.com/market-center/api2/dial/openBox`,
+            headers: this.headers,
+            body: JSON.stringify({
+                "businessType": type,
+                "appChannel": this.appChannel,
+                "appVersion": this.appVersion,
+                "operatingSystem": this.operatingSystem,
+                "os": this.os
+            })
+        };
+
+        let res = await httpRequest(options);
+        // console.log(res);
+        if (res?.errorCode == 0) {
+            doubleLog(`账号[${this.index}] ${name}:  ${res?.results?.openBoxAwards[1].amount} 金币 领取成功!`);
+            await $.wait(3);
+        } else if (res?.errorCode == 1211071) {
+            doubleLog(`账号[${this.index}] ${name}:  ${res?.errorStr} !`);
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
+    }
+
+    async taskListCoin(type) {
+        let name = `领取任务列表金币 ${type}`;
+        let options = {
+            method: "post",
+            url: `https://market-gateway.julanling.com/market-center/api2/assignment/receiveAwardByBusinessType`,
+            headers: {
+                "authorization": `Bearer ${this.token}`,
+                "content-type": "application/json;charset=UTF-8",
+                "x-requested-with": "com.julanling.app",
+            },
+            body: JSON.stringify({
+                "businessType": type,
+                "appChannel": this.appChannel,
+                "appVersion": this.appVersion,
+                "os": this.os
+            })
+        };
+
+        let res = await httpRequest(options);
+        // console.log(res);
+        if (res?.errorCode == 0) {
+            doubleLog(`账号[${this.index}] ${name}:  ${res?.results?.awardInfos[0].amount} 金币 领取成功!`);
+            await $.wait(3);
+        } else if (res?.errorCode == 1211239) {
+            doubleLog(`账号[${this.index}] ${name}:  ${res?.errorStr} !`);
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
+    }
+
+    async signInfo() {
+        let name = "签到查询";
+        let options = {
+            method: "get",
+            url: `https://market-gateway.julanling.com/market-center/api2/signIn/signInfo`,
+            headers: this.headers2
+        };
+
+        let res = await httpRequest(options);
+        // console.log(res);
+        if (res?.results.isSignIn == false) {
+            doubleLog(`账号[${this.index}] ${name}:  未签到, 去签到!`);
+            await this.signIn();
+        } else if (res?.results.isSignIn == true) {
+            doubleLog(`账号[${this.index}] ${name}:  已签到!`);
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
+    }
+
+    async signIn() {
+        let name = "签到";
+        let options = {
+            method: "post",
+            url: `https://market-gateway.julanling.com/market-center/api2/signIn/signIn`,
+            headers: {
+                "authorization": `Bearer ${this.token}`,
+                "x-requested-with": "com.julanling.app",
+                "content-type": "application/json;charset=UTF-8"
+            },
+            body: JSON.stringify({
+                "appChannel": this.appChannel,
+                "appVersion": this.appVersion,
+                "os": this.os
+            })
+        };
+
+        let res = await httpRequest(options);
+        // console.log(res);
+        if (res.errorCode == 0) {
+            doubleLog(`账号[${this.index}] ${name}:  ${res?.results?.amount} 金币领取成功! 顺便报名下班打卡!`);
+            await $.wait(1);
+            await this.clockOutApply();
+
+        } else if (res.errorCode == 1211090) {
+            doubleLog(`账号[${this.index}] ${name}: ${res.errorStr}`);
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
+    }
+
+    async clockOutApply() {
+        let name = "报名下班打卡";
+        let today = `${$.ts('y')}-${$.ts('mo')}-${$.ts('d')}`;
+        let options = {
+            method: "post",
+            url: `https://market-gateway.julanling.com/market-center/api2/clockOut/clockOutApply`,
+            headers: {
+                "authorization": `Bearer ${this.token}`,
+                "x-requested-with": "com.julanling.app",
+                "content-type": "application/json;charset=UTF-8"
+            },
+            body: JSON.stringify({
+                "period": today,
+                "appChannel": this.appChannel,
+                "appVersion": this.appVersion,
+                "os": this.os
+            })
+        };
+
+        let res = await httpRequest(options);
+        // console.log(res);
+        if (res.errorCode == 0) {
+            doubleLog(`账号[${this.index}] ${name}:  ok `);
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
+    }
+
+    async clock() {
+        let name = "下班打卡";
+        let today = `${$.ts('y')}-${$.ts('mo')}-${$.ts('d')}`;
+        let options = {
+            method: "post",
+            url: `https://market-gateway.julanling.com/market-center/api2/clockOut/clock`,
+            headers: {
+                "authorization": `Bearer ${this.token}`,
+                "x-requested-with": "com.julanling.app",
+                "content-type": "application/json;charset=UTF-8"
+            },
+            body: JSON.stringify({
+                "period": today,
+                "appChannel": this.appChannel,
+                "appVersion": this.appVersion,
+                "os": this.os
+            })
+        };
+
+        let res = await httpRequest(options);
+        // console.log(res);
+        if (res.errorCode == 0) {
+            doubleLog(`账号[${this.index}] ${name}: 打卡时间:${res.results.clockTime}, 进度: ${res.results.clockoutBoxProcessResp.clockDays}/7`);
+        } else if (res?.errorCode == 1211271) {
+            doubleLog(`账号[${this.index}] ${name}:  ${res?.errorStr} !`);
+            await $.wait(3);
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
+    }
+
+    async check() {
+        let name = "查询余额";
+        let options = {
+            method: "get",
+            url: `https://market-gateway.julanling.com/activity-third-account/api/cash/draw/drawIndex`,
+            headers: {
+                "authorization": `Bearer ${this.token}`,
+                "x-requested-with": "com.julanling.app",
+            },
+        };
+
+        let res = await httpRequest(options);
+        // console.log(res);
+        if (res.errorCode == 0) {
+            doubleLog(`账号[${this.index}] ${name}: 金币: ${res.results.balanceAmount}==${res.results.aboutAmount} 元`);
+        } else doubleLog(`账号[${this.index}]  ${name} 失败 ❌ 了呢`), console.log(res);
     }
 
 }
