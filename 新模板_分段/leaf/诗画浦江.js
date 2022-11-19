@@ -1,20 +1,16 @@
 /*
-今日越城
+诗画浦江
 
-账号密码填写到 jrycAccount 里，多账号用换行或@或&隔开
+账号密码填写到 shpj 里，多账号用换行或@或&隔开
 格式：账号#密码
 
 cron: 17 7,20 * * *
-const $ = new Env("今日越城")
+const $ = new Env("诗画浦江")
 */
-const $ = new Env("今日越城");
-
-const Notify = 1
-const notify = require("./sendNotify");
-
+const $ = new Env("诗画浦江");
 
 const envSplitor = ['\n', '&', '@'] //支持多种分割
-const ckNames = ['jrycAccount'] //支持多变量
+const ckNames = ['shpj'] //支持多变量
 
 let userCookieList = ckNames.map(x => ($.isNode() ? process.env[x] : $.getdata(x)) || '');
 
@@ -32,17 +28,13 @@ const osType = 'IOS'
 const osVer = '15.0'
 const channelType = 'Appstore'
 
-const tenantId = 31
-const client_id = 48
-const channel_id = '5dbf7fdfb1985007455762fd'
+const tenantId = 14
+const client_id = 12
+let channel = ["5f103ebaad61a40f3c8cce88", "622b01cdfe3fc10794f6c747", "61b1aea9ad61a42065f901c9", "5cc2cc821b011b18ee37591b", "5cc2cca7b1985017d6fef816", "5cc2cc56b1985017d6fef814", "5d075f1e1b011b68176a8a00", "5cc2cc981b011b18ee37591c", "5d52be161b011b137b853d18", "5cc2ccbe1b011b18ee37591d", "5cc02969b1985017d6fef804"]
 
 const salt = 'FR*r!isE5W'
-const public_key = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD6XO7e9YeAOs+cFqwa7ETJ+WXizPqQeXv68i5vqw9pFREsrqiBTRcg7wB0RIp3rJkDpaeVJLsZqYm5TW7FWx/iOiXFc+zCPvaKZric2dXCw27EvlH5rq+zwIPDAJHGAfnn1nmQH7wR3PCatEIb8pz5GFlTHMlluw4ZYmnOwg+thwIDAQAB'
-
 global.window = {};
-const JSEncrypt = require('jsencrypt')
-let rsa = new JSEncrypt();
-rsa.setPublicKey(public_key)
+const NodeRSA = require('node-rsa');
 ///////////////////////////////////////////////////////////////////
 class UserInfo {
     constructor(str) {
@@ -53,8 +45,8 @@ class UserInfo {
         let info = str.split('#')
         this.phone = info[0]
         this.pwd = info[1]
-
-        this.sessionId = '629509ecfe3fc15cbf974ef0'
+        this.channel_id = randomArr(channel)
+        this.sessionId = '6378302ab77d2e7e53d7da31'
         this.uuid = randomUUID()
         this.UA = [appVer, this.uuid, phoneVer, osType, osVer, channelType].join(';')
         this.articleList = []
@@ -146,7 +138,7 @@ class UserInfo {
     async credentialAuth() {
         let paramOut = {}
         try {
-            let encryptedPwd = rsa.encrypt(this.pwd)
+            let encryptedPwd = aesencrypt(this.pwd)
             let urlParam = {
                 fn: 'credentialAuth',
                 method: 'post',
@@ -158,8 +150,10 @@ class UserInfo {
                 },
                 //debugIn: true,
             }
+            //  console.log(urlParam)
             paramOut = Object.assign({}, await this.taskApi(urlParam))
             let result = paramOut.result
+            //console.log(result)
             if (result.code == 0) {
                 await this.login(result.data.authorization_code.code)
             } else {
@@ -186,9 +180,10 @@ class UserInfo {
                     union_id: '',
                 }
             }
+            //  console.log(urlParam)
             paramOut = Object.assign({}, await this.taskApi(urlParam))
             let result = paramOut.result
-            //console.log(result)
+            // console.log(result)
             if (result.code == 0) {
                 this.valid = true
                 this.sessionId = result.data.session.id
@@ -296,12 +291,8 @@ class UserInfo {
             let urlParam = {
                 fn: 'getArticleList',
                 method: 'get',
-                url: `https://vapp.tmuyun.com/api/article/channel_list`,
-                queryParam: {
-                    channel_id: paramIn.channel_id || channel_id,
-                    is_new: paramIn.is_new || 1,
-                    size: paramIn.size || 50,
-                },
+                url: `https://vapp.tmuyun.com/api/article/channel_list?channel_id=${this.channel_id}&is_new=1&size=50`,
+
                 //debugIn: true,
                 //debugOut: true,
             }
@@ -515,7 +506,7 @@ class UserInfo {
                     }
                 }
             } else {
-                console.log(`任务列表失败: ${result.message}`)
+                console.log(`查询签到状态失败: ${result.message}`)
             }
         } catch (e) {
             console.log(e)
@@ -579,6 +570,13 @@ function checkEnv() {
     console.log(`共找到${userCount}个账号`)
     return true
 }
+function aesencrypt(data) {
+    const publicKey = "-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD6XO7e9YeAOs+cFqwa7ETJ+WXizPqQeXv68i5vqw9pFREsrqiBTRcg7wB0RIp3rJkDpaeVJLsZqYm5TW7FWx/iOiXFc+zCPvaKZric2dXCw27EvlH5rq+zwIPDAJHGAfnn1nmQH7wR3PCatEIb8pz5GFlTHMlluw4ZYmnOwg+thwIDAQAB-----END PUBLIC KEY-----";
+    const nodersa = new NodeRSA(publicKey);
+    nodersa.setOptions({ encryptionScheme: 'pkcs1' });
+    const encrypted = nodersa.encrypt(data, 'base64');
+    return encrypted;
+}
 ////////////////////////////////////////////////////////////////////
 async function httpRequest(method, url) {
     return new Promise((resolve) => {
@@ -586,6 +584,9 @@ async function httpRequest(method, url) {
             resolve({ err, req, resp })
         })
     });
+}
+function randomArr(arr) {
+    return arr[parseInt(Math.random() * arr.length, 10)];
 }
 ////////////////////////////////////////////////////////////////////
 //SHA256

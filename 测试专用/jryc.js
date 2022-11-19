@@ -1,26 +1,27 @@
 /*
 今日越城
 
+11.19       yml-修复部分rsa青龙报错  需要安装  node-rsa
+
 账号密码填写到 jrycAccount 里，多账号用换行或@或&隔开
 格式：账号#密码
 
 cron: 17 7,20 * * *
 const $ = new Env("今日越城")
 */
-const $ = new Env("今日越城");
+const $ = new Env("今日越城")
+let userList = []
+let userIdx = 0
+
 
 const Notify = 1
-const notify = require("./sendNotify");
+const notify = require("./sendNotify")
 
 
 const envSplitor = ['\n', '&', '@'] //支持多种分割
 const ckNames = ['jrycAccount'] //支持多变量
 
-let userCookieList = ckNames.map(x => ($.isNode() ? process.env[x] : $.getdata(x)) || '');
-
-let userList = []
-let userIdx = 0
-let userCount = 0
+// ---------------------------- 自定义变量区  ----------------------------
 
 const comment_word_list = ['努力评论', '来点积分', '火哥厉害']
 
@@ -39,10 +40,7 @@ const channel_id = '5dbf7fdfb1985007455762fd'
 const salt = 'FR*r!isE5W'
 const public_key = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD6XO7e9YeAOs+cFqwa7ETJ+WXizPqQeXv68i5vqw9pFREsrqiBTRcg7wB0RIp3rJkDpaeVJLsZqYm5TW7FWx/iOiXFc+zCPvaKZric2dXCw27EvlH5rq+zwIPDAJHGAfnn1nmQH7wR3PCatEIb8pz5GFlTHMlluw4ZYmnOwg+thwIDAQAB'
 
-global.window = {};
-const JSEncrypt = require('jsencrypt')
-let rsa = new JSEncrypt();
-rsa.setPublicKey(public_key)
+
 ///////////////////////////////////////////////////////////////////
 class UserInfo {
     constructor(str) {
@@ -106,9 +104,11 @@ class UserInfo {
                     urlObject.headers['Content-Length'] = urlObject.body ? urlObject.body.length : 0
                 }
             }
-            if (paramIn.urlObjectParam) Object.assign(urlObject, paramIn.urlObjectParam);
-            if (paramIn.headerParam) Object.assign(urlObject.headers, paramIn.headerParam);
-            if (paramIn.debugIn) console.log(urlObject);
+            // 合并对象
+            if (paramIn.urlObjectParam) Object.assign(urlObject, paramIn.urlObjectParam)
+            if (paramIn.headerParam) Object.assign(urlObject.headers, paramIn.headerParam)
+
+            if (paramIn.debugIn) console.log(urlObject)
             paramOut = Object.assign({}, await httpRequest(paramIn.method, urlObject))
             paramOut.statusCode = paramOut?.err?.response?.statusCode || paramOut?.resp?.statusCode
             if (paramOut.statusCode != 200) {
@@ -143,10 +143,22 @@ class UserInfo {
         }
     }
 
+    rsaEncrypt(encryptTxt) {
+        const NodeRSA = require('node-rsa')
+        let Key = public_key
+
+        let nodersa = new NodeRSA('-----BEGIN PUBLIC KEY-----\n' + Key + '\n-----END PUBLIC KEY-----');
+        nodersa.setOptions({ encryptionScheme: 'pkcs1' });
+        let decryptText = nodersa.encrypt(encryptTxt, 'base64', 'utf8');
+
+        // console.log(decryptText);
+        return decryptText;
+    }
+
     async credentialAuth() {
         let paramOut = {}
         try {
-            let encryptedPwd = rsa.encrypt(this.pwd)
+            let encryptedPwd = this.rsaEncrypt(this.pwd)
             let urlParam = {
                 fn: 'credentialAuth',
                 method: 'post',
@@ -156,7 +168,7 @@ class UserInfo {
                     password: encodeURIComponent(encryptedPwd),
                     phone_number: this.phone,
                 },
-                //debugIn: true,
+                // debugIn: true,
             }
             paramOut = Object.assign({}, await this.taskApi(urlParam))
             let result = paramOut.result
@@ -556,6 +568,8 @@ function randomUUID() {
 }
 
 function checkEnv() {
+    let userCookieList = ckNames.map(x => ($.isNode() ? process.env[x] : $.getdata(x)) || '');
+    let userCount = 0
     for (let userCookie of userCookieList) {
         if (!userCookie) continue;
         let splitor = envSplitor[0];
