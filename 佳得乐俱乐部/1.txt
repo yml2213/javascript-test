@@ -1,0 +1,67 @@
+1668913172 000
+
+1668913172000_  7769222
+
+
+
+{
+	"data": "{"screenWidth":393,"phoneCalendarAuthorized":true,"windowHeight":756,"bluetoothEnabled":true,"errMsg":"getSystemInfo:ok","language":"zh_CN","microphoneAuthorized":true,"fontSizeScaleFactor":1,"locationAuthorized":true,"notificationAuthorized":true,"model":"M2102J2SC","statusBarHeight":33,"safeArea":{"width":393,"right":393,"top":33,"left":0,"bottom":835,"height":802},"brand":"Xiaomi","windowWidth":393,"locationEnabled":true,"benchmarkLevel":32,"screenHeight":835,"abi":"arm64-v8a","version":"8.0.28","cameraAuthorized":true,"deviceAbi":"arm64-v8a","system":"Android 12","fontSizeSetting":16,"pixelRatio":2.75,"deviceOrientation":"portrait","wifiEnabled":true,"screenTop":80,"platform":"android","SDKVersion":"2.27.3","enableDebug":false,"devicePixelRatio":2.75,"host":{"env":"WeChat","version":671095895},"mode":"default","scene":1089,"mopenid":"oK9Mv5a0lfKbJwxqB993RgSUrG84"}"
+}
+
+{
+    "user": {
+        "uid": "106543772",
+        "open_o": 2,
+        "open_ov": "12",
+        "open_mmid": "fd4196854db380b47caf9eb6ab396f2ea5",
+        "cookieid": "5tieu0T47AiKWi3NpRdAy"
+    },
+    "event": "click",
+    "properties": {
+        "itemid": "welfare_task_pt_reward_video",
+        "item_type": "welfare",
+        "position": "WELFARE_TASK",
+        "time": 1668925916919,
+        "sessionid": "17fdda300ba12692",
+        "item_mark": {
+            "0": "看",
+            "1": "视",
+            "2": "频",
+            "3": "赚",
+            "4": "金",
+            "5": "币",
+            "item_name": "",
+            "item_order": "",
+            "item_url": "https://van.mama.cn/welfare/v6/welfare/index/indexV3?rel=2&app=pt&uid=106543772#/task",
+            "item_desc": "",
+            "entrance": "",
+            "inside": "",
+            "outside": "",
+            "fm": "",
+            "channel": "",
+            "time_on_visit": "",
+            "item_mark_1": "",
+            "item_mark_2": "",
+            "item_mark_3": "",
+            "item_mark_4": "",
+            "item_mark_5": "",
+            "item_mark_6": "",
+            "item_mark_7": "",
+            "item_mark_8": ""
+        }
+    },
+    "content": {
+        "app": "pt",
+        "app_ver": "12.10.1",
+        "action": "view_detail",
+        "contextid": "-1",
+        "context_type": "",
+        "context_mark": {
+            "context_name": ""
+        },
+        "search_keyword": "",
+        "referrer": ""
+    }
+}
+
+

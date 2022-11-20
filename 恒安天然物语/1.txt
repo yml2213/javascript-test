@@ -1,0 +1,179 @@
+任务列表
+
+{
+    "msg": "操作成功",
+    "code": 0,
+    "data": [
+        {
+            "jobName": "每日打卡",
+            "buttonName": "签到",
+            "dailyCompletion": 1,
+            "jobCode": "A00001",
+            "remark": "",
+            "jobIntro": "连续签到第5天获大量水滴",
+            "type": "0",
+            "jobIcon": "http://cdn.beidan666.com/open/20210516/597855b3ff4a42e38968a05a6348d33b.png",
+            "total": 1,
+            "success": "1",
+            "rank": 100,
+            "id": "1382633999567237121",
+            "status": "0",
+            "createDate": 1618480608000
+        },
+        {
+            "jobName": "限时福袋 +20/40",
+            "buttonName": "领取",
+            "dailyCompletion": 4,
+            "jobCode": "A00003",
+            "remark": null,
+            "jobIntro": "每天指定时段派送随机福袋",
+            "type": "2",
+            "jobIcon": "http://cdn.beidan666.com/open/20210516/be597da6c5e8456997e67f95cf1137f7.png",
+            "total": 0,
+            "success": "0",
+            "rank": 102,
+            "id": "1382633999567237123",
+            "status": "0",
+            "createDate": 1619429932000
+        },
+        {
+            "jobName": "分享好友 +10",
+            "buttonName": "去分享",
+            "dailyCompletion": 5,
+            "jobCode": "A00004",
+            "remark": null,
+            "jobIntro": "邀请好友登录助力",
+            "type": "3",
+            "jobIcon": "http://cdn.beidan666.com/open/20210516/3ff84b4022fe416d9717fbc2f1b5dd84.png",
+            "total": 0,
+            "success": "0",
+            "rank": 103,
+            "id": "1382633999567237124",
+            "status": "0",
+            "createDate": 1619429934000
+        },
+        {
+            "jobName": "社区浏览 +10",
+            "buttonName": "浏览",
+            "dailyCompletion": 1,
+            "jobCode": "A00005",
+            "remark": null,
+            "jobIntro": "查看TA们的种植心得",
+            "type": "4",
+            "jobIcon": "http://cdn.beidan666.com/open/20210516/e03bf813b38040e089f7b5e9742a2704.png",
+            "total": 0,
+            "success": "0",
+            "rank": 104,
+            "id": "1382633999567237125",
+            "status": "0",
+            "createDate": 1619429938000
+        },
+        {
+            "jobName": "发表帖子 +30",
+            "buttonName": "去完成",
+            "dailyCompletion": 1,
+            "jobCode": "A00006",
+            "remark": null,
+            "jobIntro": "分享你的天然生活",
+            "type": "5",
+            "jobIcon": "http://cdn.beidan666.com/open/20210516/612665398fad4a009d8110d7ec97b7c3.png",
+            "total": 0,
+            "success": "0",
+            "rank": 105,
+            "id": "1382633999567237126",
+            "status": "0",
+            "createDate": 1619429941000
+        },
+        {
+            "jobName": "浏览官方商城好物 +30",
+            "buttonName": "去逛逛",
+            "dailyCompletion": 1,
+            "jobCode": "A00009",
+            "remark": "{\"appId\":\"wxfc766f1e9a63b01f\",\"path\":\"/pages/shop/GoodsClass/index\"}",
+            "jobIntro": "逛一逛，嗨享会员专属好物",
+            "type": "8",
+            "jobIcon": "http://cdn.beidan666.com/open/20210516/e4231d1a28984b48aa204dc19ffde0e1.png",
+            "total": "0",
+            "success": "0",
+            "rank": 106,
+            "id": "1382633999567237129",
+            "status": "0",
+            "createDate": 1619429948000
+        },
+        {
+            "jobName": "邀请新用户 +30",
+            "buttonName": "去邀请",
+            "dailyCompletion": 5,
+            "jobCode": "A00012",
+            "remark": null,
+            "jobIntro": "邀请新用户加入社区",
+            "type": "11",
+            "jobIcon": "http://cdn.beidan666.com/open/20210519/3f8e7a97e8b3433f973424f618fc32a9.png",
+            "total": 0,
+            "success": "0",
+            "rank": 108,
+            "id": "1391711051982909443",
+            "status": "0",
+            "createDate": 1621413393000
+        },
+        {
+            "jobName": "好友互动 +10",
+            "buttonName": "去完成",
+            "dailyCompletion": 5,
+            "jobCode": "A00010",
+            "remark": null,
+            "jobIntro": "收能量，帮TA浇水不消耗自己的水滴哦～",
+            "type": "9",
+            "jobIcon": "http://cdn.beidan666.com/open/20210516/825bd3ed2c9b46e8ab0b6618bdde1eb5.png",
+            "total": 0,
+            "success": "0",
+            "rank": 109,
+            "id": "1382633999567237130",
+            "status": "0",
+            "createDate": 1619429950000
+        }
+    ]
+}
+
+========================================
+任务接口
+
+{
+    "code": 0,
+    "data": {
+        "drops": 40
+    }
+}
+
+
+{
+        "uid": "8de4f9f2db434666a97c3871fec52bbb",
+        "avatarUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/WyBFlUaDAQ2LPicercSw4ACqsLoePefCn1PRvsiccrJrjWicmfBKhkRPjEgiayRlXBshibqaM1T9nEQGjILvGqSKicWg/132",
+        "nickName": "东东机器人",
+        "gender": "0",
+        "energy": "1",
+        "pictureFrame": null,
+        "generateEnergy": "0",
+        "beUpper": "0",
+        "fruit": "0",
+        "exp": "30",
+        "newTask": "1",
+        "level": "1",
+        "mobile": "153****6683",
+        "levelName": "",
+        "levelIcon": "http://cdn.beidan666.com/open/20210507/68c5379dcf134b6cbb44eaf50ff767e7.png",
+        "levelPic": "http://cdn.beidan666.com/open/20210507/9c78bb49dd184a8589579b399258d3dc.png",
+        "expLevel": "100",
+        "needExp": "70",
+        "drops": "120",
+        "token": "6464e5af-12cf-404f-a0a2-71b196f761c5",
+        "expTotal": "30",
+        "prizeTask": "0",
+        "fruitDate": null,
+        "fruitExp": "10000",
+        "shareCode": "npoetCwCM",
+        "orderDate": null,
+        "timing": "0",
+        "lotteryNumber": "0",
+        "lovePower": "0"
+    }
