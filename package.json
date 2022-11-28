@@ -6,7 +6,6 @@
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.0",
-    "download": "^8.0.0",
     "fa": "^1.0.1",
     "fs": "^0.0.1-security",
     "getting-agent": "^1.0.3",
@@ -25,8 +24,6 @@
     "tough-cookie": "^4.0.0",
     "tunnel": "0.0.6",
     "underscore": "^1.13.3",
-    "webpack": "^5.74.0",
-    "ws": "^7.4.3",
-    "yml2213-utils": "^1.0.5"
+    "webpack": "^5.74.0"
   }
 }
