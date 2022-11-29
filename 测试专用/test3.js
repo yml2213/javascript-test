@@ -1,18 +1,10 @@
-
-let a = 1
-function test() {
-    let b = 1
-    if (b) {
-        console.log(`1111`)
-        // a = false
-        return a = 3
+function tt() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (function (e) {
+        var n = 16 * Math.random() | 0
+            , t = "x" === e ? n : 3 & n | 8;
+        return t.toString(16)
     }
-
+    ))
 }
 
-test()
-
-console.log(a)
-
-
-
+console.log(tt());

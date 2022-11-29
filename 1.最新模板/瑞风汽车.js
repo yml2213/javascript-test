@@ -52,7 +52,6 @@ class UserInfo {
 
         try {
             if (str.indexOf("##") > -1) {
-                this.mopenid = str.split("##")[0]
                 this.chatId = str.split("##")[1]
             }
 
