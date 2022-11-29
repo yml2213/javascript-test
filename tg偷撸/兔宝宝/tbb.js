@@ -36,12 +36,12 @@ let text = sign = '';
 async function start() {
 
 
-	console.log('\n================== 用户信息 ==================\n');
-	taskall = [];
-	for (let user of userList) {
-		taskall.push(user.user_info('用户信息'));
-	}
-	await Promise.all(taskall);
+    console.log('\n================== 用户信息 ==================\n');
+    taskall = [];
+    for (let user of userList) {
+        taskall.push(user.user_info('用户信息'));
+    }
+    await Promise.all(taskall);
 
 
 
@@ -51,78 +51,78 @@ async function start() {
 
 
 class UserInfo {
-	constructor(str) {
-		this.index = ++userIdx;
-		this.token = str;
-	}
+    constructor(str) {
+        this.index = ++userIdx;
+        this.token = str;
+    }
 
-	async signin(name) { //签到
-		let options = {
-			method: "post",
-			url: `https://www.tubaobao.com/mini/index/sign`,
-			headers: {
-				'charset': 'utf-8',
-				'content-type': 'application/x-www-form-urlencoded'
-			},
-			form: {
-				'token': this.token
-			}
-		};
+    async signin(name) { //签到
+        let options = {
+            method: "post",
+            url: `https://www.tubaobao.com/mini/index/sign`,
+            headers: {
+                'charset': 'utf-8',
+                'content-type': 'application/x-www-form-urlencoded'
+            },
+            form: {
+                'token': this.token
+            }
+        };
 
-		// console.log(options);
-		let res = await httpRequest(name, options);
+        // console.log(options);
+        let res = await httpRequest(name, options);
 
-		// console.log(res);
-		if (res.flag == 1) {
-			DoubleLog(`账号[${this.index}]  ${name}" ${res.msg}, 签到天数 ${result.data.day}, 其他:${res.extra}`);
-			await wait(2);
-		} else if (res.flag == -1) {
-			DoubleLog(`账号[${this.index}]  ${name}" ${res.msg}`);
-			await wait(2);
-		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(res);
+        // console.log(res);
+        if (res.flag == 1) {
+            DoubleLog(`账号[${this.index}]  ${name}" ${res.msg}, 签到天数 ${result.data.day}, 其他:${JSON.parse(res.extra)}`);
+            await wait(2);
+        } else if (res.flag == -1) {
+            DoubleLog(`账号[${this.index}]  ${name}" ${res.msg}`);
+            await wait(2);
+        } else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(res);
 
-	}
-
-
+    }
 
 
-	async user_info(name) { // 用户信息
 
-		let options = {
-			method: "post",
-			url: `https://www.tubaobao.com/mini/index/user_profile`,
-			headers: {
-				'charset': 'utf-8',
-				'content-type': 'application/x-www-form-urlencoded'
-			},
-			form: {
-				'token': this.token
-			}
-		};
 
-		// console.log(options);
-		let res = await httpRequest(name, options);
+    async user_info(name) { // 用户信息
 
-		// console.log(res);
-		if (res.flag == 1) {
-			DoubleLog(`账号[${this.index}]   ${res.data.user_nickname}, 手机号: ${utils.phone_num(res.data.user_phone)}, 积分 ${res.data.user_score}, 邀请码 ${res.data.user_invite_code} `);
-			await wait(2);
-			await this.signin('签到');
-		} else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(res);
-	}
+        let options = {
+            method: "post",
+            url: `https://www.tubaobao.com/mini/index/user_profile`,
+            headers: {
+                'charset': 'utf-8',
+                'content-type': 'application/x-www-form-urlencoded'
+            },
+            form: {
+                'token': this.token
+            }
+        };
+
+        // console.log(options);
+        let res = await httpRequest(name, options);
+
+        // console.log(res);
+        if (res.flag == 1) {
+            DoubleLog(`账号[${this.index}]   ${res.data.user_nickname}, 手机号: ${utils.phone_num(res.data.user_phone)}, 积分 ${res.data.user_score}, 邀请码 ${res.data.user_invite_code} `);
+            await wait(2);
+            await this.signin('签到');
+        } else DoubleLog(`账号[${this.index}]  ${name} 失败❌了呢`), console.log(res);
+    }
 
 
 }
 
 !(async () => {
-	if (!(await checkEnv())) return;
-	if (userList.length > 0) {
-		await start();
-	}
-	await SendMsg(msg);
+    if (!(await checkEnv())) return;
+    if (userList.length > 0) {
+        await start();
+    }
+    await SendMsg(msg);
 })()
-	.catch((e) => console.log(e))
-	.finally(() => $.done());
+    .catch((e) => console.log(e))
+    .finally(() => $.done());
 
 
 // #region ********************************************************  固定代码  ********************************************************
@@ -130,21 +130,21 @@ class UserInfo {
 
 // 变量检查与处理
 async function checkEnv() {
-	if (userCookie) {
-		// console.log(userCookie);
-		let e = envSplitor[0];
-		for (let o of envSplitor)
-			if (userCookie.indexOf(o) > -1) {
-				e = o;
-				break;
-			}
-		for (let n of userCookie.split(e)) n && userList.push(new UserInfo(n));
-		userCount = userList.length;
-	} else {
-		console.log("未找到CK");
-		return;
-	}
-	return console.log(`共找到${userCount}个账号`), !0;
+    if (userCookie) {
+        // console.log(userCookie);
+        let e = envSplitor[0];
+        for (let o of envSplitor)
+            if (userCookie.indexOf(o) > -1) {
+                e = o;
+                break;
+            }
+        for (let n of userCookie.split(e)) n && userList.push(new UserInfo(n));
+        userCount = userList.length;
+    } else {
+        console.log("未找到CK");
+        return;
+    }
+    return console.log(`共找到${userCount}个账号`), !0;
 }
 
 
