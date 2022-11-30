@@ -29,7 +29,7 @@ const tgFlog = 1             // 是否tg脚本, 1 - tg脚本，将会tg单独发
 // 这里写登录或者用户信息，   用来做判断账号是否失效的， 失效直接不进行下面的任务 
 async function user_Info(userInfo) {
     await userInfo.login()
-    // await userInfo.getUserInfo(1)
+    await userInfo.getUserInfo(1)
 }
 
 // 这里是任务相关的， 直接全部写这里
@@ -472,11 +472,12 @@ function Env(name, env) {
                     if (error) throw new Error(error)
                     let res_body = response.body
                     let res = response
+                    let res_format = ''
                     try {
                         if (typeof res_body == "string") {
                             if ($.isJsonStr(res_body)) {
                                 res_body = JSON.parse(res_body)
-                                let res_format = $.formatJson(response.body)
+                                res_format = $.formatJson(response.body)
                                 e(null, res_body, res_format, res)
                             } else e(null, res_body, res_format, res)
                         } else e(null, res_body, res_format, res)
