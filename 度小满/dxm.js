@@ -1,21 +1,27 @@
 /*
-瑞风汽车 app             cron 22 8,12 * * *  rfqc.js
+度小满 app             cron 22 8,12 * * *  dxm.js
 
-11.27       完成基本任务   感谢 伟奇大佬的脚本
+只能转码链接进入小程序
+https://prod-0g7skhuid1ec6ca4-1313310780.tcloudbaseapp.com/index.html?202212132043531030071  
+
+12.14       完成签到 浏览 任务   
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 瑞风汽车app
-export rfqc=" 手机号 # 密码 " 
-注意密码不能有@和#这个两个符号！！！！
+# 度小满
+export dxm=" maState @ maState " 
 
 多账号用 换行 或 @ 分割
-tg频道: https://t.me/yml2213_tg  
+
+抓 https://www.dxmbaoxian.com  里面的  maState   
+
+tg频道: https://t.me/yml2213_tg
+
 */
 
 
 //============================== 默认变量区域 ==============================
-const $ = new Env("瑞风汽车")
-const CK_NAME = "rfqc"
+const $ = new Env("度小满")
+const CK_NAME = "dxm"
 const Notify = 1             // 通知控制
 let ckFlog = 1               // ck状态
 let msg = ''
@@ -27,20 +33,19 @@ const tgFlog = 1             // 是否tg脚本, 1 - tg脚本，将会tg单独发
 
 // 这里写登录或者用户信息，   用来做判断账号是否失效的， 失效直接不进行下面的任务 
 async function user_Info(userInfo) {
-    await userInfo.login()
+    await userInfo.dosign()
 }
 
 // 这里是任务相关的， 直接全部写这里
 async function task_Info(userInfo) {
-    await userInfo.sign()
-    await userInfo.ft()
-    await userInfo.pl()
-    await userInfo.zf()
+    await userInfo.dotask('view_my_page')
+    await userInfo.dotask('view_my_yuebao')
+
 }
 
-// 这里是查询余额 获积分的地方
+// 这里是查询余额 积分 个人信息 的地方
 async function check_Info(userInfo) {
-    await userInfo.grxx()
+    await userInfo.getUserInfo()
     //  await userInfo.Sendtg_bot()  // 这个是tg 机器人发送通知， 调试可以注释掉 
 }
 
@@ -55,170 +60,144 @@ class UserInfo {
                 this.chatId = str.split("##")[1]
             }
 
-            this.ck = str.split('#')
-            this.phone = this.ck[0]
-            this.pwd = MD5_Encrypt(this.ck[1])
+            this.maState = str.split("##")[0]
+
         } catch (error) {
             console.log(error)
         }
 
-
     }
 
 
-    async login() {
-        let name = "登录"
+
+    async dosign() {
+        let name = "签到"
         let options = {
-            method: "post",
-            url: `https://jacsupperapp.jac.com.cn/api/jac-admin/admin/userBaseInformation/userLogin`,
+            method: "get",
+            url: `https://www.dxmbaoxian.com/insurmarket/member/checkIn?maState=${this.maState}&channelId=qiye_wx-huiyuantixi-push&sourceapp=wechat_miniprogram`,
             headers: {
-                "channelID": "6",
-                "Content-Type": "application/json",
-                "Host": "jacsupperapp.jac.com.cn",
+                'Host': 'www.dxmbaoxian.com',
+                'charset': 'utf-8',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20220903 Mobile Safari/537.36 MMWEBID/8801 MicroMessenger/8.0.28.2240(0x28001C57) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android',
+                'Referer': 'https://servicewechat.com/wxdde36ae788f0bd5c/86/page-frame.html',
+                'content-type': 'application/json'
             },
-            body: `{"password":"${this.pwd}","userCode":"${this.phone}"}`
+
         }
-        // console.log(options);
+        // console.log(options)
 
         let res = await httpRequest(options)
-        // console.log(res);
-        if (res.code == 0) {
-            this.cusLog(`${this.idx}  ${name}: 成功  ${res.msg}`)
-            this.token = res.data.token
-            this.no = res.data.no
-
+        // console.log(res)
+        if (res.resultCode == '000000') {
+            this.cusLog(`${this.idx} ${name}:  ${res.resultMsg}`)
             // 成功返回ck状态 成功
             return ckFlog = 1
-        } else if (res.code == 50002) {
-            this.cusLog(`${this.idx}  ${name}: ${res.msg}`)
-            // 成功返回ck状态 失败
-            return ckFlog = 0
-
+        } else if (res.resultCode == '000017') {
+            this.cusLog(`${this.idx} ${name}:  ${res.resultMsg}, 可能是签到过了!`)
+            // 成功返回ck状态 成功
+            return ckFlog = 1
         } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res); return ckFlog = 0
     }
 
-    async sign() {
-        let name = "签到"
+
+
+
+
+    async dotask(id) {
+        let name = "做任务"
         let options = {
             method: "post",
-            url: `https://jacsupperapp.jac.com.cn/api/pluto-membership/pluto-membership/integral-gather/addintegral-signIn`,
+            url: `https://www.dxmbaoxian.com/insurmarket/member/task/finish?sourceapp=wechat_miniprogram`,
             headers: {
-                "channelID": "6",
-                "Content-Type": "application/json",
-                "Host": "jacsupperapp.jac.com.cn",
-                "timaToken": `${this.token}`
+                'Host': 'www.dxmbaoxian.com',
+                'charset': 'utf-8',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20220903 Mobile Safari/537.36 MMWEBID/8801 MicroMessenger/8.0.28.2240(0x28001C57) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android',
+                'Referer': 'https://servicewechat.com/wxdde36ae788f0bd5c/86/page-frame.html',
+                'content-type': 'application/json'
             },
-            body: `{"ruleStr":"SIGN_IN","serviceTypeStr":"SERVICE_FIXED","no":"${this.no}"}`
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res);
-        if (res.code == 0) {
-            this.cusLog(`${this.idx}  ${name}: 获得积分  ${res.data.integral}`)
-            await $.wait(2)
-        } else if (res.code == 50002) {
-            this.cusLog(`${this.idx}  ${name}:   完成任务  收手吧阿祖！！！`)
-        } else this.cusLog(`${this.idx} ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    async zf() {
-        let name = "转发"
-        let options = {
-            method: "post",
-            url: `https://jacsupperapp.jac.com.cn/api/pluto-membership/pluto-membership/integral-gather/addintegral-sharingForwarding`,
-            headers: {
-                "channelID": "6",
-                "Content-Type": "application/json",
-                "Host": "jacsupperapp.jac.com.cn",
-                "timaToken": `${this.token}`
-            },
-            body: `{"ruleStr":"SHARING_FORWARDING","serviceTypeStr":"SERVICE_FIXED","no":"${this.no}","lid":"","shareflag":""}`
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res);
-        if (res.code == 0) {
-            this.cusLog(`${this.idx}  ${name}: 获得积分  ${res.data}`)
-            await $.wait(2)
-        } else if (res.code == 50002) {
-            this.cusLog(`${this.idx}  ${name}:   完成任务  收手吧阿祖！！！`)
-        } else this.cusLog(`${this.idx} ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    async ft() {
-        let name = "发帖"
-        let options = {
-            method: "post",
-            url: `https://jacsupperapp.jac.com.cn/api/pluto-membership/pluto-membership/integral-gather/addpost_website`,
-            headers: {
-                "channelID": "6",
-                "Content-Type": "application/json",
-                "Host": "jacsupperapp.jac.com.cn",
-                "timaToken": `${this.token}`
-            },
-            body: `{"ruleStr":"POST_WEBSITE","serviceTypeStr":"SERVICE_FIXED","no":""}`
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res);
-        if (res.code == 0) {
-            this.cusLog(`${this.idx}  ${name}: 获得积分  ${res.data}`)
-            await $.wait(2)
-        } else if (res.code == 50002) {
-            this.cusLog(`${this.idx}  ${name}:   完成任务  收手吧阿祖！！！`)
-        } else this.cusLog(`${this.idx} ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    async pl() {
-        let name = "评论"
-        let options = {
-            method: "post",
-            url: `https://jacsupperapp.jac.com.cn/api/pluto-membership/pluto-membership/integral-gather/comment`,
-            headers: {
-                "channelID": "6",
-                "Content-Type": "application/json",
-                "Host": "jacsupperapp.jac.com.cn",
-                "timaToken": `${this.token}`
-            },
-            body: `{"ruleStr":"COMMENT","serviceTypeStr":"SERVICE_FIXED","no":"${this.no}"}`
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res);
-        if (res.code == 0) {
-            this.cusLog(`${this.idx}  ${name}: 获得积分  ${res.data}`)
-            await $.wait(2)
-        } else if (res.code == 50002) {
-            this.cusLog(`${this.idx}  ${name}:   完成任务  收手吧阿祖！！！`)
-        } else this.cusLog(`${this.idx} ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-    async grxx() {
-        let name = "个人信息"
-        let options = {
-            method: "post",
-            url: `https://jacsupperapp.jac.com.cn/api/pluto-membership/plutomembership/integralCount/searchIntegralCountList`,
-            headers: {
-                "channelID": "6",
-                "Content-Type": "application/json",
-                "Host": "jacsupperapp.jac.com.cn",
-                "timaToken": `${this.token}`
-            },
-            body: `{"no":"${this.no}"}`
+            body: JSON.stringify({
+                "maState": this.maState,
+                "channelId": "qiye_wx-huiyuantixi-push",
+                "sourceapp": "wechat_miniprogram",
+                "taskCode": id,
+                "ignoreFail": true,
+                "appid": "wxdde36ae788f0bd5c"
+            })
         }
         // console.log(options);
 
         let res = await httpRequest(options)
         // console.log(res)
-        if (res.code == 0) {
-            this.cusLog(`${this.idx}  ${$.phoneNum(res.data[0].uid)}, 总积分 ${res.data[0].count}`)
-        } else if (res.code == 50002) {
-            this.cusLog(`${this.idx}  ${name}:   完成任务  收手吧阿祖！！！`)
-        } else this.cusLog(`${this.idx} ${name} 失败 ❌ 了呢`), console.log(res)
+        if (res.resultCode == '000000') {
+            this.cusLog(`${this.idx} ${name}:  ${res.resultMsg}`)
+            await $.wait(5)
+            await this.receive()
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
     }
+
+    async receive() {
+        let name = "领取金币"
+        let options = {
+            method: "post",
+            url: `https://www.dxmbaoxian.com/insurmarket/member/gold/receive?sourceapp=wechat_miniprogram`,
+            headers: {
+                'Host': 'www.dxmbaoxian.com',
+                'charset': 'utf-8',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20220903 Mobile Safari/537.36 MMWEBID/8801 MicroMessenger/8.0.28.2240(0x28001C57) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android',
+                'Referer': 'https://servicewechat.com/wxdde36ae788f0bd5c/86/page-frame.html',
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                "maState": this.maState,
+                "channelId": "qiye_wx-huiyuantixi-push",
+                "sourceapp": "wechat_miniprogram",
+                "appid": "wxdde36ae788f0bd5c"
+            })
+        }
+        // console.log(options);
+
+        let res = await httpRequest(options)
+        // console.log(res)
+
+        if (res.resultCode == '000000') {
+            this.cusLog(`${this.idx} ${name}:  ${res.resultMsg}`)
+            await $.wait(3)
+        } else if (res.resultCode == '100304') {
+            this.cusLog(`${this.idx} ${name}:  ${res.resultMsg}`)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+    }
+
+
+
+
+
+    async getUserInfo() {
+        let name = "查询余额"
+        let options = {
+            method: "get",
+            url: `https://www.dxmbaoxian.com/insurmarket/member/homepage?maState=${this.maState}&channelId=qiye_wx-huiyuantixi-push&sourceapp=wechat_miniprogram`,
+            headers: {
+                'Host': 'www.dxmbaoxian.com',
+                'charset': 'utf-8',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20220903 Mobile Safari/537.36 MMWEBID/8801 MicroMessenger/8.0.28.2240(0x28001C57) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android',
+                'Referer': 'https://servicewechat.com/wxdde36ae788f0bd5c/86/page-frame.html',
+                'Content-Type': 'application/json'
+            },
+
+        }
+        // console.log(options)
+
+        let res = await httpRequest(options)
+        // console.log(res)
+
+        if (res.resultCode == '000000') {
+            this.cusLog(`${this.idx} ${name}:  ${res.resultMsg}, 金币:${res.bean.memberBaseInfo.goldBalance}`)
+            // 成功返回ck状态 成功
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+
+    }
+
+
 
 
 
@@ -266,7 +245,7 @@ class UserInfo {
     })
 
     if (Mode) {  // 并发模式
-        $.doubleLog(`----------------- 用户信息 -----------------\n`)
+        $.doubleLog(`----------------- 登录 -----------------\n`)
         list = []
         users.forEach(async element => {
             list.push(user_Info(element))
@@ -329,9 +308,9 @@ async function getUsers(ckName, fnUserInfo) {
         }
         userCount = userList.length
     } else {
-        console.log("未找到CK")
+        $.doubleLog("未找到CK")
     }
-    console.log(`共找到${userCount}个账号`), !0
+    $.doubleLog(`共找到${userCount}个账号`), !0
     return userList
 }
 
@@ -360,8 +339,6 @@ async function httpRequest(options, type = false) {
 
 
 // ============================================================================================================================
-function MD5_Encrypt(a) { function b(a, b) { return (a << b) | (a >>> (32 - b)) } function c(a, b) { var c, d, e, f, g; return ((e = 2147483648 & a), (f = 2147483648 & b), (c = 1073741824 & a), (d = 1073741824 & b), (g = (1073741823 & a) + (1073741823 & b)), c & d ? 2147483648 ^ g ^ e ^ f : c | d ? 1073741824 & g ? 3221225472 ^ g ^ e ^ f : 1073741824 ^ g ^ e ^ f : g ^ e ^ f) } function d(a, b, c) { return (a & b) | (~a & c) } function e(a, b, c) { return (a & c) | (b & ~c) } function f(a, b, c) { return a ^ b ^ c } function g(a, b, c) { return b ^ (a | ~c) } function h(a, e, f, g, h, i, j) { return (a = c(a, c(c(d(e, f, g), h), j))), c(b(a, i), e) } function i(a, d, f, g, h, i, j) { return (a = c(a, c(c(e(d, f, g), h), j))), c(b(a, i), d) } function j(a, d, e, g, h, i, j) { return (a = c(a, c(c(f(d, e, g), h), j))), c(b(a, i), d) } function k(a, d, e, f, h, i, j) { return (a = c(a, c(c(g(d, e, f), h), j))), c(b(a, i), d) } function l(a) { for (var b, c = a.length, d = c + 8, e = (d - (d % 64)) / 64, f = 16 * (e + 1), g = new Array(f - 1), h = 0, i = 0; c > i;) (b = (i - (i % 4)) / 4), (h = (i % 4) * 8), (g[b] = g[b] | (a.charCodeAt(i) << h)), i++; return ((b = (i - (i % 4)) / 4), (h = (i % 4) * 8), (g[b] = g[b] | (128 << h)), (g[f - 2] = c << 3), (g[f - 1] = c >>> 29), g) } function m(a) { var b, c, d = "", e = ""; for (c = 0; 3 >= c; c++) (b = (a >>> (8 * c)) & 255), (e = "0" + b.toString(16)), (d += e.substr(e.length - 2, 2)); return d } function n(a) { a = a.replace(/\r\n/g, "\n"); for (var b = "", c = 0; c < a.length; c++) { var d = a.charCodeAt(c); 128 > d ? (b += String.fromCharCode(d)) : d > 127 && 2048 > d ? ((b += String.fromCharCode((d >> 6) | 192)), (b += String.fromCharCode((63 & d) | 128))) : ((b += String.fromCharCode((d >> 12) | 224)), (b += String.fromCharCode(((d >> 6) & 63) | 128)), (b += String.fromCharCode((63 & d) | 128))) } return b } var o, p, q, r, s, t, u, v, w, x = [], y = 7, z = 12, A = 17, B = 22, C = 5, D = 9, E = 14, F = 20, G = 4, H = 11, I = 16, J = 23, K = 6, L = 10, M = 15, N = 21; for (a = n(a), x = l(a), t = 1732584193, u = 4023233417, v = 2562383102, w = 271733878, o = 0; o < x.length; o += 16) (p = t), (q = u), (r = v), (s = w), (t = h(t, u, v, w, x[o + 0], y, 3614090360)), (w = h(w, t, u, v, x[o + 1], z, 3905402710)), (v = h(v, w, t, u, x[o + 2], A, 606105819)), (u = h(u, v, w, t, x[o + 3], B, 3250441966)), (t = h(t, u, v, w, x[o + 4], y, 4118548399)), (w = h(w, t, u, v, x[o + 5], z, 1200080426)), (v = h(v, w, t, u, x[o + 6], A, 2821735955)), (u = h(u, v, w, t, x[o + 7], B, 4249261313)), (t = h(t, u, v, w, x[o + 8], y, 1770035416)), (w = h(w, t, u, v, x[o + 9], z, 2336552879)), (v = h(v, w, t, u, x[o + 10], A, 4294925233)), (u = h(u, v, w, t, x[o + 11], B, 2304563134)), (t = h(t, u, v, w, x[o + 12], y, 1804603682)), (w = h(w, t, u, v, x[o + 13], z, 4254626195)), (v = h(v, w, t, u, x[o + 14], A, 2792965006)), (u = h(u, v, w, t, x[o + 15], B, 1236535329)), (t = i(t, u, v, w, x[o + 1], C, 4129170786)), (w = i(w, t, u, v, x[o + 6], D, 3225465664)), (v = i(v, w, t, u, x[o + 11], E, 643717713)), (u = i(u, v, w, t, x[o + 0], F, 3921069994)), (t = i(t, u, v, w, x[o + 5], C, 3593408605)), (w = i(w, t, u, v, x[o + 10], D, 38016083)), (v = i(v, w, t, u, x[o + 15], E, 3634488961)), (u = i(u, v, w, t, x[o + 4], F, 3889429448)), (t = i(t, u, v, w, x[o + 9], C, 568446438)), (w = i(w, t, u, v, x[o + 14], D, 3275163606)), (v = i(v, w, t, u, x[o + 3], E, 4107603335)), (u = i(u, v, w, t, x[o + 8], F, 1163531501)), (t = i(t, u, v, w, x[o + 13], C, 2850285829)), (w = i(w, t, u, v, x[o + 2], D, 4243563512)), (v = i(v, w, t, u, x[o + 7], E, 1735328473)), (u = i(u, v, w, t, x[o + 12], F, 2368359562)), (t = j(t, u, v, w, x[o + 5], G, 4294588738)), (w = j(w, t, u, v, x[o + 8], H, 2272392833)), (v = j(v, w, t, u, x[o + 11], I, 1839030562)), (u = j(u, v, w, t, x[o + 14], J, 4259657740)), (t = j(t, u, v, w, x[o + 1], G, 2763975236)), (w = j(w, t, u, v, x[o + 4], H, 1272893353)), (v = j(v, w, t, u, x[o + 7], I, 4139469664)), (u = j(u, v, w, t, x[o + 10], J, 3200236656)), (t = j(t, u, v, w, x[o + 13], G, 681279174)), (w = j(w, t, u, v, x[o + 0], H, 3936430074)), (v = j(v, w, t, u, x[o + 3], I, 3572445317)), (u = j(u, v, w, t, x[o + 6], J, 76029189)), (t = j(t, u, v, w, x[o + 9], G, 3654602809)), (w = j(w, t, u, v, x[o + 12], H, 3873151461)), (v = j(v, w, t, u, x[o + 15], I, 530742520)), (u = j(u, v, w, t, x[o + 2], J, 3299628645)), (t = k(t, u, v, w, x[o + 0], K, 4096336452)), (w = k(w, t, u, v, x[o + 7], L, 1126891415)), (v = k(v, w, t, u, x[o + 14], M, 2878612391)), (u = k(u, v, w, t, x[o + 5], N, 4237533241)), (t = k(t, u, v, w, x[o + 12], K, 1700485571)), (w = k(w, t, u, v, x[o + 3], L, 2399980690)), (v = k(v, w, t, u, x[o + 10], M, 4293915773)), (u = k(u, v, w, t, x[o + 1], N, 2240044497)), (t = k(t, u, v, w, x[o + 8], K, 1873313359)), (w = k(w, t, u, v, x[o + 15], L, 4264355552)), (v = k(v, w, t, u, x[o + 6], M, 2734768916)), (u = k(u, v, w, t, x[o + 13], N, 1309151649)), (t = k(t, u, v, w, x[o + 4], K, 4149444226)), (w = k(w, t, u, v, x[o + 11], L, 3174756917)), (v = k(v, w, t, u, x[o + 2], M, 718787259)), (u = k(u, v, w, t, x[o + 9], N, 3951481745)), (t = c(t, p)), (u = c(u, q)), (v = c(v, r)), (w = c(w, s)); var O = m(t) + m(u) + m(v) + m(w); return O.toLowerCase() }
-
 
 
 // 新的 env 函数, 增加自定义功能 yml-11.12改   合并

@@ -9,7 +9,7 @@
     "fa": "^1.0.1",
     "fs": "^0.0.1-security",
     "getting-agent": "^1.0.3",
-    "got": "^11.8.5",
+    "got": "^11.8.6",
     "http-server": "^0.12.3",
     "https-proxy-agent": "^5.0.1",
     "iconv-lite": "^0.6.3",
