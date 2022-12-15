@@ -1,22 +1,24 @@
 /*
-瑞风汽车 app             cron 22 8,12 * * *  rfqc.js
+工匠职聘 app             cron 22 8,12 * * *  gjzp.js
 
 12.15       完成基本任务   感谢 leaf 大佬的模板
 
 -------------------  青龙-配置文件-复制区域  -------------------
-export rfqc=" 手机号 # 密码 " 
+# 工匠职聘
+export gjzp=" sessionToken @ sessionToken " 
 
 多账号用 换行 或 @ 分割  注意密码不能有@和#这个两个符号！！！！
 tg频道: https://t.me/yml2213_tg  
 
 */
-const $ = Env('rfqc')
+const $ = Env('工匠职聘')
 const notify = require('./sendNotify')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['rfqc', '变量名2']      //支持多变量
+const ckNames = ['gjzp', '变量名2']      //支持多变量
 //=======================================================================================================
-
+let DEFAULT_RETRY = 1          // 默认重试次数
+//=======================================================================================================
 
 class BasicClass {
     constructor() { this.index = $.userIdx++; this.name = '' }
@@ -31,7 +33,6 @@ class BasicClass {
     async request(opt) {
         const got = require('got')
         let DEFAULT_TIMEOUT = 8000      // 默认超时时间
-        let DEFAULT_RETRY = 3           // 默认并发数量
         let resp = null, count = 0
         let fn = opt.fn || opt.url
         opt.timeout = opt.timeout || DEFAULT_TIMEOUT
@@ -49,10 +50,18 @@ class BasicClass {
                 }
             }
         }
+        let resp_opt = opt.resp_opt || 'body'
         if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
         let { statusCode, headers, body } = resp
         if (body) try { body = JSON.parse(body) } catch { }
-        return Promise.resolve({ statusCode, headers, body })
+        if (resp_opt == 'body') {
+            return Promise.resolve(body)
+        } else if (resp_opt == 'hd') {
+            return Promise.resolve(headers)
+        } else if (resp_opt == 'statusCode') {
+            return Promise.resolve(statusCode)
+        }
+
     }
 }
 let http = new BasicClass() //公用http请求实例
@@ -60,15 +69,12 @@ let http = new BasicClass() //公用http请求实例
 class UserClass extends BasicClass {
     constructor(ck) {
         super()
-        this.ck = ck.split('#')
-        this.phone = this.ck[0]
-        this.pwd = MD5_Encrypt(this.ck[1])
+        this.sessionToken = ck
     }
 
     async UserTasks() {
-        $.log('\n登录', { sp: true })  // 带分割的打印
-        await this.login()
-
+        $.log('\n用户信息', { sp: true })  // 带分割的打印
+        await this.user_info()
 
         // $.log('\n3并发跑任务')
         // await $.threadManager('wait_task', 3)
@@ -76,20 +82,21 @@ class UserClass extends BasicClass {
 
     }
 
-    async login() {
+    async user_info() {
         let options = {
             fn: 'login',
             method: 'post',
-            url: 'https://jacsupperapp.jac.com.cn/api/jac-admin/admin/userBaseInformation/userLogin',
+            url: 'https://api-recruitment.yzw.cn/v2/labor/app/user/getUserBaseInfo',
             headers: {
-                "channelID": "6",
-                "Content-Type": "application/json",
-                "Host": "jacsupperapp.jac.com.cn",
+                'authorization': `Bearer ${this.sessionToken}`,
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ "password": this.pwd, "userCode": this.phone }),
+            json: {},
         }
         console.log(options)
         let resp = await this.request(options)
+        // $.log(resp)
+        $.log(`=========`)
         $.log(resp)
         // if (resp.code == 0) {
 
