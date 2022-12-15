@@ -1,16 +1,18 @@
 /*
-工匠职聘 app             cron 22 8,12 * * *  gjzp.js
+立邦涂装俱乐部  公众号            cron 22 8,12 * * *  lbtl.js
 
-12.14       完成签到 浏览 任务
-12.15       增加工分任务列表  兑换抽奖次数   
+12.15       签到任务  
+
+1. 点击免费注册   注册  邀请码 13754650804
+2. 点击获得专区--打卡领福利   抓包即可  （进去后我的积分需要有数据，不然就是没登录）
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
-# 工匠职聘
-export gjzp=" sessionToken @ sessionToken " 
+# 立邦涂料
+export lbtl=" Cookie @ Cookie " 
 
 多账号用 换行 或 @ 分割
 
-抓 api-recruitment.yzw.cn/v2/labor/app  里面的  sessionToken   
+抓 diyclub.nipponpaint.com.cn  里面的  Cookie   
 
 tg频道: https://t.me/yml2213_tg
 
@@ -18,8 +20,8 @@ tg频道: https://t.me/yml2213_tg
 
 
 //============================== 默认变量区域 ==============================
-const $ = new Env("工匠职聘")
-const CK_NAME = "gjzp"
+const $ = new Env("立邦涂料")
+const CK_NAME = "lbtl"
 const Notify = 1             // 通知控制
 let ckFlog = 1               // ck状态
 let msg = ''
@@ -31,16 +33,12 @@ const tgFlog = 1             // 是否tg脚本, 1 - tg脚本，将会tg单独发
 
 // 这里写登录或者用户信息，   用来做判断账号是否失效的， 失效直接不进行下面的任务 
 async function user_Info(userInfo) {
-    await userInfo.user_info()
+    await userInfo.dosign()
 }
 
 // 这里是任务相关的， 直接全部写这里
 async function task_Info(userInfo) {
-    await userInfo.signInfo()
-    await userInfo.redTaskList()
-    await userInfo.commonTaskList()
-    await userInfo.taskExchange()      // 兑换抽奖次数
-    await userInfo.lotteryNum()      // 抽奖次数
+    // await userInfo.signInfo()
 
 }
 
@@ -61,12 +59,7 @@ class UserInfo {
                 this.chatId = str.split("##")[1]
             }
 
-            this.sessionToken = str.split("##")[0]
-            this.userId = this.sessionToken.split("_")[0]
-            this.h = {
-                'authorization': `Bearer ${this.sessionToken}`,
-                'Content-Type': 'application/json'
-            }
+            this.Cookie = str.split("##")[0]
 
         } catch (error) {
             console.log(error)
@@ -74,468 +67,55 @@ class UserInfo {
 
     }
 
-    // 用户信息
-    async user_info() {
-        let name = "用户信息"
-        let options = {
-            method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/user/getUserBaseInfo`,
-            headers: this.h,
-            body: {},
-            json: true
-        }
-        // console.log(options)
 
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
-            await $.wait(2)
-            this.cusLog(`${this.idx} ${name}:  昵称:${res?.data?.name}, 工分余额:${res?.data?.totalScore}`)
-            this.totalScore = res?.data?.totalScore
 
-            return ckFlog = 1   // 成功返回ck状态 成功
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res); return ckFlog = 0
-    }
-
-    // 签到查询
-    async signInfo() {
-        let name = "签到查询"
+    async getDate() {
+        let name = "获取签到所需数据"
         let options = {
             method: "get",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/sign/mySignInfo`,
-            headers: this.h
+            url: `https://diyclub.nipponpaint.com.cn/wxdc/signIn/signInHome3`,
+            headers: {
+                'Upgrade-Insecure-Requests': '1',
+                'X-Requested-With': 'com.tencent.mm',
+                'Sec-Fetch-User': '?1',
+                'Cookie': this.Cookie,
+            }
         }
         // console.log(options)
 
         let res = await httpRequest(options)
         // console.log(res)
-        if (res.code == 20000) {
-            this.cusLog(`${this.idx} ${name}:   ${res.data.continueDays ? '已签到' : '未签到,去签到'}`)
-            if (!res.data.continueDays) await this.dosign()
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        let data = res.split('" id="formToken"')[0].split('id="tips">')[1].split('value="')[1]
+        this.myIntegral = res.split('<h2 class="credit">')[1].split('</h2>')[0]
+        return data
     }
 
     async dosign() {
         let name = "签到"
+        let date = await this.getDate()
         let options = {
-            method: "get",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/sign/sign`,
-            headers: this.h
+            method: "post",
+            url: `https://diyclub.nipponpaint.com.cn/wxdc/signIn/signInViewType1Comfirm`,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Cookie': this.Cookie,
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            form: {
+                'formToken': date
+            }
         }
         // console.log(options)
 
         let res = await httpRequest(options)
         // console.log(res)
-        if (res.code == 20000) {
-            this.cusLog(`${this.idx} ${name}:  ${res.data.msg}`)
-        } else if (res.code == 40005) {
-            this.cusLog(`${this.idx} ${name}:  ${res.message}`)
+        await this.getDate()
+        if (res.point) {
+            this.cusLog(`${this.idx} ${name}:  ok, 获得 ${res.point} 积分, 总积分 ${this.myIntegral}`)
+        } else if (res.success == 0) {
+            this.cusLog(`${this.idx} ${name}:  ${res.errorMsg}, 总积分 ${this.myIntegral}`)
         } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
     }
-
-
-    // 兑换抽奖次数   每天限制 5 次
-    async taskExchange() {
-        let name = "兑换抽奖次数"
-        if (this.totalScore >= 5) {
-            let num = parseInt(this.totalScore / 5)
-            if (num > 5) num = 5
-            this.cusLog(`${this.idx} ${name}: 您当前有${this.totalScore} 工分, 将全部兑换成抽奖 ${num} 次`)
-            let options = {
-                method: "post",
-                url: `https://api-recruitment.yzw.cn/v2/labor/app/lottery/lotteryUserInfo/exchangeTimes`,
-                headers: this.h,
-                body: { "times": num },
-                json: true
-            }
-            // console.log(options)
-            let res = await httpRequest(options)
-            // console.log(res)
-            if (res.code == 20000) {
-                this.cusLog(`${this.idx} ${name}: ok`)
-            } else if (res.code == 40005 || res.code == 50000) {
-                this.cusLog(`${this.idx} ${name}: ${res.message}`)
-            } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-        } else {
-            this.cusLog(`${this.idx} ${name}: 您当前只有 ${this.totalScore} 工分, 跳过兑换`)
-        }
-    }
-
-
-    // 抽奖次数
-    async lotteryNum() {
-        let name = "抽奖次数"
-        let options = {
-            method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/lottery/lotteryUserDrawRecord/resultAndTask`,
-            headers: this.h,
-            body: {},
-            json: true
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
-            this.lotNum = res.data.userInfo.usableTimes
-            this.cusLog(`${this.idx} ${name}:  剩余${this.lotNum}次`)
-            for (let index = 0; index < this.lotNum; index++) {
-                await this.lottery()
-            }
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    // 抽奖
-    async lottery() {
-        let name = "抽奖"
-        let options = {
-            method: "get",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/lottery/lotteryAward/draw?drawSource=android-zhipin`,
-            headers: this.h,
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            let { type, awardId, strategyDesc } = res.data
-            this.cusLog(`${this.idx} ${name}:  获得${strategyDesc}, 类型:${type}, id:${awardId}`)
-            await $.wait(5)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    // 工分任务列表      status 0 未完成  1 完成
-    async commonTaskList() {
-        let name = "工分任务列表"
-        let options = {
-            method: "get",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/common/tasks`,
-            headers: this.h,
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            let tasks = res.data.dailyTasks
-            for (let index = 0; index < tasks.length; index++) {
-                const element = tasks[index]
-                if (element.status == 0) {
-                    switch (element.code) {
-                        case 'SCORE_VIEW_INDEX':  //浏览首页 工分
-                            await this.viewHome_c(element.title)
-                            await wait(10)
-                            await this.viewHome_c("浏览首页")
-                            break
-
-                        case 'SCORE_VIEW_POSITION':  // 浏览职位详情 工分
-                            for (let i = 0; i < 5; i++) {
-                                await this.viewJob_c(element.title)
-                                await wait(5)
-                            }
-                            break
-
-                        default:
-                            break
-                    }
-                } else {
-                    this.cusLog(`${this.idx} ${element.taskName}: 已完成`)
-                }
-
-            }
-
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-
-    // 红包任务列表 🧧     status 0 未完成  1 完成
-    async redTaskList() {
-        let name = "红包任务列表"
-        let options = {
-            method: "get",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/sign/tasks`,
-            headers: this.h,
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            let tasks = res.data
-            // console.log(tasks)
-            for (let index = 0; index < tasks.length; index++) {
-                const element = tasks[index]
-                if (element.status == 0) {
-                    switch (element.id) {
-                        case 13: await this.viewHome(element.taskName, element.id)      //浏览首页8s
-                            break
-
-                        case 14: await this.viewJob(element.taskName, element.id, element.positionId)      // 浏览职位详情5s
-                            break
-
-                        // case 15: await this.shareNew(element.taskName, element.id, element.positionId)      // 邀请新用户注册
-                        //     break
-
-                        // case 16: await this.shareJob()      // 评价已联系过的职位
-                        //     break
-
-                        case 18: await this.shareFrind(element.taskName, element.id)      // 分享职位给好友
-                            break
-
-                        default:
-                            break
-                    }
-                } else {
-                    this.cusLog(`${this.idx} ${element.taskName}: 已完成`)
-                }
-
-            }
-
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-
-    // 浏览首页8s
-    async viewHome(name, id) {
-        // let name = "浏览首页8s"
-        let options = {
-            method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/browseCollectRecord/add`,
-            headers: this.h,
-            body: { type: 1, recordType: 7 },
-            json: true
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            // this.cusLog(`${this.idx} ${name}:  ok`)
-            await $.wait(10)
-            let RedNum = await this.getRednum(id)
-            this.cusLog(`${this.idx} ${name}:  ok, 获得红包: ${RedNum} 元`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    // 浏览首页  工分
-    async viewHome_c(name) {
-        let options = {
-            method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/browseCollectRecord/add`,
-            headers: this.h,
-            body: { type: 1, recordType: 9 },
-            json: true
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
-            this.cusLog(`${this.idx} ${name}: ok`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    // 浏览职位详情
-    async viewJob(name, id, positionId) {
-        // let name = "浏览职位详情5s"
-        let otherId = await this.getOtherid(id, positionId)
-        let options = {
-            method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/browseCollectRecord/add`,
-            headers: this.h,
-            body: { "otherId": otherId, "recordType": 8, "type": 1 },
-            json: true
-        }
-        // console.log(options)
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            // this.cusLog(`${this.idx} ${name}:  ok`)
-            // await $.wait(6)
-            let RedNum = await this.getRednum(id)
-            this.cusLog(`${this.idx} ${name}:  ok, 获得红包: ${RedNum} 元`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    // 浏览职位详情 工分
-    async viewJob_c(name) {
-        let otherId = await this.getOtherid(id, positionId)
-        let options = {
-            method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/browseCollectRecord/add`,
-            headers: this.h,
-            body: { type: 1, recordType: 10, otherId: otherId },
-            json: true
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
-            this.cusLog(`${this.idx} ${name}: ok`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    // 分享职位给好友
-    async shareFrind(name, id) {
-        // let name = "分享职位给好友"
-        let shareOtherId = await this.getshareOtherId()
-        let options = {
-            method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/userShareRecord/add`,
-            headers: this.h,
-            body: JSON.stringify({
-                "shareTarget": 0,
-                "userId": this.userId,
-                "shareType": 1,
-                "shareOtherId": shareOtherId
-            })
-        }
-        console.log(options)
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            // this.cusLog(`${this.idx} ${name}:  ok`)
-            await $.wait(3)
-            let RedNum = await this.getRednum(id)
-            this.cusLog(`${this.idx} ${name}:  ok, 获得红包: ${RedNum} 元`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    // 邀请新用户注册
-    async shareNew(name, id) {
-        // let name = "邀请新用户注册"
-        let options = {
-            method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/userShareRecord/add`,
-            headers: this.h,
-            body: JSON.stringify({
-                "shareTarget": 0,
-                "userId": this.userId,
-                "shareType": 4,
-            })
-        }
-        // console.log(options)
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            // this.cusLog(`${this.idx} ${name}:  ok`)
-            await $.wait(3)
-            let RedNum = await this.getRednum(id)
-            this.cusLog(`${this.idx} ${name}:  ok, 获得红包: ${RedNum} 元`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-
-    }
-
-
-    // 查看获得红包数量
-    async getRednum(id) {
-        let name = "查看获得红包数量"
-        let options = {
-            method: "get",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/sign/tasks`,
-            headers: this.h,
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            let tasks = res.data
-            for (let index = 0; index < tasks.length; index++) {
-                const element = tasks[index]
-                if (element.id == id) {
-                    return element.rpPrize
-                }
-            }
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    // 获取分享id
-    async getshareOtherId() {
-        let name = "获取分享id"
-        let options = {
-            method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/company/job/list`,
-            headers: this.h,
-            body: JSON.stringify({
-                "pageNum": 1,
-                "pageSize": 15,
-                "requestType": 2,
-                "resumeFilter": true
-            })
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            let lists = res.data.data.list
-
-            let num = $.randomInt(0, lists.length)
-            this.cusLog(`${this.idx}  ${name}: ok, ${lists[num].id}`)
-            return lists[num].id
-
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-    async getPositionId(id) {
-        let name = "获取任务最新的 PositionId"
-        let options = {
-            method: "get",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/sign/tasks`,
-            headers: this.h,
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            let tasks = res.data
-            for (let index = 0; index < tasks.length; index++) {
-                const element = tasks[index]
-                if (element.id == id) {
-                    // console.log(`获取任务最新的 PositionId: ${element.positionId}`)
-                    return element.positionId
-                }
-            }
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
-
-    async getOtherid(id, positionId) {
-        let name = "获取otherid"
-        let options = {
-            method: "get",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/common/job/jobDetail?positionId=${positionId}&specialActivityId=`,
-            headers: this.h
-        }
-        // console.log(options);
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.code == 20000) {
-            await $.wait(6)
-            let otherid = await this.getPositionId(id)
-            // console.log(`查看职位详情id: ${otherid}`)
-            return otherid
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-    }
-
 
 
 
@@ -544,9 +124,9 @@ class UserInfo {
         let name = "查询余额"
         let options = {
             method: "get",
-            url: `https://www.gjzpbaoxian.com/insurmarket/member/homepage?maState=${this.maState}&channelId=qiye_wx-huiyuantixi-push&sourceapp=wechat_miniprogram`,
+            url: `https://www.lbtlbaoxian.com/insurmarket/member/homepage?maState=${this.maState}&channelId=qiye_wx-huiyuantixi-push&sourceapp=wechat_miniprogram`,
             headers: {
-                'Host': 'www.gjzpbaoxian.com',
+                'Host': 'www.lbtlbaoxian.com',
                 'charset': 'utf-8',
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20220903 Mobile Safari/537.36 MMWEBID/8801 MicroMessenger/8.0.28.2240(0x28001C57) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android',
                 'Referer': 'https://servicewechat.com/wxdde36ae788f0bd5c/86/page-frame.html',
@@ -614,14 +194,14 @@ class UserInfo {
     })
 
     if (Mode) {  // 并发模式
-        $.doubleLog(`----------------- 登录 -----------------\n`)
+        $.doubleLog(`----------------- 签到 -----------------\n`)
         list = []
         users.forEach(async element => {
             list.push(user_Info(element))
         })
         await Promise.all(list)
 
-        $.doubleLog(`----------------- 任务 -----------------\n`)
+        // $.doubleLog(`----------------- 任务 -----------------\n`)
         list = []
         if (ckFlog) {
             users.forEach(async element => {
@@ -630,7 +210,7 @@ class UserInfo {
             await Promise.all(list)
         }
 
-        $.doubleLog(`----------------- 查询 -----------------\n`)
+        // $.doubleLog(`----------------- 查询 -----------------\n`)
         list = []
         if (ckFlog) {
             users.forEach(async element => {
