@@ -41,7 +41,7 @@ async function task_Info(userInfo) {
 // 这里是查询余额 获积分的地方
 async function check_Info(userInfo) {
     await userInfo.grxx()
-    //  await userInfo.Sendtg_bot()  // 这个是tg 机器人发送通知， 调试可以注释掉 
+    await userInfo.Sendtg_bot()  // 这个是tg 机器人发送通知， 调试可以注释掉
 }
 
 class UserInfo {
@@ -52,6 +52,7 @@ class UserInfo {
 
         try {
             if (str.indexOf("##") > -1) {
+                this.mopenid = str.split("##")[0]
                 this.chatId = str.split("##")[1]
             }
 
