@@ -1,29 +1,12 @@
-async  yiyan() {
-    const got = require('got')
-    return new Promise((resolve) => {
-        (async () => {
-            try {
-                const response = await got('https://v1.hitokoto.cn')
-                // console.log(response.body)
-                let data = JSON.parse(response.body)
-                let data_ = `[一言]: ${data.hitokoto}  by--${data.from}`
-                // console.log(data_)
-                resolve(data_)
-            } catch (error) {
-                console.log(error.response.body)
-            }
-        })()
-    })
-}
+// 9fe9a9ce4ccd122378e96c41bdc73e6b768yuoihbuv34refhudios
 
 
+// 23a76d7acb63b6839a433504e3cd86de   768yuoihbuv34refhudios
 
 
-async function t() {
-    let a = await yiyan()
-    console.log(a)
-}
-t()
+// 1671789956_db_ryei_udjns!78713cbv!487934ru1671789956
+
+// 1671789940_db_ryei_udjns!78713cbv!487934ru1671789940
 
 
-
+let salt = '768yuoihbuv34refhudios'
