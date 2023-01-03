@@ -1,27 +1,25 @@
 /*
-豆伴 app             cron 22 8,12 * * *  douban.js
+河马免费小说-快应用 app             cron 22 8,12 * * *  hmmfxs.js
 
-https://www.imdouban.com/share?code=VDT62   带邀请谢谢
-
-12.23       修改最新模板
+12.16       修改最新模板
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 豆伴
-export douban=" user_id # douban-token @ user_id # douban-token "  
+# 河马免费小说-快应用
+export hmmfxs=" t # smdid @ t # smdid "  
 
-抓 api.imdouban.com 的  user_id 和 douban-token
+抓 dzmfxs.kkyd.cn 的 t 和 smdid   登录包有 smdid
 
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
 
 */
-const $ = Env('豆伴')
+const $ = Env('河马免费小说-快应用')
 const notify = require('./sendNotify')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['douban', '变量名2']      //支持多变量
+const ckNames = ['hmmfxs']      //支持多变量
 //=======================================================================================================
-let DEFAULT_RETRY = 1           // 默认重试次数
+let DEFAULT_RETRY = 2           // 默认重试次数
 let MODE = 0                    // 并发控制 1-并发  0-顺序
 //=======================================================================================================
 
@@ -31,91 +29,150 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]: `
         this.ck = ck.split('#')
-        this.user_id = this.ck[0]
-        this.token = this.ck[1]
+        this.t = this.ck[0]
+        this.smdid = this.ck[1]
     }
 
     async UserTasks() {
-        $.log('提现', { sp: true, console: false })  // 带分割的打印
-        await this.view()
+        $.log('上传阅读时间', { sp: true, console: false })  // 带分割的打印
+        await this.readDuration()
 
-        // $.log('刷金币', { sp: true, console: false })  // 带分割的打印
-        // await this.tasks()
+        $.log('刷金币', { sp: true, console: false })  // 带分割的打印
+        await this.tasks()
 
-        // $.log('查询', { sp: true, console: false })  // 带分割的打印
-        // await this.points()
+        $.log('查询', { sp: true, console: false })  // 带分割的打印
+        await this.points()
 
     }
 
 
-    getSign(ts) {
-        let salt = '768yuoihbuv34refhudios'
-        let a = `${ts}_db_ryei_udjns!${this.user_id}cbv!487934ru${ts}`
-        let b = MD5Encrypt(a) + salt
-        let sign = MD5Encrypt(b)
-        return sign
-    }
-
-
-    async view() {
-        let ts = $.ts(10)
-        let options = {
-            fn: 'view',
-            method: 'get',
-            url: 'https://api.imdouban.com/v1/dd-money/view-new',
-            headers: {
-                'douban-token': this.token,
-                'douban-channel': 'yingyongbao',
-                'douban-version': '42',
-                'device-type': 'android',
-                'device-id': '2ff930d36bda73ee8819680dc3dbc3c98',
-            },
-
+    getHeaders() {
+        return {
+            't': this.t,
+            'pname': 'com.dianzhong.hmxs',
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 hap/1.10/xiaomi com.miui.hybrid/1.10.0.0 com.dianzhong.hmxs/5.5.2.720 ({"packageName":"com.miui.home","type":"shortcut","extra":{"original":{"packageName":"mark.via","type":"url","extra":{}},"scene":"api"}})'
         }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200 || 400) {
-            $.log(`${this.idx} ${resp.message}`)
-            await $.wait(6)
-            await this.receive()
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
     }
 
+    // https://dzmfxs.kkyd.cn
+    // https://dzmfxs.kkyd.cn/glory/fastapp/2162?ver=5502720&appVer=5.5.2.720
 
-    async receive() {
-        let ts = $.ts(10)
+    async readDuration() {
         let options = {
-            fn: 'receive',
+            fn: 'readDuration',
             method: 'post',
-            url: 'https://api.imdouban.com/v1/dd-money/receive',
-            headers: {
-                'douban-token': this.token,
-                'douban-channel': 'yingyongbao',
-                'douban-version': '42',
-                'device-type': 'android',
-                'device-id': '2ff930d36bda73ee8819680dc3dbc3c98',
-                'User-Agent': 'Apifox/1.0.0 (https://www.apifox.cn)',
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            form: {
-                'db_sign': this.getSign(ts),
-                'db_u': this.user_id,
-                'time': ts,
-                'lat': '37.036642',
-                'long': '117.350813'
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2146?ver=5502720&appVer=5.5.2.720',
+            headers: this.getHeaders(),
+            json: {
+                "taskId": 1087,
+                "action": 36,
+                "readDuration": $.randomInt(500, 700),
+                "bookId": "11010057591",
+                "chapterId": "472523743"
             }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 200 || 400) {
-            $.log(`${this.idx} ${resp.message}`)
+        if (resp.retCode == 0 && resp.data.totalReadDuration) {
+            $.log(`${this.idx} 上传阅读时间成功 当前阅读 ${resp.data.totalReadDuration}分钟`)
+        } else if (resp.retCode == 0 && resp.data.totalReadDuration == 0) {
+            $.log(`失败,稍后再试!`)
         } else console.log(`${options.fn}: 失败, ${resp}`)
 
     }
 
+    async tasks() {
+        let qd = [
+            1001, 1042, 1043, 1044, 1062, 1068, 1069, 1070, 1071,
+            1072, 1075, 1085, 1087, 1092, 1094, 1104, 1105, 1141,
+            1142, 1148, 1149, 1150, 1151, 1152, 1153, 1154, 1156,
+            1157, 1158, 1159, 1160, 1161, 1162, 1167, 1169, 1170,
+            1171, 1173, 1174, 1176, 1177, 1179, 1180, 1187, 1193,
+            1194, 1195, 1196, 1197, 1198, 1199, 1200, 1201, 1202,
+            1203, 1204, 1205, 1206, 1207, 1208, 1209, 1210, 1218,
+            1219, 1220, 1221, 1222, 1223, 1224, 1225, 1226, 1227,
+            1228, 1229, 1236, 1240, 1244, 1245, 1247, 1248, 1249,
+            1250, 1251, 1252, 1257, 1258, 1260, 1266, 1269, 1272,
+            1278, 47
+        ]
+
+        for (let id of qd) {
+            await this.dotask(id)
+            await $.wait(2)
+        }
+
+    }
+    async dotask(id) {
+        let options = {
+            fn: 'dotask',
+            method: 'post',
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2141?ver=5502720&appVer=5.5.2.720',
+            headers: this.getHeaders(),
+            json: { 'taskId': id },
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.retCode == 0 && resp.data.message) {
+            if (resp.data.code == 103 || 102) {
+                $.log(`${this.idx}: ${resp.data.message}`)
+            }
+        } else console.log(`${options.fn}: 失败, ${resp}`)
+
+    }
+
+
+
+    async points() {
+        let options = {
+            fn: 'points',
+            method: 'post',
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2404?ver=5502720&appVer=5.5.2.720',
+            headers: this.getHeaders(),
+            json: { 'signText': 1 },
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.(resp)
+        if (resp.retCode == 0) this.coin = resp.data.glods
+        // console.log(this.coin)
+        options = resp = ''
+        options = {
+            fn: 'points',
+            method: 'post',
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2106?ver=5502720&appVer=5.5.2.720',
+            headers: this.getHeaders(),
+            json: {},
+        }
+        resp = await $.request(options)
+        if (resp.retCode == 0) {
+            $.log(`${this.idx} ${resp.data.user.nickName}, 金币:${this.coin}`)
+        } else console.log(`${options.fn}: 失败, ${resp}`)
+
+        if (this.coin >= 30000) {
+            $.log(`${this.idx} 金币:${this.coin}, 去提现 3 元!`)
+            await this.cash()
+        }
+    }
+
+    async cash() {
+        let options = {
+            fn: 'cash',
+            method: 'post',
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2856?ver=5502720&appVer=5.5.2.720',
+            headers: this.getHeaders(),
+            json: { 'amountId': 13, 'smdid': this.smdid },
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.retCode == 0 && resp.data.retCode == 1) {
+            $.log(`提现3元:  ${resp.data.retMsg}`)
+        } else console.log(`${options.fn}: 失败, ${resp}`)
+
+
+    }
 
 }
 
@@ -144,11 +201,6 @@ class UserClass {
 })()
     .catch((e) => $.log(e))
     .finally(() => $.exitNow())
-
-
-
-function MD5Encrypt(a) { function b(a, b) { return a << b | a >>> 32 - b } function c(a, b) { var c, d, e, f, g; return e = 2147483648 & a, f = 2147483648 & b, c = 1073741824 & a, d = 1073741824 & b, g = (1073741823 & a) + (1073741823 & b), c & d ? 2147483648 ^ g ^ e ^ f : c | d ? 1073741824 & g ? 3221225472 ^ g ^ e ^ f : 1073741824 ^ g ^ e ^ f : g ^ e ^ f } function d(a, b, c) { return a & b | ~a & c } function e(a, b, c) { return a & c | b & ~c } function f(a, b, c) { return a ^ b ^ c } function g(a, b, c) { return b ^ (a | ~c) } function h(a, e, f, g, h, i, j) { return a = c(a, c(c(d(e, f, g), h), j)), c(b(a, i), e) } function i(a, d, f, g, h, i, j) { return a = c(a, c(c(e(d, f, g), h), j)), c(b(a, i), d) } function j(a, d, e, g, h, i, j) { return a = c(a, c(c(f(d, e, g), h), j)), c(b(a, i), d) } function k(a, d, e, f, h, i, j) { return a = c(a, c(c(g(d, e, f), h), j)), c(b(a, i), d) } function l(a) { for (var b, c = a.length, d = c + 8, e = (d - d % 64) / 64, f = 16 * (e + 1), g = new Array(f - 1), h = 0, i = 0; c > i;)b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | a.charCodeAt(i) << h, i++; return b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | 128 << h, g[f - 2] = c << 3, g[f - 1] = c >>> 29, g } function m(a) { var b, c, d = "", e = ""; for (c = 0; 3 >= c; c++)b = a >>> 8 * c & 255, e = "0" + b.toString(16), d += e.substr(e.length - 2, 2); return d } function n(a) { a = a.replace(/\r\n/g, "\n"); for (var b = "", c = 0; c < a.length; c++) { var d = a.charCodeAt(c); 128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(d >> 6 | 192), b += String.fromCharCode(63 & d | 128)) : (b += String.fromCharCode(d >> 12 | 224), b += String.fromCharCode(d >> 6 & 63 | 128), b += String.fromCharCode(63 & d | 128)) } return b } var o, p, q, r, s, t, u, v, w, x = [], y = 7, z = 12, A = 17, B = 22, C = 5, D = 9, E = 14, F = 20, G = 4, H = 11, I = 16, J = 23, K = 6, L = 10, M = 15, N = 21; for (a = n(a), x = l(a), t = 1732584193, u = 4023233417, v = 2562383102, w = 271733878, o = 0; o < x.length; o += 16)p = t, q = u, r = v, s = w, t = h(t, u, v, w, x[o + 0], y, 3614090360), w = h(w, t, u, v, x[o + 1], z, 3905402710), v = h(v, w, t, u, x[o + 2], A, 606105819), u = h(u, v, w, t, x[o + 3], B, 3250441966), t = h(t, u, v, w, x[o + 4], y, 4118548399), w = h(w, t, u, v, x[o + 5], z, 1200080426), v = h(v, w, t, u, x[o + 6], A, 2821735955), u = h(u, v, w, t, x[o + 7], B, 4249261313), t = h(t, u, v, w, x[o + 8], y, 1770035416), w = h(w, t, u, v, x[o + 9], z, 2336552879), v = h(v, w, t, u, x[o + 10], A, 4294925233), u = h(u, v, w, t, x[o + 11], B, 2304563134), t = h(t, u, v, w, x[o + 12], y, 1804603682), w = h(w, t, u, v, x[o + 13], z, 4254626195), v = h(v, w, t, u, x[o + 14], A, 2792965006), u = h(u, v, w, t, x[o + 15], B, 1236535329), t = i(t, u, v, w, x[o + 1], C, 4129170786), w = i(w, t, u, v, x[o + 6], D, 3225465664), v = i(v, w, t, u, x[o + 11], E, 643717713), u = i(u, v, w, t, x[o + 0], F, 3921069994), t = i(t, u, v, w, x[o + 5], C, 3593408605), w = i(w, t, u, v, x[o + 10], D, 38016083), v = i(v, w, t, u, x[o + 15], E, 3634488961), u = i(u, v, w, t, x[o + 4], F, 3889429448), t = i(t, u, v, w, x[o + 9], C, 568446438), w = i(w, t, u, v, x[o + 14], D, 3275163606), v = i(v, w, t, u, x[o + 3], E, 4107603335), u = i(u, v, w, t, x[o + 8], F, 1163531501), t = i(t, u, v, w, x[o + 13], C, 2850285829), w = i(w, t, u, v, x[o + 2], D, 4243563512), v = i(v, w, t, u, x[o + 7], E, 1735328473), u = i(u, v, w, t, x[o + 12], F, 2368359562), t = j(t, u, v, w, x[o + 5], G, 4294588738), w = j(w, t, u, v, x[o + 8], H, 2272392833), v = j(v, w, t, u, x[o + 11], I, 1839030562), u = j(u, v, w, t, x[o + 14], J, 4259657740), t = j(t, u, v, w, x[o + 1], G, 2763975236), w = j(w, t, u, v, x[o + 4], H, 1272893353), v = j(v, w, t, u, x[o + 7], I, 4139469664), u = j(u, v, w, t, x[o + 10], J, 3200236656), t = j(t, u, v, w, x[o + 13], G, 681279174), w = j(w, t, u, v, x[o + 0], H, 3936430074), v = j(v, w, t, u, x[o + 3], I, 3572445317), u = j(u, v, w, t, x[o + 6], J, 76029189), t = j(t, u, v, w, x[o + 9], G, 3654602809), w = j(w, t, u, v, x[o + 12], H, 3873151461), v = j(v, w, t, u, x[o + 15], I, 530742520), u = j(u, v, w, t, x[o + 2], J, 3299628645), t = k(t, u, v, w, x[o + 0], K, 4096336452), w = k(w, t, u, v, x[o + 7], L, 1126891415), v = k(v, w, t, u, x[o + 14], M, 2878612391), u = k(u, v, w, t, x[o + 5], N, 4237533241), t = k(t, u, v, w, x[o + 12], K, 1700485571), w = k(w, t, u, v, x[o + 3], L, 2399980690), v = k(v, w, t, u, x[o + 10], M, 4293915773), u = k(u, v, w, t, x[o + 1], N, 2240044497), t = k(t, u, v, w, x[o + 8], K, 1873313359), w = k(w, t, u, v, x[o + 15], L, 4264355552), v = k(v, w, t, u, x[o + 6], M, 2734768916), u = k(u, v, w, t, x[o + 13], N, 1309151649), t = k(t, u, v, w, x[o + 4], K, 4149444226), w = k(w, t, u, v, x[o + 11], L, 3174756917), v = k(v, w, t, u, x[o + 2], M, 718787259), u = k(u, v, w, t, x[o + 9], N, 3951481745), t = c(t, p), u = c(u, q), v = c(v, r), w = c(w, s); var O = m(t) + m(u) + m(v) + m(w); return O.toLowerCase() }
-
 
 
 
