@@ -86,15 +86,15 @@ class UserInfo {
         }
         // console.log(options)
 
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
+        let resp = await httpRequest(options)
+        // console.log(resp)
+        if (resp.code == 20000) {
             await $.wait(2)
-            this.cusLog(`${this.idx} ${name}:  昵称:${res?.data?.name}, 工分余额:${res?.data?.totalScore}`)
-            this.totalScore = res?.data?.totalScore
+            this.cusLog(`${this.idx} ${name}:  昵称:${resp?.data?.name}, 工分余额:${resp?.data?.totalScore}`)
+            this.totalScore = resp?.data?.totalScore
 
             return ckFlog = 1   // 成功返回ck状态 成功
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res); return ckFlog = 0
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp); return ckFlog = 0
     }
 
     // 签到查询
@@ -107,12 +107,12 @@ class UserInfo {
         }
         // console.log(options)
 
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
-            this.cusLog(`${this.idx} ${name}:   ${res.data.continueDays ? '已签到' : '未签到,去签到'}`)
-            if (!res.data.continueDays) await this.dosign()
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
+        if (resp.code == 20000) {
+            this.cusLog(`${this.idx} ${name}:   ${resp.data.continueDays ? '已签到' : '未签到,去签到'}`)
+            if (!resp.data.continueDays) await this.dosign()
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     async dosign() {
@@ -124,13 +124,13 @@ class UserInfo {
         }
         // console.log(options)
 
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
-            this.cusLog(`${this.idx} ${name}:  ${res.data.msg}`)
-        } else if (res.code == 40005) {
-            this.cusLog(`${this.idx} ${name}:  ${res.message}`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
+        if (resp.code == 20000) {
+            this.cusLog(`${this.idx} ${name}:  ${resp.data.msg}`)
+        } else if (resp.code == 40005) {
+            this.cusLog(`${this.idx} ${name}:  ${resp.message}`)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
 
@@ -149,13 +149,13 @@ class UserInfo {
                 json: true
             }
             // console.log(options)
-            let res = await httpRequest(options)
-            // console.log(res)
-            if (res.code == 20000) {
+            let resp = await httpRequest(options)
+            // console.log(resp)
+            if (resp.code == 20000) {
                 this.cusLog(`${this.idx} ${name}: ok`)
-            } else if (res.code == 40005 || res.code == 50000) {
-                this.cusLog(`${this.idx} ${name}: ${res.message}`)
-            } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+            } else if (resp.code == 40005 || resp.code == 50000) {
+                this.cusLog(`${this.idx} ${name}: ${resp.message}`)
+            } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
         } else {
             this.cusLog(`${this.idx} ${name}: 您当前只有 ${this.totalScore} 工分, 跳过兑换`)
         }
@@ -167,22 +167,22 @@ class UserInfo {
         let name = "抽奖次数"
         let options = {
             method: "post",
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/lottery/lotteryUserDrawRecord/resultAndTask`,
+            url: `https://api-recruitment.yzw.cn/v2/labor/app/lottery/lotteryUserDrawRecord/respultAndTask`,
             headers: this.h,
             body: {},
             json: true
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
-            this.lotNum = res.data.userInfo.usableTimes
+        let resp = await httpRequest(options)
+        // console.log(resp)
+        if (resp.code == 20000) {
+            this.lotNum = resp.data.userInfo.usableTimes
             this.cusLog(`${this.idx} ${name}:  剩余${this.lotNum}次`)
             for (let index = 0; index < this.lotNum; index++) {
                 await this.lottery()
             }
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     // 抽奖
@@ -195,14 +195,14 @@ class UserInfo {
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
-            let { type, awardId, strategyDesc } = res.data
+        if (resp.code == 20000) {
+            let { type, awardId, strategyDesc } = resp.data
             this.cusLog(`${this.idx} ${name}:  获得${strategyDesc}, 类型:${type}, id:${awardId}`)
             await $.wait(5)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     // 工分任务列表      status 0 未完成  1 完成
@@ -215,11 +215,11 @@ class UserInfo {
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
-            let tasks = res.data.dailyTasks
+        if (resp.code == 20000) {
+            let tasks = resp.data.dailyTasks
             for (let index = 0; index < tasks.length; index++) {
                 const element = tasks[index]
                 if (element.status == 0) {
@@ -246,7 +246,7 @@ class UserInfo {
 
             }
 
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
 
@@ -260,11 +260,11 @@ class UserInfo {
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
-            let tasks = res.data
+        if (resp.code == 20000) {
+            let tasks = resp.data
             // console.log(tasks)
             for (let index = 0; index < tasks.length; index++) {
                 const element = tasks[index]
@@ -294,7 +294,7 @@ class UserInfo {
 
             }
 
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
 
@@ -310,15 +310,15 @@ class UserInfo {
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
+        if (resp.code == 20000) {
             // this.cusLog(`${this.idx} ${name}:  ok`)
             await $.wait(10)
             let RedNum = await this.getRednum(id)
             this.cusLog(`${this.idx} ${name}:  ok, 获得红包: ${RedNum} 元`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     // 浏览首页  工分
@@ -332,11 +332,11 @@ class UserInfo {
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
+        let resp = await httpRequest(options)
+        // console.log(resp)
+        if (resp.code == 20000) {
             this.cusLog(`${this.idx} ${name}: ok`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     // 浏览职位详情
@@ -352,15 +352,15 @@ class UserInfo {
         }
         // console.log(options)
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
+        if (resp.code == 20000) {
             // this.cusLog(`${this.idx} ${name}:  ok`)
             // await $.wait(6)
             let RedNum = await this.getRednum(id)
             this.cusLog(`${this.idx} ${name}:  ok, 获得红包: ${RedNum} 元`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     // 浏览职位详情 工分
@@ -375,11 +375,11 @@ class UserInfo {
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
-        if (res.code == 20000) {
+        let resp = await httpRequest(options)
+        // console.log(resp)
+        if (resp.code == 20000) {
             this.cusLog(`${this.idx} ${name}: ok`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     // 分享职位给好友
@@ -399,15 +399,15 @@ class UserInfo {
         }
         console.log(options)
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
+        if (resp.code == 20000) {
             // this.cusLog(`${this.idx} ${name}:  ok`)
             await $.wait(3)
             let RedNum = await this.getRednum(id)
             this.cusLog(`${this.idx} ${name}:  ok, 获得红包: ${RedNum} 元`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     // 邀请新用户注册
@@ -425,15 +425,15 @@ class UserInfo {
         }
         // console.log(options)
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
+        if (resp.code == 20000) {
             // this.cusLog(`${this.idx} ${name}:  ok`)
             await $.wait(3)
             let RedNum = await this.getRednum(id)
             this.cusLog(`${this.idx} ${name}:  ok, 获得红包: ${RedNum} 元`)
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
 
     }
 
@@ -448,18 +448,18 @@ class UserInfo {
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
-            let tasks = res.data
+        if (resp.code == 20000) {
+            let tasks = resp.data
             for (let index = 0; index < tasks.length; index++) {
                 const element = tasks[index]
                 if (element.id == id) {
                     return element.rpPrize
                 }
             }
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     // 获取分享id
@@ -473,22 +473,22 @@ class UserInfo {
                 "pageNum": 1,
                 "pageSize": 15,
                 "requestType": 2,
-                "resumeFilter": true
+                "respumeFilter": true
             })
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
-            let lists = res.data.data.list
+        if (resp.code == 20000) {
+            let lists = resp.data.data.list
 
             let num = $.randomInt(0, lists.length)
             this.cusLog(`${this.idx}  ${name}: ok, ${lists[num].id}`)
             return lists[num].id
 
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
     async getPositionId(id) {
@@ -500,11 +500,11 @@ class UserInfo {
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
-            let tasks = res.data
+        if (resp.code == 20000) {
+            let tasks = resp.data
             for (let index = 0; index < tasks.length; index++) {
                 const element = tasks[index]
                 if (element.id == id) {
@@ -512,7 +512,7 @@ class UserInfo {
                     return element.positionId
                 }
             }
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
 
@@ -525,46 +525,21 @@ class UserInfo {
         }
         // console.log(options);
 
-        let res = await httpRequest(options)
-        // console.log(res)
+        let resp = await httpRequest(options)
+        // console.log(resp)
 
-        if (res.code == 20000) {
+        if (resp.code == 20000) {
             await $.wait(6)
             let otherid = await this.getPositionId(id)
             // console.log(`查看职位详情id: ${otherid}`)
             return otherid
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
+        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(resp)
     }
 
 
 
 
 
-    async getUserInfo() {
-        let name = "查询余额"
-        let options = {
-            method: "get",
-            url: `https://www.gjzpbaoxian.com/insurmarket/member/homepage?maState=${this.maState}&channelId=qiye_wx-huiyuantixi-push&sourceapp=wechat_miniprogram`,
-            headers: {
-                'Host': 'www.gjzpbaoxian.com',
-                'charset': 'utf-8',
-                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20220903 Mobile Safari/537.36 MMWEBID/8801 MicroMessenger/8.0.28.2240(0x28001C57) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android',
-                'Referer': 'https://servicewechat.com/wxdde36ae788f0bd5c/86/page-frame.html',
-                'Content-Type': 'application/json'
-            },
-
-        }
-        // console.log(options)
-
-        let res = await httpRequest(options)
-        // console.log(res)
-
-        if (res.resultCode == '000000') {
-            this.cusLog(`${this.idx} ${name}:  ${res.resultMsg}, 金币:${res.bean.memberBaseInfo.goldBalance}`)
-            // 成功返回ck状态 成功
-        } else this.cusLog(`${this.idx}  ${name} 失败 ❌ 了呢`), console.log(res)
-
-    }
 
 
 
@@ -684,15 +659,15 @@ async function getUsers(ckName, fnUserInfo) {
 }
 
 async function httpRequest(options, type = false) {
-    return new Promise((resolve) => {
+    return new Promise((respolve) => {
         try {
-            $.send(options, async (err, res_body, res_format, res) => {
+            $.send(options, async (err, resp_body, resp_format, resp) => {
                 if (err) {
                     console.log(`错误, 检查点--2`); return
                 }
                 if (!type) {
-                    resolve(res_body)
-                } resolve(res_format)
+                    respolve(resp_body)
+                } respolve(resp_format)
             })
         } catch (error) {
             console.log(error)
@@ -750,19 +725,19 @@ function Env(name, env) {
             }
             if (this.isNode()) {
                 this.request = this.request ? this.request : require("request")
-                this.request(options, function (error, response) {
+                this.request(options, function (error, respponse) {
                     if (error) throw new Error(error)
-                    let res_body = response.body
-                    let res = response
-                    let res_format = ''
+                    let resp_body = respponse.body
+                    let resp = respponse
+                    let resp_format = ''
                     try {
-                        if (typeof res_body == "string") {
-                            if ($.isJsonStr(res_body)) {
-                                res_body = JSON.parse(res_body)
-                                res_format = $.formatJson(response.body)
-                                e(null, res_body, res_format, res)
-                            } else e(null, res_body, res_format, res)
-                        } else e(null, res_body, res_format, res)
+                        if (typeof resp_body == "string") {
+                            if ($.isJsonStr(resp_body)) {
+                                resp_body = JSON.parse(resp_body)
+                                resp_format = $.formatJson(respponse.body)
+                                e(null, resp_body, resp_format, resp)
+                            } else e(null, resp_body, resp_format, resp)
+                        } else e(null, resp_body, resp_format, resp)
                     } catch (error) {
                         console.log(error)
                         let a = `ENV -- request 请求错误, 检查点1\n${error}`
@@ -937,16 +912,16 @@ function Env(name, env) {
         }
         async yiyan() {
             this.request = this.request ? this.request : require("request")
-            return new Promise((resolve) => {
+            return new Promise((respolve) => {
                 var options = {
                     method: "GET",
                     url: "https://v1.hitokoto.cn/",
                     headers: {},
                 }
-                this.request(options, function (error, response) {
-                    let data = JSON.parse(response.body)
+                this.request(options, function (error, respponse) {
+                    let data = JSON.parse(respponse.body)
                     let data_ = `[一言]: ${data.hitokoto}  by--${data.from}`
-                    resolve(data_)
+                    respolve(data_)
                 })
             })
         }
