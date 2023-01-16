@@ -1,52 +1,41 @@
 /*
-工匠职聘 app             cron 22 8,12 * * *  g'j'z'p.js
+新黄河-库存查询 app             cron 22 8,12 * * *  xhh_cx.js
 
-12.14       完成签到 浏览 任务
-12.15       增加工分任务列表  兑换抽奖次数   
-23/1/10     修复错误
+
+23/1/16         库存查询    
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 工匠职聘
-export gjzp=" authorization @ authorization "  
-
-抓 api-recruitment.yzw.cn/v2/labor/app  里面的  authorization  不需要 Bearer
+# 新黄河-库存查询
+export xhh_cx=" token  @  token  "  
 
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('工匠职聘')
+const $ = Env('新黄河-库存查询')
 const notify = require('./sendNotify')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['gjzp']                //支持多变量
+const ckNames = ['xhh_cx', 'xhh']                //支持多变量
 //====================================================================================================
-let DEFAULT_RETRY = 2           // 默认重试次数
+let DEFAULT_RETRY = 1           // 默认重试次数
 //====================================================================================================
 
 
 async function userTasks() {
 
-    $.log('用户信息', { sp: true, console: false })  // 带分割的打印
+    $.log('库存查询', { sp: true, console: false })  // 带分割的打印
     list = []
     for (let user of $.userList) {
-        list.push(user.userInfo(1))
+        list.push(user.stock_cx())
     } await Promise.all(list)
 
-    $.log('任务列表', { sp: true, console: false })
-    list = []
-    // console.log(user.ckFlog)
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.signInfo())
-            // list.push(user.commonTaskList())  // 工分任务列表
-            // list.push(user.taskExchange())    // 兑换抽奖次数
-            // list.push(user.lotteryNum())      // 抽奖次数
-        }
-    } await Promise.all(list)
-
+    // $.log('签到', { sp: true, console: false })
+    // list = []
+    // for (let user of $.userList) {
+    //     if (user.ckFlog) list.push(user.signIn())
+    // } await Promise.all(list)
 
 }
-
 
 
 class UserClass {
@@ -55,230 +44,87 @@ class UserClass {
         this.ckFlog = true
         this.token = ck
         this.hd = {
-            'authorization': `Bearer ${this.token}`,
-            'content-type': 'application/json'
+            'Pragma': 'no-cache',
+            'X-Requested-With': 'XMLHttpRequest',
         }
     }
 
 
 
-    async userInfo(type) {
+    // https://jfshop.jnbywh.cn/index.php?s=/wap&token=p3tt9jmqvmuheagov9vucqreon8vp
+    // https://jfshop.jnbywh.cn/index.php?s=%2Fwap&token=p3tt9jmqvmuheagov9vucqreon8vp
+    async query_points() { //积分查询  
         let options = {
-            fn: 'userInfo',
-            method: 'post',
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/user/getUserBaseInfo`,
-            headers: this.hd,
-            json: {}
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 20000 && resp.data != null) {
-            if (type == 1) {
-                $.log(`${this.idx}: 欢迎用户: ${resp?.data?.name}, 手机号:${$.phoneNum(resp?.data?.phone)}, 工分余额:${resp?.data?.totalScore}`, { notify: true })
-                // this.nickname = resp.data.nickname
-                this.totalScore = resp?.data?.totalScore
-                this.userId = resp?.data?.userId
-                this.ckFlog = true
-            } else {
-                this.totalScore = resp?.data?.totalScore
-            }
-
-        } else console.log(`${options.fn}: 失败, ${resp}`), this.ckFlog = false
-
-    }
-
-    // https://api-recruitment.yzw.cn/v2/labor/app/sign/mySignInfo
-    async signInfo() {
-        let options = {
-            fn: 'signInfo',
+            fn: 'stock_cx',
             method: 'get',
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/sign/mySignInfo`,
-            headers: this.hd,
-
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 20000) {
-            $.log(`${this.idx}: ${resp.data.continueDays ? '已签到' : '未签到,去签到'}`)
-            if (!resp.data.continueDays) await this.signIn()
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
-    }
-
-    // 签到  https://api-recruitment.yzw.cn/v2/labor/app/sign/sign
-    async signIn() {
-        let options = {
-            fn: 'signIn',
-            method: 'get',
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/sign/sign`,
-            headers: this.hd,
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 20000) {
-            $.log(`${this.idx}: ${resp.data.msg}`)
-        } else if (resp.code == 40005) {
-            $.log(`${this.idx}: ${resp.message}`)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-    }
-
-
-    // 工分任务列表  status 0 未完成  1 完成
-    async commonTaskList() {
-        let options = {
-            fn: 'commonTaskList',
-            method: 'get',
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/common/tasks`,
+            url: `https://jfshop.jnbywh.cn/index.php?s=%2Fwap&token=p3t${this.token}`,
             headers: {
-                'version': '2.14.0',
-                'authorization': `Bearer ${this.token}`,
+                'Pragma': 'no-cache',
+                'Sec-Fetch-User': '?1',
+                'Upgrade-Insecure-Requests': '1',
             },
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 20000) {
-            let tasks = resp.data.dailyTasks
-            // console.log(tasks)
-            for (let index = 0; index < tasks.length; index++) {
-                const element = tasks[index]
-                // console.log(element.status)
-                if (element.status == 0) {
-                    switch (element.code) {
-                        case 'SCORE_VIEW_INDEX':  //浏览首页 工分
-                            await this.viewHome_c(element.title)
-                            await $.wait(10)
-                            await this.viewHome_c(element.title)
-                            break
-
-                        case 'SCORE_VIEW_POSITION':  // 浏览职位详情 工分
-                            for (let i = 0; i < 5; i++) {
-                                await this.viewJob_c(element.title, element.positionId)
-                                await $.wait(5)
-                            }
-                            break
-
-                        default:
-                            break
-                    }
-                } else {
-                    $.log(`${this.idx} ${element.title}: 已完成`)
-                }
-
-            }
-
-
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-    }
-
-    // 浏览首页  工分
-    async viewHome_c(name) {
-        let options = {
-            fn: 'viewHome_c',
-            method: 'post',
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/browseCollectRecord/add`,
-            headers: this.hd,
-            json: { type: 1, recordType: 9 }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 20000) {
-            $.log(`${this.idx}: ${name}: ok`)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-    }
-
-    // 浏览职位详情 工分
-    async viewJob_c(name, positionId) {
-        let options = {
-            fn: 'viewJob_c',
-            method: 'post',
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/browseCollectRecord/add`,
-            headers: this.hd,
-            json: { type: 1, recordType: 10, otherId: positionId }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 20000) {
-            $.log(`${this.idx}: ${name}: ok`)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-    }
-
-
-
-    // 兑换抽奖次数  每天限制 5 次
-    async taskExchange() {
-        await this.userInfo(0)
-        if (this.totalScore >= 5) {
-            let num = parseInt(this.totalScore / 5)
-            if (num > 5) num = 5
-            $.log(`${this.idx} : 您当前有${this.totalScore} 工分, 将全部兑换成抽奖 ${num} 次`)
-            let options = {
-                method: "post",
-                url: `https://api-recruitment.yzw.cn/v2/labor/app/lottery/lotteryUserInfo/exchangeTimes`,
-                headers: this.hd,
-                json: { "times": num },
-            }
-            // console.log(options)
-            let resp = await $.request(options)
-            // console.log(resp)
-            if (resp.code == 20000) {
-                $.log(`${this.idx} : ok`)
-            } else if (resp.code == 40005 || resp.code == 50000) {
-                $.log(`${this.idx} : ${resp.message}`)
-            } else $.log(`${this.idx}   失败 ❌ 了呢`), console.log(resp)
-        } else {
-            $.log(`${this.idx} : 您当前只有 ${this.totalScore} 工分, 跳过兑换`)
+        if (resp) {
+            let tem = resp.split('<div class="count">')
+            // console.log(tem[1]);
+            let points = tem[1].split('</')[0]
+            this.points = points
         }
     }
 
 
-    // 抽奖次数
-    async lotteryNum() {
+    async stock_cx() {
+        await this.query_points()
         let options = {
-            fn: 'lotteryNum',
-            method: 'post',
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/lottery/lotteryUserDrawRecord/resultAndTask`,
-            headers: this.hd,
-            json: {}
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 20000) {
-            this.lotNum = resp.data.userInfo.usableTimes
-            $.log(`${this.idx}: 剩余${this.lotNum}次`)
-            for (let index = 0; index < this.lotNum; index++) {
-                await this.doLottery()
-            }
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-    }
-
-
-
-    async doLottery() {
-        let options = {
-            fn: 'doLottery',
+            fn: 'stock_cx',
             method: 'get',
-            url: `https://api-recruitment.yzw.cn/v2/labor/app/lottery/lotteryAward/draw?drawSource=android-zhipin`,
+            url: `https://jfshop.jnbywh.cn/index.php?s=%2Fwap%2FShop%2FajaxShopHotGoodsList&token=p3t${this.token}&page=1&page_size=50&order_mark=0`,
             headers: this.hd,
         }
         // console.log(options)
         let resp = await $.request(options)
-        // console.(resp)
-        if (resp.code == 20000) {
-            let { type, awardId, strategyDesc } = resp.data
-            $.log(`${this.idx}: 获得${strategyDesc}, 类型:${type}, id:${awardId}`, { notify: true })
-            await $.wait(5)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
+        // console.log(resp)
+        if (resp.code == 1) {
+            let goods = resp.data
+            let stock_data = ''
+            for (const good of goods) {
+                this.goods_name = good.goods_name
+                this.point_exchange = good.point_exchange
+                this.stock = good.stock
+                // console.log(goods_name, point_exchange, stock)
+                // $.log(`${this.idx}: ${this.goods_name}, 需要积分: ${this.point_exchange}, 库存: ${this.stock}`, { notify: true })
+                if (this.stock > 0) {
+                    stock_data += `${this.goods_name}, 需要积分: ${this.point_exchange}, 库存: ${this.stock}\n`
+                    // $.log(`${this.idx}: 当前有库存的是: ${this.goods_name}, 需要积分: ${this.point_exchange}, 库存: ${this.stock}`, { notify: true })
+                }
+            }
+            $.log(`${this.idx}: 当前有积分: ${this.points}\n\n${stock_data}`, { notify: true })
+        } else console.log(`${options.fn}: 失败, ${resp} `)
 
     }
 
+    async signIn() {
+        let options = {
+            fn: 'signIn',
+            method: 'post',
+            url: `https://app-api.xhh_cx.cn/xhh_cxapp-me/signs/v2`,
+            headers: this.hd,
+            json: 'https://app-api.xhh_cx.cn/xhh_cxapp-me/signs/v2'
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == "success") {
+            let signPrize = resp.data.signPrize
+            $.log(`${this.idx}: 签到:${resp.code}, 获得 ${JSON.stringify(signPrize)}`)
+        } else if (resp.code == "err.userprofile.duplicate.sign") {
+            $.log(`${this.idx}: 签到: 已签到`)
+        } else console.log(`${options.fn}: 失败, ${resp} `)
 
+    }
 
 
 

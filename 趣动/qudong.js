@@ -21,6 +21,7 @@ const ckNames = ['qudong']                //支持多变量
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
 let cashnum = '20000'           //2元 自定义修改
+let maxDrawNum = '100'          //默认最大抽奖次数
 //====================================================================================================
 
 
@@ -29,7 +30,7 @@ async function userTasks() {
     $.log('用户信息', { sp: true, console: false })  // 带分割的打印
     list = []
     for (let user of $.userList) {
-        list.push(user.userInfo(1))
+        list.push(user.userInfo())
     } await Promise.all(list)
 
     $.log('上传步数', { sp: true, console: false })
@@ -46,6 +47,13 @@ async function userTasks() {
         if (user.ckFlog) {
             list.push(user.tasklist())
             list.push(user.signTask())
+        }
+    } await Promise.all(list)
+
+    $.log('抽奖', { sp: true, console: false })
+    list = []
+    for (let user of $.userList) {
+        if (user.ckFlog) {
             list.push(user.drawTask())
         }
     } await Promise.all(list)
@@ -75,26 +83,29 @@ class UserClass {
 
     }
 
-    async userInfo(type) {
+    async userInfo() {
+        await this.getMoney()
         let options = {
             fn: 'userInfo',
-            method: 'get',
-            url: `https://capi.wewillpro.com/user/get_member_integral_info?token=${this.token}`,
+            method: 'post',
+            url: `https://capi.wewillpro.com/wallet/myWallet`,
             headers: this.hd,
+            form: {
+                'token': this.token,
+            }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
         if (resp.code == 200) {
-            if (type == 1) {
-                this.gold_money = resp.data.gold_money
-                $.log(`${this.idx}: 当前余额:${this.gold_money} 元`)
-            } else if (type == 2) {
-                this.gold_money = resp.data.gold_money
-            }
+            let tasks = resp.data
+            for (const task of tasks) {
+                if (task.type == 'gold') this.wxnickname = task.wxnickname
+                if (task.type == 'integral') this.holding_amount = task.holding_amount
 
-            this.ckFlog = true
-        } else console.log(`${options.fn}: 失败, ${resp} `), this.ckFlog = false
+            }
+            $.log(`${this.idx}: ${this.wxnickname}, 余额≈≈${this.gold_money}元, 积分${this.holding_amount}`, { notify: true })
+        } else console.log(`${options.fn}: 失败, ${resp} `)
 
     }
 
@@ -200,9 +211,11 @@ class UserClass {
         // console.log(resp)
         if (resp.code == 200 && resp.data) {
             let num = resp.data.user_daily_draw_remains
-            $.log(`${this.idx}: 抽奖次数  ${num} 次`)
+            let num_r = num < this.holding_amount ? num : this.holding_amount
+            num_r = num_r < maxDrawNum ? num_r : maxDrawNum
+            $.log(`${this.idx}: 您当前 抽奖次数 ${num} 次, 积分${this.holding_amount}, 最大限制次数为 ${maxDrawNum} 次, 您本次实际抽奖次数为 ${num_r} 次`)
             if (num > 100) {
-                for (let index = 0; index < num; index++) {
+                for (let index = 0; index < num_r; index++) {
                     await this.draw()
                     if (this.drawFlog) break
                 }
@@ -262,7 +275,7 @@ class UserClass {
         if (resp.code == 200 && resp.data) {
             let { award_multi_num, award_amount, award_type } = resp.data
             $.log(`${this.idx}: 抽奖 ${resp.msg}, 类型 ${resp.data.award_type}, 数量 ${award_amount}, id ${award_multi_num}`)
-            await $.wait(5)
+            await $.wait($.randomInt(3, 5))
             await this.draw_fb(award_multi_num, award_amount, award_type)
         } else if (resp.code == 1000) {
             $.log(`${this.idx}: ${resp.msg}`)
@@ -293,6 +306,7 @@ class UserClass {
         // console.log(resp)
         if (resp.code == 200 && resp.data) {
             $.log(`${this.idx}:  抽奖额外奖励 ${resp.msg}, 获得金币 ${resp.data.num}`)
+            await $.wait($.randomInt(20, 30))
         } else if (resp.code == 1000) {
             $.log(`${this.idx}: ${resp.msg}`)
         } else console.log(`${options.fn}: 失败, ${resp}`)
@@ -317,10 +331,10 @@ class UserClass {
         // console.log(resp)
         if (resp.code == 200 && resp.data) {
             $.log(`${this.idx}: 抽奖翻倍 ${resp.msg}, 获得 ${resp.data.num} 金币`)
-            await $.wait(65)
+            await $.wait($.randomInt(10, 20))
         } else if (resp.code == 1000) {
             $.log(`${this.idx}: ${resp.msg}`)
-            await $.wait(10)
+            await $.wait($.randomInt(3, 5))
         } else console.log(`${options.fn}: 失败, ${resp}`)
 
     }
@@ -405,9 +419,24 @@ class UserClass {
 
     }
 
+    async getMoney() {
+        let options = {
+            fn: 'getMoney',
+            method: 'get',
+            url: `https://capi.wewillpro.com/user/get_member_integral_info?token=${this.token}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 200) {
+            this.gold_money = resp.data.gold_money
+        } else console.log(`${options.fn}: 失败, ${resp} `)
+
+    }
 
     async wallet() { // 钱包查询
-        await this.userInfo(2)
+        await this.getMoney()
         let options = {
             fn: 'wallet',
             method: 'post',
