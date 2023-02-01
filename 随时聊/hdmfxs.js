@@ -1,23 +1,23 @@
 /*
-趣动 app             cron 22 8,12 * * *  qudong.js
+红豆免费小说 app             cron 22 8,12 * * *  hdmfxs.js
 
 
-23/1/14      改 蛋佬 脚本
+23/1/30      基本任务
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 趣动
-export qudong=" token  @  token  "  
+# 红豆免费小说
+export hdmfxs=" token  @  token  "  
 
 抓 capi.wewillpro.com 的 token 
 
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('趣动')
+const $ = Env('红豆免费小说')
 const notify = require('./sendNotify')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['qudong']                //支持多变量
+const ckNames = ['hdmfxs']                //支持多变量
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
 let cashnum = '20000'           //2元 自定义修改

@@ -1,23 +1,23 @@
 /*
-河马免费小说-快应用 app             cron 22 8,12 * * *  hmmfxs.js
+点众免费小说-快应用 app             cron 22 8,12 * * *  dzmfxs.js
 
 12.16       修改最新模板
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 河马免费小说-快应用
-export hmmfxs=" t # smdid @ t # smdid "  
+# 点众免费小说-快应用
+export dzmfxs=" t # smdid @ t # smdid "  
 
-抓 dzmfxs.kkyd.cn 的 t 和 smdid   登录包有 smdid
+抓 dzmfxs.kkyd.cn 的 t 和 smdid
 
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
 
 */
-const $ = Env('河马免费小说-快应用')
+const $ = Env('点众免费小说-快应用')
 const notify = require('./sendNotify')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['hmmfxs']      //支持多变量
+const ckNames = ['dzmfxs']      //支持多变量
 //=======================================================================================================
 let DEFAULT_RETRY = 2           // 默认重试次数
 //=======================================================================================================
@@ -57,22 +57,22 @@ class UserClass {
         this.smdid = this.ck[1]
         this.hd = {
             't': this.t,
-            'pname': 'com.dianzhong.hmxs',
-            'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 hap/1.10/xiaomi com.miui.hybrid/1.10.0.0 com.dianzhong.hmxs/5.5.2.720 ({"packageName":"com.miui.home","type":"shortcut","extra":{"original":{"packageName":"mark.via","type":"url","extra":{}},"scene":"api"}})'
+            'pname': 'com.dianzhong.dzmfxs',
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 hap/1.10/xiaomi com.miui.hybrid/1.10.0.0 com.dianzhong.dzmfxs/5.5.3.230 ({"packageName":"com.miui.home","type":"shortcut","extra":{"original":{"packageName":"com.tencent.mm","type":"url","extra":{}},"scene":"api"}})'
         }
+        this.ver = '5503230'
+        this.appVer = '5.5.3.230'
     }
 
 
 
 
-    // https://dzmfxs.kkyd.cn
-    // https://dzmfxs.kkyd.cn/glory/fastapp/2162?ver=5502720&appVer=5.5.2.720
 
     async readDuration() {
         let options = {
             fn: 'readDuration',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2146?ver=5502720&appVer=5.5.2.720',
+            url: `https://dzmfxs.kkyd.cn/glory/fastapp/2146?ver=${this.ver}&appVer=${this.appVer}`,
             headers: this.hd,
             json: {
                 "taskId": 1087,
@@ -118,7 +118,7 @@ class UserClass {
         let options = {
             fn: 'dotask',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2141?ver=5502720&appVer=5.5.2.720',
+            url: `https://dzmfxs.kkyd.cn/glory/fastapp/2141?ver=${this.ver}&appVer=${this.appVer}`,
             headers: this.hd,
             json: { 'taskId': id },
         }
@@ -139,7 +139,7 @@ class UserClass {
         let options = {
             fn: 'points',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2404?ver=5502720&appVer=5.5.2.720',
+            url: `https://dzmfxs.kkyd.cn/glory/fastapp/2404?ver=${this.ver}&appVer=${this.appVer}`,
             headers: this.hd,
             json: { 'signText': 1 },
         }
@@ -152,7 +152,7 @@ class UserClass {
         options = {
             fn: 'points',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2106?ver=5502720&appVer=5.5.2.720',
+            url: `https://dzmfxs.kkyd.cn/glory/fastapp/2106?ver=${this.ver}&appVer=${this.appVer}`,
             headers: this.hd,
             json: {},
         }
@@ -171,7 +171,7 @@ class UserClass {
         let options = {
             fn: 'cash',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2856?ver=5502720&appVer=5.5.2.720',
+            url: `https://dzmfxs.kkyd.cn/glory/fastapp/2856?ver=${this.ver}&appVer=${this.appVer}`,
             headers: this.hd,
             json: { 'amountId': 13, 'smdid': this.smdid },
         }

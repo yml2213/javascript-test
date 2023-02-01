@@ -1,23 +1,22 @@
 /*
-趣动 app             cron 22 8,12 * * *  qudong.js
+二三里 app             cron 22 8,12 * * *  esl.js
 
 
-23/1/14      改 蛋佬 脚本
+23/1/30      基本任务
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 趣动
-export qudong=" token  @  token  "  
-
-抓 capi.wewillpro.com 的 token 
+# 二三里
+export esl=" phone # pwd  @  phone # pwd   "  
 
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('趣动')
+const $ = Env('二三里')
 const notify = require('./sendNotify')
+const crypto = require('crypto-js')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['qudong']                //支持多变量
+const ckNames = ['esl']                //支持多变量
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
 let cashnum = '20000'           //2元 自定义修改
@@ -34,41 +33,34 @@ async function userTasks() {
     $.log('用户信息', { sp: true, console: false })  // 带分割的打印
     list = []
     for (let user of $.userList) {
-        list.push(user.userInfo())
+        list.push(user.login())
     } await Promise.all(list)
 
-    $.log('上传步数', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.uploadstep())  // 上传步数 
-        }
-    } await Promise.all(list)
 
     $.log('任务列表', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
             list.push(user.tasklist())
-            list.push(user.signTask())
+            // list.push(user.signTask())
         }
     } await Promise.all(list)
 
-    $.log('抽奖', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.drawTask())
-        }
-    } await Promise.all(list)
+    // $.log('抽奖', { sp: true, console: false })
+    // list = []
+    // for (let user of $.userList) {
+    //     if (user.ckFlog) {
+    //         list.push(user.drawTask())
+    //     }
+    // } await Promise.all(list)
 
-    $.log('钱包查询', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.wallet())
-        }
-    } await Promise.all(list)
+    // $.log('钱包查询', { sp: true, console: false })
+    // list = []
+    // for (let user of $.userList) {
+    //     if (user.ckFlog) {
+    //         list.push(user.wallet())
+    //     }
+    // } await Promise.all(list)
 
 
 }
@@ -78,94 +70,101 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.token = ck
-        this.ranNum = $.randomInt(5, 10)
-        this.hd = {
-            'appversion': '3.0.3',
-            'brand': 'Xiaomi',
-        }
+        this.ck = ck.split('#')
+        this.phone = this.ck[0]
+        this.pwd = crypto.MD5(crypto.MD5(this.ck[1]).toString()).toString()
+        this.rs = `${$.randomString(8)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(12)}`
+        this.hd = { 'User-Agent': 'okm/7.2.9' }
+
+
+        this.appVersion = '7.2.9'
+        this.ts = $.ts(10)
+        this.salt = 'x3pbkWjH4EiBPbRi1DYKgIiuS9ehOCOk0DkqREOIvffOYtAOQvRXkvmvhe9j13QoT3aOsTP/Y6wLlDhg97RhYnt4y23zgd5AV+UiNgerlmwCjWclOwwf1IvZYX4nAjOdCkGgRAboiU+Gh+UvW+CnXjjFx26vk4Y91Mztq8SjCvCwoaQGHXxfy0VxmsS85BBV3E39Ak12n/EcV+/ihk9uIQwqc3BlvR8miZTGh2EesqSqKm+RiwWAQpYrhaWuN9Zc'
+        this.deviceId = 'cf873feaf4509842ae76beec9df158f973633ad268db50cbc22206ba1f98185d'
 
     }
-
-    async userInfo() {
-        await this.getMoney()
+    async login() {
+        let ts = this.ts
+        let rs = this.rs
+        let a = `name=${this.phone}&password=${this.pwd}&clientType=3&deviceId=${this.deviceId}&appId=1&appVersion=${this.appVersion}&osVersion=12&timestamp=${ts}&nonce_str=${rs}&location=371601`
+        // console.log(`${a}${this.salt}`)
+        let sign = crypto.MD5(`${crypto.MD5(a).toString()}${this.salt}`).toString()
         let options = {
-            fn: 'userInfo',
+            fn: 'login',
             method: 'post',
-            url: `https://capi.wewillpro.com/wallet/myWallet`,
+            url: `https://api.ersanli.cn/kilos/apis/passport/login.action`,
             headers: this.hd,
             form: {
-                'token': this.token,
+                'name': this.phone,
+                'password': this.pwd,
+                'clientType': '3',
+                'deviceId': this.deviceId,
+                'appId': '1',
+                'appVersion': this.appVersion,
+                'osVersion': '12',
+                'timestamp': ts,
+                'nonce_str': rs,
+                'location': '371601',
+                'sign': sign
             }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 200) {
-            let tasks = resp.data
-            for (const task of tasks) {
-                if (task.type == 'gold') this.wxnickname = task.wxnickname
-                if (task.type == 'integral') this.holding_amount = task.holding_amount
-
-            }
-            $.log(`${this.idx}: ${this.wxnickname}, 余额≈≈${this.gold_money}元, 积分${this.holding_amount}`, { notify: true })
-        } else console.log(`${options.fn}: 失败, ${resp} `)
+        if (resp.code == 'A00000') {
+            this.userCookie = resp.data.userCookie
+            this.nickname = resp.data.userInfo.name
+            $.log(`${this.idx}: ${this.nickname}, 手机号 ${$.phoneNum(resp.data.userInfo.mobile)}`, { notify: true })
+            this.ckFlog = true
+        } else console.log(`${options.fn}: 失败, ${resp} `), this.ckFlog = false
 
     }
 
-    async uploadstep() { // 上传步数 
-        let ranNum = $.randomInt(10000, 20000)
-        let options = {
-            fn: 'uploadstep',
-            method: 'post',
-            url: `https://capi.wewillpro.com/sport/addSportRecord`,
-            headers: {
-                'appversion': '3.0.3',
-                'brand': 'Xiaomi',
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            form: {
-                'step_count': ranNum,
-                'token': this.token,
-                'brand': 'Xiaomi'
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200) {
-            $.log(`${this.idx}: 上传${ranNum}步: ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败, ${resp} `)
 
-    }
 
-    // 任务列表  finish_status 0-未完成  1-完成
+    // 任务列表  
     async tasklist() {
+        let ts = this.ts
+        let rs = this.rs
+        let a = `userCookie=${this.userCookie}&clientType=3&deviceId=${this.deviceId}&appId=1&appVersion=${this.appVersion}&osVersion=12&timestamp=${ts}&nonce_str=${rs}&location=371601`
+        let sign = crypto.MD5(`${crypto.MD5(a).toString()}${this.salt}`).toString()
         let options = {
             fn: 'tasklist',
             method: 'post',
-            url: `https://capi.wewillpro.com/task/getTodayTaskList`,
+            url: `https://api.ersanli.cn/kilos/apis/user/task.action`,
             headers: this.hd,
-            form: { 'token': this.token }
+            form: {
+                'userCookie': this.userCookie,
+                'clientType': '3',
+                'deviceId': this.deviceId,
+                'appId': '1',
+                'appVersion': this.appVersion,
+                'osVersion': '12',
+                'timestamp': ts,
+                'nonce_str': rs,
+                'location': '371601',
+                'sign': sign
+            }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 200 && resp.data) { // finish_status 0-未完成  1-完成
+        if (resp.code == 'A00000') { // finish_status 0-未完成  1-完成
             // console.log(resp.data)
             // console.log(resp.data.length)
-            let tasks = resp.data
-            for (const task of tasks) {
-                // console.log(task)
-                let { id, task_id, task_description, finish_status } = task
-                if (!finish_status) {
-                    $.log(`${this.idx}: ${task_description} 未完成`)
-                    // await this.reward(id, task_id, task_description)
-                } else {
-                    $.log(`${this.idx}: ${task_description} 已完成`)
-                    await this.reward(id, task_id, task_description)
-                }
-            }
+            let tasks = resp.taskList
+            console.log(tasks)
+            // for (const task of tasks) {
+            //     // console.log(task)
+            //     let { id, task_id, task_description, finish_status } = task
+            //     if (!finish_status) {
+            //         $.log(`${this.idx}: ${task_description} 未完成`)
+            //         // await this.reward(id, task_id, task_description)
+            //     } else {
+            //         $.log(`${this.idx}: ${task_description} 已完成`)
+            //         await this.reward(id, task_id, task_description)
+            //     }
+            // }
             // this.taskId = resp.data
             // $.log(`${this.idx}: ${resp.info}, 当前任务id:${this.taskId}`)
             // await $.wait(this.ranNum)

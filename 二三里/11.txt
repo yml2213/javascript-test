@@ -1,188 +1,209 @@
 /*
-河马免费小说-快应用 app             cron 22 8,12 * * *  hmmfxs.js
+随时聊 app             cron 22 8,12 * * *  shl.js
 
-12.16       修改最新模板
+
+23/1/30      基本任务
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 河马免费小说-快应用
-export hmmfxs=" t # smdid @ t # smdid "  
+# 随时聊
+export shl=" phone # pwd  @  phone # pwd  "  
 
-抓 dzmfxs.kkyd.cn 的 t 和 smdid   登录包有 smdid
 
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
-
 */
-const $ = Env('河马免费小说-快应用')
+const $ = Env('随时聊')
+const { MD5 } = require('crypto-js')
+const crypto = require('crypto-js')
 const notify = require('./sendNotify')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['hmmfxs']      //支持多变量
-//=======================================================================================================
-let DEFAULT_RETRY = 2           // 默认重试次数
-//=======================================================================================================
+const ckNames = ['shl']                //支持多变量
+//====================================================================================================
+let DEFAULT_RETRY = 1           // 默认重试次数
+//====================================================================================================
+
+
+
+
+
 
 async function userTasks() {
 
-    $.log('查询', { sp: true, console: false })
+    $.log('用户信息', { sp: true, console: false })  // 带分割的打印
     list = []
     for (let user of $.userList) {
-        if (user.ckFlog) list.push(user.points())
+        // list.push(user.login())
     } await Promise.all(list)
 
-    $.log('上传阅读时间', { sp: true, console: false })  // 带分割的打印
+    $.log('合成信息', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
-        list.push(user.readDuration())
+        if (user.ckFlog) {
+            list.push(user.userInfo())
+            // list.push(user.boxList())
+        }
     } await Promise.all(list)
 
-    $.log('刷金币', { sp: true, console: false })
+    $.log('购买', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
-        if (user.ckFlog) list.push(user.tasks())  // 上传步数 
+        if (user.ckFlog) {
+            list.push(user.buy_1())
+            // list.push(user.boxList())
+        }
     } await Promise.all(list)
 
 
-
-
+    // $.log('积分查询', { sp: true, console: false })
+    // list = []
+    // for (let user of $.userList) {
+    //     if (user.ckFlog) {
+    //         list.push(user.points())
+    //     }
+    // } await Promise.all(list)
 
 }
 
+
 class UserClass {
     constructor(ck) {
-        this.idx = `账号[${++$.userIdx}]: `
+        this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
         this.ck = ck.split('#')
-        this.t = this.ck[0]
-        this.smdid = this.ck[1]
-        this.hd = {
-            't': this.t,
-            'pname': 'com.dianzhong.hmxs',
-            'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 hap/1.10/xiaomi com.miui.hybrid/1.10.0.0 com.dianzhong.hmxs/5.5.2.720 ({"packageName":"com.miui.home","type":"shortcut","extra":{"original":{"packageName":"mark.via","type":"url","extra":{}},"scene":"api"}})'
+        this.phone = this.ck[0]
+        this.pwd = this.ck[1]
+
+        this.salt = 'SHL9L9JIRW5PCRBEU9FTKFGEY4HXLSHL'
+        this.Random_str = $.randomString(8)
+        this.ts = $.ts(10)
+        this.hd1 = { // ts rs  salt
+            'Api-Token': this.getApiToken(1, this.ts, this.Random_str),
+            'Api-Timestamp': this.ts,
+            'Api-Random-Str': this.Random_str,
+            'Api-OS': '1',
+            'Api-Version': '10803',
+            'Api-Device': 'Xiaomi M2102J2SC',
+            'Login-Token': '1zo61jdeqzyg6melbeuy03fvtdqv7htw',
         }
+        this.hd2 = { // ts  salt rs  
+            'Api-Token': this.getApiToken(2, this.ts, this.Random_str),
+            'Api-Timestamp': this.ts,
+            'Api-Random-Str': this.Random_str,
+            'Api-OS': '1',
+            'Api-Version': '10803',
+            'Api-Device': 'Xiaomi M2102J2SC',
+            'Login-Token': '1zo61jdeqzyg6melbeuy03fvtdqv7htw',
+        }
+
     }
 
 
 
 
-    // https://dzmfxs.kkyd.cn
-    // https://dzmfxs.kkyd.cn/glory/fastapp/2162?ver=5502720&appVer=5.5.2.720
-
-    async readDuration() {
+    async login() {
         let options = {
-            fn: 'readDuration',
+            fn: 'login',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2146?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
-            json: {
-                "taskId": 1087,
-                "action": 36,
-                "readDuration": $.randomInt(500, 700),
-                "bookId": "11010057591",
-                "chapterId": "472523743"
+            url: `https://api.liaozhuangkeji.com/member/v1/member/login`,
+            headers: {
+                'Api-Token': this.getApiToken('login', this.ts, this.Random_str),
+                'Api-Timestamp': this.ts,
+                'Api-Random-Str': this.Random_str,
+                'Api-OS': '1',
+                'Api-Version': '10803',
+                'Api-Device': 'Xiaomi M2102J2SC',
+                'Login-Token': '',
+            },
+            form: {
+                'mobile': this.phone,
+                'password': this.pwd
+            }
+
+        }
+        console.log(options)
+        let resp = await $.request(options)
+        console.log(resp)
+        if (resp.recode == 0) {
+            this.hd['Login-Token'] = resp.data.token
+            this.nickname = resp.data.member.nickname
+            this.amount = resp.data.estimated_amount
+            $.log(`${this.idx}: ${this.nickname}, 手机号 ${$.phoneNum(resp.data.member.mobile)}, 余额≈≈${this.amount}元`, { notify: true })
+            this.ckFlog = true
+        } else console.log(`${options.fn}: 失败, ${resp}`), this.ckFlog = false
+
+    }
+
+    // https://api.liaozhuangkeji.com/synthetic/v1/user/info
+    async userInfo() {
+        let options = {
+            fn: 'userInfo',
+            method: 'get',
+            url: `https://api.liaozhuangkeji.com/synthetic/v1/user/info`,
+            headers: this.hd2,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.recode == 0) {
+            this.game_car = resp.data.game_car
+            $.log(`${this.idx}: 等级${resp.data.level}级, 银币${resp.data.coin}, 现金${resp.data.wallet.money}元, 更新时间${resp.data.update_time}`, { notify: true })
+            // console.log(this.game_car)
+        } else console.log(`${options.fn}: 失败, ${resp}`)
+
+    }
+
+    // 买一级--100银币
+    async buy_1() {
+        let options = {
+            fn: 'buy_1',
+            method: 'post',
+            url: `https://api.liaozhuangkeji.com/synthetic/v1/game/buy`,
+            headers: {
+                'Api-Token': this.getApiToken(2, this.ts, this.Random_str),
+                'Api-Timestamp': this.ts,
+                'Api-Random-Str': this.Random_str,
+                'Accept-Language': 'zh-CN,zh;q=0.8',
+                'User-Agent': 'Android/1.8.3/10803/XiaomiM2102J2SC/12/IMEI:72606f551c907d8b/246135',
+                'Api-OS': '1',
+                'Api-Version': '10803',
+                'Api-Device': 'Xiaomi M2102J2SC',
+                'Login-Token': '1zo61jdeqzyg6melbeuy03fvtdqv7htw',
+                'Host': 'api.liaozhuangkeji.com',
+                'Cache-Control': 'no-cache',
+                'Content-Length': 0
+            },
+            form: {
+                'https://api.liaozhuangkeji.com/synthetic/v1/game/buy': ''
             }
         }
-        // console.log(options)
+        console.log(options)
         let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.retCode == 0 && resp.data.totalReadDuration) {
-            $.log(`${this.idx} 上传阅读时间成功 当前阅读 ${resp.data.totalReadDuration}分钟`)
-        } else if (resp.retCode == 0 && resp.data.totalReadDuration == 0) {
-            $.log(`失败,稍后再试!`)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
-    }
-
-    async tasks() {
-        let qd = [
-            1001, 1042, 1043, 1044, 1062, 1068, 1069, 1070, 1071,
-            1072, 1075, 1085, 1087, 1092, 1094, 1104, 1105, 1141,
-            1142, 1148, 1149, 1150, 1151, 1152, 1153, 1154, 1156,
-            1157, 1158, 1159, 1160, 1161, 1162, 1167, 1169, 1170,
-            1171, 1173, 1174, 1176, 1177, 1179, 1180, 1187, 1193,
-            1194, 1195, 1196, 1197, 1198, 1199, 1200, 1201, 1202,
-            1203, 1204, 1205, 1206, 1207, 1208, 1209, 1210, 1218,
-            1219, 1220, 1221, 1222, 1223, 1224, 1225, 1226, 1227,
-            1228, 1229, 1236, 1240, 1244, 1245, 1247, 1248, 1249,
-            1250, 1251, 1252, 1257, 1258, 1260, 1266, 1269, 1272,
-            1278, 47
-        ]
-
-        for (let id of qd) {
-            await this.dotask(id)
-            await $.wait(2)
-        }
-
-    }
-    async dotask(id) {
-        let options = {
-            fn: 'dotask',
-            method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2141?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
-            json: { 'taskId': id },
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.retCode == 0 && resp.data.message) {
-            if (resp.data.code == 103 || 102) {
-                $.log(`${this.idx}: ${resp.data.message}`)
-            }
+        console.log(resp)
+        if (resp.recode == 0) {
+            this.game_car = resp.data.game_car
+            $.log(`${this.idx}: 购买 ${resp.msg}, 等级${resp.data.level}级, 剩余银币${resp.data.coin}, 奖券${resp.data.coupons}张, 更新时间${resp.data.update_time}`, { notify: true })
+            console.log(this.game_car)
         } else console.log(`${options.fn}: 失败, ${resp}`)
 
     }
 
 
 
-    async points() {
-        let options = {
-            fn: 'points',
-            method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2404?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
-            json: { 'signText': 1 },
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.(resp)
-        if (resp.retCode == 0) this.coin = resp.data.glods
-        // console.log(this.coin)
-        options = resp = ''
-        options = {
-            fn: 'points',
-            method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2106?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
-            json: {},
-        }
-        resp = await $.request(options)
-        if (resp.retCode == 0) {
-            $.log(`${this.idx} ${resp.data.user.nickName}, 金币:${this.coin}`, { notify: true })
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
-        if (this.coin >= 30000) {
-            $.log(`${this.idx} 金币:${this.coin}, 去提现 3 元!`)
-            await this.cash()
-        }
-    }
-
-    async cash() {
-        let options = {
-            fn: 'cash',
-            method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2856?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
-            json: { 'amountId': 13, 'smdid': this.smdid },
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.retCode == 0 && resp.data.retCode == 1) {
-            $.log(`提现3元:  ${resp.data.retMsg}`, { notify: true })
-        } else console.log(`${options.fn}: 失败, ${resp}`)
 
 
+
+
+    getApiToken(type, ts, Random_str) { // 获取sign 
+        if (type = 1) {
+            let a = `${ts}${Random_str}${this.salt}`
+            let sign = MD5(a).toString()
+            return sign
+        } else if (type = 2) {
+            let a = `${ts}${this.salt}${Random_str}`
+            let sign = MD5(a).toString()
+            return sign
+        }
     }
 
 }
