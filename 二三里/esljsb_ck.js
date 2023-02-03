@@ -1,40 +1,36 @@
 /*
-二三里 app             cron 22 8,12 * * *  esl.js
+二三里极速版 app             cron 25 6-23 * * *  esljsb.js
 
 
 23/1/30      基本任务
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 二三里
-export esl=" phone # pwd  @  phone # pwd   "  
+# 二三里极速版
+export esljsb=" userCookie @  userCookie "  
 
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('二三里')
+const $ = Env('二三里极速版')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['esl']                //支持多变量
+const ckNames = ['esljsb']                //支持多变量
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
-let cashnum = '20000'           //2元 自定义修改
-let maxDrawNum = '100'          //默认最大抽奖次数
 //====================================================================================================
-
-
 
 
 
 
 async function userTasks() {
 
-    $.log('用户信息', { sp: true, console: false })  // 带分割的打印
-    list = []
-    for (let user of $.userList) {
-        list.push(user.login())
-    } await Promise.all(list)
+    // $.log('用户信息', { sp: true, console: false })  // 带分割的打印
+    // list = []
+    // for (let user of $.userList) {
+    //     list.push(user.login())
+    // } await Promise.all(list)
 
 
     $.log('任务列表', { sp: true, console: false })
@@ -42,25 +38,57 @@ async function userTasks() {
     for (let user of $.userList) {
         if (user.ckFlog) {
             list.push(user.tasklist())
-            // list.push(user.signTask())
+            // list.push(user.sleep())
         }
     } await Promise.all(list)
 
-    // $.log('抽奖', { sp: true, console: false })
-    // list = []
-    // for (let user of $.userList) {
-    //     if (user.ckFlog) {
-    //         list.push(user.drawTask())
-    //     }
-    // } await Promise.all(list)
+    $.log('走路赚豆', { sp: true, console: false })
+    list = []
+    if ($.ts('h') == 18) {
+        for (let user of $.userList) {
+            if (user.ckFlog) {
+                let a = ['10', '1000', '3000', '5000', '7000', '10000']
+                for (let index = 0; index < a.length; index++) {
+                    list.push(user.lifeTask(a[index]))
+                }
+            }
+        } await Promise.all(list)
+    } else $.log(`走路赚豆--时间不对, 跳过!`)
 
-    // $.log('钱包查询', { sp: true, console: false })
-    // list = []
-    // for (let user of $.userList) {
-    //     if (user.ckFlog) {
-    //         list.push(user.wallet())
-    //     }
-    // } await Promise.all(list)
+    $.log('吃饭赚豆', { sp: true, console: false })
+    list = []
+    for (let user of $.userList) {
+        if (user.ckFlog) {
+            list.push(user.eat())
+        }
+    } await Promise.all(list)
+
+
+    $.log('睡觉赚豆', { sp: true, console: false })
+    list = []
+    for (let user of $.userList) {
+        if (user.ckFlog) {
+            list.push(user.sleep())
+        }
+    } await Promise.all(list)
+
+    $.log('开宝箱', { sp: true, console: false })
+    list = []
+    for (let user of $.userList) {
+        if (user.ckFlog) {
+            list.push(user.openBox())
+        }
+    } await Promise.all(list)
+
+
+    $.log('里豆查询', { sp: true, console: false })
+    list = []
+    for (let user of $.userList) {
+        if (user.ckFlog) {
+            list.push(user.check())
+        }
+    } await Promise.all(list)
+
 
 
 }
@@ -70,43 +98,42 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.ck = ck.split('#')
-        this.phone = this.ck[0]
-        this.pwd = crypto.MD5(crypto.MD5(this.ck[1]).toString()).toString()
+        this.userCookie = ck
         this.rs = `${$.randomString(8)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(12)}`
-        this.hd = { 'User-Agent': 'okm/7.2.9' }
+        this.hd = { 'User-Agent': 'oke/3.2.8' }
 
-
-        this.appVersion = '7.2.9'
+        this.appVersion = '3.2.8'    // 3.2.8 极速版    7.2.9 正式版
         this.ts = $.ts(10)
         this.salt = 'x3pbkWjH4EiBPbRi1DYKgIiuS9ehOCOk0DkqREOIvffOYtAOQvRXkvmvhe9j13QoT3aOsTP/Y6wLlDhg97RhYnt4y23zgd5AV+UiNgerlmwCjWclOwwf1IvZYX4nAjOdCkGgRAboiU+Gh+UvW+CnXjjFx26vk4Y91Mztq8SjCvCwoaQGHXxfy0VxmsS85BBV3E39Ak12n/EcV+/ihk9uIQwqc3BlvR8miZTGh2EesqSqKm+RiwWAQpYrhaWuN9Zc'
         this.deviceId = 'cf873feaf4509842ae76beec9df158f973633ad268db50cbc22206ba1f98185d'
+        this.appId = '2'  // 2 极速版   1 正式版
+        this.location = '371681'  // 371681 极速版    371601 正式版
 
     }
-    async login() {
-        let ts = this.ts
-        let rs = this.rs
-        let a = `name=${this.phone}&password=${this.pwd}&clientType=3&deviceId=${this.deviceId}&appId=1&appVersion=${this.appVersion}&osVersion=12&timestamp=${ts}&nonce_str=${rs}&location=371601`
-        // console.log(`${a}${this.salt}`)
-        let sign = crypto.MD5(`${crypto.MD5(a).toString()}${this.salt}`).toString()
+
+
+    async login() { // 登录
+        let params = {
+            'name': this.phone,
+            'password': this.pwd,
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
+        // console.log(params)
+
         let options = {
-            fn: 'login',
+            fn: '登录',
             method: 'post',
             url: `https://api.ersanli.cn/kilos/apis/passport/login.action`,
             headers: this.hd,
-            form: {
-                'name': this.phone,
-                'password': this.pwd,
-                'clientType': '3',
-                'deviceId': this.deviceId,
-                'appId': '1',
-                'appVersion': this.appVersion,
-                'osVersion': '12',
-                'timestamp': ts,
-                'nonce_str': rs,
-                'location': '371601',
-                'sign': sign
-            }
+            form: params
         }
         // console.log(options)
         let resp = await $.request(options)
@@ -114,379 +141,403 @@ class UserClass {
         if (resp.code == 'A00000') {
             this.userCookie = resp.data.userCookie
             this.nickname = resp.data.userInfo.name
-            $.log(`${this.idx}: ${this.nickname}, 手机号 ${$.phoneNum(resp.data.userInfo.mobile)}`, { notify: true })
+            $.log(`${this.idx}: ${options.fn} ${resp.msg}, ${this.nickname}, 手机号 ${$.phoneNum(resp.data.userInfo.mobile)}`, { notify: true })
             this.ckFlog = true
-        } else console.log(`${options.fn}: 失败, ${resp} `), this.ckFlog = false
+            await $.wait(2)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
     }
 
+    async tasklist() { // 任务列表 
+        let params = {
+            'userCookie': this.userCookie,
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
 
-
-    // 任务列表  
-    async tasklist() {
-        let ts = this.ts
-        let rs = this.rs
-        let a = `userCookie=${this.userCookie}&clientType=3&deviceId=${this.deviceId}&appId=1&appVersion=${this.appVersion}&osVersion=12&timestamp=${ts}&nonce_str=${rs}&location=371601`
-        let sign = crypto.MD5(`${crypto.MD5(a).toString()}${this.salt}`).toString()
         let options = {
-            fn: 'tasklist',
+            fn: '任务列表',
             method: 'post',
             url: `https://api.ersanli.cn/kilos/apis/user/task.action`,
             headers: this.hd,
-            form: {
-                'userCookie': this.userCookie,
-                'clientType': '3',
-                'deviceId': this.deviceId,
-                'appId': '1',
-                'appVersion': this.appVersion,
-                'osVersion': '12',
-                'timestamp': ts,
-                'nonce_str': rs,
-                'location': '371601',
-                'sign': sign
-            }
+            form: params
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 'A00000') { // finish_status 0-未完成  1-完成
-            // console.log(resp.data)
-            // console.log(resp.data.length)
+        if (resp.code == 'A00000') {
+
             let tasks = resp.taskList
-            console.log(tasks)
-            // for (const task of tasks) {
-            //     // console.log(task)
-            //     let { id, task_id, task_description, finish_status } = task
-            //     if (!finish_status) {
-            //         $.log(`${this.idx}: ${task_description} 未完成`)
-            //         // await this.reward(id, task_id, task_description)
-            //     } else {
-            //         $.log(`${this.idx}: ${task_description} 已完成`)
-            //         await this.reward(id, task_id, task_description)
-            //     }
-            // }
-            // this.taskId = resp.data
-            // $.log(`${this.idx}: ${resp.info}, 当前任务id:${this.taskId}`)
-            // await $.wait(this.ranNum)
-            // await this.getOrder()
-        } else if (resp.data == '') {
-            this.taskId = resp.data
-            $.log(`${this.idx}: ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
-    }
-
-    async reward(id, task_id, task_description) { // 领取奖励
-        let options = {
-            fn: 'reward',
-            method: 'post',
-            url: `https://capi.wewillpro.com/task/pickTaskReward`,
-            headers: this.hd,
-            form: {
-                'id': id,
-                'task_id': task_id,
-                'token': this.token
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200 && resp.data) { // finish_status 0-未完成  1-完成
-            $.log(`${this.idx}: 领取 ${task_description} ${resp.msg}, 获得 ${resp.data.gold} 金币, 当前 ${resp.data.gold_count} 金币≈≈${resp.data.gold_money}元`)
-            await $.wait($.randomInt(5, 10))
-        } else if (resp.code == 1000) {
-            $.log(`${this.idx}: ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
-    }
-
-
-
-    async drawTask() { // 抽奖相关
-        let options = {
-            fn: 'drawTask',
-            method: 'get',
-            url: `https://capi.wewillpro.com/wheel/get_user_status?token=${this.token}`,
-            headers: this.hd,
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200 && resp.data) {
-            let num = resp.data.user_daily_draw_remains
-            let num_r = num < this.holding_amount ? num : this.holding_amount
-            num_r = num_r < maxDrawNum ? num_r : maxDrawNum
-            $.log(`${this.idx}: 您当前 抽奖次数 ${num} 次, 积分${this.holding_amount}, 最大限制次数为 ${maxDrawNum} 次, 您本次实际抽奖次数为 ${num_r} 次`)
-            if (num > 100) {
-                for (let index = 0; index < num_r; index++) {
-                    await this.draw()
-                    if (this.drawFlog) break
-                }
-            } else {
-                await this.drawNum()
-                await this.drawTask()
-            }
-
-            let { user_brs_adt_5_info, user_brs_adt_10_info, user_brs_adt_20_info } = resp.data
-            if (user_brs_adt_5_info == '0') await this.draw_ew(5)
-            if (user_brs_adt_10_info == '0') await this.draw_ew(10)
-            if (user_brs_adt_20_info == '0') await this.draw_ew(20)
-
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-    }
-
-    async drawNum() { // 刷抽奖次数
-        let ranNum = $.randomInt(100, 200)
-        let options = {
-            fn: 'drawNum',
-            method: 'post',
-            url: `https://capi.wewillpro.com/wheel/view_ad_complete`,
-            headers: {
-                'pragma': 'no-cache',
-                'x-requested-with': 'com.ruidonghy.will',
-                'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            form: {
-                'token': this.token,
-                'award_type': 'draw',
-                'award_amount': ranNum,
-                'multi': '1'
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200) {
-            $.log(`${this.idx}: 增加${ranNum}次抽奖: ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败, ${resp} `)
-
-    }
-
-    async draw() { // 抽奖红包
-        let options = {
-            fn: 'draw',
-            method: 'post',
-            url: `https://capi.wewillpro.com/wheel/make_draw`,
-            headers: this.hd,
-            form: {
-                'token': this.token,
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200 && resp.data) {
-            let { award_multi_num, award_amount, award_type } = resp.data
-            $.log(`${this.idx}: 抽奖 ${resp.msg}, 类型 ${resp.data.award_type}, 数量 ${award_amount}, id ${award_multi_num}`)
-            await $.wait($.randomInt(3, 5))
-            await this.draw_fb(award_multi_num, award_amount, award_type)
-        } else if (resp.code == 1000) {
-            $.log(`${this.idx}: ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
-    }
-
-    async draw_ew(id) { // 抽奖额外奖励
-        let options = {
-            fn: 'draw',
-            method: 'post',
-            url: `https://capi.wewillpro.com/wheel/view_ad_complete`,
-            headers: {
-                'pragma': 'no-cache',
-                'x-requested-with': 'com.ruidonghy.will',
-                'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            form: {
-                'token': this.token,
-                'award_type': 'gold',
-                'award_amount': '0',
-                'multi': '0',
-                'draw_times': id
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200 && resp.data) {
-            $.log(`${this.idx}:  抽奖额外奖励 ${resp.msg}, 获得金币 ${resp.data.num}`)
-            await $.wait($.randomInt(20, 30))
-        } else if (resp.code == 1000) {
-            $.log(`${this.idx}: ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
-    }
-
-    async draw_fb(award_multi_num, award_amount, award_type) { // 抽奖翻倍
-        let options = {
-            fn: 'draw_fb',
-            method: 'post',
-            url: `https://capi.wewillpro.com/wheel/view_ad_complete`,
-            headers: this.hd,
-            form: {
-                'token': this.token,
-                'award_type': award_type,
-                'award_amount': award_amount,
-                'multi': award_multi_num,
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200 && resp.data) {
-            $.log(`${this.idx}: 抽奖翻倍 ${resp.msg}, 获得 ${resp.data.num} 金币`)
-            await $.wait($.randomInt(10, 20))
-        } else if (resp.code == 1000) {
-            $.log(`${this.idx}: ${resp.msg}`)
-            await $.wait($.randomInt(3, 5))
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
-    }
-
-    async signTask() { // 签到相关
-        let options = {
-            fn: 'signTask',
-            method: 'get',
-            url: `https://capi.wewillpro.com/gold/get_gold_info?token=${this.token}`,
-            headers: this.hd,
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200 && resp.data) {
-
-            let tasks = resp.data.sign_task_list
-            // is_receive -1 未领取  2-已领取 
-            // adv_status - 1 正常翻倍  2 - 大额 不能翻倍
             for (const task of tasks) {
                 // console.log(task)
-                let { is_receive, id, adv_status } = task
-                if (is_receive == 1) {
-                    $.log(`${this.idx}: 签到 ${id} -- 未完成`)
-                    await this.signvideo(id, adv_status)
+                let { taskId, taskName, currentCount, maxCount } = task
+
+                if (currentCount < maxCount) {
+                    if (taskId == 1) $.log(`${this.idx}: ${taskName}--${currentCount}/${maxCount}`), await this.doSign()    // 每日签到
+                    if (taskId == 11) $.log(`${this.idx}: ${taskName}--${currentCount}/${maxCount}`), await this.jsb(taskName)    // 往正式版 - 领取100里豆
+                    if (taskId == 2) { // 浏览文章
+                        let n = maxCount - currentCount
+                        $.log(`${this.idx}: ${taskName}--${currentCount}/${maxCount}`)
+                        for (let index = 0; index < n; index++) await this.read(taskName)
+                    }
+
                 } else {
-                    $.log(`${this.idx}: 签到 ${id} -- 已完成`)
+                    $.log(`${this.idx}: ${taskName} 已完成`)
                 }
             }
 
-        } else console.log(`${options.fn}: 失败, ${resp}`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
-    async signvideo(id, adv_status) { // 签到 is_adv-2
+
+    async doSign() { // 签到
+        let params = {
+            'userCookie': this.userCookie,
+            'areaCode': this.location,
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
         let options = {
-            fn: 'signvideo',
+            fn: '签到',
             method: 'post',
-            url: `https://capi.wewillpro.com/gold/user_gold_sign`,
+            url: `https://api.ersanli.cn/kilos/apis/user/sign.action`,
             headers: this.hd,
-            form: {
-                'id': id,
-                'token': this.token,
-                'is_adv': '2'
-            }
+            form: params
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 200 && resp.data) {
-            $.log(`${this.idx}: 签到 ${id} ${resp.msg}, 获得 ${resp.data.num} 金币, 当前 ${resp.data.gold_num} 金币≈≈${resp.data.money_num}元`)
-            await $.wait($.randomInt(20, 30))
-            await this.signvideo_fb(id)
-        } else if (resp.code == 1000) {
-            $.log(`${this.idx}: ${id} -- ${resp.msg}`)
-            await $.wait($.randomInt(10, 20))
-        } else console.log(`${options.fn}: 失败, ${resp}`)
+        if (resp.code == 'A00000') {
+            $.log(`${this.idx}: ${resp.msg}, 签到第 ${resp.data.sign} 天, 获得里豆 ${resp.data.money}`)
+        } else if (resp.code == 'A00007') {
+            $.log(`${this.idx}: ${resp.msg}`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
-    async signvideo_fb(id) { // 签到翻倍 is_adv-1
+    async jsb(name) { // 正式版
+        let params = {
+            'userCookie': this.userCookie,
+            'areaCode': this.location,
+            'from': 'jsb',
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
         let options = {
-            fn: 'signvideo',
+            fn: '正式版',
             method: 'post',
-            url: `https://capi.wewillpro.com/gold/user_gold_sign`,
+            url: `https://api.ersanli.cn/kilos/apis/user/sign.action`,
             headers: this.hd,
-            form: {
-                'id': id,
-                'token': this.token,
-                'is_adv': '1'
-            }
+            form: params
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 200 && resp.data) {
-            $.log(`${this.idx}: 签到翻倍 ${id} ${resp.msg}, 获得 ${resp.data.num} 金币, 当前 ${resp.data.gold_num} 金币≈≈${resp.data.money_num}元`)
-            await $.wait($.randomInt(20, 30))
-        } else if (resp.code == 1000) {
-            $.log(`${this.idx}: ${id} -- ${resp.msg}`)
-            await $.wait($.randomInt(10, 20))
-        } else console.log(`${options.fn}: 失败, ${resp}`)
+        if (resp.code == 'A00000') {
+            $.log(`${this.idx}: ${name}${resp.msg}`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
-    async getMoney() {
-        let options = {
-            fn: 'getMoney',
-            method: 'get',
-            url: `https://capi.wewillpro.com/user/get_member_integral_info?token=${this.token}`,
-            headers: this.hd,
+    async read(name) { // 阅读
+        let newsId = $.randomInt(123870142596668, 123870142599999)
+        let params = {
+            'userCookie': this.userCookie,
+            'newsId': newsId,
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
         }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200) {
-            this.gold_money = resp.data.gold_money
-        } else console.log(`${options.fn}: 失败, ${resp} `)
+        params.sign = await this.getSign(params)
 
-    }
-
-    async wallet() { // 钱包查询
-        await this.getMoney()
         let options = {
-            fn: 'wallet',
+            fn: '阅读',
             method: 'post',
-            url: `https://capi.wewillpro.com/wallet/myWallet`,
+            url: `https://api.ersanli.cn/kilos/apis/news/read.action`,
             headers: this.hd,
-            form: {
-                'token': this.token,
-            }
+            form: params
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 200) {
-            let tasks = resp.data
-            for (const task of tasks) {
-                if (task.type == 'gold') {
-                    let { holding_amount, wxnickname } = task
-                    this.wxnickname = wxnickname
-                    $.log(`${this.idx}: ${this.wxnickname}, 余额≈≈${this.gold_money}元`, { notify: true })
-                }
-
-            }
-            if (this.gold_money >= 2) {
-                await this.chsh()
-            } else $.log(`${this.idx}: ${this.wxnickname}, 小于 2 元,跳过提现!`, { notify: true })
-        } else console.log(`${options.fn}: 失败, ${resp} `)
+        if (resp.code == 'A00000') {
+            $.log(`${this.idx}: ${name} ${newsId}--${resp.msg}`)
+            await $.wait($.randomInt(3, 6))
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
-    async chsh() { // 提现2元
+    async openBox() { // 开宝箱
+        let params = {
+            'userCookie': this.userCookie,
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
+
         let options = {
-            fn: 'chsh',
+            fn: '开宝箱',
             method: 'post',
-            url: `https://capi.wewillpro.com/balance/goldWithdrawal`,
+            url: `https://api.ersanli.cn/kilos/apis/user/teapot_open.action`,
             headers: this.hd,
-            form: {
-                'token': this.token,
-                'num': cashnum,
-            }
+            form: params
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 200) {
-            $.log(`${this.idx}: 提现2元 ${resp.msg}, 提现时间:${resp.data.updated_at}`, { notify: true })
-        } else console.log(`${options.fn}: 失败, ${resp} `)
+        if (resp.code == 'A00000') {
+            $.log(`${this.idx}: ${options.fn}, ${resp.msg}`)
+        } else if (resp.code == 'E00003') {
+            $.log(`${this.idx}: ${resp.msg}`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
+    }
+
+    async lifeTask(names) { // 走路赚豆
+        let params = {
+            'userCookie': this.userCookie,
+            'names': names,
+            'type': '3',
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
+        let options = {
+            fn: '走路赚豆',
+            method: 'post',
+            url: `https://api.ersanli.cn/kilos/apis/user/life_task.action`,
+            headers: this.hd,
+            form: params
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 'A00000') {
+            $.log(`${this.idx}: ${options.fn} 领取 ${names} 步--${resp.msg}`)
+            await $.wait($.randomInt(5, 10))
+        } else if (resp.code == 'E00001') {
+            $.log(`${this.idx}: 领取 ${names} 步--${resp.msg}`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async eat() { // 吃饭赚豆调度
+        let h = $.ts('h')
+        if (h >= 7 && h < 10) {
+            await this.life_eat('早餐补贴')
+        } else if (h >= 12 && h < 14) {
+            await this.life_eat('午餐补贴')
+        } else if (h >= 18 && h < 19) {
+            await this.life_eat('晚餐补贴')
+        } else if (h >= 22 && h < 23) {
+            await this.life_eat('夜宵补贴')
+        } else {
+            $.log(`${this.idx}: 吃饭赚豆--时间不对, 跳过!`)
+        }
+
+    }
+
+    async life_eat(name) { // 吃饭赚豆 
+        let params = {
+            'userCookie': this.userCookie,
+            'name': name,
+            'type': '1',
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
+        params.name = encodeURI(name)
+
+        let options = {
+            fn: '吃饭赚豆',
+            method: 'post',
+            url: `https://api.ersanli.cn/kilos/apis/user/life_task.action`,
+            headers: this.hd,
+            form: params
+        }
+        console.log(options)
+        let resp = await $.request(options)
+        console.log(resp)
+        if (resp.code == 'A00000') {
+            $.log(`${this.idx}: ${options.fn} 领取 ${name} --${resp.msg}`)
+            await $.wait($.randomInt(5, 10))
+        } else if (resp.code == 'E00001' || resp.code == 'E00002') {
+            $.log(`${this.idx}: 领取 ${name} 步--${resp.msg}`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async sleep() { // 睡觉赚豆调度
+        let h = $.ts('h')
+        if (h >= 20 && h < 4) {
+            $.log(`${this.idx}: 休息时间, 检查是否 休息!`)
+            await this.sleepCheck('休息')
+
+        } else if (h >= 12 && h < 14) {
+            $.log(`${this.idx}: 午休时间, 检查是否 午休!`)
+            await this.sleepCheck('午休')
+        } else {
+            $.log(`${this.idx}: 不在午休或睡觉时间, 跳过!`)
+        }
+        if (h == 8) {
+            await this.sleepCheck('休息')
+        }
+
+    }
+
+    async sleepCheck(name) { // 睡觉检查
+        let params = {
+            'userCookie': this.userCookie,
+            'type': '2',
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
+
+
+        let options = {
+            fn: '睡觉检查',
+            method: 'post',
+            url: `https://api.ersanli.cn/kilos/apis/user/life_task.action`,
+            headers: this.hd,
+            form: params
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 'A00000') {
+            if (name == '休息') {
+                if (!resp.data[0].sleepStatus) await this.doSleep(name)
+            }
+            if (name == '午休') {
+                if (!resp.data[1].sleepStatus) await this.doSleep(name)
+            }
+
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async doSleep(name) { // 睡觉 -- 休息
+        let params = {
+            'userCookie': this.userCookie,
+            'name': name,
+            'type': '2',
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
+        params.name = encodeURI(name)
+
+        let options = {
+            fn: '休息',
+            method: 'post',
+            url: `https://api.ersanli.cn/kilos/apis/user/life_task.action`,
+            headers: this.hd,
+            form: params
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 'A00000') {
+            $.log(`${this.idx}: ${name}--${resp.msg}`)
+            await $.wait($.randomInt(5, 10))
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async check() { // 查询
+        let params = {
+            'userCookie': this.userCookie,
+            'clientType': '3',
+            'deviceId': this.deviceId,
+            'appId': this.appId,
+            'appVersion': this.appVersion,
+            'osVersion': '12',
+            'timestamp': this.ts,
+            'nonce_str': this.rs,
+            'location': this.location,
+        }
+        params.sign = await this.getSign(params)
+
+        let options = {
+            fn: '查询',
+            method: 'post',
+            url: `https://api.ersanli.cn/kilos/apis/user/wallet.action`,
+            headers: this.hd,
+            form: params
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 'A00000') {
+            $.log(`${this.idx}: 共有豆豆 ${resp.data.gold}个, 今天获得 ${resp.data.withdrawToday}`, { notify: true })
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+
+
+    async getSign(params) {
+        delete params.sign
+        let a = new URLSearchParams(Object.entries(params)).toString()
+        let sign = crypto.MD5(`${crypto.MD5(a).toString()}${this.salt}`).toString()
+        return sign
     }
 
 
