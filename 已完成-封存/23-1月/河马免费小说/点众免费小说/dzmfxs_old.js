@@ -1,85 +1,73 @@
 /*
-河马免费小说-快应用 app             cron 22 8,12 * * *  hmmfxs.js
+点众免费小说-快应用 app             cron 22 8,12 * * *  dzmfxs.js
 
 12.16       修改最新模板
-
+https://user.quickapp.cn/?packageName=com.dianzhong.dzmfxs&path=&shareUrl=&params=
 -------------------  青龙-配置文件-复制区域  -------------------
-# 河马免费小说-快应用
-export hmmfxs=" t # smdid @ t # smdid "  
+# 点众免费小说-快应用
+export dzmfxs=" t # smdid @ t # smdid "  
 
-抓 dzmfxs.kkyd.cn 的 t 和 smdid   登录包有 smdid
+抓 dzmfxs.kkyd.cn 的 t 和 smdid
 
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
 
 */
-const $ = Env('河马免费小说-快应用')
+const $ = Env('点众免费小说-快应用')
 const notify = require('./sendNotify')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['hmmfxs']      //支持多变量
+const ckNames = ['dzmfxs', '变量名2']      //支持多变量
 //=======================================================================================================
-let DEFAULT_RETRY = 2           // 默认重试次数
+let DEFAULT_RETRY = 1           // 默认重试次数
+let MODE = 0                    // 并发控制 1-并发  0-顺序
 //=======================================================================================================
 
-async function userTasks() {
 
-    $.log('查询', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) list.push(user.points())
-    } await Promise.all(list)
-
-    $.log('上传阅读时间', { sp: true, console: false })  // 带分割的打印
-    list = []
-    for (let user of $.userList) {
-        list.push(user.readDuration())
-    } await Promise.all(list)
-
-    $.log('刷金币', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) list.push(user.tasks())  // 上传步数 
-    } await Promise.all(list)
-
-
-
-
-
-}
 
 class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]: `
-        this.ckFlog = true
         this.ck = ck.split('#')
         this.t = this.ck[0]
         this.smdid = this.ck[1]
-        this.hd = {
+    }
+
+    async UserTasks() {
+        $.log('上传阅读时间', { sp: true, console: false })  // 带分割的打印
+        await this.readDuration()
+
+        $.log('刷金币', { sp: true, console: false })  // 带分割的打印
+        await this.tasks()
+
+        $.log('查询', { sp: true, console: false })  // 带分割的打印
+        await this.points()
+
+    }
+
+
+    getHeaders() {
+        return {
             't': this.t,
-            'pname': 'com.dianzhong.hmxs',
-            'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 hap/1.10/xiaomi com.miui.hybrid/1.10.0.0 com.dianzhong.hmxs/5.5.2.720 ({"packageName":"com.miui.home","type":"shortcut","extra":{"original":{"packageName":"mark.via","type":"url","extra":{}},"scene":"api"}})'
+            'pname': 'com.dianzhong.dzmfxs',
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 hap/1.10/xiaomi com.miui.hybrid/1.10.0.0 com.dianzhong.dzmfxs/5.5.3.230 ({"packageName":"com.miui.home","type":"shortcut","extra":{"original":{"packageName":"com.tencent.mm","type":"url","extra":{}},"scene":"api"}})'
         }
     }
 
 
 
-
-    // https://dzmfxs.kkyd.cn
-    // https://dzmfxs.kkyd.cn/glory/fastapp/2162?ver=5502720&appVer=5.5.2.720
-
     async readDuration() {
         let options = {
             fn: 'readDuration',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2146?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2146?ver=5503230&appVer=5.5.3.230',
+            headers: this.getHeaders(),
             json: {
-                "taskId": 1087,
+                "taskId": 1148,
                 "action": 36,
-                "readDuration": $.randomInt(500, 700),
-                "bookId": "11010057591",
-                "chapterId": "472523743"
+                "readDuration": 567,
+                "bookId": "11010083047",
+                "chapterId": "487625436"
             }
         }
         // console.log(options)
@@ -118,8 +106,8 @@ class UserClass {
         let options = {
             fn: 'dotask',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2141?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2141?ver=5503230&appVer=5.5.3.230',
+            headers: this.getHeaders(),
             json: { 'taskId': id },
         }
         // console.log(options)
@@ -139,8 +127,8 @@ class UserClass {
         let options = {
             fn: 'points',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2404?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2404?ver=5503230&appVer=5.5.3.230',
+            headers: this.getHeaders(),
             json: { 'signText': 1 },
         }
         // console.log(options)
@@ -152,13 +140,13 @@ class UserClass {
         options = {
             fn: 'points',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2106?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2106?ver=5503230&appVer=5.5.3.230',
+            headers: this.getHeaders(),
             json: {},
         }
         resp = await $.request(options)
         if (resp.retCode == 0) {
-            $.log(`${this.idx} ${resp.data.user.nickName}, 金币:${this.coin}`, { notify: true })
+            $.log(`${this.idx} ${resp.data.user.nickName}, 金币:${this.coin}`)
         } else console.log(`${options.fn}: 失败, ${resp}`)
 
         if (this.coin >= 30000) {
@@ -171,15 +159,15 @@ class UserClass {
         let options = {
             fn: 'cash',
             method: 'post',
-            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2856?ver=5502720&appVer=5.5.2.720',
-            headers: this.hd,
+            url: 'https://dzmfxs.kkyd.cn/glory/fastapp/2856?ver=5503230&appVer=5.5.3.230',
+            headers: this.getHeaders(),
             json: { 'amountId': 13, 'smdid': this.smdid },
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
         if (resp.retCode == 0 && resp.data.retCode == 1) {
-            $.log(`提现3元:  ${resp.data.retMsg}`, { notify: true })
+            $.log(`提现3元:  ${resp.data.retMsg}`)
         } else console.log(`${options.fn}: 失败, ${resp}`)
 
 
@@ -191,8 +179,23 @@ class UserClass {
 !(async () => {
     console.log(await $.yiyan())
     $.read_env(UserClass)
+    if (MODE) {  // 并发模式
+        list = []
+        for (let user of $.userList) {
+            list.push(user.UserTasks())
+        }
+        await Promise.all(list)
 
-    await userTasks()
+    } else {  // 顺序模式 
+        for (let user of $.userList) {
+            // $.log(`${user.idx}`, { sp: true, console: false })
+            console.log(`\n\n====================  ${user.idx}  ====================`)
+            await user.UserTasks()
+        }
+    }
+
+
+
 
 })()
     .catch((e) => $.log(e))
@@ -209,7 +212,7 @@ function Env(name) {
             this.log(`[${this.name}]开始运行`, { time: true })
 
             this.notifyStr = []
-            this.notifyFlag = true
+            this.notifyFlag = false
 
             this.userIdx = 0
             this.userList = []
