@@ -1,48 +1,51 @@
 /*
-二三里极速版 app             cron 25 6-23 * * *  esljsb.js
+二三里极速版 app             cron 25 6-23 * * *  jsfp.js
 
 
 23/1/30      基本任务
 
 -------------------  青龙-配置文件-复制区域  -------------------
 # 二三里极速版
-export esljsb=" phone # pwd  @  phone # pwd   "  
+export esljsb=" phone # pwd  @  phone # pwd   "
 
-多账号用 换行 或 @ 分割  
-tg频道: https://t.me/yml2213_tg  
+多账号用 换行 或 @ 分割
+tg频道: https://t.me/yml2213_tg
 */
 const $ = Env('二三里极速版')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
+const got = require("got");
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
 const ckNames = ['esljsb']                //支持多变量
+// console.log(process.env)
+
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
 //====================================================================================================
 
 
-
-
 async function userTasks() {
 
-    $.log('用户信息', { sp: true, console: false })  // 带分割的打印
-    list = []
+    $.log('用户信息', {sp: true, console: false})  // 带分割的打印
+    let list = []
     for (let user of $.userList) {
         list.push(user.login())
-    } await Promise.all(list)
+    }
+    await Promise.all(list)
 
 
-    $.log('任务列表', { sp: true, console: false })
+    $.log('任务列表', {sp: true, console: false})
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
             list.push(user.tasklist())
             // list.push(user.sleep())
         }
-    } await Promise.all(list)
+    }
+    await Promise.all(list)
 
-    $.log('走路赚豆', { sp: true, console: false })
+    $.log('走路赚豆', {sp: true, console: false})
     list = []
     if ($.ts('h') == 18) {
         for (let user of $.userList) {
@@ -52,43 +55,47 @@ async function userTasks() {
                     list.push(user.lifeTask(a[index]))
                 }
             }
-        } await Promise.all(list)
+        }
+        await Promise.all(list)
     } else $.log(`走路赚豆--时间不对, 跳过!`)
 
-    $.log('吃饭赚豆', { sp: true, console: false })
+    $.log('吃饭赚豆', {sp: true, console: false})
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
             list.push(user.eat())
         }
-    } await Promise.all(list)
+    }
+    await Promise.all(list)
 
 
-    $.log('睡觉赚豆', { sp: true, console: false })
+    $.log('睡觉赚豆', {sp: true, console: false})
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
             list.push(user.sleep())
         }
-    } await Promise.all(list)
+    }
+    await Promise.all(list)
 
-    $.log('开宝箱', { sp: true, console: false })
+    $.log('开宝箱', {sp: true, console: false})
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
             list.push(user.openBox())
         }
-    } await Promise.all(list)
+    }
+    await Promise.all(list)
 
 
-    $.log('里豆查询', { sp: true, console: false })
+    $.log('里豆查询', {sp: true, console: false})
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
             list.push(user.check())
         }
-    } await Promise.all(list)
-
+    }
+    await Promise.all(list)
 
 
 }
@@ -102,7 +109,7 @@ class UserClass {
         this.phone = this.ck[0]
         this.pwd = crypto.MD5(crypto.MD5(this.ck[1]).toString()).toString()
         this.rs = `${$.randomString(8)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(12)}`
-        this.hd = { 'User-Agent': 'oke/3.2.8' }
+        this.hd = {'User-Agent': 'oke/3.2.8'}
 
         this.appVersion = '3.2.8'    // 3.2.8 极速版    7.2.9 正式版
         this.ts = $.ts(10)
@@ -143,14 +150,14 @@ class UserClass {
         if (resp.code == 'A00000') {
             this.userCookie = resp.data.userCookie
             this.nickname = resp.data.userInfo.name
-            $.log(`${this.idx}: ${options.fn} ${resp.msg}, ${this.nickname}, 手机号 ${$.phoneNum(resp.data.userInfo.mobile)}`, { notify: true })
+            $.log(`${this.idx}: ${options.fn} ${resp.msg}, ${this.nickname}, 手机号 ${$.phoneNum(resp.data.userInfo.mobile)}`, {notify: true})
             this.ckFlog = true
             await $.wait(2)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
     }
 
-    async tasklist() { // 任务列表 
+    async tasklist() { // 任务列表
         let params = {
             'userCookie': this.userCookie,
             'clientType': '3',
@@ -179,7 +186,7 @@ class UserClass {
             let tasks = resp.taskList
             for (const task of tasks) {
                 // console.log(task)
-                let { taskId, taskName, currentCount, maxCount } = task
+                let {taskId, taskName, currentCount, maxCount} = task
 
                 if (currentCount < maxCount) {
                     if (taskId == 1) $.log(`${this.idx}: ${taskName}--${currentCount}/${maxCount}`), await this.doSign()    // 每日签到
@@ -377,7 +384,7 @@ class UserClass {
 
     }
 
-    async life_eat(name) { // 吃饭赚豆 
+    async life_eat(name) { // 吃饭赚豆
         let params = {
             'userCookie': this.userCookie,
             'name': name,
@@ -528,11 +535,10 @@ class UserClass {
         let resp = await $.request(options)
         // console.log(resp)
         if (resp.code == 'A00000') {
-            $.log(`${this.idx}: ${this.nickname}, 共有豆豆 ${resp.data.gold}个, 今天获得 ${resp.data.withdrawToday}`, { notify: true })
+            $.log(`${this.idx}: ${this.nickname}, 共有豆豆 ${resp.data.gold}个, 今天获得 ${resp.data.withdrawToday}`, {notify: true})
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
-
 
 
     async getSign(params) {
@@ -548,23 +554,23 @@ class UserClass {
 
 !(async () => {
     console.log(await $.yiyan())
-    $.read_env(UserClass)
+    if ($.read_env(UserClass)) {
+        await userTasks()
+    }
 
-    await userTasks()
 
 })()
     .catch((e) => $.log(e))
     .finally(() => $.exitNow())
 
 
-
-//===============================================================     
+//===============================================================
 function Env(name) {
     return new class {
         constructor(name) {
             this.name = name
             this.startTime = Date.now()
-            this.log(`[${this.name}]开始运行`, { time: true })
+            this.log(`[${this.name}]开始运行`)
 
             this.notifyStr = []
             this.notifyFlag = true
@@ -573,6 +579,7 @@ function Env(name) {
             this.userList = []
             this.userCount = 0
         }
+
         async request(opt) {
             const got = require('got')
             let DEFAULT_TIMEOUT = 8000      // 默认超时时间
@@ -580,7 +587,7 @@ function Env(name) {
             let fn = opt.fn || opt.url
             let resp_opt = opt.resp_opt || 'body'
             opt.timeout = opt.timeout || DEFAULT_TIMEOUT
-            opt.retry = opt.retry || { limit: 0 }
+            opt.retry = opt.retry || {limit: 0}
             opt.method = opt?.method?.toUpperCase() || 'GET'
             while (count++ < DEFAULT_RETRY) {
                 try {
@@ -594,9 +601,12 @@ function Env(name) {
                     }
                 }
             }
-            if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
-            let { statusCode, headers, body } = resp
-            if (body) try { body = JSON.parse(body) } catch { }
+            if (resp == null) return Promise.resolve({statusCode: 'timeout', headers: null, body: null})
+            let {statusCode, headers, body} = resp
+            if (body) try {
+                body = JSON.parse(body)
+            } catch {
+            }
             if (resp_opt == 'body') {
                 return Promise.resolve(body)
             } else if (resp_opt == 'hd') {
@@ -608,13 +618,8 @@ function Env(name) {
         }
 
         log(msg, options = {}) {
-            let opt = { console: true }
+            let opt = {console: true}
             Object.assign(opt, options)
-
-            if (opt.time) {
-                let fmt = opt.fmt || 'hh:mm:ss'
-                msg = `[${this.time(fmt)}]` + msg
-            }
             if (opt.notify) {
                 this.notifyStr.push(msg)
             }
@@ -625,6 +630,7 @@ function Env(name) {
                 console.log(`\n-------------- ${msg} --------------`)
             }
         }
+
         read_env(Class) {
             let envStrList = ckNames.map(x => process.env[x])
             for (let env_str of envStrList.filter(x => !!x)) {
@@ -636,42 +642,14 @@ function Env(name) {
             }
             this.userCount = this.userList.length
             if (!this.userCount) {
-                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, { notify: true })
+                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, {notify: true})
                 return false
             }
             this.log(`共找到${this.userCount}个账号`)
             return true
         }
-        async taskThread(taskName, conf, opt = {}) {
-            while (conf.idx < $.userList.length) {
-                let user = $.userList[conf.idx++]
-                await user[taskName](opt)
-            }
-        }
-        async threadManager(taskName, thread) {
-            let taskAll = []
-            let taskConf = { idx: 0 }
-            while (thread--) {
-                taskAll.push(this.taskThread(taskName, taskConf))
-            }
-            await Promise.all(taskAll)
-        }
-        time(t, x = null) {
-            let xt = x ? new Date(x) : new Date
-            let e = {
-                "M+": xt.getMonth() + 1,
-                "d+": xt.getDate(),
-                "h+": xt.getHours(),
-                "m+": xt.getMinutes(),
-                "s+": xt.getSeconds(),
-                "q+": Math.floor((xt.getMonth() + 3) / 3),
-                S: this.padStr(xt.getMilliseconds(), 3)
-            };
-            /(y+)/.test(t) && (t = t.replace(RegExp.$1, (xt.getFullYear() + "").substr(4 - RegExp.$1.length)))
-            for (let s in e)
-                new RegExp("(" + s + ")").test(t) && (t = t.replace(RegExp.$1, 1 == RegExp.$1.length ? e[s] : ("00" + e[s]).substr(("" + e[s]).length)))
-            return t
-        }
+
+
         async showmsg() {
             if (!this.notifyFlag) return
             if (!this.notifyStr) return
@@ -679,22 +657,8 @@ function Env(name) {
             this.log('\n============== 推送 ==============')
             await notify.sendNotify(this.name, this.notifyStr.join('\n'))
         }
-        padStr(num, length, opt = {}) {
-            let padding = opt.padding || '0'
-            let mode = opt.mode || 'l'
-            let numStr = String(num)
-            let numPad = (length > numStr.length) ? (length - numStr.length) : 0
-            let pads = ''
-            for (let i = 0; i < numPad; i++) {
-                pads += padding
-            }
-            if (mode == 'r') {
-                numStr = numStr + pads
-            } else {
-                numStr = pads + numStr
-            }
-            return numStr
-        }
+
+
         json2str(obj, c, encode = false) {
             let ret = []
             for (let keys of Object.keys(obj).sort()) {
@@ -704,6 +668,7 @@ function Env(name) {
             }
             return ret.join(c)
         }
+
         str2json(str, decode = false) {
             let ret = {}
             for (let item of str.split('&')) {
@@ -717,6 +682,7 @@ function Env(name) {
             }
             return ret
         }
+
         phoneNum(phone_num) {
             if (phone_num.length == 11) {
                 let data = phone_num.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2")
@@ -725,9 +691,11 @@ function Env(name) {
                 return phone_num
             }
         }
+
         randomInt(min, max) {
             return Math.round(Math.random() * (max - min) + min)
         }
+
         async yiyan() {
             const got = require('got')
             return new Promise((resolve) => {
@@ -745,6 +713,7 @@ function Env(name) {
                 })()
             })
         }
+
         ts(type = false, _data = "") {
             let myDate = new Date()
             let a = ""
@@ -792,19 +761,8 @@ function Env(name) {
             }
             return a
         }
-        randomPattern(pattern, charset = 'abcdef0123456789') {
-            let str = ''
-            for (let chars of pattern) {
-                if (chars == 'x') {
-                    str += charset.charAt(Math.floor(Math.random() * charset.length))
-                } else if (chars == 'X') {
-                    str += charset.charAt(Math.floor(Math.random() * charset.length)).toUpperCase()
-                } else {
-                    str += chars
-                }
-            }
-            return str
-        }
+
+
         randomString(len, charset = 'abcdef0123456789') {
             let str = ''
             for (let i = 0; i < len; i++) {
@@ -812,13 +770,16 @@ function Env(name) {
             }
             return str
         }
+
         randomList(a) {
             let idx = Math.floor(Math.random() * a.length)
             return a[idx]
         }
+
         wait(t) {
             return new Promise(e => setTimeout(e, t * 1000))
         }
+
         async exitNow() {
             await this.showmsg()
             let e = Date.now()

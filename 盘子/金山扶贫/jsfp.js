@@ -1,90 +1,48 @@
 /*
-二三里极速版 app             cron 25 6-23 * * *  jsfp.js
+进山扶贫 盘子             cron 25 6-23 * * *  jsfp.js
 
 
-23/1/30      基本任务
+23/1/30      签到
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 二三里极速版
-export esljsb=" userCookie @  userCookie "  
+# 进山扶贫
+export jsfp=" phone # pwd  @  phone # pwd   "  
 
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('二三里极速版')
+const $ = Env('进山扶贫')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['esljsb']                //支持多变量
+const ckNames = ['jsfp']                //支持多变量
+
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
 //====================================================================================================
 
 
 async function userTasks() {
-
-    // $.log('用户信息', { sp: true, console: false })  // 带分割的打印
-    // list = []
-    // for (let user of $.userList) {
-    //     list.push(user.login())
-    // } await Promise.all(list)
-
-
-    $.log('任务列表', {sp: true, console: false})
+    $.log('登录', {sp: true, console: false})  // 带分割的打印
     list = []
     for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.tasklist())
-            // list.push(user.sleep())
-        }
+        list.push(user.login())
     }
     await Promise.all(list)
 
-    $.log('走路赚豆', {sp: true, console: false})
-    list = []
-    if ($.ts('h') == 18) {
-        for (let user of $.userList) {
-            if (user.ckFlog) {
-                let a = ['10', '1000', '3000', '5000', '7000', '10000']
-                for (let index = 0; index < a.length; index++) {
-                    list.push(user.lifeTask(a[index]))
-                }
-            }
-        }
-        await Promise.all(list)
-    } else $.log(`走路赚豆--时间不对, 跳过!`)
 
-    $.log('吃饭赚豆', {sp: true, console: false})
+    $.log('签到', {sp: true, console: false})
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
-            list.push(user.eat())
+            list.push(user.doSign())
         }
     }
     await Promise.all(list)
 
 
-    $.log('睡觉赚豆', {sp: true, console: false})
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.sleep())
-        }
-    }
-    await Promise.all(list)
-
-    $.log('开宝箱', {sp: true, console: false})
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.openBox())
-        }
-    }
-    await Promise.all(list)
-
-
-    $.log('里豆查询', {sp: true, console: false})
+    $.log('余额查询', {sp: true, console: false})
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
@@ -101,50 +59,37 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.userCookie = ck
-        this.rs = `${$.randomString(8)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(12)}`
-        this.hd = {'User-Agent': 'oke/3.2.8'}
+        this.ck = ck.split('#')
+        this.phone = this.ck[0]
+        this.pwd = this.ck[1]
+        this.salt = '9df3b01c1ed3a485'
 
-        this.appVersion = '3.2.8'    // 3.2.8 极速版    7.2.9 正式版
-        this.ts = $.ts(10)
-        this.salt = 'x3pbkWjH4EiBPbRi1DYKgIiuS9ehOCOk0DkqREOIvffOYtAOQvRXkvmvhe9j13QoT3aOsTP/Y6wLlDhg97RhYnt4y23zgd5AV+UiNgerlmwCjWclOwwf1IvZYX4nAjOdCkGgRAboiU+Gh+UvW+CnXjjFx26vk4Y91Mztq8SjCvCwoaQGHXxfy0VxmsS85BBV3E39Ak12n/EcV+/ihk9uIQwqc3BlvR8miZTGh2EesqSqKm+RiwWAQpYrhaWuN9Zc'
-        this.deviceId = 'cf873feaf4509842ae76beec9df158f973633ad268db50cbc22206ba1f98185d'
-        this.appId = '2'  // 2 极速版   1 正式版
-        this.location = '371681'  // 371681 极速版    371601 正式版
 
     }
 
 
     async login() { // 登录
-        let params = {
-            'name': this.phone,
-            'password': this.pwd,
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-        // console.log(params)
-
+        let api = '/api/playervue/login'
         let options = {
             fn: '登录',
             method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/passport/login.action`,
+            url: `https://jins-api.jsfps.com/api/playervue/login?access_auth=${this.access_auth(api)}&server_sign=${this.get_server_sign(api)}&auth_key=${this.get_auth_key(api)}`,
             headers: this.hd,
-            form: params
+            json: {
+                "password": this.pwd,
+                "username": this.phone,
+                "checked": true,
+                "show": false,
+                "IsKeepPWD": false
+            }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 'A00000') {
-            this.userCookie = resp.data.userCookie
-            this.nickname = resp.data.userInfo.name
-            $.log(`${this.idx}: ${options.fn} ${resp.msg}, ${this.nickname}, 手机号 ${$.phoneNum(resp.data.userInfo.mobile)}`, {notify: true})
+        if (resp.code == 200) {
+            this.token = resp.data.Token
+            this.nickname = resp.data.UserName
+            $.log(`${this.idx}: ${options.fn} ${resp.msg}, 欢迎 ${this.nickname}, 手机号 ${$.phoneNum(resp.data.User)}`, {notify: true})
             this.ckFlog = true
             await $.wait(2)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
@@ -201,356 +146,127 @@ class UserClass {
     }
 
     async doSign() { // 签到
-        let params = {
-            'userCookie': this.userCookie,
-            'areaCode': this.location,
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-        let options = {
-            fn: '签到',
-            method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/user/sign.action`,
-            headers: this.hd,
-            form: params
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'A00000') {
-            $.log(`${this.idx}: ${resp.msg}, 签到第 ${resp.data.sign} 天, 获得里豆 ${resp.data.money}`)
-        } else if (resp.code == 'A00007') {
-            $.log(`${this.idx}: ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async jsb(name) { // 正式版
-        let params = {
-            'userCookie': this.userCookie,
-            'areaCode': this.location,
-            'from': 'jsb',
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-        let options = {
-            fn: '正式版',
-            method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/user/sign.action`,
-            headers: this.hd,
-            form: params
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'A00000') {
-            $.log(`${this.idx}: ${name}${resp.msg}`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async read(name) { // 阅读
-        let newsId = $.randomInt(123870142596668, 123870142599999)
-        let params = {
-            'userCookie': this.userCookie,
-            'newsId': newsId,
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-
-        let options = {
-            fn: '阅读',
-            method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/news/read.action`,
-            headers: this.hd,
-            form: params
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'A00000') {
-            $.log(`${this.idx}: ${name} ${newsId}--${resp.msg}`)
-            await $.wait($.randomInt(3, 6))
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async openBox() { // 开宝箱
-        let params = {
-            'userCookie': this.userCookie,
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-
-        let options = {
-            fn: '开宝箱',
-            method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/user/teapot_open.action`,
-            headers: this.hd,
-            form: params
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'A00000') {
-            $.log(`${this.idx}: ${options.fn}, ${resp.msg}`)
-        } else if (resp.code == 'E00003') {
-            $.log(`${this.idx}: ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async lifeTask(names) { // 走路赚豆
-        let params = {
-            'userCookie': this.userCookie,
-            'names': names,
-            'type': '3',
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-        let options = {
-            fn: '走路赚豆',
-            method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/user/life_task.action`,
-            headers: this.hd,
-            form: params
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'A00000') {
-            $.log(`${this.idx}: ${options.fn} 领取 ${names} 步--${resp.msg}`)
-            await $.wait($.randomInt(5, 10))
-        } else if (resp.code == 'E00001') {
-            $.log(`${this.idx}: 领取 ${names} 步--${resp.msg}`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async eat() { // 吃饭赚豆调度
-        let h = $.ts('h')
-        if (h >= 7 && h < 10) {
-            await this.life_eat('早餐补贴')
-        } else if (h >= 12 && h < 14) {
-            await this.life_eat('午餐补贴')
-        } else if (h >= 18 && h < 19) {
-            await this.life_eat('晚餐补贴')
-        } else if (h >= 22 && h < 23) {
-            await this.life_eat('夜宵补贴')
-        } else {
-            $.log(`${this.idx}: 吃饭赚豆--时间不对, 跳过!`)
-        }
-
-    }
-
-    async life_eat(name) { // 吃饭赚豆 
-        let params = {
-            'userCookie': this.userCookie,
-            'name': name,
-            'type': '1',
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-        params.name = encodeURI(name)
-
-        let options = {
-            fn: '吃饭赚豆',
-            method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/user/life_task.action`,
-            headers: this.hd,
-            form: params
-        }
-        console.log(options)
-        let resp = await $.request(options)
-        console.log(resp)
-        if (resp.code == 'A00000') {
-            $.log(`${this.idx}: ${options.fn} 领取 ${name} --${resp.msg}`)
-            await $.wait($.randomInt(5, 10))
-        } else if (resp.code == 'E00001' || resp.code == 'E00002') {
-            $.log(`${this.idx}: 领取 ${name} 步--${resp.msg}`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async sleep() { // 睡觉赚豆调度
-        let h = $.ts('h')
-        if (h >= 20 && h < 4) {
-            $.log(`${this.idx}: 休息时间, 检查是否 休息!`)
-            await this.sleepCheck('休息')
-
-        } else if (h >= 12 && h < 14) {
-            $.log(`${this.idx}: 午休时间, 检查是否 午休!`)
-            await this.sleepCheck('午休')
-        } else {
-            $.log(`${this.idx}: 不在午休或睡觉时间, 跳过!`)
-        }
-        if (h == 8) {
-            await this.sleepCheck('休息')
-        }
-
-    }
-
-    async sleepCheck(name) { // 睡觉检查
-        let params = {
-            'userCookie': this.userCookie,
-            'type': '2',
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-
-
-        let options = {
-            fn: '睡觉检查',
-            method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/user/life_task.action`,
-            headers: this.hd,
-            form: params
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'A00000') {
-            if (name == '休息') {
-                if (!resp.data[0].sleepStatus) await this.doSleep(name)
-            }
-            if (name == '午休') {
-                if (!resp.data[1].sleepStatus) await this.doSleep(name)
-            }
-
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async doSleep(name) { // 睡觉 -- 休息
-        let params = {
-            'userCookie': this.userCookie,
-            'name': name,
-            'type': '2',
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-        params.name = encodeURI(name)
-
-        let options = {
-            fn: '休息',
-            method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/user/life_task.action`,
-            headers: this.hd,
-            form: params
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'A00000') {
-            $.log(`${this.idx}: ${name}--${resp.msg}`)
-            await $.wait($.randomInt(5, 10))
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async check() { // 查询
-        let params = {
-            'userCookie': this.userCookie,
-            'clientType': '3',
-            'deviceId': this.deviceId,
-            'appId': this.appId,
-            'appVersion': this.appVersion,
-            'osVersion': '12',
-            'timestamp': this.ts,
-            'nonce_str': this.rs,
-            'location': this.location,
-        }
-        params.sign = await this.getSign(params)
-
+        let api = '/api/signvue/getsign'
         let options = {
             fn: '查询',
             method: 'post',
-            url: `https://api.ersanli.cn/kilos/apis/user/wallet.action`,
-            headers: this.hd,
-            form: params
+            url: `https://jins-api.jsfps.com/api/signvue/getsign?access_auth=${this.access_auth(api)}&server_sign=${this.get_server_sign(api)}&auth_key=${this.get_auth_key(api)}`,
+            headers: this.get_hd(),
+            json: {"isTrusted": true}
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 'A00000') {
-            $.log(`${this.idx}: 共有豆豆 ${resp.data.gold}个, 今天获得 ${resp.data.withdrawToday}`, {notify: true})
+        if (resp.code == 200) {
+            $.log(`${this.idx}: ${resp.msg}`)
+        } else if (resp.code == 404) {
+            $.log(`${this.idx}: ${resp.msg}`)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
 
-    async getSign(params) {
-        delete params.sign
-        let a = new URLSearchParams(Object.entries(params)).toString()
-        let sign = crypto.MD5(`${crypto.MD5(a).toString()}${this.salt}`).toString()
-        return sign
+    async check() { // 查询
+        let api = '/api/minmetals/postuserinfo'
+        let options = {
+            fn: '查询',
+            method: 'post',
+            url: `https://jins-api.jsfps.com/api/minmetals/postuserinfo?access_auth=${this.access_auth(api)}&server_sign=${this.get_server_sign(api)}&auth_key=${this.get_auth_key(api)}`,
+            headers: this.get_hd(),
+            json: {}
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 200) {
+            $.log(`${this.idx}: ${options.fn} ${resp.msg}, 余额 ${resp.data.freedAccount}`, {notify: true})
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
     }
 
+    get_hd() {
+        let hd = {
+            'authority': 'jins-api.jsfps.com',
+            'pragma': 'no-cache',
+            'token': this.token,
+            'x-forwarded-for': '112.224.162.167',
+            'x-requested-with': 'XMLHttpRequest',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1'
+        }
+        return hd
+    }
 
+    access_auth(n) {
+        let d = this.salt
+
+        function z() {
+            var n = Math.floor(Date.now() / 1e3);
+            return Number(n + Number('2')).toString()
+        }
+
+        function C() {
+            for (var n = [], e = "0123456789abcdef", i = 0; i < 36; i++)
+                n[i] = e.substr(Math.floor(16 * Math.random()), 1);
+            return n[14] = "4",
+                n[19] = e.substr(3 & n[19] | 8, 1),
+                n.join("")
+        }
+
+        function md5(a) {
+            return crypto.MD5(a).toString()
+        }
+
+        var e = z()
+            , i = C()
+            , a = "0"
+            , o = md5(n + "-" + e + "-" + i + "-" + a + "-" + d);
+        return "".concat(e, "-").concat(i, "-").concat(a, "-").concat(o)
+    }
+
+    get_server_sign(api) {
+        function z() {
+            var n = Math.floor(Date.now() / 1e3);
+            return Number(n + Number('2')).toString()
+        }
+
+        let ts = z()
+
+        function md5(a) {
+            return crypto.MD5(a).toString()
+        }
+
+        let a = `${api}${ts}${this.token}${this.salt}`
+        let sign = `${ts}-${md5(a)}`
+        return sign
+
+
+    }
+
+    get_auth_key(api) {
+        function z() {
+            var n = Math.floor(Date.now() / 1e3);
+            return Number(n + Number('2')).toString()
+        }
+
+        let ts = z()
+        let b = `${api}?access_auth=${this.access_auth()}&server_sign=${this.get_server_sign()}${ts}`
+        let c = this.salt
+        let a = crypto.HmacSHA256(b, c)
+        let d = crypto.enc.Base64.stringify(a)
+        let e = encodeURI(`${ts}-${d}`)
+        return e
+
+
+    }
 }
 
 
 !(async () => {
     console.log(await $.yiyan())
-    $.read_env(UserClass)
+    if ($.read_env(UserClass)) {
+        await userTasks()
+    }
 
-    await userTasks()
 
 })()
     .catch((e) => $.log(e))

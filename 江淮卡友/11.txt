@@ -1,41 +1,67 @@
 /*
-二三里极速版 app             cron 25 6-23 * * *  jsfp.js
+随时聊 app             cron 22 8,12 * * *  shl.js
 
 
 23/1/30      基本任务
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 二三里极速版
-export esljsb=" phone # pwd  @  phone # pwd   "
+# 随时聊
+export shl=" phone # pwd  @  phone # pwd  "  
 
-多账号用 换行 或 @ 分割
-tg频道: https://t.me/yml2213_tg
+
+多账号用 换行 或 @ 分割  
+tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('二三里极速版')
-const notify = require('./sendNotify')
+const $ = Env('随时聊')
+const { MD5 } = require('crypto-js')
 const crypto = require('crypto-js')
-const got = require("got");
+const notify = require('./sendNotify')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['esljsb']                //支持多变量
-// console.log(process.env)
-
+const ckNames = ['shl']                //支持多变量
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
-let cash_arr = []
-
 //====================================================================================================
+
+
+
+
 
 
 async function userTasks() {
-    $.log('用户信息', {sp: true, console: false})  // 带分割的打印
-    let list = []
+
+    $.log('用户信息', { sp: true, console: false })  // 带分割的打印
+    list = []
     for (let user of $.userList) {
-        list.push(user.task())
-    }
-    await Promise.all(list)
-    console.log(`可提现账号`)
-    console.log(cash_arr)
+        // list.push(user.login())
+    } await Promise.all(list)
+
+    $.log('合成信息', { sp: true, console: false })
+    list = []
+    for (let user of $.userList) {
+        if (user.ckFlog) {
+            list.push(user.userInfo())
+            // list.push(user.boxList())
+        }
+    } await Promise.all(list)
+
+    $.log('购买', { sp: true, console: false })
+    list = []
+    for (let user of $.userList) {
+        if (user.ckFlog) {
+            list.push(user.buy_1())
+            // list.push(user.boxList())
+        }
+    } await Promise.all(list)
+
+
+    // $.log('积分查询', { sp: true, console: false })
+    // list = []
+    // for (let user of $.userList) {
+    //     if (user.ckFlog) {
+    //         list.push(user.points())
+    //     }
+    // } await Promise.all(list)
 
 }
 
@@ -45,281 +71,163 @@ class UserClass {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
         this.ck = ck.split('#')
+        this.phone = this.ck[0]
+        this.pwd = this.ck[1]
 
-    }
-
-
-    // let i = 1158227 ; i < 1160227;   ok
-
-    async task() { // 登录  1171054  1266226  1076344
-
-        for (let i = 65163; i < 80000; i++) {
-            // await  this.cash_info(i)
-            await this.phone_info(i)
-            // await $.wait(2)
+        this.salt = 'SHL9L9JIRW5PCRBEU9FTKFGEY4HXLSHL'
+        this.Random_str = $.randomString(8)
+        this.ts = $.ts(10)
+        this.hd1 = { // ts rs  salt
+            'Api-Token': this.getApiToken(1, this.ts, this.Random_str),
+            'Api-Timestamp': this.ts,
+            'Api-Random-Str': this.Random_str,
+            'Api-OS': '1',
+            'Api-Version': '10803',
+            'Api-Device': 'Xiaomi M2102J2SC',
+            'Login-Token': '1zo61jdeqzyg6melbeuy03fvtdqv7htw',
         }
-        // let arr1 = [
-        //     1160859, 1161018, 1162415,
-        //     1162625, 1163131, 1163265,
-        //     1163389, 1163482, 1163736,
-        //     1163927, 1165131, 1165496,
-        //     1165534, 1166533, 1166902,
-        //     1167088, 1167211, 1167442,
-        //     1169549, 1169559, 1158401,
-        //     1159093, 1159286, 1158588,
-        //     1159299, 1159412, 1159904,
-        //     1159745
-        // ]
-        // for (let i = 0; i < arr1.length; i++) {
-        //     await this.cash_info(arr1[i])
-        // }
-        // await this.cash_info(65163)
+        this.hd2 = { // ts  salt rs  
+            'Api-Token': this.getApiToken(2, this.ts, this.Random_str),
+            'Api-Timestamp': this.ts,
+            'Api-Random-Str': this.Random_str,
+            'Api-OS': '1',
+            'Api-Version': '10803',
+            'Api-Device': 'Xiaomi M2102J2SC',
+            'Login-Token': '1zo61jdeqzyg6melbeuy03fvtdqv7htw',
+        }
 
     }
 
-    async phone_info(id) { // 登录
+
+
+
+    async login() {
         let options = {
-            fn: 'cash_info',
+            fn: 'login',
+            method: 'post',
+            url: `https://api.liaozhuangkeji.com/member/v1/member/login`,
+            headers: {
+                'Api-Token': this.getApiToken('login', this.ts, this.Random_str),
+                'Api-Timestamp': this.ts,
+                'Api-Random-Str': this.Random_str,
+                'Api-OS': '1',
+                'Api-Version': '10803',
+                'Api-Device': 'Xiaomi M2102J2SC',
+                'Login-Token': '',
+            },
+            form: {
+                'mobile': this.phone,
+                'password': this.pwd
+            }
+
+        }
+        console.log(options)
+        let resp = await $.request(options)
+        console.log(resp)
+        if (resp.recode == 0) {
+            this.hd['Login-Token'] = resp.data.token
+            this.nickname = resp.data.member.nickname
+            this.amount = resp.data.estimated_amount
+            $.log(`${this.idx}: ${this.nickname}, 手机号 ${$.phoneNum(resp.data.member.mobile)}, 余额≈≈${this.amount}元`, { notify: true })
+            this.ckFlog = true
+        } else console.log(`${options.fn}: 失败, ${resp}`), this.ckFlog = false
+
+    }
+
+    // https://api.liaozhuangkeji.com/synthetic/v1/user/info
+    async userInfo() {
+        let options = {
+            fn: 'userInfo',
             method: 'get',
-            url: `https://wnl28.jiemengjia.com/api/my_integral_index?user_id=${id}&ver=1.8.6&appname=calendar_android`,
-            headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-            },
+            url: `https://api.liaozhuangkeji.com/synthetic/v1/user/info`,
+            headers: this.hd2,
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 'E00000000') {
-            let tasks = resp.data.task[0]
-            if (tasks.title == '新手任务') {
-                let lists = tasks.list
-                // console.log(lists)
-                let arr = []
-                for (let list of lists) {
-                    arr.push(list.id)
-                }
-                if (arr.indexOf(8) > -1) {
-                    // console.log(`${id}, 没有绑定手机号`)
-                } else {
-                    console.log(`${id}, 绑定手机号`)
-                    await this.check_cash(id)
-
-                }
-
-            }
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
+        if (resp.recode == 0) {
+            this.game_car = resp.data.game_car
+            $.log(`${this.idx}: 等级${resp.data.level}级, 银币${resp.data.coin}, 现金${resp.data.wallet.money}元, 更新时间${resp.data.update_time}`, { notify: true })
+            // console.log(this.game_car)
+        } else console.log(`${options.fn}: 失败, ${resp}`)
 
     }
 
-
-    async check_cash(id) {
+    // 买一级--100银币
+    async buy_1() {
         let options = {
-            fn: 'cash_info',
-            method: 'get',
-            url: `https://wnl28.jiemengjia.com/api/my_cash_index?user_id=${id}`,
-            headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-            },
-
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'E00000000') {
-            let cash_num = resp.data.score_detail.cash_num
-            console.log(id, `可提现 ${cash_num} 元`)
-            if (cash_num > 0.5) {
-                cash_arr.push(id)
-                await this.cash_info(id)
-            }
-            // else if (cash_num > 0.4) {
-            //     // console.log(cash_arr)
-            //     await this.doTask(id)
-            // }
-            // await  this.cash(id)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
-    }
-
-    // 任务
-    async doTask(id) {
-        let task_arr = []
-
-
-        let a = `${id}Wh1y1hvGMOclMeug@4Y9Jbc0BUjmzXae`
-        let sign = crypto.MD5(a).toString()
-
-        let options = {
-            fn: 'cash_info',
+            fn: 'buy_1',
             method: 'post',
-            url: `https://wnl28.jiemengjia.com/api/update_cash_info`,
+            url: `https://api.liaozhuangkeji.com/synthetic/v1/game/buy`,
             headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-                'content-type': 'application/x-www-form-urlencoded'
+                'Api-Token': this.getApiToken(2, this.ts, this.Random_str),
+                'Api-Timestamp': this.ts,
+                'Api-Random-Str': this.Random_str,
+                'Accept-Language': 'zh-CN,zh;q=0.8',
+                'User-Agent': 'Android/1.8.3/10803/XiaomiM2102J2SC/12/IMEI:72606f551c907d8b/246135',
+                'Api-OS': '1',
+                'Api-Version': '10803',
+                'Api-Device': 'Xiaomi M2102J2SC',
+                'Login-Token': '1zo61jdeqzyg6melbeuy03fvtdqv7htw',
+                'Host': 'api.liaozhuangkeji.com',
+                'Cache-Control': 'no-cache',
+                'Content-Length': 0
             },
             form: {
-                'device': 'android',
-                'timestamp': '1675594689704',
-                'ver': '1.8.6',
-                'appname': 'calendar_android',
-                'client': 'android',
-                'idfa': 'android',
-                'market': 'xiaomi',
-                'openudid': '1c8493ec71d68197unknown',
-                'dev_uuid': '1c8493ec71d68197',
-                'user_id': id,
-                'app_secret': sign,
-                'cash_openid': 'otMA60c9k60K8Qygm3NHa930ygKk',
-                'user_name': '杨梦磊',
-                'cash_name': '东东机器人'
+                'https://api.liaozhuangkeji.com/synthetic/v1/game/buy': ''
             }
         }
-        // console.log(options)
+        console.log(options)
         let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'E00000000') {
-            await this.cash(id)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
+        console.log(resp)
+        if (resp.recode == 0) {
+            this.game_car = resp.data.game_car
+            $.log(`${this.idx}: 购买 ${resp.msg}, 等级${resp.data.level}级, 剩余银币${resp.data.coin}, 奖券${resp.data.coupons}张, 更新时间${resp.data.update_time}`, { notify: true })
+            console.log(this.game_car)
+        } else console.log(`${options.fn}: 失败, ${resp}`)
 
     }
 
 
-    async cash_info(id) {
-        let a = `${id}Wh1y1hvGMOclMeug@4Y9Jbc0BUjmzXae`
-        let sign = crypto.MD5(a).toString()
 
-        let options = {
-            fn: 'cash_info',
-            method: 'post',
-            url: `https://wnl28.jiemengjia.com/api/update_cash_info`,
-            headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            form: {
-                'device': 'android',
-                'timestamp': '1675594689704',
-                'ver': '1.8.6',
-                'appname': 'calendar_android',
-                'client': 'android',
-                'idfa': 'android',
-                'market': 'xiaomi',
-                'openudid': '1c8493ec71d68197unknown',
-                'dev_uuid': '1c8493ec71d68197',
-                'user_id': id,
-                'app_secret': sign,
-                'cash_openid': $.randomString(28),
-                'user_name': '杨梦磊',
-                'cash_name': '东东机器人'
-            }
+
+
+
+
+    getApiToken(type, ts, Random_str) { // 获取sign 
+        if (type = 1) {
+            let a = `${ts}${Random_str}${this.salt}`
+            let sign = MD5(a).toString()
+            return sign
+        } else if (type = 2) {
+            let a = `${ts}${this.salt}${Random_str}`
+            let sign = MD5(a).toString()
+            return sign
         }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'E00000000') {
-            await this.cash(id)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
     }
-
-    async cash_info2(id) { // 随机
-        let a = `${id}Wh1y1hvGMOclMeug@4Y9Jbc0BUjmzXae`
-        let sign = crypto.MD5(a).toString()
-
-        let options = {
-            fn: 'cash_info',
-            method: 'post',
-            url: `https://wnl28.jiemengjia.com/api/update_cash_info`,
-            headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            form: {
-                'device': 'android',
-                'timestamp': '1675594689704',
-                'ver': '1.8.6',
-                'appname': 'calendar_android',
-                'client': 'android',
-                'idfa': 'android',
-                'market': 'xiaomi',
-                'openudid': '1c8493ec71d68197unknown',
-                'dev_uuid': '1c8493ec71d68197',
-                'user_id': id,
-                'app_secret': sign,
-                'cash_openid': $.randomString(28),
-                'user_name': '张三',
-                'cash_name': '李四'
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'E00000000') {
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
-    }
-
-
-    async cash(id) {
-        // let sign = await this.getSign(id)
-        let a = `${id}1Wh1y1hvGMOclMeug@4Y9Jbc0BUjmzXae`
-        let sign = crypto.MD5(a).toString()
-
-        let options = {
-            fn: 'test',
-            method: 'post',
-            url: `https://wnl28.jiemengjia.com/api/cash_out`,
-            headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            form: {
-                'app_secret': sign,
-                'appname': 'wannianli_iphone',
-                'client': 'iPhone',
-                'device': 'iPhone',
-                'idfa': '00000000-0000-0000-0000-000000000000',
-                'market': 'appstore',
-                'openudid': 'E07D0A35-FA64-44EC-B48B-0307F528DD98',
-                'type': '1',
-                'user_id': id,
-                'ver': '3.6.5'
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(id,resp)
-        if (resp.code == 'E00000001') { // 失败
-            console.log(id, resp)
-        } else if (resp.code == 'E00000000') { // 成功提现
-            console.log(id, resp)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-        await this.cash_info2(id)
-    }
-
 
 }
 
 
 !(async () => {
     console.log(await $.yiyan())
-    if ($.read_env(UserClass)) {
-        await userTasks()
-    }
+    $.read_env(UserClass)
 
+    await userTasks()
 
 })()
     .catch((e) => $.log(e))
     .finally(() => $.exitNow())
 
 
-//===============================================================
+
+//===============================================================     
 function Env(name) {
     return new class {
         constructor(name) {
             this.name = name
             this.startTime = Date.now()
-            this.log(`[${this.name}]开始运行`, {time: true})
+            this.log(`[${this.name}]开始运行`, { time: true })
 
             this.notifyStr = []
             this.notifyFlag = true
@@ -328,7 +236,6 @@ function Env(name) {
             this.userList = []
             this.userCount = 0
         }
-
         async request(opt) {
             const got = require('got')
             let DEFAULT_TIMEOUT = 8000      // 默认超时时间
@@ -336,7 +243,7 @@ function Env(name) {
             let fn = opt.fn || opt.url
             let resp_opt = opt.resp_opt || 'body'
             opt.timeout = opt.timeout || DEFAULT_TIMEOUT
-            opt.retry = opt.retry || {limit: 0}
+            opt.retry = opt.retry || { limit: 0 }
             opt.method = opt?.method?.toUpperCase() || 'GET'
             while (count++ < DEFAULT_RETRY) {
                 try {
@@ -350,12 +257,9 @@ function Env(name) {
                     }
                 }
             }
-            if (resp == null) return Promise.resolve({statusCode: 'timeout', headers: null, body: null})
-            let {statusCode, headers, body} = resp
-            if (body) try {
-                body = JSON.parse(body)
-            } catch {
-            }
+            if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
+            let { statusCode, headers, body } = resp
+            if (body) try { body = JSON.parse(body) } catch { }
             if (resp_opt == 'body') {
                 return Promise.resolve(body)
             } else if (resp_opt == 'hd') {
@@ -367,7 +271,7 @@ function Env(name) {
         }
 
         log(msg, options = {}) {
-            let opt = {console: true}
+            let opt = { console: true }
             Object.assign(opt, options)
 
             if (opt.time) {
@@ -384,7 +288,6 @@ function Env(name) {
                 console.log(`\n-------------- ${msg} --------------`)
             }
         }
-
         read_env(Class) {
             let envStrList = ckNames.map(x => process.env[x])
             for (let env_str of envStrList.filter(x => !!x)) {
@@ -396,29 +299,26 @@ function Env(name) {
             }
             this.userCount = this.userList.length
             if (!this.userCount) {
-                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, {notify: true})
+                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, { notify: true })
                 return false
             }
             this.log(`共找到${this.userCount}个账号`)
             return true
         }
-
         async taskThread(taskName, conf, opt = {}) {
             while (conf.idx < $.userList.length) {
                 let user = $.userList[conf.idx++]
                 await user[taskName](opt)
             }
         }
-
         async threadManager(taskName, thread) {
             let taskAll = []
-            let taskConf = {idx: 0}
+            let taskConf = { idx: 0 }
             while (thread--) {
                 taskAll.push(this.taskThread(taskName, taskConf))
             }
             await Promise.all(taskAll)
         }
-
         time(t, x = null) {
             let xt = x ? new Date(x) : new Date
             let e = {
@@ -435,7 +335,6 @@ function Env(name) {
                 new RegExp("(" + s + ")").test(t) && (t = t.replace(RegExp.$1, 1 == RegExp.$1.length ? e[s] : ("00" + e[s]).substr(("" + e[s]).length)))
             return t
         }
-
         async showmsg() {
             if (!this.notifyFlag) return
             if (!this.notifyStr) return
@@ -443,7 +342,6 @@ function Env(name) {
             this.log('\n============== 推送 ==============')
             await notify.sendNotify(this.name, this.notifyStr.join('\n'))
         }
-
         padStr(num, length, opt = {}) {
             let padding = opt.padding || '0'
             let mode = opt.mode || 'l'
@@ -460,7 +358,6 @@ function Env(name) {
             }
             return numStr
         }
-
         json2str(obj, c, encode = false) {
             let ret = []
             for (let keys of Object.keys(obj).sort()) {
@@ -470,7 +367,6 @@ function Env(name) {
             }
             return ret.join(c)
         }
-
         str2json(str, decode = false) {
             let ret = {}
             for (let item of str.split('&')) {
@@ -484,7 +380,6 @@ function Env(name) {
             }
             return ret
         }
-
         phoneNum(phone_num) {
             if (phone_num.length == 11) {
                 let data = phone_num.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2")
@@ -493,11 +388,9 @@ function Env(name) {
                 return phone_num
             }
         }
-
         randomInt(min, max) {
             return Math.round(Math.random() * (max - min) + min)
         }
-
         async yiyan() {
             const got = require('got')
             return new Promise((resolve) => {
@@ -515,7 +408,6 @@ function Env(name) {
                 })()
             })
         }
-
         ts(type = false, _data = "") {
             let myDate = new Date()
             let a = ""
@@ -563,7 +455,6 @@ function Env(name) {
             }
             return a
         }
-
         randomPattern(pattern, charset = 'abcdef0123456789') {
             let str = ''
             for (let chars of pattern) {
@@ -577,7 +468,6 @@ function Env(name) {
             }
             return str
         }
-
         randomString(len, charset = 'abcdef0123456789') {
             let str = ''
             for (let i = 0; i < len; i++) {
@@ -585,16 +475,13 @@ function Env(name) {
             }
             return str
         }
-
         randomList(a) {
             let idx = Math.floor(Math.random() * a.length)
             return a[idx]
         }
-
         wait(t) {
             return new Promise(e => setTimeout(e, t * 1000))
         }
-
         async exitNow() {
             await this.showmsg()
             let e = Date.now()

@@ -20,6 +20,7 @@ const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变�
 const ckNames = ['esljsb']                //支持多变量
 // console.log(process.env)
 
+let ckData = '1'   // ck数据
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
 let cash_arr = []
@@ -28,14 +29,10 @@ let cash_arr = []
 
 
 async function userTasks() {
-    $.log('用户信息', {sp: true, console: false})  // 带分割的打印
-    let list = []
-    for (let user of $.userList) {
-        list.push(user.task())
-    }
-    await Promise.all(list)
-    console.log(`可提现账号`)
-    console.log(cash_arr)
+
+    let userClass = new UserClass(ck)
+    await userClass.task()
+
 
 }
 
@@ -53,27 +50,7 @@ class UserClass {
 
     async task() { // 登录  1171054  1266226  1076344
 
-        for (let i = 65163; i < 80000; i++) {
-            // await  this.cash_info(i)
-            await this.phone_info(i)
-            // await $.wait(2)
-        }
-        // let arr1 = [
-        //     1160859, 1161018, 1162415,
-        //     1162625, 1163131, 1163265,
-        //     1163389, 1163482, 1163736,
-        //     1163927, 1165131, 1165496,
-        //     1165534, 1166533, 1166902,
-        //     1167088, 1167211, 1167442,
-        //     1169549, 1169559, 1158401,
-        //     1159093, 1159286, 1158588,
-        //     1159299, 1159412, 1159904,
-        //     1159745
-        // ]
-        // for (let i = 0; i < arr1.length; i++) {
-        //     await this.cash_info(arr1[i])
-        // }
-        // await this.cash_info(65163)
+        await this.cash_info(67892)
 
     }
 
@@ -303,8 +280,9 @@ class UserClass {
 
 !(async () => {
     console.log(await $.yiyan())
-    if ($.read_env(UserClass)) {
+    if (ckData) {
         await userTasks()
+
     }
 
 
@@ -385,23 +363,6 @@ function Env(name) {
             }
         }
 
-        read_env(Class) {
-            let envStrList = ckNames.map(x => process.env[x])
-            for (let env_str of envStrList.filter(x => !!x)) {
-                let sp = envSplitor.filter(x => env_str.includes(x))
-                let splitor = sp.length > 0 ? sp[0] : envSplitor[0]
-                for (let ck of env_str.split(splitor).filter(x => !!x)) {
-                    this.userList.push(new Class(ck))
-                }
-            }
-            this.userCount = this.userList.length
-            if (!this.userCount) {
-                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, {notify: true})
-                return false
-            }
-            this.log(`共找到${this.userCount}个账号`)
-            return true
-        }
 
         async taskThread(taskName, conf, opt = {}) {
             while (conf.idx < $.userList.length) {
