@@ -1,20 +1,15 @@
-
 const $ = Env('慢慢买')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
-var random_ua = require('random-ua')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['mmm']                //支持多变量
 //====================================================================================================
-
-
 
 
 async function userTasks() {
 
 
-    $.log('任务列表', { sp: true, console: false })
+    $.log('任务列表', {sp: true, console: false})
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
@@ -22,7 +17,6 @@ async function userTasks() {
         }
     }
     await Promise.all(list)
-
 
 
 }
@@ -39,7 +33,6 @@ class UserClass {
             'User-Agent': `Mozilla/5.0 (Linux; Android 12; M${$.randomString(8)} Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 - mmbWebBrowse - android`
         }
     }
-
 
 
     async task_1() {
@@ -146,7 +139,6 @@ class UserClass {
     }
 
 
-
 }
 
 
@@ -165,11 +157,9 @@ function Env(name) {
         constructor(name) {
             this.name = name
             this.startTime = Date.now()
-            this.log(`[${this.name}]开始运行`, { time: true })
-
+            this.log(`[${this.name}]开始运行`)
             this.notifyStr = []
             this.notifyFlag = true
-
             this.userIdx = 0
             this.userList = []
             this.userCount = 0
@@ -182,12 +172,12 @@ function Env(name) {
             let fn = opt.fn || opt.url
             let resp_opt = opt.resp_opt || 'body'
             opt.timeout = opt.timeout || DEFAULT_TIMEOUT
-            opt.retry = opt.retry || { limit: 0 }
+            opt.retry = opt.retry || {limit: 0}
             opt.method = opt?.method?.toUpperCase() || 'GET'
             resp = await got(opt)
 
-            if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
-            let { statusCode, headers, body } = resp
+            if (resp == null) return Promise.resolve({statusCode: 'timeout', headers: null, body: null})
+            let {statusCode, headers, body} = resp
             if (body) try {
                 body = JSON.parse(body)
             } catch {
@@ -203,7 +193,7 @@ function Env(name) {
         }
 
         log(msg, options = {}) {
-            let opt = { console: true }
+            let opt = {console: true}
             Object.assign(opt, options)
 
             if (opt.time) {
