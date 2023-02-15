@@ -31,7 +31,7 @@ async function userTasks() {
     // } await Promise.all(list)
 
 
-    $.log('任务列表', {sp: true, console: false})
+    $.log('任务列表', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
@@ -41,7 +41,7 @@ async function userTasks() {
     }
     await Promise.all(list)
 
-    $.log('走路赚豆', {sp: true, console: false})
+    $.log('走路赚豆', { sp: true, console: false })
     list = []
     if ($.ts('h') == 18) {
         for (let user of $.userList) {
@@ -55,7 +55,7 @@ async function userTasks() {
         await Promise.all(list)
     } else $.log(`走路赚豆--时间不对, 跳过!`)
 
-    $.log('吃饭赚豆', {sp: true, console: false})
+    $.log('吃饭赚豆', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
@@ -65,7 +65,7 @@ async function userTasks() {
     await Promise.all(list)
 
 
-    $.log('睡觉赚豆', {sp: true, console: false})
+    $.log('睡觉赚豆', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
@@ -74,7 +74,7 @@ async function userTasks() {
     }
     await Promise.all(list)
 
-    $.log('开宝箱', {sp: true, console: false})
+    $.log('开宝箱', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
@@ -84,7 +84,7 @@ async function userTasks() {
     await Promise.all(list)
 
 
-    $.log('里豆查询', {sp: true, console: false})
+    $.log('里豆查询', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
@@ -103,7 +103,7 @@ class UserClass {
         this.ckFlog = true
         this.userCookie = ck
         this.rs = `${$.randomString(8)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(4)}-${$.randomString(12)}`
-        this.hd = {'User-Agent': 'oke/3.2.8'}
+        this.hd = { 'User-Agent': 'oke/3.2.8' }
 
         this.appVersion = '3.2.8'    // 3.2.8 极速版    7.2.9 正式版
         this.ts = $.ts(10)
@@ -144,7 +144,7 @@ class UserClass {
         if (resp.code == 'A00000') {
             this.userCookie = resp.data.userCookie
             this.nickname = resp.data.userInfo.name
-            $.log(`${this.idx}: ${options.fn} ${resp.msg}, ${this.nickname}, 手机号 ${$.phoneNum(resp.data.userInfo.mobile)}`, {notify: true})
+            $.log(`${this.idx}: ${options.fn} ${resp.msg}, ${this.nickname}, 手机号 ${$.phoneNum(resp.data.userInfo.mobile)}`, { notify: true })
             this.ckFlog = true
             await $.wait(2)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
@@ -180,7 +180,7 @@ class UserClass {
             let tasks = resp.taskList
             for (const task of tasks) {
                 // console.log(task)
-                let {taskId, taskName, currentCount, maxCount} = task
+                let { taskId, taskName, currentCount, maxCount } = task
 
                 if (currentCount < maxCount) {
                     if (taskId == 1) $.log(`${this.idx}: ${taskName}--${currentCount}/${maxCount}`), await this.doSign()    // 每日签到
@@ -529,7 +529,7 @@ class UserClass {
         let resp = await $.request(options)
         // console.log(resp)
         if (resp.code == 'A00000') {
-            $.log(`${this.idx}: 共有豆豆 ${resp.data.gold}个, 今天获得 ${resp.data.withdrawToday}`, {notify: true})
+            $.log(`${this.idx}: 共有豆豆 ${resp.data.gold}个, 今天获得 ${resp.data.withdrawToday}`, { notify: true })
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
@@ -563,7 +563,7 @@ function Env(name) {
         constructor(name) {
             this.name = name
             this.startTime = Date.now()
-            this.log(`[${this.name}]开始运行`, {time: true})
+            this.log(`[${this.name}]开始运行`, { time: true })
 
             this.notifyStr = []
             this.notifyFlag = true
@@ -580,7 +580,7 @@ function Env(name) {
             let fn = opt.fn || opt.url
             let resp_opt = opt.resp_opt || 'body'
             opt.timeout = opt.timeout || DEFAULT_TIMEOUT
-            opt.retry = opt.retry || {limit: 0}
+            opt.retry = opt.retry || { limit: 0 }
             opt.method = opt?.method?.toUpperCase() || 'GET'
             while (count++ < DEFAULT_RETRY) {
                 try {
@@ -594,8 +594,8 @@ function Env(name) {
                     }
                 }
             }
-            if (resp == null) return Promise.resolve({statusCode: 'timeout', headers: null, body: null})
-            let {statusCode, headers, body} = resp
+            if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
+            let { statusCode, headers, body } = resp
             if (body) try {
                 body = JSON.parse(body)
             } catch {
@@ -611,7 +611,7 @@ function Env(name) {
         }
 
         log(msg, options = {}) {
-            let opt = {console: true}
+            let opt = { console: true }
             Object.assign(opt, options)
 
             if (opt.time) {
@@ -640,7 +640,7 @@ function Env(name) {
             }
             this.userCount = this.userList.length
             if (!this.userCount) {
-                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, {notify: true})
+                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, { notify: true })
                 return false
             }
             this.log(`共找到${this.userCount}个账号`)
@@ -656,7 +656,7 @@ function Env(name) {
 
         async threadManager(taskName, thread) {
             let taskAll = []
-            let taskConf = {idx: 0}
+            let taskConf = { idx: 0 }
             while (thread--) {
                 taskAll.push(this.taskThread(taskName, taskConf))
             }
