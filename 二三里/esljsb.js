@@ -15,7 +15,7 @@ const $ = Env('二三里极速版')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
-const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
+const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
 const ckNames = ['esljsb']                //支持多变量
 // console.log(process.env)
 
@@ -27,7 +27,7 @@ let DEFAULT_RETRY = 1           // 默认重试次数
 async function userTasks() {
 
     $.log('用户信息', {sp: true, console: false})  // 带分割的打印
-    list = []
+    let list = []
     for (let user of $.userList) {
         list.push(user.login())
     }
@@ -543,8 +543,7 @@ class UserClass {
     async getSign(params) {
         delete params.sign
         let a = new URLSearchParams(Object.entries(params)).toString()
-        let sign = crypto.MD5(`${crypto.MD5(a).toString()}${this.salt}`).toString()
-        return sign
+        return crypto.MD5(`${crypto.MD5(a).toString()}${this.salt}`).toString()
     }
 
 
@@ -638,8 +637,8 @@ function Env(name) {
         read_env(Class) {
             let envStrList = ckNames.map(x => process.env[x])
             for (let env_str of envStrList.filter(x => !!x)) {
-                let sp = envSplitor.filter(x => env_str.includes(x))
-                let splitor = sp.length > 0 ? sp[0] : envSplitor[0]
+                let sp = envSplit.filter(x => env_str.includes(x))
+                let splitor = sp.length > 0 ? sp[0] : envSplit[0]
                 for (let ck of env_str.split(splitor).filter(x => !!x)) {
                     this.userList.push(new Class(ck))
                 }

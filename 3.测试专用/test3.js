@@ -9,7 +9,7 @@ const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变�
 async function userTasks() {
 
 
-    $.log('任务列表', {sp: true, console: false})
+    $.log('任务列表', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
@@ -172,12 +172,12 @@ function Env(name) {
             let fn = opt.fn || opt.url
             let resp_opt = opt.resp_opt || 'body'
             opt.timeout = opt.timeout || DEFAULT_TIMEOUT
-            opt.retry = opt.retry || {limit: 0}
+            opt.retry = opt.retry || { limit: 0 }
             opt.method = opt?.method?.toUpperCase() || 'GET'
             resp = await got(opt)
 
-            if (resp == null) return Promise.resolve({statusCode: 'timeout', headers: null, body: null})
-            let {statusCode, headers, body} = resp
+            if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
+            let { statusCode, headers, body } = resp
             if (body) try {
                 body = JSON.parse(body)
             } catch {
@@ -193,7 +193,7 @@ function Env(name) {
         }
 
         log(msg, options = {}) {
-            let opt = {console: true}
+            let opt = { console: true }
             Object.assign(opt, options)
 
             if (opt.time) {
