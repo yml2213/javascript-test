@@ -1,23 +1,23 @@
 /*
-青岛地铁 app             cron 25 6-23 * * *  qddt.js
+齐家装修 app             cron 25 6-23 * * *  qjzx.js
 
 
 23/2/23      密码登录 ,基本任务 感谢 蛋姨 脚本
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 青岛地铁
-export qddt=" phone # pwd  @  phone # pwd   "  
+# 齐家装修
+export qjzx=" phone # pwd  @  phone # pwd   "  
 
 多账号用 换行 或 @ 分割  
 
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('青岛地铁')
+const $ = Env('齐家装修')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
 const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['qddt']                //支持多变量
+const ckNames = ['qjzx']                //支持多变量
 
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
@@ -29,7 +29,7 @@ async function userTasks() {
     $.log('登录', { sp: true, console: false })  // 带分割的打印
     let list = []
     for (let user of $.userList) {
-        list.push(user.get_iv())
+        list.push(user.login())
     }
     await Promise.all(list)
 
@@ -38,20 +38,21 @@ async function userTasks() {
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
-            list.push(user.tasklist())
+            // list.push(user.tasklist())
+            list.push(user.create_diary('写日记'))
         }
     }
     await Promise.all(list)
 
 
-    $.log('积分查询', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.check())
-        }
-    }
-    await Promise.all(list)
+    // $.log('积分查询', { sp: true, console: false })
+    // list = []
+    // for (let user of $.userList) {
+    //     if (user.ckFlog) {
+    //         list.push(user.check())
+    //     }
+    // }
+    // await Promise.all(list)
 
 
 }
@@ -63,193 +64,195 @@ class UserClass {
         this.ckFlog = true
         this.ck = ck.split('#')
         this.phone = this.ck[0]
-        this.pwd = crypto.MD5(this.ck[1]).toString()
+        this.pwd = this.ck[1]
         this.device = $.randomString(16)
-        this.version = '4.1.5_VersionCode_415'
-        this.key = '1wTD3U39b53qv8ck'
+        this.appkey = '9bc33568bedfdab00b622016c9b41be9'
+        this.key = '7513642281147258'
+        this.iv = 'A-16-Byte-String'
 
         this.hd = {
-            'Host': 'api.qd-metro.com',
-            'User-Agent': 'okhttp/3.12.0'
+            'appkey': this.appkey,
+            'device-id': this.device,
+            'app-version': '5.0.7',
+            'user-agent': 'okhttp/3.14.9',
+            'content-type': 'application/json; charset=UTF-8'
         }
-        this.pk = `-----BEGIN PRIVATE KEY-----
-        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7iUFO+72knVUvymgXNvR7Tpv1
-        J/krOQeV8pFxBkmtCvfVwkpu5nsthPyxt0rYlKnRQQZlFkVlr7cT62drLHZicDSi0ojvSmEhpNAQ
-        lue9HWXPhob4dXgxpGsRmCSYiv8naHsyRiApR9O2lvzNa6WK4MP/Tfo9phVk5Ipa3HCiVZY3YSd7
-        cWAImyrY9fsFSOvc1zd0k2vmkPE0nKAI+l5Mv7eAglPYfDw6oRXwGEjdGVtRduyfmy5YeyLEbNIR
-        cFhHiHHoWcQvByEAgXbjOKG/Om3hsA3eeUw70f+9sMdv7uwZm6E1Y50TnQzsP03Co4WpPEVH0+zM
-        VoAIigrjL0YNAgMBAAECggEAHphx8zTW57hTYYygFsl8cXGNuB1hZU/UkP4WBF6GPpj/ffxIsHch
-        uXds0oGY0GTQn7cAGBXeFIzqTXGmWbHTTpQHwliexotX9WkyGMLF4/Cb35OPCZIAnfi5DxHHRqvG
-        nONK1hTiwllZjPxtGgZp55Jr54cNQGmMK/2tJM26AoG0OtT+55/ZBxHTtm0j08DhfyYdjHPYGZJz
-        nmZ/oQqjeI0eZQZe+h5ojKNqxGvhDiybgpIfkQvwVJhcbXiRYvQs1QnwxKOjm8dUCkn+do24H17x
-        ouw4NML9sm3zCW48yXQwWcP45h27bvmu7z2iVhq1lo50sWg710EG9bBNfc1rcQKBgQDyDK6+sm7k
-        NYO98A3xjp/GVmJ6Mp+6moWmI+fKDVEGb2chcdO5slKrBb1XX2TQRJS10K6yc0zntuTNVfJRAPpN
-        lyQV9ndGvUbWwRFEu8DETW05NCnd9SQwgQoSG1TcS6fqUqpQV9wJvnoFUJSP9uRnxBiVGyyeSzte
-        LMvjCpU33wKBgQDGWEFbK69u69QH3RsgI+V0Dthr+ySF+VTRaeprfrhFfuZzVhwqd3Cpjj8HpL/7
-        XzTT4Gt33tZudbT02VY71QtzuPH2psoP5P2vP8XMbj1hM5Jgl71G+BnEKNUDlLqVn8zzE76Woi7y
-        5Yj7U7ppCx94qDod7tuqEzvt4nbrponvkwKBgQCJ4gmlXhXncEi06Uu4IAwKOulsPOxaq22Y3/lJ
-        U16lsM5p8eKvdNK8088xN4lBTt/71n298AqOMNST1/LqjAkKLCAFVtpJdMcmzOKeaen8qTKgFIQJ
-        CX1tGAT5nZIwz/Q+eorEq9gPwO7XmjiW7gjcx4tNXSaEocyW8CPRGRU5twKBgGNUB0bVFcICr+hQ
-        PilWUK5SUOeimaPOPT+yPwceKsICzv2rfed2cSE4bzAwvUPxZc9FcAxTuCcRI1ILFThZdKa7U9El
-        rcNP9gsxcKjz/CEVZpSg6NUFokGuAR8N+HK92DFTDfr5tXFGqdbTE2NPgq818ATVfYQqpbR32P4i
-        JKmpAoGAMUvAjv2uAf46ucQiTiABAhFKXMTIco3EJm9HTuWkB55RJ6RT08AT3ZdzlD9o4/kS2sFy
-        /f2h6kU+FQeGSFufArfhDMgqQhTOBZGo+8lDQ8BqJgQEumSKjseWy2m8azPbmR9SvpR00104A1AY
-        ZDX4+KE3pBYDhZiC44tDPOW99OI=
-        -----END PRIVATE KEY-----`
+
     }
 
 
-    // https://api.qd-metro.com/ngcustomer/Login/loginByPassword
     async login() { // 登录
-        let param = await this.get_param(`{"phone":"${this.phone}","password":"${this.pwd}"}`)
+        let phone = this.aes_encrypt(this.phone)
         let options = {
             fn: '登录',
             method: 'post',
-            url: `https://api.qd-metro.com/ngcustomer/Login/loginByPassword`,
+            url: `https://zxtt.jia.com/api/user/login-account`,
             headers: this.hd,
-            form: {
-                'language': 'ZH',
-                'deviceCoding': this.device,
-                'model': 'M2102J2SC',
-                'token': '',
-                'version': this.version,
-                'systemversion': '12',
-                'platform': 'android',
-                'phone': this.phone,
-                'param': param
+            json: {
+                "remember": 1,
+                "password": "qj123456",
+                "mobile": phone
             }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.respcod == '01') {
-            let data1 = await this.Decrypt(resp.data.param1)
-            // console.log(data1)
-            this.token = data1.split('"token":"')[1].split('",')[0]
-            this.userId = data1.split('"userId":"')[1].split('",')[0]
-            // console.log(this.token, this.userId)
-
-            $.log(`${this.idx}: ${options.fn} ${resp.respmsg}`)
+        if (resp.status_code == 200) {
+            this.token = resp.session_id
+            this.userId = resp.user_info.user_id
+            this.nick_name = resp.user_info.nick_name
+            this.cookie = `session_id=${this.token}`
+            this.hd.cookie = this.cookie
+            this.hd.userid = this.userId
+            // console.log(this.hd)
+            // console.log(this.token)
+            $.log(`${this.idx}: ${options.fn} ${resp.msg}, ${this.nick_name}, 手机号 ${resp.user_info.phone}`)
             this.ckFlog = true
             await $.wait(2)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
     }
 
-    async get_iv() { // 获取iv
-        let options = {
-            fn: '获取iv',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngcustomer/Login/loginRandom`,
-            headers: this.hd,
-            form: {
-                'language': 'ZH',
-                'deviceCoding': this.device,
-                'model': 'M2102J2SC',
-                'token': '',
-                'version': this.version,
-                'systemversion': '12',
-                'platform': 'android',
-                'needVerifyCode': 'false',
-                'isLogin': 'false',
-                'phone': this.phone
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.respcod == '01') {
-            this.iv = resp.data.whatIsThis
-            await this.login()
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
 
     async tasklist() { // 任务列表 
         let options = {
             fn: '任务列表',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/taskShowList`,
+            method: 'get',
+            url: `https://zxtt.jia.com/user/task/sign/center`,
             headers: this.hd,
-            json: {
-                "token": this.token,
-                "deviceCoding": this.device
-            }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == '01') {
-            let tasks = resp.data
+        if (resp.status_code == 200) {
+            let tasks = resp.result.daily_tasks.task_list
+            // console.log(tasks)
             for (const task of tasks) {
                 // console.log(task)
-                let { name, status, id } = task
-                if (status != 4) {
-                    if (name == '使用钱包乘车') {
-                        await this.dotask(name, id, 2)
-                    } else {
-                        await this.view(name, id)
+                let { action_cn, total_count, finished_count, status } = task
+                let num = total_count - finished_count
+                if (status == 0) {
+                    if (action_cn == '写日记') {
+                        for (let index = 0; index < num; index++) {
+                            await this.create_diary(action_cn)
+                        }
+                    } else if (action_cn == '发帖') {
+                        for (let index = 0; index < num; index++) {
+                            await this.create_top(action_cn)
+                        }
+                    } else if (action_cn == '评论') {
+                        for (let index = 0; index < num; index++) {
+                            // await this.create_com(action_cn)
+                        }
                     }
                 } else {
-                    $.log(`${this.idx}: ${name} 已完成`)
+                    $.log(`${this.idx}: ${action_cn} 已完成`)
                 }
-
             }
 
         } else console.log(`${options.fn}: 失败, ${JSON.stringify(resp)} `)
 
     }
 
-    async view(name, id) { // 取浏览id 
+
+
+    async create_diary(name) { // 写日记 
         let options = {
-            fn: '取浏览id',
+            fn: '写日记',
             method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/getTaskBrowseConf`,
+            url: `https://zxtt.jia.com/forum/diary/info/create`,
             headers: this.hd,
             json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-                "taskConfId": id
+                "house_city": "山东 滨州 ",
+                "address": "在邹平同盛贸易有限公司附近",
+                "stage": "聊风格",
+                "channel": 1,
+                "main_stage": "前期准备",
+                "content": {
+                    "text": "简约风格好喜欢",
+                    "image_list": []
+                },
+                "status": 1
             }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == '01') {
-            let doid = resp.data.id
-            await $.wait($.randomInt(15, 20))
-            await this.dotask(name, id, doid)
+        if (resp.status_code == 200) {
+            let id = resp.result.id
+            $.log(`${this.idx}: ${name}-${id}, ok`)
+            await $.wait(3)
+            await this.delete_diary(id)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-
     }
 
-    async dotask(name, id, doid) { // 做任务 
-        let ts = $.ts(13)
-        let sign = await this.get_sign(ts, id, doid)
+    async delete_diary(id) { // 删除日记 
         let options = {
-            fn: '做任务',
+            fn: '删除日记',
+            method: 'get',
+            url: `https://zxtt.jia.com/forum/diary/info/delete?id=${id}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status_code == 200) {
+            $.log(`${this.idx}: ${options.fn}-${id}, ok`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+    }
+
+
+    async create_top(name) { // 发帖 
+        let options = {
+            fn: '写日记',
             method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/browseDocument`,
+            url: `https://zxtt.jia.com/forum/note/create`,
             headers: this.hd,
             json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-                "taskConfId": id,
-                "documentId": doid,
-                "createTime": ts,
-                "sign": sign,
-                "timestamp": ""
+                "address": "在邹平西收费站(G20青银高速入口)附近",
+                "community_new_id": 10,
+                "city": "滨州",
+                "id": "",
+                "title": "装修就选齐家",
+                "type": 13,
+                "image_content": {
+                    "text": "齐家服务好呀",
+                    "image_list": [{
+                        "width": "200",
+                        "url": "http://imgmall.tg.com.cn/zxtt/2023/2/26/04/VbGGtneMZeX3RylpJB6bVjSaszur.jpg",
+                        "height": "200"
+                    }]
+                },
+                "status": 1
             }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == '01') {
-            $.log(`${this.idx}: ${name}, 完成，开始领取奖励`)
-            await this.finish(name, id)
+        if (resp.status_code == 200) {
+            let id = resp.records[0].id
+            $.log(`${this.idx}: ${name}-${id}, ok`)
+            await $.wait(3)
+            await this.delete_top(id)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
+
+    // https://zxtt.jia.com/forum/note/delete?id=2125445
+    async delete_top(id) { // 删除帖
+        let options = {
+            fn: '删除帖',
+            method: 'get',
+            url: `https://zxtt.jia.com/forum/note/delete?id=${id}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status_code == 200) {
+            $.log(`${this.idx}: ${options.fn}-${id}, ok`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+    }
+
 
 
     async finish(name, id) { // 领奖励 
@@ -335,6 +338,20 @@ class UserClass {
         return signn
     }
 
+    aes_encrypt(word) { // aes 加密
+        let key = this.key
+        let iv = this.iv
+        key = crypto.enc.Utf8.parse(key)
+        iv = crypto.enc.Utf8.parse(iv)
+        let srcs = crypto.enc.Utf8.parse(word)
+        // 加密模式为CBC，补码方式为PKCS5Padding（也就是PKCS7）
+        let encrypted = crypto.AES.encrypt(srcs, key, {
+            iv: iv,
+            mode: crypto.mode.CBC,
+            padding: crypto.pad.Pkcs7
+        })
+        return crypto.enc.Base64.stringify(encrypted.ciphertext) //返回 b64
+    }
 
     //SHA256withRSA   
     SHA256withRSA(content) {
@@ -380,12 +397,11 @@ function Env(name) {
             this.userCount = 0
         }
 
-        async request(opt) {
+        async request(opt, type = 'body') {
             const got = require('got')
             let DEFAULT_TIMEOUT = 8000      // 默认超时时间
             let resp = null, count = 0
             let fn = opt.fn || opt.url
-            let resp_opt = opt.resp_opt || 'body'
             opt.timeout = opt.timeout || DEFAULT_TIMEOUT
             opt.retry = opt.retry || { limit: 0 }
             opt.method = opt?.method?.toUpperCase() || 'GET'
@@ -407,11 +423,11 @@ function Env(name) {
                 body = JSON.parse(body)
             } catch {
             }
-            if (resp_opt == 'body') {
+            if (type == 'body') {
                 return Promise.resolve(body)
-            } else if (resp_opt == 'hd') {
+            } else if (type == 'hd') {
                 return Promise.resolve(headers)
-            } else if (resp_opt == 'statusCode') {
+            } else if (type == 'statusCode') {
                 return Promise.resolve(statusCode)
             }
 

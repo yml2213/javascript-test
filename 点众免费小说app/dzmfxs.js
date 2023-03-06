@@ -1,44 +1,53 @@
 /*
-青岛地铁 app             cron 25 6-23 * * *  qddt.js
+点众免费小说 app             cron 25 6-23 * * *  dzmfxs.js
 
 
-23/2/23      密码登录 ,基本任务 感谢 蛋姨 脚本
+23/2/25      
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 青岛地铁
-export qddt=" phone # pwd  @  phone # pwd   "  
+# 点众免费小说
+export dzmfxs=" 解密后的数据  @  解密后的数据 "  
+
+解密 xgmf.zuanqianyi.com/glory/free/1601 的 param 参数即可
+自动提现请设置 smdid  找 1703 包的 body信息  然后解密即可  start_ 不需要
 
 多账号用 换行 或 @ 分割  
 
 tg频道: https://t.me/yml2213_tg  
+
+
 */
-const $ = Env('青岛地铁')
+const $ = Env('点众免费小说')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
 const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['qddt']                //支持多变量
+const ckNames = ['dzmfxs']                //支持多变量
 
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
+let ok_arr = []
+
+let smdid = 'DeyJvcyI6ImFuZHJvaWQiLCJlbmNvZGUiOjEsImRhdGEiOiJleUpoTVNJNkltVjRZMlZ3ZEdsdmJpSXNJbUUySWpvaVlXNWtjbTlwWkNJc0ltRTNJam9pTXk0d0xqY2lMQ0poTWlJNklpSXNJbUV4TUNJNklqRXlJaXdpWVRFeklqb2lUVEl4TURKS01sTkRJaXdpWVRrMklqb2lJaXdpWVRFeElqb2lJaXdpWVRrNElqb2lJaXdpWlNJNkltcGhkbUV1YkdGdVp5NUpiR3hsWjJGc1FXTmpaWE56UlhoalpYQjBhVzl1T2lCemJYTmtheUJ1YjNRZ2FXNXBkQ0ZjYmx4MFlYUWdZMjl0TG1semFIVnRaV2t1YzIxaGJuUnBabkpoZFdRdVUyMUJiblJwUm5KaGRXUXVaMlYwUkdWMmFXTmxTV1FvVlc1cmJtOTNiaUJUYjNWeVkyVTZNeklwWEc1Y2RHRjBJSGcwTG1JdVl5aFRiM1Z5WTJWR2FXeGxPaklwWEc1Y2RHRjBJSEUxTG1ZdVoyVjBRWEJ3UkdGMFlTaFRiM1Z5WTJWR2FXeGxPalFwWEc1Y2RHRjBJR0Z1WkhKdmFXUXViM011VFdWemMyRm5aVkYxWlhWbExtNWhkR2wyWlZCdmJHeFBibU5sS0U1aGRHbDJaU0JOWlhSb2IyUXBYRzVjZEdGMElHRnVaSEp2YVdRdWIzTXVUV1Z6YzJGblpWRjFaWFZsTG01bGVIUW9UV1Z6YzJGblpWRjFaWFZsTG1waGRtRTZNek0zS1Z4dVhIUmhkQ0JoYm1SeWIybGtMbTl6TGt4dmIzQmxjaTVzYjI5d1QyNWpaU2hNYjI5d1pYSXVhbUYyWVRveE5qZ3BYRzVjZEdGMElHRnVaSEp2YVdRdWIzTXVURzl2Y0dWeUxteHZiM0FvVEc5dmNHVnlMbXBoZG1FNk1qazVLVnh1WEhSaGRDQmhibVJ5YjJsa0xtOXpMa2hoYm1Sc1pYSlVhSEpsWVdRdWNuVnVLRWhoYm1Sc1pYSlVhSEpsWVdRdWFtRjJZVG8yTnlsY2JpSXNJbUU1TnlJNklpSjkiLCJ0biI6IiIsImVwIjoiIn0='
 //====================================================================================================
 
 
 async function userTasks() {
 
-    $.log('登录', { sp: true, console: false })  // 带分割的打印
-    let list = []
-    for (let user of $.userList) {
-        list.push(user.get_iv())
-    }
-    await Promise.all(list)
+    // $.log('登录', { sp: true, console: false })  // 带分割的打印
+    // let list = []
+    // for (let user of $.userList) {
+    //     list.push(user.get_iv())
+    // }
+    // await Promise.all(list)
 
 
     $.log('任务列表', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
         if (user.ckFlog) {
-            list.push(user.tasklist())
+            // list.push(user.tasklist())
+            list.push(user.task())
         }
     }
     await Promise.all(list)
@@ -53,6 +62,7 @@ async function userTasks() {
     }
     await Promise.all(list)
 
+    // console.log(ok_arr)
 
 }
 
@@ -61,240 +71,218 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.ck = ck.split('#')
-        this.phone = this.ck[0]
-        this.pwd = crypto.MD5(this.ck[1]).toString()
-        this.device = $.randomString(16)
-        this.version = '4.1.5_VersionCode_415'
-        this.key = '1wTD3U39b53qv8ck'
+        this.ck = ck
+        this.appId = '105291391'
+        this.key = 'dzkjgfyxgshylgzm'
+        this.iv = 'apiupdownedcrypt'
+        this.salt = 'b5d906bfe573ec7b0eb3d9f96d3513ed'
 
         this.hd = {
             'Host': 'api.qd-metro.com',
             'User-Agent': 'okhttp/3.12.0'
         }
         this.pk = `-----BEGIN PRIVATE KEY-----
-        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7iUFO+72knVUvymgXNvR7Tpv1
-        J/krOQeV8pFxBkmtCvfVwkpu5nsthPyxt0rYlKnRQQZlFkVlr7cT62drLHZicDSi0ojvSmEhpNAQ
-        lue9HWXPhob4dXgxpGsRmCSYiv8naHsyRiApR9O2lvzNa6WK4MP/Tfo9phVk5Ipa3HCiVZY3YSd7
-        cWAImyrY9fsFSOvc1zd0k2vmkPE0nKAI+l5Mv7eAglPYfDw6oRXwGEjdGVtRduyfmy5YeyLEbNIR
-        cFhHiHHoWcQvByEAgXbjOKG/Om3hsA3eeUw70f+9sMdv7uwZm6E1Y50TnQzsP03Co4WpPEVH0+zM
-        VoAIigrjL0YNAgMBAAECggEAHphx8zTW57hTYYygFsl8cXGNuB1hZU/UkP4WBF6GPpj/ffxIsHch
-        uXds0oGY0GTQn7cAGBXeFIzqTXGmWbHTTpQHwliexotX9WkyGMLF4/Cb35OPCZIAnfi5DxHHRqvG
-        nONK1hTiwllZjPxtGgZp55Jr54cNQGmMK/2tJM26AoG0OtT+55/ZBxHTtm0j08DhfyYdjHPYGZJz
-        nmZ/oQqjeI0eZQZe+h5ojKNqxGvhDiybgpIfkQvwVJhcbXiRYvQs1QnwxKOjm8dUCkn+do24H17x
-        ouw4NML9sm3zCW48yXQwWcP45h27bvmu7z2iVhq1lo50sWg710EG9bBNfc1rcQKBgQDyDK6+sm7k
-        NYO98A3xjp/GVmJ6Mp+6moWmI+fKDVEGb2chcdO5slKrBb1XX2TQRJS10K6yc0zntuTNVfJRAPpN
-        lyQV9ndGvUbWwRFEu8DETW05NCnd9SQwgQoSG1TcS6fqUqpQV9wJvnoFUJSP9uRnxBiVGyyeSzte
-        LMvjCpU33wKBgQDGWEFbK69u69QH3RsgI+V0Dthr+ySF+VTRaeprfrhFfuZzVhwqd3Cpjj8HpL/7
-        XzTT4Gt33tZudbT02VY71QtzuPH2psoP5P2vP8XMbj1hM5Jgl71G+BnEKNUDlLqVn8zzE76Woi7y
-        5Yj7U7ppCx94qDod7tuqEzvt4nbrponvkwKBgQCJ4gmlXhXncEi06Uu4IAwKOulsPOxaq22Y3/lJ
-        U16lsM5p8eKvdNK8088xN4lBTt/71n298AqOMNST1/LqjAkKLCAFVtpJdMcmzOKeaen8qTKgFIQJ
-        CX1tGAT5nZIwz/Q+eorEq9gPwO7XmjiW7gjcx4tNXSaEocyW8CPRGRU5twKBgGNUB0bVFcICr+hQ
-        PilWUK5SUOeimaPOPT+yPwceKsICzv2rfed2cSE4bzAwvUPxZc9FcAxTuCcRI1ILFThZdKa7U9El
-        rcNP9gsxcKjz/CEVZpSg6NUFokGuAR8N+HK92DFTDfr5tXFGqdbTE2NPgq818ATVfYQqpbR32P4i
-        JKmpAoGAMUvAjv2uAf46ucQiTiABAhFKXMTIco3EJm9HTuWkB55RJ6RT08AT3ZdzlD9o4/kS2sFy
-        /f2h6kU+FQeGSFufArfhDMgqQhTOBZGo+8lDQ8BqJgQEumSKjseWy2m8azPbmR9SvpR00104A1AY
-        ZDX4+KE3pBYDhZiC44tDPOW99OI=
+        MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCKeaOFPXGp7N80uoPzQ8Ncz9fy
+    PM8fvKj52szC4bSFWuS66ZZdo/vHFj4zLahQ2slL/begQfGSC4elaaX1wpFgEbyucYyulDOcHz0O
+    5vvQDtySpnEu4b3AX2JfhQKtEJdK1pwDgzV+uLi0T2wBua7NADyiVL9J1KiVrywDKN+pclgVy2+s
+    qK1wKWWKMha2HS/NlqfmNyxCdvnTuE6D20lIsPUmrkE2ZwkrlqivHTI4gWh6ONqjtPSd76lhgBV2
+    svO9D7aMRz96BcV4XVqYdBXzbArOmd/rfXFWty6spGqqCBcHX79QUwarNVWrK7cprPZMatx3Y4N5
+    pIait/F9c3jBAgMBAAECggEBAIfJmdDJHNF9Zq8lCskcNNGpOl/ew1iivqwro0ii3Us7gznKXtm6
+    OOXT6PB0oC2RLX1n8Y2jvIfy6HQK8mPZBIdJPVVuIX778tPwSgZ3+IvgVukzb5+CW3jtz+BM5P/i
+    WglYAyrqmiWGbBDcJNRYSZHa3ppsMhvq/dmyKZ17kj9sVRaJXauejkbhiIYKpOFXdYnPGQEU1sMj
+    YNfSzo7h3OtfunFuPuQ+TCTHUetkJHy2cMy3bYsl/diRmvM+dqOJit+uFDVAxxg/j4LDu1q4yHhQ
+    ofJ8/kpQNRYDOT1xi/vKPf+XoLwHns9fw/Azv1JCg76kc0uMIA5EzXyCIME0VHUCgYEA8cwQk/he
+    Ab8OiUgSc1YRE7ztGFYMBZ838LVUboIX38h4EeCBlsrlNhQoXEbuXh+x1kVKElURwLA8BJoXJMyQ
+    fAvi8QWkfTPWGm0b7V0KMdCWW9oM00nU5iVyFWkk2mAn+/j8uvVqlUVEDtWFgQZ/QefPS25jzuDf
+    yuZ1fe4Yp2sCgYEAkpvoZ6ECt46Tn2t+4EuE2aSegd8CvzGwGHZeBIt6utfWO6bLr5vHS529qb3d
+    KL41019P9oiRR/SSTLZSsVOsAytv1JMEPeoDY3Fxh/GULODkLq2NnapskQP11XlDt7xjazeJsxS8
+    s2KP6yeA63dxOZ3iv4C0nCgIJ7gSCe+dp4MCgYBsbhNdF7qoU9Ij8+L6P7VGwakdCbE4cC74zYgA
+    SmyEWPSnJ6NVSMVC3AVBZDmOke4A5W+TCvz8CMvRUHxiby23wujRJrOdxboUfatRZTCmKCDVLdIk
+    ie5kCpS/TzhMiWRE1WIYQOe76qTbdhr5Qj2dA2PtMqKlaihRZ8l2YGhD4wKBgQCHJ8WzqyJ3F7CN
+    2iqIGfaqMfGSZoYAvozJsG1yISeOkiXErjq+dIzg79WGYys8QUYby5VLAJF2VUh+AeLv6OP9tBCP
+    Vs0lStO+3Dk+iv3/9X9GbObN/+vAMHd0Siucecbpc7S07Bwd/3IP5kYaTO2LoTsFMmDOSLVj8HRo
+    xoZ/gwKBgQCXjMPO9bnv03JYQ3EzJbM1UuokRu0iXRaZ3BzRj3jHBKELrsKBDXNdaJLUJyqDQJE1
+    8lJJRQC+JciNA5kFuzdLjwfu4GHIHFXQSBuNdz8BKXPltxjBObhr9ycNeLXWIQnZo0iGQiHc/+6a
+    C88cw4gGZtuW+gWRa7QxTtgTNWrbgw==
         -----END PRIVATE KEY-----`
     }
 
 
-    // https://api.qd-metro.com/ngcustomer/Login/loginByPassword
-    async login() { // 登录
-        let param = await this.get_param(`{"phone":"${this.phone}","password":"${this.pwd}"}`)
-        let options = {
-            fn: '登录',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngcustomer/Login/loginByPassword`,
-            headers: this.hd,
-            form: {
-                'language': 'ZH',
-                'deviceCoding': this.device,
-                'model': 'M2102J2SC',
-                'token': '',
-                'version': this.version,
-                'systemversion': '12',
-                'platform': 'android',
-                'phone': this.phone,
-                'param': param
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.respcod == '01') {
-            let data1 = await this.Decrypt(resp.data.param1)
-            // console.log(data1)
-            this.token = data1.split('"token":"')[1].split('",')[0]
-            this.userId = data1.split('"userId":"')[1].split('",')[0]
-            // console.log(this.token, this.userId)
 
-            $.log(`${this.idx}: ${options.fn} ${resp.respmsg}`)
-            this.ckFlog = true
+    async task() {
+        let qd = [
+            1001, 1042, 1043, 1044, 1062, 1068, 1069, 1070, 1071,
+            1072, 1075, 1085, 1087, 1092, 1094, 1104, 1105, 1141,
+            1142, 1148, 1149, 1150, 1151, 1152, 1153, 1154, 1156,
+            1157, 1158, 1159, 1160, 1161, 1162, 1167, 1169, 1170,
+            1171, 1173, 1174, 1176, 1177, 1179, 1180, 1187, 1193,
+            1194, 1195, 1196, 1197, 1198, 1199, 1200, 1201, 1202,
+            1203, 1204, 1205, 1206, 1207, 1208, 1209, 1210, 1218,
+            1219, 1220, 1221, 1222, 1223, 1224, 1225, 1226, 1227,
+            1228, 1229, 1236, 1240, 1244, 1245, 1247, 1248, 1249,
+            1250, 1251, 1252, 1257, 1258, 1260, 1266, 1269, 1272,
+            1278, 1273, 1274, 1277, 1279, 1280, 1281, 47
+        ]
+        // for (let index = 1000; index < 2000; index++) {
+        //     await this.dotask(index)
+        // }
+
+        for (let id of qd) {
+            await this.dotask(id)
             await $.wait(2)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
-    }
-
-    async get_iv() { // 获取iv
-        let options = {
-            fn: '获取iv',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngcustomer/Login/loginRandom`,
-            headers: this.hd,
-            form: {
-                'language': 'ZH',
-                'deviceCoding': this.device,
-                'model': 'M2102J2SC',
-                'token': '',
-                'version': this.version,
-                'systemversion': '12',
-                'platform': 'android',
-                'needVerifyCode': 'false',
-                'isLogin': 'false',
-                'phone': this.phone
-            }
         }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.respcod == '01') {
-            this.iv = resp.data.whatIsThis
-            await this.login()
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
-    async tasklist() { // 任务列表 
-        let options = {
-            fn: '任务列表',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/taskShowList`,
-            headers: this.hd,
-            json: {
-                "token": this.token,
-                "deviceCoding": this.device
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == '01') {
-            let tasks = resp.data
-            for (const task of tasks) {
-                // console.log(task)
-                let { name, status, id } = task
-                if (status != 4) {
-                    if (name == '使用钱包乘车') {
-                        await this.dotask(name, id, 2)
-                    } else {
-                        await this.view(name, id)
-                    }
-                } else {
-                    $.log(`${this.idx}: ${name} 已完成`)
-                }
-
-            }
-
-        } else console.log(`${options.fn}: 失败, ${JSON.stringify(resp)} `)
-
-    }
-
-    async view(name, id) { // 取浏览id 
-        let options = {
-            fn: '取浏览id',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/getTaskBrowseConf`,
-            headers: this.hd,
-            json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-                "taskConfId": id
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == '01') {
-            let doid = resp.data.id
-            await $.wait($.randomInt(15, 20))
-            await this.dotask(name, id, doid)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
 
-    }
 
-    async dotask(name, id, doid) { // 做任务 
-        let ts = $.ts(13)
-        let sign = await this.get_sign(ts, id, doid)
+    async dotask(id) { // 做任务 
+        let ts = this.ts14()
+        let a = this.ck
+        let param = this.aes_encrypt(a)
+        // console.log(param)
+
+        let e = `{"taskId":${id}}`
+        // let aa = `appId=105291391&country=CN&lang=zh_CN&ver=10100143&appVer=1.1.0.143&timestamp=20230225081835{"taskId":1156}b5d906bfe573ec7b0eb3d9f96d3513ed`
+        let p = `appId=${this.appId}&country=CN&lang=zh_CN&ver=10100143&appVer=1.1.0.143&timestamp=${ts}`
+        let b = `${p}${e}${this.salt}`
+        // console.log(b)
+        let sign = this.SHA256withRSA(b)
+        // console.log(sign)
+        let body = `start_${this.aes_encrypt(e)}`
+        // console.log('body: ', body)
         let options = {
             fn: '做任务',
             method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/browseDocument`,
-            headers: this.hd,
-            json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-                "taskConfId": id,
-                "documentId": doid,
-                "createTime": ts,
-                "sign": sign,
-                "timestamp": ""
-            }
+            url: `https://xgmf.zuanqianyi.com/glory/free/1601?${p}`,
+            headers: {
+                'param': param,
+                'sign': sign,
+                'signtype': '2',
+                'content-type': 'application/json; charset=utf-8'
+            },
+            body: body
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == '01') {
-            $.log(`${this.idx}: ${name}, 完成，开始领取奖励`)
-            await this.finish(name, id)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+        let result = JSON.parse(this.aes_decrypt(resp))
+        // console.log(typeof (resp))
+        // console.log(result)
+
+        if (result.data.code == 0) {
+            // console.log(result.data.message)
+            $.log(`${this.idx}: ${id} ==> ${result.data.message}`)
+            ok_arr.push(id)
+        } else if (result.data.code == 103) {
+            // console.log(result.data.message)
+            $.log(`${this.idx}: ${result.data.message}`)
+        } else if (result.data.code == 102) {
+            // console.log(result.data.message)
+            $.log(`${this.idx}: ${result.data.message}`)
+        } else console.log(`${options.fn}: 失败, ${JSON.stringify(result)} `)
+
     }
 
 
-    async finish(name, id) { // 领奖励 
-        let options = {
-            fn: '领奖励',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/finishTask`,
-            headers: this.hd,
-            json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-                "taskConfId": id,
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == '01') {
-            $.log(`${this.idx}: ${name}, 奖励领取成功`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-    }
-
-
+    // https://xgmf.zuanqianyi.com/glory/free/1701?appId=105291391&country=CN&lang=zh_CN&ver=10100143&appVer=1.1.0.143&timestamp=20230225094419
     async check() { // 查询
+        let ts = this.ts14()
+        let a = this.ck
+        let param = this.aes_encrypt(a)
+        // console.log(param)
+
+        let e = `{}`
+        // let aa = `appId=105291391&country=CN&lang=zh_CN&ver=10100143&appVer=1.1.0.143&timestamp=20230225081835{"taskId":1156}b5d906bfe573ec7b0eb3d9f96d3513ed`
+        let qs = `appId=${this.appId}&country=CN&lang=zh_CN&ver=10100143&appVer=1.1.0.143&timestamp=${ts}`
+        let b = `${qs}${e}${this.salt}`
+        // console.log(b)
+        let sign = this.SHA256withRSA(b)
+        // console.log(sign)
+        let body = `start_${this.aes_encrypt(e)}`
+        // console.log('body: ', body)
+
+
         let options = {
             fn: '查询',
             method: 'post',
-            url: `https://api.qd-metro.com/ngscore/user/accInfo`,
-            headers: this.hd,
-            json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-            }
+            url: `https://xgmf.zuanqianyi.com/glory/free/1701?${qs}`,
+            headers: {
+                'param': param,
+                'sign': sign,
+                'signtype': '2',
+                'content-type': 'application/json; charset=utf-8'
+            },
+            body: body
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == '01') {
-            $.log(`${this.idx}: 共有积分 ==> ${resp.data.totalScore}`, { notify: true })
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+        // console.log(resp)
+        let result = JSON.parse(this.aes_decrypt(resp))
+        // console.log(typeof (resp))
+        // console.log(result)
+
+        if (result.retCode == 0) {
+            // console.log(result.data.message)
+            this.coin = result.data.goldCoinNum
+            this.cash = result.data.cashAmount
+            $.log(`${this.idx}:  ${result.data.wechatBindInfo.nickname}, 金币:${this.coin} == ${this.cash} 元`, { notify: true })
+            if (this.cash >= 3) {
+                await this.cash()
+            }
+        } else console.log(`${options.fn}: 失败, ${JSON.stringify(result)} `)
+
+    }
+
+    // https://xgmf.zuanqianyi.com/glory/free/1703?appId=105291391&country=CN&lang=zh_CN&ver=10100143&appVer=1.1.0.143&timestamp=20230306123820
+    async cash() { // 提现
+        let ts = this.ts14()
+        let a = this.ck
+        let param = this.aes_encrypt(a)
+        // console.log(param)
+
+        let e = `{"amountId":24,"smdid":"${smdid}"}`
+        // let aa = `appId=105291391&country=CN&lang=zh_CN&ver=10100143&appVer=1.1.0.143&timestamp=20230306123820{"amountId":24,"smdid":"DeyJvcyI6ImFuZHJvaWQiLCJlbmNvZGUiOjEsImRhdGEiOiJleUpoTVNJNkltVjRZMlZ3ZEdsdmJpSXNJbUUySWpvaVlXNWtjbTlwWkNJc0ltRTNJam9pTXk0d0xqY2lMQ0poTWlJNklpSXNJbUV4TUNJNklqRXlJaXdpWVRFeklqb2lUVEl4TURKS01sTkRJaXdpWVRrMklqb2lJaXdpWVRFeElqb2lJaXdpWVRrNElqb2lJaXdpWlNJNkltcGhkbUV1YkdGdVp5NUpiR3hsWjJGc1FXTmpaWE56UlhoalpYQjBhVzl1T2lCemJYTmtheUJ1YjNRZ2FXNXBkQ0ZjYmx4MFlYUWdZMjl0TG1semFIVnRaV2t1YzIxaGJuUnBabkpoZFdRdVUyMUJiblJwUm5KaGRXUXVaMlYwUkdWMmFXTmxTV1FvVlc1cmJtOTNiaUJUYjNWeVkyVTZNeklwWEc1Y2RHRjBJSGcwTG1JdVl5aFRiM1Z5WTJWR2FXeGxPaklwWEc1Y2RHRjBJSEUxTG1ZdVoyVjBRWEJ3UkdGMFlTaFRiM1Z5WTJWR2FXeGxPalFwWEc1Y2RHRjBJR0Z1WkhKdmFXUXViM011VFdWemMyRm5aVkYxWlhWbExtNWhkR2wyWlZCdmJHeFBibU5sS0U1aGRHbDJaU0JOWlhSb2IyUXBYRzVjZEdGMElHRnVaSEp2YVdRdWIzTXVUV1Z6YzJGblpWRjFaWFZsTG01bGVIUW9UV1Z6YzJGblpWRjFaWFZsTG1waGRtRTZNek0zS1Z4dVhIUmhkQ0JoYm1SeWIybGtMbTl6TGt4dmIzQmxjaTVzYjI5d1QyNWpaU2hNYjI5d1pYSXVhbUYyWVRveE5qZ3BYRzVjZEdGMElHRnVaSEp2YVdRdWIzTXVURzl2Y0dWeUxteHZiM0FvVEc5dmNHVnlMbXBoZG1FNk1qazVLVnh1WEhSaGRDQmhibVJ5YjJsa0xtOXpMa2hoYm1Sc1pYSlVhSEpsWVdRdWNuVnVLRWhoYm1Sc1pYSlVhSEpsWVdRdWFtRjJZVG8yTnlsY2JpSXNJbUU1TnlJNklpSjkiLCJ0biI6IiIsImVwIjoiIn0="}b5d906bfe573ec7b0eb3d9f96d3513ed`
+        let qs = `appId=${this.appId}&country=CN&lang=zh_CN&ver=10100143&appVer=1.1.0.143&timestamp=${ts}`
+        let b = `${qs}${e}${this.salt}`
+        // console.log(b)
+        let sign = this.SHA256withRSA(b)
+        // console.log(sign)
+        let body = `start_${this.aes_encrypt(e)}`
+        // console.log('body: ', body)
+
+
+        let options = {
+            fn: '提现',
+            method: 'post',
+            url: `https://xgmf.zuanqianyi.com/glory/free/1703?${qs}`,
+            headers: {
+                'param': param,
+                'sign': sign,
+                'signtype': '2',
+                'content-type': 'application/json; charset=utf-8'
+            },
+            body: body
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        let result = JSON.parse(this.aes_decrypt(resp))
+        // console.log(typeof (resp))
+        // console.log(result)
+
+        if (result.retCode == 0) {
+            // console.log(result.data.message)
+            $.log(`${this.idx}:  提现 3 元, ${result.data.retMsg}`, { notify: true })
+        } else console.log(`${options.fn}: 失败, ${JSON.stringify(result)} `)
 
     }
 
 
-    async get_param(word) {
+
+    aes_encrypt(word) { // aes 加密
         let key = this.key
         let iv = this.iv
         key = crypto.enc.Utf8.parse(key)
@@ -306,11 +294,31 @@ class UserClass {
             mode: crypto.mode.CBC,
             padding: crypto.pad.Pkcs7
         })
-        //返回base64
-        return crypto.enc.Base64.stringify(encrypted.ciphertext)
+        return crypto.enc.Hex.stringify(encrypted.ciphertext) //返回 Hex
     }
 
-    async Decrypt(word) {
+
+
+    aes_decrypt(word) {
+        let key = this.key
+        let iv = this.iv
+        key = crypto.enc.Utf8.parse(key)
+        iv = crypto.enc.Utf8.parse(iv)
+        let base64 = crypto.enc.Hex.parse(word)
+        let src = crypto.enc.Base64.stringify(base64)
+        // 解密模式为CBC，补码方式为PKCS5Padding（也就是PKCS7）
+        let decrypt = crypto.AES.decrypt(src, key, {
+            iv: iv,
+            mode: crypto.mode.CBC,
+            padding: crypto.pad.Pkcs7
+        })
+        let decryptedStr = decrypt.toString(crypto.enc.Utf8)
+        return decryptedStr.toString()
+
+    }
+
+    async aes_decrypt_bk(word) {
+        console.log(`==========555===`)
         let key = this.key
         let iv = this.iv
         key = crypto.enc.Utf8.parse(key)
@@ -328,24 +336,53 @@ class UserClass {
 
     }
 
-    async get_sign(ts, id, doid) {
-        let sign = this.SHA256withRSA(`${id}${doid}${ts}`).replace(/\_/g, '/').replace(/\-/g, '+')
-        let signn = `${sign}` + '=='
-        //返回base64
-        return signn
+
+
+    SHA256withRSA(inputString) {
+        var rs = require("jsrsasign")
+        let { KEYUTIL, KJUR, hextob64, hextob64u } = rs
+        const key = KEYUTIL.getKey(this.pk)
+        // 创建 Signature 对象，设置签名编码算法
+        const signature = new KJUR.crypto.Signature({ alg: 'SHA256withRSA' })
+        // 初始化
+        signature.init(key)
+        // 传入待加密字符串
+        signature.updateString(inputString)
+        // 生成密文
+        const originSign = signature.sign()
+        const sign64 = hextob64(originSign)
+        // console.log('sign base64 =======', sign64)
+        // const sign64u = hextob64u(originSign)
+        // console.log('sign base64u=======', sign64u)
+        return sign64
     }
 
 
-    //SHA256withRSA   
-    SHA256withRSA(content) {
-        let rs = require("jsrsasign")
-        const key = rs.KEYUTIL.getKey(this.pk)
-        const signature = new rs.KJUR.crypto.Signature({ alg: "SHA256withRSA" })
-        signature.init(key)
-        signature.updateString(content)
-        const originSign = signature.sign()
-        const sign64u = rs.hextob64u(originSign)
-        return sign64u
+    ts14() {
+        let date = new Date()
+        function up0(m) {
+            if (m.toString().length == 1) {
+                m = `0${m}`
+            }
+            return m
+        }
+        // 直接打印当前时间
+        // console.log(date)
+        let y = date.getFullYear()
+        let mo = date.getMonth() + 1
+        mo = up0(mo)
+        let d = date.getDate()
+        d = up0(d)
+        let h = date.getHours() - 8
+        h = up0(h)
+        let m = date.getMinutes()
+        m = up0(m)
+        let s = date.getSeconds()
+        s = up0(s)
+        let aa = `${y}${mo}${d}${h}${m}${s}`
+        // console.log(aa)
+        return aa
+
     }
 
 
@@ -654,4 +691,6 @@ function Env(name) {
             process.exit(0)
         }
     }(name)
+
+
 }

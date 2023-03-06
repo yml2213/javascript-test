@@ -1,23 +1,23 @@
 /*
-青岛地铁 app             cron 25 6-23 * * *  qddt.js
+欧派家居集团 小程序             cron 25 6,12 * * *  opjjjt.js
 
 
-23/2/23      密码登录 ,基本任务 感谢 蛋姨 脚本
+23/2/25      日常任务 ,积分换实物   没几个东西
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 青岛地铁
-export qddt=" phone # pwd  @  phone # pwd   "  
+# 欧派家居集团
+export opjjjt="  token  @ token  "     
 
-多账号用 换行 或 @ 分割  
+多账号用 换行 或 @ 分割   
 
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('青岛地铁')
+const $ = Env('欧派家居集团')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
 const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['qddt']                //支持多变量
+const ckNames = ['opjjjt']                //支持多变量
 
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
@@ -25,14 +25,6 @@ let DEFAULT_RETRY = 1           // 默认重试次数
 
 
 async function userTasks() {
-
-    $.log('登录', { sp: true, console: false })  // 带分割的打印
-    let list = []
-    for (let user of $.userList) {
-        list.push(user.get_iv())
-    }
-    await Promise.all(list)
-
 
     $.log('任务列表', { sp: true, console: false })
     list = []
@@ -53,7 +45,6 @@ async function userTasks() {
     }
     await Promise.all(list)
 
-
 }
 
 
@@ -61,134 +52,50 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.ck = ck.split('#')
-        this.phone = this.ck[0]
-        this.pwd = crypto.MD5(this.ck[1]).toString()
-        this.device = $.randomString(16)
-        this.version = '4.1.5_VersionCode_415'
-        this.key = '1wTD3U39b53qv8ck'
+        this.token = ck
+
+        this.appid = 'wx3713b1d8b100b0be'
 
         this.hd = {
-            'Host': 'api.qd-metro.com',
-            'User-Agent': 'okhttp/3.12.0'
+            'AppCode': 'GRZX',
+            'SubAppCode': 'GRZXMP001',
+            'platform': 'mp-weixin',
+            'appid': this.appid,
+            'Oauth2-AccessToken': this.token,
+            'content-type': 'application/json;charset=utf-8'
         }
-        this.pk = `-----BEGIN PRIVATE KEY-----
-        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7iUFO+72knVUvymgXNvR7Tpv1
-        J/krOQeV8pFxBkmtCvfVwkpu5nsthPyxt0rYlKnRQQZlFkVlr7cT62drLHZicDSi0ojvSmEhpNAQ
-        lue9HWXPhob4dXgxpGsRmCSYiv8naHsyRiApR9O2lvzNa6WK4MP/Tfo9phVk5Ipa3HCiVZY3YSd7
-        cWAImyrY9fsFSOvc1zd0k2vmkPE0nKAI+l5Mv7eAglPYfDw6oRXwGEjdGVtRduyfmy5YeyLEbNIR
-        cFhHiHHoWcQvByEAgXbjOKG/Om3hsA3eeUw70f+9sMdv7uwZm6E1Y50TnQzsP03Co4WpPEVH0+zM
-        VoAIigrjL0YNAgMBAAECggEAHphx8zTW57hTYYygFsl8cXGNuB1hZU/UkP4WBF6GPpj/ffxIsHch
-        uXds0oGY0GTQn7cAGBXeFIzqTXGmWbHTTpQHwliexotX9WkyGMLF4/Cb35OPCZIAnfi5DxHHRqvG
-        nONK1hTiwllZjPxtGgZp55Jr54cNQGmMK/2tJM26AoG0OtT+55/ZBxHTtm0j08DhfyYdjHPYGZJz
-        nmZ/oQqjeI0eZQZe+h5ojKNqxGvhDiybgpIfkQvwVJhcbXiRYvQs1QnwxKOjm8dUCkn+do24H17x
-        ouw4NML9sm3zCW48yXQwWcP45h27bvmu7z2iVhq1lo50sWg710EG9bBNfc1rcQKBgQDyDK6+sm7k
-        NYO98A3xjp/GVmJ6Mp+6moWmI+fKDVEGb2chcdO5slKrBb1XX2TQRJS10K6yc0zntuTNVfJRAPpN
-        lyQV9ndGvUbWwRFEu8DETW05NCnd9SQwgQoSG1TcS6fqUqpQV9wJvnoFUJSP9uRnxBiVGyyeSzte
-        LMvjCpU33wKBgQDGWEFbK69u69QH3RsgI+V0Dthr+ySF+VTRaeprfrhFfuZzVhwqd3Cpjj8HpL/7
-        XzTT4Gt33tZudbT02VY71QtzuPH2psoP5P2vP8XMbj1hM5Jgl71G+BnEKNUDlLqVn8zzE76Woi7y
-        5Yj7U7ppCx94qDod7tuqEzvt4nbrponvkwKBgQCJ4gmlXhXncEi06Uu4IAwKOulsPOxaq22Y3/lJ
-        U16lsM5p8eKvdNK8088xN4lBTt/71n298AqOMNST1/LqjAkKLCAFVtpJdMcmzOKeaen8qTKgFIQJ
-        CX1tGAT5nZIwz/Q+eorEq9gPwO7XmjiW7gjcx4tNXSaEocyW8CPRGRU5twKBgGNUB0bVFcICr+hQ
-        PilWUK5SUOeimaPOPT+yPwceKsICzv2rfed2cSE4bzAwvUPxZc9FcAxTuCcRI1ILFThZdKa7U9El
-        rcNP9gsxcKjz/CEVZpSg6NUFokGuAR8N+HK92DFTDfr5tXFGqdbTE2NPgq818ATVfYQqpbR32P4i
-        JKmpAoGAMUvAjv2uAf46ucQiTiABAhFKXMTIco3EJm9HTuWkB55RJ6RT08AT3ZdzlD9o4/kS2sFy
-        /f2h6kU+FQeGSFufArfhDMgqQhTOBZGo+8lDQ8BqJgQEumSKjseWy2m8azPbmR9SvpR00104A1AY
-        ZDX4+KE3pBYDhZiC44tDPOW99OI=
-        -----END PRIVATE KEY-----`
-    }
-
-
-    // https://api.qd-metro.com/ngcustomer/Login/loginByPassword
-    async login() { // 登录
-        let param = await this.get_param(`{"phone":"${this.phone}","password":"${this.pwd}"}`)
-        let options = {
-            fn: '登录',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngcustomer/Login/loginByPassword`,
-            headers: this.hd,
-            form: {
-                'language': 'ZH',
-                'deviceCoding': this.device,
-                'model': 'M2102J2SC',
-                'token': '',
-                'version': this.version,
-                'systemversion': '12',
-                'platform': 'android',
-                'phone': this.phone,
-                'param': param
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.respcod == '01') {
-            let data1 = await this.Decrypt(resp.data.param1)
-            // console.log(data1)
-            this.token = data1.split('"token":"')[1].split('",')[0]
-            this.userId = data1.split('"userId":"')[1].split('",')[0]
-            // console.log(this.token, this.userId)
-
-            $.log(`${this.idx}: ${options.fn} ${resp.respmsg}`)
-            this.ckFlog = true
-            await $.wait(2)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
-    }
-
-    async get_iv() { // 获取iv
-        let options = {
-            fn: '获取iv',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngcustomer/Login/loginRandom`,
-            headers: this.hd,
-            form: {
-                'language': 'ZH',
-                'deviceCoding': this.device,
-                'model': 'M2102J2SC',
-                'token': '',
-                'version': this.version,
-                'systemversion': '12',
-                'platform': 'android',
-                'needVerifyCode': 'false',
-                'isLogin': 'false',
-                'phone': this.phone
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.respcod == '01') {
-            this.iv = resp.data.whatIsThis
-            await this.login()
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
     async tasklist() { // 任务列表 
+        await this.getToken()
+        await this.getUserId()
         let options = {
             fn: '任务列表',
             method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/taskShowList`,
+            url: `https://apigateway.oppein.com/pointscenter/pointIssueRule/getUserPointsIssueRules`,
             headers: this.hd,
             json: {
-                "token": this.token,
-                "deviceCoding": this.device
+                "userId": this.userId,
+                "appCode": "GRZX"
             }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == '01') {
+        if (resp.code == '100000') {
             let tasks = resp.data
             for (const task of tasks) {
                 // console.log(task)
-                let { name, status, id } = task
-                if (status != 4) {
-                    if (name == '使用钱包乘车') {
-                        await this.dotask(name, id, 2)
+                let { name, eventCode, limitCount, triggerCount } = task
+                let num = limitCount - triggerCount
+                if (triggerCount < limitCount) {
+                    if (name == '完善用户信息') {
+                        // await this.dotask(name, eventCode)
                     } else {
-                        await this.view(name, id)
+                        for (let index = 0; index < num; index++) {
+                            await this.dotask(name, eventCode)
+                        }
                     }
                 } else {
                     $.log(`${this.idx}: ${name} 已完成`)
@@ -200,152 +107,100 @@ class UserClass {
 
     }
 
-    async view(name, id) { // 取浏览id 
-        let options = {
-            fn: '取浏览id',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/getTaskBrowseConf`,
-            headers: this.hd,
-            json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-                "taskConfId": id
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == '01') {
-            let doid = resp.data.id
-            await $.wait($.randomInt(15, 20))
-            await this.dotask(name, id, doid)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
 
-    }
-
-    async dotask(name, id, doid) { // 做任务 
-        let ts = $.ts(13)
-        let sign = await this.get_sign(ts, id, doid)
+    async dotask(name, eventCode) { // 做任务 
         let options = {
             fn: '做任务',
             method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/browseDocument`,
+            url: `https://apigateway.oppein.com/pointscenter/points/eventTrigger`,
             headers: this.hd,
             json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-                "taskConfId": id,
-                "documentId": doid,
-                "createTime": ts,
-                "sign": sign,
-                "timestamp": ""
+                "userId": this.userId,
+                "appCode": "GRZX",
+                "subAppCode": "GRZXMP001",
+                "eventCode": eventCode,
+                "userBizType": "CUSTOMER",
+                "eventSubject": "Article"
             }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == '01') {
-            $.log(`${this.idx}: ${name}, 完成，开始领取奖励`)
-            await this.finish(name, id)
+        if (resp.code == '100000') {
+            $.log(`${this.idx}: ${name}, ${resp.data.message}`)
+            await $.wait($.randomInt(5, 10))
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
 
 
-    async finish(name, id) { // 领奖励 
+    async getUserId() {
         let options = {
-            fn: '领奖励',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngscore/task/finishTask`,
+            fn: '获取用户id',
+            method: 'get',
+            url: `https://apigateway.oppein.com/customercenter/auth/v2/getCurrentCustomer`,
             headers: this.hd,
-            json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-                "taskConfId": id,
-            }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == '01') {
-            $.log(`${this.idx}: ${name}, 奖励领取成功`)
+        if (resp.code == '100000') {
+            this.userId = resp.data.customerId
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
-
 
     async check() { // 查询
         let options = {
             fn: '查询',
-            method: 'post',
-            url: `https://api.qd-metro.com/ngscore/user/accInfo`,
+            method: 'get',
+            url: `https://apigateway.oppein.com/pointscenter/points/getUserPoints?appCode=GRZX&userBizType=CUSTOMER&userBizId=${this.userId}`,
             headers: this.hd,
-            json: {
-                "token": this.token,
-                "deviceCoding": this.device,
-            }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == '01') {
-            $.log(`${this.idx}: 共有积分 ==> ${resp.data.totalScore}`, { notify: true })
+        if (resp.code == '100000') {
+            $.log(`${this.idx}: 共有积分 ==> ${resp.data.score}`, { notify: true })
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
-
-    async get_param(word) {
-        let key = this.key
-        let iv = this.iv
-        key = crypto.enc.Utf8.parse(key)
-        iv = crypto.enc.Utf8.parse(iv)
-        let srcs = crypto.enc.Utf8.parse(word)
-        // 加密模式为CBC，补码方式为PKCS5Padding（也就是PKCS7）
-        let encrypted = crypto.AES.encrypt(srcs, key, {
-            iv: iv,
-            mode: crypto.mode.CBC,
-            padding: crypto.pad.Pkcs7
-        })
-        //返回base64
-        return crypto.enc.Base64.stringify(encrypted.ciphertext)
-    }
-
-    async Decrypt(word) {
-        let key = this.key
-        let iv = this.iv
-        key = crypto.enc.Utf8.parse(key)
-        iv = crypto.enc.Utf8.parse(iv)
-        let base64 = crypto.enc.Base64.parse(word)
-        let src = crypto.enc.Base64.stringify(base64)
-        // 解密模式为CBC，补码方式为PKCS5Padding（也就是PKCS7）
-        let decrypt = crypto.AES.decrypt(src, key, {
-            iv: iv,
-            mode: crypto.mode.CBC,
-            padding: crypto.pad.Pkcs7
-        })
-        let decryptedStr = decrypt.toString(crypto.enc.Utf8)
-        return decryptedStr.toString()
-
-    }
-
-    async get_sign(ts, id, doid) {
-        let sign = this.SHA256withRSA(`${id}${doid}${ts}`).replace(/\_/g, '/').replace(/\-/g, '+')
-        let signn = `${sign}` + '=='
-        //返回base64
-        return signn
-    }
-
-
-    //SHA256withRSA   
-    SHA256withRSA(content) {
-        let rs = require("jsrsasign")
-        const key = rs.KEYUTIL.getKey(this.pk)
-        const signature = new rs.KJUR.crypto.Signature({ alg: "SHA256withRSA" })
-        signature.init(key)
-        signature.updateString(content)
-        const originSign = signature.sign()
-        const sign64u = rs.hextob64u(originSign)
-        return sign64u
+    async getToken() {
+        let options = {
+            fn: '获取token',
+            method: 'post',
+            url: `https://apigateway.oppein.com/customercenter/anonymous/auth/v2/oauthLogin`,
+            headers: this.hd,
+            join: {
+                "authResult": {
+                    "errno": 0,
+                    "code": "053Ccc000CBQvP17Sx000mrHDq1Ccc0T",
+                    "errMsg": "login:ok",
+                    "clientInfo": {
+                        "wxdataQueueTimestamp": 1677289018168,
+                        "isConfirm": false,
+                        "wxlibCallbackTimestamp": 1677289018368,
+                        "beginCGITimestamp": 1677289018168,
+                        "queueLength": 0,
+                        "beginCGITimestampAfterConfirm": 18446744073709552000,
+                        "wxdataDequeueTimestamp": 1677289018168,
+                        "CGICallbackTimestampAfterConfirm": 18446744073709552000,
+                        "CGICallbackTimestamp": 1677289018368
+                    }
+                },
+                "mtdsUserId": "",
+                "appid": "wx3713b1d8b100b0be",
+                "platform": "MP_WEIXIN",
+                "sourceChannel": ""
+            }
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        console.log(resp)
+        if (resp.code == '100000') {
+            this.token = resp.data
+            console.log(this.token)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
 
 
