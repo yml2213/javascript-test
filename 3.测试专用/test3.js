@@ -9,6 +9,13 @@ const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变�
 async function userTasks() {
 
 
+    $.log('登录', { sp: true, console: false })  // 带分割的打印
+    let list = []
+    for (let user of $.userList) {
+        list.push(user.login())
+    }
+    await Promise.all(list)
+
     $.log('任务列表', { sp: true, console: false })
     list = []
     for (let user of $.userList) {
@@ -21,17 +28,59 @@ async function userTasks() {
 
 }
 
-// Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 - mmbWebBrowse - android
+
 class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.ck = ck
+        this.ck = ck.split('#')
+        this.token = this.ck[0]
+        this.ts = $.ts(13)
+        this.code = '65'
+        this.token = '1633660361038946305'
+        this.version = '1.0.0'
+
         this.hd = {
-            'Cookie': this.ck,
-            'content-type': 'application/x-www-form-urlencoded',
-            'User-Agent': `Mozilla/5.0 (Linux; Android 12; M${$.randomString(8)} Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 - mmbWebBrowse - android`
+            'charset': 'utf-8',
+            'api_timestamp': this.ts,
+            'api_token': this.token,
+            'api_sign': '',
+            'api_version': this.version,
+            'api_client_code': this.code,
+            'content-type': 'application/json'
         }
+    }
+
+
+    async login() { // 登录
+        let options = {
+            fn: '登录',
+            method: 'post',
+            url: `https://atom.musiyoujia.com/member/wechatlogin/selectuserinfo`,
+            headers: this.hd,
+            json: {
+                "appId": "wx03527497c5369a2c",
+                "appType": "WECHAT_MINI_PROGRAM",
+                "openId": "oaVFg5BHw6Gk_vPVy5SWBhBsc2QY"
+            }
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status_code == 200) {
+            this.token = resp.session_id
+            this.userId = resp.user_info.user_id
+            this.nick_name = resp.user_info.nick_name
+            this.cookie = `session_id=${this.token}`
+            this.hd.cookie = this.cookie
+            this.hd.userid = this.userId
+            // console.log(this.hd)
+            // console.log(this.token)
+            $.log(`${this.idx}: ${options.fn} ${resp.msg}, ${this.nick_name}, 手机号 ${resp.user_info.phone}`)
+            this.ckFlog = true
+            await $.wait(2)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
+
     }
 
 
@@ -105,37 +154,11 @@ class UserClass {
 
     }
 
-    async doTask2(id) { // 领 5 元e卡
-        let options = {
-            fn: 'doTask',
-            method: 'post',
-            url: `https://apph5.manmanbuy.com/h5/zhuanpan/index.aspx`,
-            headers: {
-                'Cookie': this.ck,
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            form: {
-                'action': 'get_award',
-                'orderId': '2072793'
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 1) {
-            $.log(`${this.idx} 第${id + 1}次: 成功`)
-            let n = $.randomInt(5, 8)
-            $.log(`随机等待 ${n} 秒`)
-            await $.wait(n)
 
-        } else if (resp.code == 0) {
-            $.log(`${this.idx} 第${id + 1}次: 失败`)
-            let n = $.randomInt(20, 30)
-            $.log(`随机等待 ${n} 秒`)
-            await $.wait(n)
 
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
+    get_sign(ts) {
+        let a = `api_token=${this.token}&api_client_code=${this.code}&api_version=${this.version}&api_timestamp=${ts}`
+        return crypto.MD5(stringify(a)).toString().toUpperCase()
     }
 
 

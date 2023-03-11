@@ -1,67 +1,37 @@
 /*
-随时聊 app             cron 22 8,12 * * *  shl.js
+热度星客 小程序            cron 25 6-23 * * *  rdxk.js
 
 
-23/1/30      基本任务
+23/3/11      签到
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 随时聊
-export shl=" phone # pwd  @  phone # pwd  "  
-
+# 热度星客
+export rdxk="token  @ token   "  
 
 多账号用 换行 或 @ 分割  
+
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('随时聊')
-const { MD5 } = require('crypto-js')
-const crypto = require('crypto-js')
+const $ = Env('热度星客')
 const notify = require('./sendNotify')
+const crypto = require('crypto-js')
 
-const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['shl']                //支持多变量
+const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
+const ckNames = ['rdxk']                //支持多变量
+
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
 //====================================================================================================
 
 
-
-
-
-
 async function userTasks() {
 
-    $.log('用户信息', { sp: true, console: false })  // 带分割的打印
-    list = []
+    $.log('签到', { sp: true, console: false })  // 带分割的打印
+    let list = []
     for (let user of $.userList) {
-        // list.push(user.login())
-    } await Promise.all(list)
-
-    $.log('合成信息', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.userInfo())
-            // list.push(user.boxList())
-        }
-    } await Promise.all(list)
-
-    $.log('购买', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.buy_1())
-            // list.push(user.boxList())
-        }
-    } await Promise.all(list)
-
-
-    // $.log('积分查询', { sp: true, console: false })
-    // list = []
-    // for (let user of $.userList) {
-    //     if (user.ckFlog) {
-    //         list.push(user.points())
-    //     }
-    // } await Promise.all(list)
+        list.push(user.sign())
+    }
+    await Promise.all(list)
 
 }
 
@@ -70,164 +40,62 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.ck = ck.split('#')
-        this.phone = this.ck[0]
-        this.pwd = this.ck[1]
-
-        this.salt = 'SHL9L9JIRW5PCRBEU9FTKFGEY4HXLSHL'
-        this.Random_str = $.randomString(8)
-        this.ts = $.ts(10)
-        this.hd1 = { // ts rs  salt
-            'Api-Token': this.getApiToken(1, this.ts, this.Random_str),
-            'Api-Timestamp': this.ts,
-            'Api-Random-Str': this.Random_str,
-            'Api-OS': '1',
-            'Api-Version': '10803',
-            'Api-Device': 'Xiaomi M2102J2SC',
-            'Login-Token': '1zo61jdeqzyg6melbeuy03fvtdqv7htw',
-        }
-        this.hd2 = { // ts  salt rs  
-            'Api-Token': this.getApiToken(2, this.ts, this.Random_str),
-            'Api-Timestamp': this.ts,
-            'Api-Random-Str': this.Random_str,
-            'Api-OS': '1',
-            'Api-Version': '10803',
-            'Api-Device': 'Xiaomi M2102J2SC',
-            'Login-Token': '1zo61jdeqzyg6melbeuy03fvtdqv7htw',
-        }
+        this.ck = JSON.parse(ck)
 
     }
 
 
-
-
-    async login() {
+    async sign() { // 签到
         let options = {
-            fn: 'login',
+            fn: '签到',
             method: 'post',
-            url: `https://api.liaozhuangkeji.com/member/v1/member/login`,
+            url: `https://m.reduxingke.com/api/usersign/sign`,
             headers: {
-                'Api-Token': this.getApiToken('login', this.ts, this.Random_str),
-                'Api-Timestamp': this.ts,
-                'Api-Random-Str': this.Random_str,
-                'Api-OS': '1',
-                'Api-Version': '10803',
-                'Api-Device': 'Xiaomi M2102J2SC',
-                'Login-Token': '',
+                'charset': 'utf-8',
+                'version': '10102',
+                'form-type': 'routine',
+                'authori-zation': 'Bearer 7762a08e325d5e7eec45dc5dccecdf5a',
+                'User-Agent': 'Apifox/1.0.0 (https://www.apifox.cn)',
+                'content-type': 'application/json'
             },
-            form: {
-                'mobile': this.phone,
-                'password': this.pwd
-            }
-
-        }
-        console.log(options)
-        let resp = await $.request(options)
-        console.log(resp)
-        if (resp.recode == 0) {
-            this.hd['Login-Token'] = resp.data.token
-            this.nickname = resp.data.member.nickname
-            this.amount = resp.data.estimated_amount
-            $.log(`${this.idx}: ${this.nickname}, 手机号 ${$.phoneNum(resp.data.member.mobile)}, 余额≈≈${this.amount}元`, { notify: true })
-            this.ckFlog = true
-        } else console.log(`${options.fn}: 失败, ${resp}`), this.ckFlog = false
-
-    }
-
-    // https://api.liaozhuangkeji.com/synthetic/v1/user/info
-    async userInfo() {
-        let options = {
-            fn: 'userInfo',
-            method: 'get',
-            url: `https://api.liaozhuangkeji.com/synthetic/v1/user/info`,
-            headers: this.hd2,
+            json: {}
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.recode == 0) {
-            this.game_car = resp.data.game_car
-            $.log(`${this.idx}: 等级${resp.data.level}级, 银币${resp.data.coin}, 现金${resp.data.wallet.money}元, 更新时间${resp.data.update_time}`, { notify: true })
-            // console.log(this.game_car)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
-
-    }
-
-    // 买一级--100银币
-    async buy_1() {
-        let options = {
-            fn: 'buy_1',
-            method: 'post',
-            url: `https://api.liaozhuangkeji.com/synthetic/v1/game/buy`,
-            headers: {
-                'Api-Token': this.getApiToken(2, this.ts, this.Random_str),
-                'Api-Timestamp': this.ts,
-                'Api-Random-Str': this.Random_str,
-                'Accept-Language': 'zh-CN,zh;q=0.8',
-                'User-Agent': 'Android/1.8.3/10803/XiaomiM2102J2SC/12/IMEI:72606f551c907d8b/246135',
-                'Api-OS': '1',
-                'Api-Version': '10803',
-                'Api-Device': 'Xiaomi M2102J2SC',
-                'Login-Token': '1zo61jdeqzyg6melbeuy03fvtdqv7htw',
-                'Host': 'api.liaozhuangkeji.com',
-                'Cache-Control': 'no-cache',
-                'Content-Length': 0
-            },
-            form: {
-                'https://api.liaozhuangkeji.com/synthetic/v1/game/buy': ''
-            }
-        }
-        console.log(options)
-        let resp = await $.request(options)
-        console.log(resp)
-        if (resp.recode == 0) {
-            this.game_car = resp.data.game_car
-            $.log(`${this.idx}: 购买 ${resp.msg}, 等级${resp.data.level}级, 剩余银币${resp.data.coin}, 奖券${resp.data.coupons}张, 更新时间${resp.data.update_time}`, { notify: true })
-            console.log(this.game_car)
-        } else console.log(`${options.fn}: 失败, ${resp}`)
+        if (resp.status == 200) {
+            $.log(`${this.idx}: ${options.fn}, ${resp.msg}`)
+            await $.wait(2)
+        } else if (resp.status == 400) {
+            $.log(`${this.idx}: ${options.fn}, ${resp.msg}`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
 
-
-
-
-
-
-    getApiToken(type, ts, Random_str) { // 获取sign 
-        if (type = 1) {
-            let a = `${ts}${Random_str}${this.salt}`
-            let sign = MD5(a).toString()
-            return sign
-        } else if (type = 2) {
-            let a = `${ts}${this.salt}${Random_str}`
-            let sign = MD5(a).toString()
-            return sign
-        }
-    }
 
 }
 
 
 !(async () => {
     console.log(await $.yiyan())
-    $.read_env(UserClass)
+    if ($.read_env(UserClass)) {
+        await userTasks()
+    }
 
-    await userTasks()
 
 })()
     .catch((e) => $.log(e))
     .finally(() => $.exitNow())
 
 
-
-//===============================================================     
+//===============================================================
 function Env(name) {
     return new class {
         constructor(name) {
             this.name = name
             this.startTime = Date.now()
-            this.log(`[${this.name}]开始运行`, { time: true })
+            this.log(`[${this.name}]开始运行`)
 
             this.notifyStr = []
             this.notifyFlag = true
@@ -236,37 +104,45 @@ function Env(name) {
             this.userList = []
             this.userCount = 0
         }
-        async request(opt) {
-            const got = require('got')
-            let DEFAULT_TIMEOUT = 8000      // 默认超时时间
-            let resp = null, count = 0
-            let fn = opt.fn || opt.url
-            let resp_opt = opt.resp_opt || 'body'
-            opt.timeout = opt.timeout || DEFAULT_TIMEOUT
-            opt.retry = opt.retry || { limit: 0 }
-            opt.method = opt?.method?.toUpperCase() || 'GET'
-            while (count++ < DEFAULT_RETRY) {
-                try {
-                    resp = await got(opt)
-                    break
-                } catch (e) {
-                    if (e.name == 'TimeoutError') {
-                        this.log(`[${fn}]请求超时，重试第${count}次`)
-                    } else {
-                        this.log(`[${fn}]请求错误(${e.message})，重试第${count}次`)
+
+        async request(opt, type = 'body') {
+            try {
+                const got = require('got')
+                let DEFAULT_TIMEOUT = 8000      // 默认超时时间
+                let resp = null, count = 0
+                let fn = opt.fn || opt.url
+                opt.timeout = opt.timeout || DEFAULT_TIMEOUT
+                opt.retry = opt.retry || { limit: 0 }
+                opt.method = opt?.method?.toUpperCase() || 'GET'
+                while (count++ < DEFAULT_RETRY) {
+                    try {
+                        resp = await got(opt)
+                        break
+                    } catch (e) {
+                        if (e.name == 'TimeoutError') {
+                            this.log(`[${fn}]请求超时，重试第${count}次`)
+                        } else {
+                            this.log(`[${fn}]请求错误(${e.message})，重试第${count}次`)
+                        }
                     }
                 }
+                if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
+                let { statusCode, headers, body } = resp
+                if (body) try {
+                    body = JSON.parse(body)
+                } catch {
+                }
+                if (type == 'body') {
+                    return Promise.resolve(body)
+                } else if (type == 'hd') {
+                    return Promise.resolve(headers)
+                } else if (type == 'statusCode') {
+                    return Promise.resolve(statusCode)
+                }
+            } catch (error) {
+                console.log(error)
             }
-            if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
-            let { statusCode, headers, body } = resp
-            if (body) try { body = JSON.parse(body) } catch { }
-            if (resp_opt == 'body') {
-                return Promise.resolve(body)
-            } else if (resp_opt == 'hd') {
-                return Promise.resolve(headers)
-            } else if (resp_opt == 'statusCode') {
-                return Promise.resolve(statusCode)
-            }
+
 
         }
 
@@ -288,11 +164,12 @@ function Env(name) {
                 console.log(`\n-------------- ${msg} --------------`)
             }
         }
+
         read_env(Class) {
             let envStrList = ckNames.map(x => process.env[x])
             for (let env_str of envStrList.filter(x => !!x)) {
-                let sp = envSplitor.filter(x => env_str.includes(x))
-                let splitor = sp.length > 0 ? sp[0] : envSplitor[0]
+                let sp = envSplit.filter(x => env_str.includes(x))
+                let splitor = sp.length > 0 ? sp[0] : envSplit[0]
                 for (let ck of env_str.split(splitor).filter(x => !!x)) {
                     this.userList.push(new Class(ck))
                 }
@@ -305,12 +182,14 @@ function Env(name) {
             this.log(`共找到${this.userCount}个账号`)
             return true
         }
+
         async taskThread(taskName, conf, opt = {}) {
             while (conf.idx < $.userList.length) {
                 let user = $.userList[conf.idx++]
                 await user[taskName](opt)
             }
         }
+
         async threadManager(taskName, thread) {
             let taskAll = []
             let taskConf = { idx: 0 }
@@ -319,6 +198,7 @@ function Env(name) {
             }
             await Promise.all(taskAll)
         }
+
         time(t, x = null) {
             let xt = x ? new Date(x) : new Date
             let e = {
@@ -335,6 +215,7 @@ function Env(name) {
                 new RegExp("(" + s + ")").test(t) && (t = t.replace(RegExp.$1, 1 == RegExp.$1.length ? e[s] : ("00" + e[s]).substr(("" + e[s]).length)))
             return t
         }
+
         async showmsg() {
             if (!this.notifyFlag) return
             if (!this.notifyStr) return
@@ -342,6 +223,7 @@ function Env(name) {
             this.log('\n============== 推送 ==============')
             await notify.sendNotify(this.name, this.notifyStr.join('\n'))
         }
+
         padStr(num, length, opt = {}) {
             let padding = opt.padding || '0'
             let mode = opt.mode || 'l'
@@ -358,6 +240,7 @@ function Env(name) {
             }
             return numStr
         }
+
         json2str(obj, c, encode = false) {
             let ret = []
             for (let keys of Object.keys(obj).sort()) {
@@ -367,6 +250,7 @@ function Env(name) {
             }
             return ret.join(c)
         }
+
         str2json(str, decode = false) {
             let ret = {}
             for (let item of str.split('&')) {
@@ -380,6 +264,7 @@ function Env(name) {
             }
             return ret
         }
+
         phoneNum(phone_num) {
             if (phone_num.length == 11) {
                 let data = phone_num.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2")
@@ -388,9 +273,11 @@ function Env(name) {
                 return phone_num
             }
         }
+
         randomInt(min, max) {
             return Math.round(Math.random() * (max - min) + min)
         }
+
         async yiyan() {
             const got = require('got')
             return new Promise((resolve) => {
@@ -408,6 +295,7 @@ function Env(name) {
                 })()
             })
         }
+
         ts(type = false, _data = "") {
             let myDate = new Date()
             let a = ""
@@ -455,6 +343,7 @@ function Env(name) {
             }
             return a
         }
+
         randomPattern(pattern, charset = 'abcdef0123456789') {
             let str = ''
             for (let chars of pattern) {
@@ -468,6 +357,7 @@ function Env(name) {
             }
             return str
         }
+
         randomString(len, charset = 'abcdef0123456789') {
             let str = ''
             for (let i = 0; i < len; i++) {
@@ -475,13 +365,16 @@ function Env(name) {
             }
             return str
         }
+
         randomList(a) {
             let idx = Math.floor(Math.random() * a.length)
             return a[idx]
         }
+
         wait(t) {
             return new Promise(e => setTimeout(e, t * 1000))
         }
+
         async exitNow() {
             await this.showmsg()
             let e = Date.now()
