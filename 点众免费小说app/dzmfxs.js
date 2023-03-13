@@ -229,6 +229,7 @@ class UserClass {
             this.coin = result.data.goldCoinNum
             this.cash = result.data.cashAmount
             $.log(`${this.idx}:  ${result.data.wechatBindInfo.nickname}, 金币:${this.coin} == ${this.cash} 元`, { notify: true })
+            console.log(this.cash)
             if (this.cash >= 3) {
                 await this.cash()
             }

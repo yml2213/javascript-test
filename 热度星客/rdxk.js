@@ -40,7 +40,7 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.ck = JSON.parse(ck)
+        this.token = ck
 
     }
 
@@ -54,7 +54,7 @@ class UserClass {
                 'charset': 'utf-8',
                 'version': '10102',
                 'form-type': 'routine',
-                'authori-zation': 'Bearer 7762a08e325d5e7eec45dc5dccecdf5a',
+                'authori-zation': `Bearer ${this.token}`,
                 'User-Agent': 'Apifox/1.0.0 (https://www.apifox.cn)',
                 'content-type': 'application/json'
             },
@@ -64,7 +64,7 @@ class UserClass {
         let resp = await $.request(options)
         // console.log(resp)
         if (resp.status == 200) {
-            $.log(`${this.idx}: ${options.fn}, ${resp.msg}`)
+            $.log(`${this.idx}: ${options.fn}, ${resp.msg}`, { notify: true })
             await $.wait(2)
         } else if (resp.status == 400) {
             $.log(`${this.idx}: ${options.fn}, ${resp.msg}`)
