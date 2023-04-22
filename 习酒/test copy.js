@@ -28,6 +28,33 @@ let DEFAULT_RETRY = 1           // 默认重试次数
 //====================================================================================================
 
 
+async function userTasks() {
+
+
+    $.log(`\n-------------- 登录刷新 --------------`)
+    let list = []
+    for (let user of $.userList) {
+        list.push(user.Info())
+    } await Promise.all(list)
+
+
+    for (let user of $.userList) {
+        if (user.ckFlog) {
+            $.log(`\n-------------- 任务列表 --------------`)
+            list = []
+            list.push(user.tasklist())
+            await Promise.all(list)
+
+            $.log(`\n-------------- 任务 --------------`)
+            list = []
+            list.push(user.do_wheat())
+            await Promise.all(list)
+        }
+    }
+
+}
+
+
 class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
@@ -55,20 +82,6 @@ class UserClass {
         }
 
 
-    }
-
-    async userTask() { // 个人信息
-        console.log(`\n=============== ${this.idx} ===============`)
-        await this.Info()
-
-        if (this.ckFlog) {
-            $.log(`\n-------------- 任务列表 --------------`)
-            await this.tasklist()
-
-            $.log(`\n-------------- 其他任务 --------------`)
-            await this.adjust()
-
-        }
     }
 
     async Info() { // 个人信息
@@ -162,7 +175,7 @@ class UserClass {
                     if (is_complete == 0) {
                         switch (name) {
                             case '每日一答':
-                                // await this.answer_survey()
+                                await this.answer_survey()
                                 break
 
                             case '分享':
@@ -205,7 +218,6 @@ class UserClass {
 
     }
 
-
     // 调度任务 种啥  是否制曲   是否制酒   浇水/施肥
     async adjust(type = 0) {
         if (type == 0) {
@@ -230,10 +242,27 @@ class UserClass {
                 $.log(`${this.idx}: 暂时没有空地, 跳过种植`)
             }
 
+
+            // 制曲 调度
+            if (this.wheat > 100 && this.wine_yeast == 0) {
+                $.log(`${this.idx}: 满足 制曲 条件, 即将 制曲`)
+                await this.makeWineYeast()  // 制曲
+            }
+
+            // 制酒 调度
+            await this.gardenmemberwine()  // 查询有无可以收获的酒
+
+
+            // 浇水/施肥  调度
+            if (this.water > 0) {
+                await this.get_landId(1)  // 浇水
+            }
+            if (this.manure > 0) {
+                await this.get_landId(2)  // 施肥  
+            }
+
         } else if (type == 1) {  // 浇水/施肥 专用循环
             await this.harvestAll()     // 尝试 收获所有成熟作物
-            await this.inventory_info()     // 刷新数量
-
             // 种植调度
             // 1 高粱 - sorghum    2 小麦 - wheat
             if (await this.is_null()) {
@@ -253,24 +282,15 @@ class UserClass {
                 $.log(`${this.idx}: 暂时没有空地, 跳过种植`)
             }
 
+            // 浇水/施肥  调度
+            if (this.water > 0) {
+                await this.get_landId(1)  // 浇水
+            }
+            if (this.manure > 0) {
+                await this.get_landId(2)  // 施肥  
+            }
 
 
-
-
-        }
-
-        // 制曲 调度
-        if (this.wheat > 100 && this.wine_yeast == 0) {
-            $.log(`${this.idx}: 满足 制曲 条件, 即将 制曲`)
-            await this.makeWineYeast()  // 制曲
-        }
-
-        // 制酒 调度
-        await this.gardenmemberwine()  // 查询有无可以收获的酒
-
-        // 兑换积分
-        if (this.wine > 0) {
-            await this.exchange(this.wine)
         }
 
     }
@@ -359,8 +379,8 @@ class UserClass {
 
     }
 
-    // 判断土地 是否为空
-    async is_null() {
+
+    async is_null() { // 判断土地 是否为空
         let options = {
             fn: '土地是否为空',
             method: 'get',
@@ -460,9 +480,6 @@ class UserClass {
                 headers: {
                     'authorization': this.jwt,
                     'login_code': this.login_code,
-                    'User-Agent': this.dUA,
-                    'Referer': ' https://servicewechat.com/wx489f950decfeb93e/246/page-frame.html',
-
                 },
                 form: {
                     'id': id,
@@ -474,15 +491,8 @@ class UserClass {
             // console.log(resp)
             if (resp.err == 0) {
                 $.log(`${this.idx}: ${options.fn} -- ${resp.msg}, 预计 ${resp.data.crop_time} 成熟`)
-                // 浇水/施肥  调度
-                if (this.water > 0) {
-                    await this.get_landId(1)  // 浇水
-                }
-                if (this.manure > 0) {
-                    await this.get_landId(2)  // 施肥  
-                }
             } else if (resp.err == 61010) {
-                $.log(`${this.idx}: ${options.fn} -- ${resp.msg}   请先手动种植一次后再跑脚本`)
+                $.log(`${this.idx}: ${options.fn} -- ${resp.msg}\n请先手动种植一次后再跑脚本`)
             } else if (resp.err == 4032) {
                 $.log(`${this.idx}: ${options.fn} -- ${resp.msg}`)
             } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
@@ -828,7 +838,7 @@ class UserClass {
     async manuring(id) {
         try {
             let options = {
-                fn: '施肥',
+                fn: '浇水',
                 method: 'post',
                 url: `https://apimallwm.exijiu.com/garden/sorghum/manuring`,
                 headers: this.hd_api,
@@ -840,7 +850,9 @@ class UserClass {
             if (resp.err == 0) {
                 $.log(`${this.idx}: ${options.fn} --  ${resp.msg}, 当前已浇水次数 ${resp.data.water_num}, 当前已施肥次数 ${resp.data.manure_num}`)
 
-                await $.wait($.randomInt(5, 10))
+                if (resp.data.type == 1) {
+                    await this.harvest(id)        // 收获
+                }
             } else if (resp.err == 4032) {
                 $.log(`${this.idx}: ${options.fn} -- ${resp.msg}`)
             } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
@@ -850,29 +862,22 @@ class UserClass {
 
     }
 
-    // 兑换积分
-    async exchange(n) {
-        try {
-            let options = {
-                fn: '兑换积分',
-                method: 'get',
-                url: `https://apimallwm.exijiu.com/garden/Gardenjifenshop/exchange?wine=${n}`,
-                headers: this.hd_api,
-            }
-            // console.log(options)
-            let resp = await $.request(options)
-            // console.log(resp)
-            if (resp.err == 0) {
-                $.log(`${this.idx}: ${options.fn} --  ${resp.msg}`)
 
 
-            } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-        } catch (e) {
-            console.log(e)
+    // 判断时间 大小
+    ts_vs(a) {
+        // 获取当前时间 b, 自定义时间 a
+        let b = new Date()
+        a = a.replace("-", "/")
+        a = new Date(Date.parse(a))
+        if (a > b) {
+            console.log('自定义时间大于当前时间, 还未发生')
+            return true
+        } else {
+            console.log('自定义时间小于当前时间, 已经过去')
+            return false
         }
-
     }
-
 
 
 
@@ -884,10 +889,7 @@ class UserClass {
 !(async () => {
     console.log(await $.yiyan())
     if ($.read_env(UserClass)) {
-        // await userTasks()
-        for (let user of $.userList) {
-            await user.userTask()
-        }
+        await userTasks()
     }
 
 

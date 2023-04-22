@@ -1,278 +1,209 @@
 /*
-二三里极速版 app             cron 25 6-23 * * *  jsfp.js
+极米 app             cron 0 1,6,12,18,22 * * *  jimi.js
 
-
-23/1/30      基本任务
+23/4/22    修脚本
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 二三里极速版
-export esljsb=" phone # pwd  @  phone # pwd   "
+# 极米
+export jimi=" accessToken  @ accessToken "  
 
-多账号用 换行 或 @ 分割
-tg频道: https://t.me/yml2213_tg
+多账号用 换行 或 @ 分割  
+
+抓 send.api.fiaohi.com.cn 的包  基本都要需要的变量
+
+tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('二三里极速版')
+const $ = Env('极米')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
-const got = require("got")
 
-const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['esljsb']                //支持多变量
-// console.log(process.env)
-
-let ckData = '1'   // ck数据
-//====================================================================================================
-let DEFAULT_RETRY = 1           // 默认重试次数
-let cash_arr = []
+const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
+const ckNames = ['jimi']                //支持多变量
 
 //====================================================================================================
 
 
-async function userTasks() {
-
-    let userClass = new UserClass(ck)
-    await userClass.task()
-
-
-}
+//====================================================================================================
 
 
 class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.ck = ck.split('#')
+        // this.ck = ck.split('#')
+        this.token = ck
+
+        this.salt = '9y$B&E)H@McQeThW'
+        this.d_ua = 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)'
 
     }
 
+    async userTask() { // 个人信息
+        console.log(`\n=============== ${this.idx} ===============`)
 
-    // let i = 1158227 ; i < 1160227;   ok
+        $.log(`\n-------------- 个人信息 --------------`)
+        await this.checkLogin()
 
-    async task() { // 登录  1171054  1266226  1076344
+        if (this.ckFlog) {
+            $.log(`\n-------------- 任务列表 --------------`)
+            await this.doSign()
+            await this.lottery_num()
+            await this.check()
+            await this.do_lttery()
 
-        await this.cash_info(67892)
-
+        }
     }
 
-    async phone_info(id) { // 登录
+    async checkLogin() { // 个人信息
         let options = {
-            fn: 'cash_info',
+            fn: '个人信息',
             method: 'get',
-            url: `https://wnl28.jiemengjia.com/api/my_integral_index?user_id=${id}&ver=1.8.6&appname=calendar_android`,
+            url: `https://ucenter-api.i.xgimi.com/open/oauth2/login/checkLogin`,
             headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
+                'source': '2',
+                'token': this.token,
+                'User-Agent': this.d_ua
             },
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 'E00000000') {
-            let tasks = resp.data.task[0]
-            if (tasks.title == '新手任务') {
-                let lists = tasks.list
-                // console.log(lists)
-                let arr = []
-                for (let list of lists) {
-                    arr.push(list.id)
-                }
-                if (arr.indexOf(8) > -1) {
-                    // console.log(`${id}, 没有绑定手机号`)
-                } else {
-                    console.log(`${id}, 绑定手机号`)
-                    await this.check_cash(id)
-
-                }
-
-            }
+        if (resp.code == 200) {
+            this.nickName = resp.data.nickName
+            this.uid = resp.data.uid
+            this.openId = resp.data.openId
+            this.mobile = resp.data.mobile
+            $.log(`${this.idx}: ${options.fn} ${this.nickName} ${this.uid} 成功 🎉, 手机号: ${this.mobile}`)
+            this.ckFlog = true
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
+
 
     }
 
-
-    async check_cash(id) {
+    async doSign() { // 签到 e3a04a305290e60b752fa652864cb253
+        let ts = $.ts(13)
+        let sign = crypto.MD5(`configNo=2021061111211168&timestamp=${ts}&${this.salt}`).toString()
         let options = {
-            fn: 'cash_info',
-            method: 'get',
-            url: `https://wnl28.jiemengjia.com/api/my_cash_index?user_id=${id}`,
-            headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-            },
-
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'E00000000') {
-            let cash_num = resp.data.score_detail.cash_num
-            console.log(id, `可提现 ${cash_num} 元`)
-            if (cash_num > 0.5) {
-                cash_arr.push(id)
-                await this.cash_info(id)
-            }
-            // else if (cash_num > 0.4) {
-            //     // console.log(cash_arr)
-            //     await this.doTask(id)
-            // }
-            // await  this.cash(id)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
-    }
-
-    // 任务
-    async doTask(id) {
-        let task_arr = []
-
-
-        let a = `${id}Wh1y1hvGMOclMeug@4Y9Jbc0BUjmzXae`
-        let sign = crypto.MD5(a).toString()
-
-        let options = {
-            fn: 'cash_info',
+            fn: '签到',
             method: 'post',
-            url: `https://wnl28.jiemengjia.com/api/update_cash_info`,
+            url: `https://mobile-api.xgimi.com/app/v4/integral/signin`,
             headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-                'content-type': 'application/x-www-form-urlencoded'
+                'timestamp': ts,
+                'openId': this.openId,
+                'sign': sign,
+                'channel': 'superApp',
+                'accessToken': this.token,
+                'User-Agent': this.d_ua
             },
-            form: {
-                'device': 'android',
-                'timestamp': '1675594689704',
-                'ver': '1.8.6',
-                'appname': 'calendar_android',
-                'client': 'android',
-                'idfa': 'android',
-                'market': 'xiaomi',
-                'openudid': '1c8493ec71d68197unknown',
-                'dev_uuid': '1c8493ec71d68197',
-                'user_id': id,
-                'app_secret': sign,
-                'cash_openid': 'otMA60c9k60K8Qygm3NHa930ygKk',
-                'user_name': '杨梦磊',
-                'cash_name': '东东机器人'
-            }
+            json: { "configNo": "2021061111211168" }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 'E00000000') {
-            await this.cash(id)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
-    }
-
-
-    async cash_info(id) {
-        let a = `${id}Wh1y1hvGMOclMeug@4Y9Jbc0BUjmzXae`
-        let sign = crypto.MD5(a).toString()
-
-        let options = {
-            fn: 'cash_info',
-            method: 'post',
-            url: `https://wnl28.jiemengjia.com/api/update_cash_info`,
-            headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            form: {
-                'device': 'android',
-                'timestamp': '1675594689704',
-                'ver': '1.8.6',
-                'appname': 'calendar_android',
-                'client': 'android',
-                'idfa': 'android',
-                'market': 'xiaomi',
-                'openudid': '1c8493ec71d68197unknown',
-                'dev_uuid': '1c8493ec71d68197',
-                'user_id': id,
-                'app_secret': sign,
-                'cash_openid': $.randomString(28),
-                'user_name': '杨梦磊',
-                'cash_name': '东东机器人'
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'E00000000') {
-            await this.cash(id)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
-    }
-
-    async cash_info2(id) { // 随机
-        let a = `${id}Wh1y1hvGMOclMeug@4Y9Jbc0BUjmzXae`
-        let sign = crypto.MD5(a).toString()
-
-        let options = {
-            fn: 'cash_info',
-            method: 'post',
-            url: `https://wnl28.jiemengjia.com/api/update_cash_info`,
-            headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            form: {
-                'device': 'android',
-                'timestamp': '1675594689704',
-                'ver': '1.8.6',
-                'appname': 'calendar_android',
-                'client': 'android',
-                'idfa': 'android',
-                'market': 'xiaomi',
-                'openudid': '1c8493ec71d68197unknown',
-                'dev_uuid': '1c8493ec71d68197',
-                'user_id': id,
-                'app_secret': sign,
-                'cash_openid': $.randomString(28),
-                'user_name': '张三',
-                'cash_name': '李四'
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'E00000000') {
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
-    }
-
-
-    async cash(id) {
-        // let sign = await this.getSign(id)
-        let a = `${id}1Wh1y1hvGMOclMeug@4Y9Jbc0BUjmzXae`
-        let sign = crypto.MD5(a).toString()
-
-        let options = {
-            fn: 'test',
-            method: 'post',
-            url: `https://wnl28.jiemengjia.com/api/cash_out`,
-            headers: {
-                'User-Agent': 'HYCalendar/3.6.5 (iPhone; iOS 16.3; Scale/3.00)',
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            form: {
-                'app_secret': sign,
-                'appname': 'wannianli_iphone',
-                'client': 'iPhone',
-                'device': 'iPhone',
-                'idfa': '00000000-0000-0000-0000-000000000000',
-                'market': 'appstore',
-                'openudid': 'E07D0A35-FA64-44EC-B48B-0307F528DD98',
-                'type': '1',
-                'user_id': id,
-                'ver': '3.6.5'
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(id,resp)
-        if (resp.code == 'E00000001') { // 失败
-            console.log(id, resp)
-        } else if (resp.code == 'E00000000') { // 成功提现
-            console.log(id, resp)
+        if (resp.code == 'ok') {
+            // console.log(resp)
+            $.log(`${this.idx}: ${this.nickName} ${options.fn}, 获得积分${resp.data.status}`)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-        await this.cash_info2(id)
+
     }
+
+    async lottery_num() { // 抽奖次数 e3a04a305290e60b752fa652864cb253
+        let options = {
+            fn: '抽奖次数',
+            method: 'get',
+            url: `https://marketing-center-gateway.i.xgimi.com/lottery/query/credit/times/limit?promotionNo=1456570878320967773`,
+            headers: {
+                'source': '2',
+                'token': this.token,
+                'User-Agent': this.d_ua
+            },
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 200) {
+            // console.log(resp)
+            this.l_num = resp.data.lotteryTimesLimit
+            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${this.l_num}`)
+            if (this.l_num) {
+                // await this.doLottery()
+            }
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async check() { // 积分查询
+        let ts = $.ts(13)
+        let sign = crypto.MD5(`timestamp=${ts}&${this.salt}`).toString()
+        let options = {
+            fn: '积分查询',
+            method: 'post',
+            url: `https://mobile-api.xgimi.com/app/v4/integral/signinConfig`,
+            headers: {
+                'timestamp': ts,
+                'openId': this.openId,
+                'sign': sign,
+                'channel': 'superApp',
+                'accessToken': this.token,
+                'User-Agent': this.d_ua
+            },
+            json: {}
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 'ok') {
+            // console.log(resp)
+            this.balance = resp.data.balance
+            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${this.balance}`)
+            if (this.l_num > 0 && this.balance >= 50) {
+                await this.lttery_info()
+            }
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async lttery_info() { // 抽奖次数 e3a04a305290e60b752fa652864cb253
+        let n = ''
+        if (this.balance >= 150) {
+            n = 3
+        } else if (this.balance >= 100) {
+            n = 2
+
+        } else if (this.balance >= 50) {
+            n = 1
+        }
+        for (let i = 0; i < n; i++) {
+            await this.do_lttery()
+        }
+
+    }
+    async do_lttery() { // 抽奖
+        let options = {
+            fn: '抽奖',
+            method: 'post',
+            url: `https://marketing-center-gateway.i.xgimi.com/lottery/draw`,
+            headers: {
+                'source': '2',
+                'token': this.token,
+                'User-Agent': this.d_ua
+            },
+            json: { "promotionNo": "1456570878320967773", "templateId": "4" }
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 200) {
+            // console.log(resp)
+            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${resp.data}`, { notify: true })
+        } else if (resp.code == 100401 || 200119) {
+            $.log(`${this.idx}: ${options.fn} -- ${resp.msg}`)
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+
+
 
 
 }
@@ -280,9 +211,11 @@ class UserClass {
 
 !(async () => {
     console.log(await $.yiyan())
-    if (ckData) {
-        await userTasks()
-
+    if ($.read_env(UserClass)) {
+        // await userTasks()
+        for (let user of $.userList) {
+            await user.userTask()
+        }
     }
 
 
@@ -297,7 +230,7 @@ function Env(name) {
         constructor(name) {
             this.name = name
             this.startTime = Date.now()
-            this.log(`[${this.name}]开始运行`, { time: true })
+            this.log(`[${this.name}]开始运行`)
 
             this.notifyStr = []
             this.notifyFlag = true
@@ -307,39 +240,35 @@ function Env(name) {
             this.userCount = 0
         }
 
-        async request(opt) {
-            const got = require('got')
-            let DEFAULT_TIMEOUT = 8000      // 默认超时时间
-            let resp = null, count = 0
-            let fn = opt.fn || opt.url
-            let resp_opt = opt.resp_opt || 'body'
-            opt.timeout = opt.timeout || DEFAULT_TIMEOUT
-            opt.retry = opt.retry || { limit: 0 }
-            opt.method = opt?.method?.toUpperCase() || 'GET'
-            while (count++ < DEFAULT_RETRY) {
+        async request(opt, type = 'body') {
+            try {
+                const got = require('got')
+                let DEFAULT_TIMEOUT = 8000      // 默认超时时间
+                let resp = null
+                let fn = opt.fn || opt.url
+                opt.timeout = opt.timeout || DEFAULT_TIMEOUT
+                opt.retry = opt.retry || { limit: 0 }
+                opt.method = opt?.method?.toUpperCase() || 'GET'
                 try {
                     resp = await got(opt)
-                    break
                 } catch (e) {
-                    if (e.name == 'TimeoutError') {
-                        this.log(`[${fn}]请求超时，重试第${count}次`)
-                    } else {
-                        this.log(`[${fn}]请求错误(${e.message})，重试第${count}次`)
-                    }
+                    console.log(e)
                 }
-            }
-            if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
-            let { statusCode, headers, body } = resp
-            if (body) try {
-                body = JSON.parse(body)
-            } catch {
-            }
-            if (resp_opt == 'body') {
-                return Promise.resolve(body)
-            } else if (resp_opt == 'hd') {
-                return Promise.resolve(headers)
-            } else if (resp_opt == 'statusCode') {
-                return Promise.resolve(statusCode)
+                if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
+                let { statusCode, headers, body } = resp
+                if (body) try {
+                    body = JSON.parse(body)
+                } catch {
+                }
+                if (type == 'body') {
+                    return Promise.resolve(body)
+                } else if (type == 'hd') {
+                    return Promise.resolve(headers)
+                } else if (type == 'statusCode') {
+                    return Promise.resolve(statusCode)
+                }
+            } catch (error) {
+                console.log(error)
             }
 
         }
@@ -358,11 +287,26 @@ function Env(name) {
             if (opt.console) {
                 console.log(msg)
             }
-            if (opt.sp) {
-                console.log(`\n-------------- ${msg} --------------`)
-            }
+
         }
 
+        read_env(Class) {
+            let envStrList = ckNames.map(x => process.env[x])
+            for (let env_str of envStrList.filter(x => !!x)) {
+                let sp = envSplit.filter(x => env_str.includes(x))
+                let splitor = sp.length > 0 ? sp[0] : envSplit[0]
+                for (let ck of env_str.split(splitor).filter(x => !!x)) {
+                    this.userList.push(new Class(ck))
+                }
+            }
+            this.userCount = this.userList.length
+            if (!this.userCount) {
+                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, { notify: true })
+                return false
+            }
+            this.log(`共找到${this.userCount}个账号`)
+            return true
+        }
 
         async taskThread(taskName, conf, opt = {}) {
             while (conf.idx < $.userList.length) {
@@ -553,6 +497,7 @@ function Env(name) {
         }
 
         wait(t) {
+            $.log(`账号[${$.userIdx}]: 随机等待 ${t} 秒 ...`)
             return new Promise(e => setTimeout(e, t * 1000))
         }
 

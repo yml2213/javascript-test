@@ -1,21 +1,21 @@
-let CryptoJS = require('crypto-js')
+let crypto = require('crypto-js')
 function Encrypt(word) {
     let key = '密钥要后后台一致'
     let iv = '偏移量要个后台一致'
 
-    key = CryptoJS.enc.Utf8.parse(key)
-    iv = CryptoJS.enc.Utf8.parse(iv)
+    key = crypto.enc.Utf8.parse(key)
+    iv = crypto.enc.Utf8.parse(iv)
 
-    let srcs = CryptoJS.enc.Utf8.parse(word)
+    let srcs = crypto.enc.Utf8.parse(word)
     // 加密模式为CBC，补码方式为PKCS5Padding（也就是PKCS7）
-    let encrypted = CryptoJS.AES.encrypt(srcs, key, {
+    let encrypted = crypto.AES.encrypt(srcs, key, {
         iv: iv,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7
+        mode: crypto.mode.CBC,
+        padding: crypto.pad.Pkcs7
     })
 
     //返回base64
-    return CryptoJS.enc.Base64.stringify(encrypted.ciphertext)
+    return crypto.enc.Base64.stringify(encrypted.ciphertext)
 
 }
 
@@ -24,21 +24,21 @@ function Decrypt(word) {
     let key = '密钥要后后台一致'
     let iv = '偏移量要个后台一致'
 
-    key = CryptoJS.enc.Utf8.parse(key)
-    iv = CryptoJS.enc.Utf8.parse(iv)
+    key = crypto.enc.Utf8.parse(key)
+    iv = crypto.enc.Utf8.parse(iv)
 
-    let base64 = CryptoJS.enc.Base64.parse(word)
+    let base64 = crypto.enc.Base64.parse(word)
 
-    let src = CryptoJS.enc.Base64.stringify(base64)
+    let src = crypto.enc.Base64.stringify(base64)
 
     // 解密模式为CBC，补码方式为PKCS5Padding（也就是PKCS7）
-    let decrypt = CryptoJS.AES.decrypt(src, key, {
+    let decrypt = crypto.AES.decrypt(src, key, {
         iv: iv,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7
+        mode: crypto.mode.CBC,
+        padding: crypto.pad.Pkcs7
     })
 
-    let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8)
+    let decryptedStr = decrypt.toString(crypto.enc.Utf8)
     return decryptedStr.toString()
 
 }

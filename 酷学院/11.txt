@@ -1,0 +1,553 @@
+三个未学习
+{
+	"code": "200000",
+	"data": {
+		"end_row": 3,
+		"extend": {
+			"all_count": 3,
+			"finished_count": 0,
+			"unfinished_count": 3
+		},
+		"first_page": 1,
+		"has_next_page": "false",
+		"has_previous_page": "false",
+		"is_first_page": "true",
+		"is_last_page": "true",
+		"last_page": 1,
+		"list": [{
+			"classify_id": "1810861015575957504",
+			"comment_count": 0,
+			"cover": "https://oss.coolcollege.cn/user-resource/prod/covers/89b6d455-f114-4d51-99dd-595dbba8b8b8.png",
+			"create_time": 1680832129000,
+			"create_user": "1809367169746735104",
+			"create_user_info": {
+				"active": true,
+				"avatar": "",
+				"department_info": [{
+					"department_ids": "1806451153299443712",
+					"department_names": "邹平五电运行管理科",
+					"source_type": "third_oa_sync"
+				}],
+				"department_infos": [{
+					"department_ids": "1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712",
+					"department_names": "中国宏桥/热电公司/热电一分公司/邹平五电/邹平五电运行管理科",
+					"source_type": "third_oa_sync"
+				}],
+				"deptName": "中国宏桥/热电公司/热电一分公司/邹平五电/邹平五电运行管理科",
+				"extendList": [{
+					"columnKey": "column1",
+					"columnValue": "手机号",
+					"extendValue": "134****0146",
+					"protectValue": "134****0146",
+					"userId": 0
+				}],
+				"id": "1809367169746735104",
+				"jobnumber": "1995594",
+				"joinTime": 1627355093000,
+				"loginEmail": "",
+				"loginMobile": "13406160146",
+				"name": "王驰",
+				"postName": "",
+				"quit": false,
+				"sourceType": "third_oa_sync",
+				"userId": "595B13442AA547E88359C781DB1D268C"
+			},
+			"create_user_name": "王驰",
+			"credit": 3,
+			"end_time": null,
+			"enrollment": false,
+			"enrollmentStatus": "closed",
+			"face_recognition": "off",
+			"finish_time": null,
+			"id": "1909837480698449920",
+			"like_count": 0,
+			"progress": 0,
+			"project_id": "6cb4670ff8244c0dae9e518bea4f774d",
+			"qualified_status": false,
+			"scan_count": "4",
+			"score": 0,
+			"status": "unfinished",
+			"studyType": "task",
+			"task_begin_time": 1680832320000,
+			"task_end_time": 1681955579000,
+			"title": "发电机培训"
+		}, {
+			"classify_id": "1810861015575957504",
+			"comment_count": 0,
+			"cover": "https://oss.coolcollege.cn/user-resource/prod/covers/d7305981-7d90-4eb4-9d8c-a3f879cdfb7f.png",
+			"create_time": 1680831799000,
+			"create_user": "1809367169746735104",
+			"create_user_info": {
+				"active": true,
+				"avatar": "",
+				"department_info": [{
+					"department_ids": "1806451153299443712",
+					"department_names": "邹平五电运行管理科",
+					"source_type": "third_oa_sync"
+				}],
+				"department_infos": [{
+					"department_ids": "1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712",
+					"department_names": "中国宏桥/热电公司/热电一分公司/邹平五电/邹平五电运行管理科",
+					"source_type": "third_oa_sync"
+				}],
+				"deptName": "中国宏桥/热电公司/热电一分公司/邹平五电/邹平五电运行管理科",
+				"extendList": [{
+					"columnKey": "column1",
+					"columnValue": "手机号",
+					"extendValue": "134****0146",
+					"protectValue": "134****0146",
+					"userId": 0
+				}],
+				"id": "1809367169746735104",
+				"jobnumber": "1995594",
+				"joinTime": 1627355093000,
+				"loginEmail": "",
+				"loginMobile": "13406160146",
+				"name": "王驰",
+				"postName": "",
+				"quit": false,
+				"sourceType": "third_oa_sync",
+				"userId": "595B13442AA547E88359C781DB1D268C"
+			},
+			"create_user_name": "王驰",
+			"credit": 5,
+			"end_time": null,
+			"enrollment": false,
+			"enrollmentStatus": "closed",
+			"face_recognition": "off",
+			"finish_time": null,
+			"id": "1909836705876283392",
+			"like_count": 0,
+			"progress": 0,
+			"project_id": "364e665d6a9f4b298a27bf4e45231cf5",
+			"qualified_status": false,
+			"scan_count": "5",
+			"score": 0,
+			"status": "unfinished",
+			"studyType": "task",
+			"task_begin_time": 1680831960000,
+			"task_end_time": 1681955219000,
+			"title": "故障录波培训"
+		}, {
+			"classify_id": "1810861015575957504",
+			"comment_count": 0,
+			"cover": "https://oss.coolcollege.cn/user-resource/prod/covers/6c36a214-437d-48f1-9262-6e970383760a.png",
+			"create_time": 1680831493000,
+			"create_user": "1809367169746735104",
+			"create_user_info": {
+				"active": true,
+				"avatar": "",
+				"department_info": [{
+					"department_ids": "1806451153299443712",
+					"department_names": "邹平五电运行管理科",
+					"source_type": "third_oa_sync"
+				}],
+				"department_infos": [{
+					"department_ids": "1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712",
+					"department_names": "中国宏桥/热电公司/热电一分公司/邹平五电/邹平五电运行管理科",
+					"source_type": "third_oa_sync"
+				}],
+				"deptName": "中国宏桥/热电公司/热电一分公司/邹平五电/邹平五电运行管理科",
+				"extendList": [{
+					"columnKey": "column1",
+					"columnValue": "手机号",
+					"extendValue": "134****0146",
+					"protectValue": "134****0146",
+					"userId": 0
+				}],
+				"id": "1809367169746735104",
+				"jobnumber": "1995594",
+				"joinTime": 1627355093000,
+				"loginEmail": "",
+				"loginMobile": "13406160146",
+				"name": "王驰",
+				"postName": "",
+				"quit": false,
+				"sourceType": "third_oa_sync",
+				"userId": "595B13442AA547E88359C781DB1D268C"
+			},
+			"create_user_name": "王驰",
+			"credit": 5,
+			"end_time": null,
+			"enrollment": false,
+			"enrollmentStatus": "closed",
+			"face_recognition": "off",
+			"finish_time": null,
+			"id": "1909833564816543744",
+			"like_count": 0,
+			"progress": 0,
+			"project_id": "05f1bf7387d64649aa93012fb4b34ec3",
+			"qualified_status": false,
+			"scan_count": "6",
+			"score": 0,
+			"status": "unfinished",
+			"studyType": "task",
+			"task_begin_time": 1680831660000,
+			"task_end_time": 1681954919000,
+			"title": "防误操作"
+		}],
+		"navigate_first_page": 1,
+		"navigate_last_page": 1,
+		"navigate_pages": 8,
+		"navigatepage_nums": [1],
+		"next_page": 0,
+		"page_num": 1,
+		"page_size": 10,
+		"pages": 1,
+		"pre_page": 0,
+		"size": 3,
+		"start_row": 1,
+		"total": 3
+	},
+	"message": "success",
+	"request_id": "dead5e66-0fa5-4401-a2c9-46bf9639e7ff",
+	"success": "true"
+}
+
+====================================================================================================
+登录成功
+{
+    "code": "200000",
+    "data": {
+        "open_id": null,
+        "expire": 14400,
+        "longToken": "32a9371c547648c987196a7669658f2e",
+        "action_token": "d7ca0b34098e4a07850732d2605fe436",
+        "user": {
+            "access_token": "d7ca0b34098e4a07850732d2605fe436",
+            "account": "13754650804",
+            "account_id": "1909228927696637952",
+            "active": true,
+            "app_id": "9003",
+            "app_type": "third_oa_app",
+            "authority_type": "0",
+            "avatar": "",
+            "config_types": [],
+            "department_ids": "[1806451153299443712]",
+            "department_names": "",
+            "ding_corp_id": "8640735a0ef141c49f8c2f68385a0024",
+            "email": "",
+            "enterprise_id": "1371843837940600987",
+            "enterprise_logo": "https://oss.coolcollege.cn/1812149149915811840.png",
+            "enterprise_name": "中国宏桥",
+            "enterprises": [
+                {
+                    "admin": null,
+                    "current": true,
+                    "enterprise_id": "1371843837940600987",
+                    "enterprise_logo": "https://oss.coolcollege.cn/1812149149915811840.png",
+                    "enterprise_name": "中国宏桥",
+                    "is_admin": null,
+                    "is_vip": 2,
+                    "open_time": 1624247626000,
+                    "opener_id": "",
+                    "status": 1,
+                    "user_id": "1909191009892438016",
+                    "version_id": "d104ff60d2234eb184010eb67bfd3284"
+                }
+            ],
+            "id": "1909191009892438016",
+            "is_vip": 2,
+            "jobnumber": "2202252",
+            "language": "zh_cn",
+            "login_email": "",
+            "login_mobile": "",
+            "main_corp_id": "",
+            "mobile": "13754650804",
+            "mobile_flag": "bound",
+            "name": "杨梦磊",
+            "open_id": "",
+            "open_time": 1624247626000,
+            "opener_flag": "",
+            "password": "d25b495a37e362a34afd82bf92fd9941721aca3b",
+            "persistent": false,
+            "position": "",
+            "post_names": [],
+            "roles": "30000000",
+            "salt": "190919100989243801644d8eb67cb9f69e0001476376b6bd410",
+            "source_type": "third_oa_sync",
+            "supplier_id": 0,
+            "third_user_id": "5201EBA52E324314B02D6AC5A7DDD9F3",
+            "type": 3,
+            "type_str": "学员",
+            "unionid": "1371843837940600987_5201EBA52E324314B02D6AC5A7DDD9F3",
+            "user_id": 0,
+            "version_id": "d104ff60d2234eb184010eb67bfd3284"
+        }
+    },
+    "message": "success",
+    "request_id": "8d41d5cb-85ba-404a-b7e1-782b2d287c17",
+    "success": "true"
+}
+
+
+====================================================================================================
+学习项目
+https://coolapi.coolcollege.cn/training-manage-api/v2/enterprises/1371843837940600987/users/1909191009892438016/study-projects?access_token=956646b5c313460ebca1a0e645789c29&enterprise_id=1371843837940600987&overdue_status=unOverdue&page_number=1&page_size=10&status=unfinished&study_type=task&user_id=1909191009892438016
+
+
+
+====================================================================================================
+进度查询
+https://coolapi.coolcollege.cn/training-manage-api/v2/1371843837940600987/study_projects/1909837480698449920/query_study_record?access_token=956646b5c313460ebca1a0e645789c29&enterprise_id=1371843837940600987&page_number=1&page_size=20&user_id=1909191009892438016
+
+返回:
+
+{
+	"end_row": 20,
+	"extend": null,
+	"first_page": 1,
+	"has_next_page": "true",
+	"has_previous_page": "false",
+	"is_first_page": "true",
+	"is_last_page": "false",
+	"last_page": 2,
+	"list": [{
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939869880320",
+		"process": 100,
+		"update_time": 1680848361000,
+		"user_id": "1809367170812088320",
+		"user_name": "邵佳乐"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939874074624",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367170078085120",
+		"user_name": "韩太玉"
+	}, {
+		"avatar": "https://oss.coolcollege.cn/1856705300577521664.jpg",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939878268928",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367167876075520",
+		"user_name": "李明华"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939882463232",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367170044530688",
+		"user_name": "曲文强"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939886657536",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367168064819200",
+		"user_name": "刘成欣"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939890851840",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367170577207296",
+		"user_name": "张大印"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939895046144",
+		"process": 100,
+		"update_time": 1680834421000,
+		"user_id": "1809367168320671744",
+		"user_name": "王永正"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939899240448",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367169469911040",
+		"user_name": "高帅"
+	}, {
+		"avatar": "https://oss.coolcollege.cn/1850414600592429056.jpg",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939903434752",
+		"process": 100,
+		"update_time": 1680848431000,
+		"user_id": "1809367169763512320",
+		"user_name": "边旭"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939907629056",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367169386024960",
+		"user_name": "许  靖"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939911823360",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367168446500864",
+		"user_name": "张辉"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939916017664",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367173567746048",
+		"user_name": "王建荣"
+	}, {
+		"avatar": "https://oss.coolcollege.cn/1898704910103482368.jpeg",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939920211968",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367172074573824",
+		"user_name": "张国鹏"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939924406272",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367171831304192",
+		"user_name": "徐新策"
+	}, {
+		"avatar": "https://oss.coolcollege.cn/1852411535104806912.jpg",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939928600576",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367172514975744",
+		"user_name": "王志刚"
+	}, {
+		"avatar": "https://oss.coolcollege.cn/1820027457789628416.jpg",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939932794880",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367172435283968",
+		"user_name": "王勇"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939936989184",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367173777461248",
+		"user_name": "刘沅金"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939941183488",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1809367172045213696",
+		"user_name": "张振东"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939945377792",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1858990520647421952",
+		"user_name": "信光义"
+	}, {
+		"avatar": "",
+		"department": "[1806451153299443712]",
+		"department_name": "邹平五电运行管理科",
+		"department_names": "",
+		"departments": "[1/1806451150367625216/1806451150409568256/1806451151034519552/1806451153299443712]",
+		"id": "1909837939949572096",
+		"process": 0,
+		"update_time": null,
+		"user_id": "1822639886663028736",
+		"user_name": "李大硕"
+	}],
+	"navigate_first_page": 1,
+	"navigate_last_page": 2,
+	"navigate_pages": 8,
+	"navigatepage_nums": [1, 2],
+	"next_page": 2,
+	"page_num": 1,
+	"page_size": 20,
+	"pages": 2,
+	"pre_page": 0,
+	"size": 20,
+	"start_row": 1,
+	"total": 23
+}
+
+
+
+
+====================================================================================================
+10分钟 上传进度
+
+https://waf-coolapi.coolcollege.cn/training-manage-api/v2/1371843837940600987/users/1909191009892438016/study_projects/1909837480698449920/courses/1844629295062978560/resources/1844629295062978560/save_progress?access_token=956646b5c313460ebca1a0e645789c29&enterprise_id=1371843837940600987&user_id=1909191009892438016&mapId=
+
+
+https://waf-coolapi.coolcollege.cn/training-manage-api/v2/1371843837940600987/users/1909191009892438016/study_projects/1909837480698449920/courses/1844629295062978560/resources/1844629295062978560/save_progress?access_token=956646b5c313460ebca1a0e645789c29&enterprise_id=1371843837940600987&user_id=1909191009892438016&mapId=
+
+{"progress":17,"recent_start":485,"page_count":117,"tempTime":1680862995000,"signature":"b1c2461bf17a7333446521b65a3e5af1"}
+
+https://waf-coolapi.coolcollege.cn/training-manage-api/v2/1371843837940600987/users/1909191009892438016/study_projects/1909837480698449920/courses/1844629295062978560/resources/1844629295062978560/save_progress?access_token=956646b5c313460ebca1a0e645789c29&enterprise_id=1371843837940600987&user_id=1909191009892438016&mapId=

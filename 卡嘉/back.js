@@ -1,114 +1,153 @@
-NAME = `青岛地铁`
-VALY = ['qddt_cookie']
-
+/*
+@蛋炒饭
+APP：卡嘉，变量名：kjck
+将手机号#登录密码填入变量，多账号换行隔开
+功能：签到、评论、分享、发动态，得积分可以在商城兑换实物
+定时：一天一次
+*/
+NAME = `卡嘉`; VALY = ['kjck']
 CK = ''
+LOGS = 0
+commentid = ['学到了', '厉害', '加油哦', '牛', '666', '真的大开眼界了', '一定要好好学习', '惊呆', '格局打开了']
 
-LOGS = 1 //0 日志
-DECODE = 1 //0 cookie解码
-
-$ = Tom()
-class tom {
+class Bar {
     constructor(str) {
-        this.login = true
-        this.user_name = str.split('||')[0]
-        this.notify = str.split('||')[2]
-        this.token = str.split('||')[1].split('@')[0]
-        this.deviceCoding = str.split('||')[1].split('@')[1]
-        this.headers = {
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;app/qdmetro;app_version/4.1.4',
-            Origin: 'https://appcdn.qd-metro.com',
-            Referer: 'https://appcdn.qd-metro.com/file/MetroH5/integral/',
-        }
-        this.key =
-            'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7iUFO+72knVUvymgXNvR7Tpv1J/krOQeV8pFxBkmtCvfVwkpu5nsthPyxt0rYlKnRQQZlFkVlr7cT62drLHZicDSi0ojvSmEhpNAQlue9HWXPhob4dXgxpGsRmCSYiv8naHsyRiApR9O2lvzNa6WK4MP/Tfo9phVk5Ipa3HCiVZY3YSd7cWAImyrY9fsFSOvc1zd0k2vmkPE0nKAI+l5Mv7eAglPYfDw6oRXwGEjdGVtRduyfmy5YeyLEbNIRcFhHiHHoWcQvByEAgXbjOKG/Om3hsA3eeUw70f+9sMdv7uwZm6E1Y50TnQzsP03Co4WpPEVH0+zMVoAIigrjL0YNAgMBAAECggEAHphx8zTW57hTYYygFsl8cXGNuB1hZU/UkP4WBF6GPpj/ffxIsHchuXds0oGY0GTQn7cAGBXeFIzqTXGmWbHTTpQHwliexotX9WkyGMLF4/Cb35OPCZIAnfi5DxHHRqvGnONK1hTiwllZjPxtGgZp55Jr54cNQGmMK/2tJM26AoG0OtT+55/ZBxHTtm0j08DhfyYdjHPYGZJznmZ/oQqjeI0eZQZe+h5ojKNqxGvhDiybgpIfkQvwVJhcbXiRYvQs1QnwxKOjm8dUCkn+do24H17xouw4NML9sm3zCW48yXQwWcP45h27bvmu7z2iVhq1lo50sWg710EG9bBNfc1rcQKBgQDyDK6+sm7kNYO98A3xjp/GVmJ6Mp+6moWmI+fKDVEGb2chcdO5slKrBb1XX2TQRJS10K6yc0zntuTNVfJRAPpNlyQV9ndGvUbWwRFEu8DETW05NCnd9SQwgQoSG1TcS6fqUqpQV9wJvnoFUJSP9uRnxBiVGyyeSzteLMvjCpU33wKBgQDGWEFbK69u69QH3RsgI+V0Dthr+ySF+VTRaeprfrhFfuZzVhwqd3Cpjj8HpL/7XzTT4Gt33tZudbT02VY71QtzuPH2psoP5P2vP8XMbj1hM5Jgl71G+BnEKNUDlLqVn8zzE76Woi7y5Yj7U7ppCx94qDod7tuqEzvt4nbrponvkwKBgQCJ4gmlXhXncEi06Uu4IAwKOulsPOxaq22Y3/lJU16lsM5p8eKvdNK8088xN4lBTt/71n298AqOMNST1/LqjAkKLCAFVtpJdMcmzOKeaen8qTKgFIQJCX1tGAT5nZIwz/Q+eorEq9gPwO7XmjiW7gjcx4tNXSaEocyW8CPRGRU5twKBgGNUB0bVFcICr+hQPilWUK5SUOeimaPOPT+yPwceKsICzv2rfed2cSE4bzAwvUPxZc9FcAxTuCcRI1ILFThZdKa7U9ElrcNP9gsxcKjz/CEVZpSg6NUFokGuAR8N+HK92DFTDfr5tXFGqdbTE2NPgq818ATVfYQqpbR32P4iJKmpAoGAMUvAjv2uAf46ucQiTiABAhFKXMTIco3EJm9HTuWkB55RJ6RT08AT3ZdzlD9o4/kS2sFy/f2h6kU+FQeGSFufArfhDMgqQhTOBZGo+8lDQ8BqJgQEumSKjseWy2m8azPbmR9SvpR00104A1AYZDX4+KE3pBYDhZiC44tDPOW99OI='
-        this.message = ''
+        this.phone = str.split(`#`)[0]
+        this.pwd = $.MD5(1, str.split(`#`)[1])
+        this.logs = true
+        this.comtext = $.randomArr(commentid)
     }
-
-    async user_info(i) {
-        let DATA = await $.task(`post`, `https://api.qd-metro.com/ngscore/user/accInfo`, this.headers, `{"token":"${this.token}","deviceCoding":"${this.deviceCoding}"}`)
-        if (DATA.code == '01' && DATA.msg == '查询成功') {
-            this.totalScore = DATA.data.totalScore
-            console.log(`用户：${this.user_name}  现有积分：${this.totalScore}`)
-            if (i == 0 && this.totalScore >= 630) {
-                this.message += `\n用户：${this.user_name},现有积分：${this.totalScore},可以兑换e卡了`
-                await this.user_showmsg()
-            }
-            this.login = true
+    //登陆
+    async login() {
+        let body = `{"password":"${this.pwd}","userCode":"${this.phone}"}`
+        let resp = await $.task('post', `https://jacsupperapp.jac.com.cn/zkapi/jac-admin/admin/userBaseInformation/userLogin`, {}, body)
+        if (resp.code == 0) {
+            this.no = resp.data.no
+            this.name = resp.data.userName
+            this.token = resp.data.token
+            console.log(`【${this.name}】登陆成功`)
+            this.logs = true
         } else {
-            this.login = false
+            this.logs = false
         }
     }
-    async user_task_list() {
-        if (this.login == true) {
-            let DATA = await $.task(`post`, `https://api.qd-metro.com/ngscore/task/taskShowList`, this.headers, `{"token":"${this.token}","deviceCoding":"${this.deviceCoding}"}`)
-            if (DATA.code == '01' && DATA.success == true) {
-                for (let is of DATA.data) {
-                    this.name = is.name
-                    let status = is.status
-                    if (this.name != '使用钱包乘车' && status != 4) {
-                        this.taskid = is.id
-                        await this.user_task_Browse()
-                    } else if (this.name != '使用钱包乘车' && status == 4) {
-                        console.log(`用户：${this.user_name}   已完成` + this.name)
-                    }
-                }
-            }
+    //签到
+    async signin() {
+        let body = `{"ruleStr":"SIGN_IN","serviceTypeStr":"SERVICE_FIXED","no":"${this.no}"}`
+        let headers = {
+            channelID: `3`,
+            timaToken: this.token,
+        }
+        let resp = await $.task('post', `https://jacsupperapp.jac.com.cn/zkapi/pluto-membership/pluto-membership/integral-gather/addintegral-signIn`, headers, body)
+        if (resp.code == 0) {
+            console.log(`【${this.name}】签到成功`)
+            await $.wait($.RT(15000, 25000))
+        } else {
+            console.log(`【${this.name}】签到失败`)
         }
     }
-    async user_task_Browse() {
-        if (this.login == true) {
-            console.log(`用户：${this.user_name}  正在执行任务：${this.name}`)
-            let DATA = await $.task(`post`, `https://api.qd-metro.com/ngscore/task/getTaskBrowseConf`, this.headers, `{"token":"${this.token}","deviceCoding":"${this.deviceCoding}","taskConfId":${this.taskid}}`)
-            if (DATA.code == '01' && DATA.success == true) {
-                await $.wait(DATA.data.finishTime * 1000)
-                await this.browseDocument(DATA.data.id)
-            }
+    //发布动态
+    async moment() {
+        await this.dailyoneword()
+        let body = `{"uid":"${this.no}","message":"#打卡##${this.word}","imgUrls":"","userLabelCategoryId":791}`
+        let headers = {
+            channelID: `3`,
+            timaToken: this.token,
+        }
+        let resp = await $.task('post', `https://jacsupperapp.jac.com.cn/zkapi/dk-dm-portal-api/moment/add`, headers, body)
+        if (resp.status == 1) {
+            console.log(`【${this.name}】发布动态成功`)
+            await $.wait($.RT(15000, 25000))
+        } else {
+            console.log(`【${this.name}】发布动态失败`)
         }
     }
-    async browseDocument(id) {
-        let time = $.time(13)
-        let sign = $.SHA_RSA(`${this.taskid}${id}${time}`, this.key).replace(/\_/g, '/').replace(/\-/g, '+') + '=='
-        let DATA = await $.task(`post`, `https://api.qd-metro.com/ngscore/task/browseDocument`, this.headers, `{"token":"${this.token}","deviceCoding":"${this.deviceCoding}","taskConfId":${this.taskid},"documentId":${id},"createTime":${time},"sign":"${sign}","timestamp":""}`)
-        if (DATA.success == true && DATA.code == '01') {
-            await $.wait(1000)
-            let data = await $.task(`post`, `https://api.qd-metro.com/ngscore/task/finishTask`, this.headers, `{"token":"${this.token}","deviceCoding":"${this.deviceCoding}","taskConfId":${this.taskid}}`)
-            if (data.success == true && data.code == '01') {
-                console.log(`用户：${this.user_name}  任务完成，领取奖励成功`)
-            }
+    //文章列表
+    async readlist() {
+        let body = `{"isNew":1,"uid":"${this.no}","pageNo":${$.RT(1, 100)},"length":5,"labelIds":["VB2018071807034444249"]}`
+        let headers = {
+            channelID: `3`,
+            timaToken: this.token,
+        }
+        let resp = await $.task('post', `https://jacsupperapp.jac.com.cn/zkapi/dk-dm-portal-api/recommend/recommendList`, headers, body)
+        this.list = resp.data
+    }
+    //分享文章
+    async share() {
+        await this.readlist()
+        let rid = this.list[$.RT(0, 4)].id
+        let body = `{"ruleStr":"SHARING_FORWARDING","serviceTypeStr":"SERVICE_FIXED","no":"${this.no}","lid":${rid},"shareflag":""}`
+        let headers = {
+            channelID: `3`,
+            timaToken: this.token,
+        }
+        let resp = await $.task('post', `https://jacsupperapp.jac.com.cn/zkapi/pluto-membership/pluto-membership/integral-gather/addintegral-sharingForwarding`, headers, body)
+        if (resp.code == 0) {
+            console.log(`【${this.name}】分享成功`)
+            await $.wait($.RT(15000, 25000))
+        } else {
+            console.log(`【${this.name}】分享失败`)
         }
     }
-    async user_showmsg() {
-        if (this.notify != 'off') {
-            await $.showmsg(this.notify, this.message)
+    //评论文章
+    async comment() {
+        await this.readlist()
+        let rid = this.list[$.RT(0, 4)].id
+        let body = `{"uid":"${this.no}","lid":"${rid}","message":"${this.comtext}"}`
+        let headers = {
+            channelID: `3`,
+            timaToken: this.token,
+        }
+        let resp = await $.task('post', `https://jacsupperapp.jac.com.cn/zkapi/dk-dm-portal-api/userComment/informationComment`, headers, body)
+        if (resp.status == 1) {
+            console.log(`【${this.name}】评论成功`)
+            await $.wait($.RT(15000, 25000))
+        } else {
+            console.log(`【${this.name}】评论失败`)
         }
     }
-}
+    //每日一言
+    async dailyoneword() {
+        let resp = await $.task('get', `https://v1.jinrishici.com/all.json`, {})
+        this.word = resp.content
+    }
+    //用户信息
+    async userinfo() {
+        let body = `{"no":"${this.no}"}`
+        let headers = {
+            channelID: `3`,
+            timaToken: this.token,
+        }
+        let resp = await $.task('post', `https://jacsupperapp.jac.com.cn/zkapi/pluto-membership/plutomembership/integralCount/searchIntegralCountList`, headers, body)
+        console.log(`【${this.name}】积分 ${resp.data[0].count}`)
+    }
 
+} $ = DD()
 !(async () => {
+    console.log(`蛋炒饭偷撸脚本，请勿外传，神秘口令：aHR0cHMlM0EvL3QubWUvK05aTGFpVWZHcnl0aE5qSmw=`)
     await $.ExamineCookie()
-
-    console.log(`\n================ 用户信息 ================`)
-    await $.Multithreading('user_info')
-
-    let valid_user_list = $.cookie_list.filter(x => x.login == true)
-    if (valid_user_list.length == 0) {
-        console.log(`Cookie格式错误 或 账号被禁封`)
-        return
+    if ($.cookie_list.length < 4) {
+        await $.Multithreading('login')
+        let valid_user_list = $.cookie_list.filter(x => x.logs == true)
+        if (valid_user_list.length == 0) {
+            console.log(`Cookie格式错误 或 账号被禁封`)
+            return
+        } else {
+            await $.Multithreading('signin')
+            await $.Multithreading('moment', 0, 4)
+            await $.Multithreading('share')
+            await $.Multithreading('comment', 0, 4)
+            await $.Multithreading('userinfo')
+        }
     } else {
-        console.log(`\n================ 任务列表 ================`)
-        await $.Multithreading('user_task_list')
+        console.log(`账号数量超过3，请减少账号数量后重试！`)
     }
-    for (let user of $.cookie_list) {
-        user.user_info(0)
-    }
-    await $.Multithreading('user_showmsg')
 })()
-    .catch(e => {
-        console.log(e)
-    })
+    .catch(e => { console.log(e) })
     .finally(() => { })
 
-function Tom() {
+
+function DD() {
     return new (class {
         constructor() {
             this.cookie_list = []
@@ -132,51 +171,20 @@ function Tom() {
         }
         //变量检查
         ExamineCookie() {
-            let ckStr = process.env[VALY] || CK || require('./TomCookie')
-            if (ckStr == process.env[VALY] || ckStr == CK) {
-                console.log(`================= Cookie模式：环境变量 =================`)
-                if (ckStr) {
-                    for (let User_Cookies of ckStr.split('&').filter(x => !!x)) {
-                        if (DECODE == 0) {
-                            this.cookie_list.push(new tom(decodeURIComponent(User_Cookies)))
-                        } else {
-                            this.cookie_list.push(new tom(User_Cookies))
-                        }
-                    }
-                } else {
-                    console.log(`\n【${NAME}】：未填写变量: ${VALY}`)
+            let ckStr = process.env[VALY] || CK
+            let userCount = 0
+            if (ckStr) {
+                for (let userCookies of ckStr.split('\n').filter(x => !!x)) {
+                    $.cookie_list.push(new Bar(userCookies))
                 }
-                console.log(`共找到 ${this.cookie_list.length || 0} 个账号`)
-                return this.cookie_list
+                userCount = $.cookie_list.length
+            } else {
+                console.log(`\n【${NAME}】：未填写变量: ${VALY}`)
             }
-            if (ckStr == require('./TomCookie')) {
-                console.log(`================= Cookie模式：文件模式 =================`)
-                if (ckStr.TomCookie[VALY]) {
-                    for (let is = 1; is <= ckStr.TomCookie[VALY].length; is++) {
-                        let User_Cookies = ckStr.TomCookie[VALY][is - 1].cookie_key
-                        let User_Name = ckStr.TomCookie[VALY][is - 1].cookie_name
-                        let User_Notify = ckStr.TomCookie[VALY][is - 1].cookie_notify
-                        if (User_Cookies != '') {
-                            if (User_Name == '') {
-                                User_Name = `账号${is}`
-                            }
-                            if (User_Notify == '') {
-                                User_Notify = `off`
-                            }
-                            if (DECODE == 0) {
-                                this.cookie_list.push(new tom(decodeURIComponent(User_Name + '||' + User_Cookies + '||' + User_Notify)))
-                            } else {
-                                this.cookie_list.push(new tom(User_Name + '||' + User_Cookies + '||' + User_Notify))
-                            }
-                        }
-                    }
-                }
-                console.log(`共找到 ${this.cookie_list.length || 0} 个账号`)
-                return this.cookie_list
-            }
+            console.log(`共找到${userCount}个账号`)
+            return $.cookie_list
         }
         // 运行模块 get post put delete patch head options
-        // let qq = $.task('get','url',{},'',ip)
         task(method, taskurl, taskheader, taskbody, taskhost) {
             if (method == 'delete') {
                 method = method.toUpperCase()
@@ -209,7 +217,7 @@ function Tom() {
                         url: taskurl,
                         headers: taskheader,
                         body: taskbody,
-                        timeout: 6000,
+                        //timeout: 6000,
                         proxy: 'http://' + taskhost,
                     }
                 } else {
@@ -217,7 +225,7 @@ function Tom() {
                         url: taskurl,
                         headers: taskheader,
                         form: JSON.parse(taskbody),
-                        timeout: 6000,
+                        //timeout: 6000,
                         proxy: 'http://' + taskhost,
                     }
                 }
@@ -227,7 +235,7 @@ function Tom() {
                 this.request[method.toLowerCase()](httpget, (err, response, data) => {
                     try {
                         if (data) {
-                            if (LOGS == 0) {
+                            if (LOGS == 1) {
                                 console.log(`================ 请求 ================`)
                                 console.log(httpget)
                                 console.log(`================ 返回 ================`)
@@ -241,44 +249,40 @@ function Tom() {
                     } catch (e) {
                         console.log(e, taskurl + '\n' + taskheader)
                     } finally {
-                        let datas = ''
+                        let resp = ''
                         if (!err) {
                             if ($.safeGet(data)) {
-                                datas = JSON.parse(data)
+                                resp = JSON.parse(data)
+                            } else if (data.indexOf('/') != -1 && data.indexOf('+') != -1) {
+                                resp = $.decrypts(data)
                             } else {
-                                datas = data
+                                resp = data
                             }
                         } else {
-                            datas = taskurl + '   API请求失败，请检查网络重试\n' + err
+                            resp = taskurl + '   API请求失败，请检查网络重试\n' + err
                         }
-                        return resolve(datas)
+                        return resolve(resp)
                     }
                 })
             })
         }
-
-        //数组中随机取出N个不重复的数据
-        getArrayItems(arr, num) {
-            var temp_array = new Array()
-            for (var index in arr) {
-                temp_array.push(arr[index])
+        //解密
+        decrypts(data) {
+            //使用方法：DecryptCrypto(`0`,`AES`, `ECB`, `Pkcs7`, data, 'key', 'iv')
+            try {
+                return JSON.parse($.DecryptCrypto(0, `AES`, `ECB`, `Pkcs7`, data, this.key1, this.iv))
+            } catch (e) {
+                return JSON.parse($.DecryptCrypto(0, `AES`, `ECB`, `Pkcs7`, data, this.key2, this.iv))
             }
-            var return_array = new Array()
-            for (var i = 0; i < num; i++) {
-                if (temp_array.length > 0) {
-                    var arrIndex = Math.floor(Math.random() * temp_array.length)
-                    return_array[i] = temp_array[arrIndex]
-                    temp_array.splice(arrIndex, 1)
-                } else {
-                    break
-                }
-            }
-            return return_array
         }
         //body长度
         lengthInUtf8Bytes(str) {
             let m = encodeURIComponent(str).match(/%[89ABab]/g)
             return str.length + (m ? m.length : 0)
+        }
+        //随机数组
+        randomArr(arr) {
+            return arr[parseInt(Math.random() * arr.length, 10)]
         }
         //延迟
         wait(t) {
@@ -324,18 +328,6 @@ function Tom() {
                 return date.getSeconds() + 1 < 10 ? '0' + date.getSeconds() : date.getSeconds()
             }
         }
-        //国际标准时间
-        nowtime() {
-            return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000)
-        }
-        //日期格式化时间戳
-        timecs() {
-            let newtime = $.nowtime()
-            if (JSON.stringify(newtime).indexOf(' ') >= 0) {
-                newtime = newtime.replace(' ', 'T')
-            }
-            return new Date(newtime).getTime() - 8 * 60 * 60 * 1000
-        }
         //数据检查
         safeGet(data) {
             try {
@@ -347,7 +339,7 @@ function Tom() {
             }
         }
         //随机字符
-        randomString(len, t) {
+        SJS(len, t) {
             if (t == 0) {
                 let chars = 'QWERTYUIOPASDFGHJKLZXCVBNM01234567890123456789'
                 let maxLen = chars.length
@@ -356,8 +348,16 @@ function Tom() {
                     str += chars.charAt(Math.floor(Math.random() * maxLen))
                 }
                 return str
+            } else if (t == 1) {
+                let chars = 'qwertyuiopasdfghjklzxcvbnm0123456789'
+                let maxLen = chars.length
+                let str = ''
+                for (let i = 0; i < len; i++) {
+                    str += chars.charAt(Math.floor(Math.random() * maxLen))
+                }
+                return str
             } else {
-                let chars = 'qwertyuiopasdfghjklzxcvbnm01234567890123456789QWERTYUIOPASDFGHJKLZXCVBNM'
+                let chars = '0123456789'
                 let maxLen = chars.length
                 let str = ''
                 for (let i = 0; i < len; i++) {
@@ -403,10 +403,6 @@ function Tom() {
             str = str.replace(/\\u/g, '%u')
             return unescape(unescape(str))
         }
-        //随机延迟 ceil向上取值$.RT(0, 5)=1 2 3 4 5
-        //随机延迟 floor向下取值$.RT(0, 5)=0 1 2 3 4
-        //随机延迟 round四舍五入取值$.RT(0, 5)=0 1 2 3 4 5
-        //区间随机
         RT(X, Y) {
             return Math.round(Math.random() * (Y - X) + X)
         }
@@ -416,6 +412,18 @@ function Tom() {
                 return s && s.trim()
             })
             return r
+        }
+        //国际标准时间
+        nowtime() {
+            return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000)
+        }
+        //日期格式化时间戳
+        timecs() {
+            let newtime = $.nowtime()
+            if (JSON.stringify(newtime).indexOf(' ') >= 0) {
+                newtime = newtime.replace(' ', 'T')
+            }
+            return new Date(newtime).getTime() - 8 * 60 * 60 * 1000
         }
         //键值对转json  $.rtjson(str, '&', '=',1)
         rtjson(input, apart, apart2, i) {
@@ -436,7 +444,7 @@ function Tom() {
             }
         }
         //md5加密 0=32位小写,1=32位大写,2=中间16位小写,3=中间16位大写
-        MD5Encrypt(i, str) {
+        MD5(i, str) {
             if (i == 0) {
                 return this.CryptoJS.MD5(str).toString().toLowerCase()
             } else if (i == 1) {
@@ -495,8 +503,11 @@ function Tom() {
             }
         }
         //RSA加密
-        RSA(str, Key) {
-            return new this.NodeRSA('-----BEGIN PUBLIC KEY-----\n' + $.getNewline(Key, 64) + '\n-----END PUBLIC KEY-----').encrypt(str, 'base64', 'utf8')
+        RSA(msg, Key) {
+            const NodeRSA = require('node-rsa')
+            let nodersa = new NodeRSA('-----BEGIN PUBLIC KEY-----\n' + Key + '\n-----END PUBLIC KEY-----')
+            nodersa.setOptions({ encryptionScheme: 'pkcs1' })
+            return nodersa.encrypt(msg, 'base64', 'utf8')
         }
         SHA_RSA(str, Keys) {
             let key = this.Sha_Rsa.KEYUTIL.getKey('-----BEGIN PRIVATE KEY-----\n' + $.getNewline(Keys, 76) + '\n-----END PRIVATE KEY-----')
@@ -506,34 +517,6 @@ function Tom() {
             let originSign = signature.sign()
             let sign64u = this.Sha_Rsa.hextob64u(originSign)
             return sign64u
-        }
-        //字符自动换行
-        getNewline(data, id) {
-            let str = new String(data)
-            let bytesCount = 0
-            let s = ''
-            for (let i = 0, n = str.length; i < n; i++) {
-                let c = str.charCodeAt(i)
-                if ((c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f)) {
-                    bytesCount += 1
-                } else {
-                    bytesCount += 2
-                }
-                s += str.charAt(i)
-                if (bytesCount >= id) {
-                    s = s + '\n'
-                    bytesCount = 0
-                }
-            }
-            return s
-        }
-        //通知
-        async showmsg(url, message) {
-            if (!message) return
-            //   var notify = require('./sendNotify')
-            let data = await $.task('get', `${url}${encodeURIComponent(NAME)}/${encodeURIComponent(message)}`, { 'Content-Type': 'application/x-www-form-urlencoded' })
-            //console.log(data)
-            //  await notify.sendNotify(NAME, message)
         }
     })()
 }
