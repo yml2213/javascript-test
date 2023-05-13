@@ -1,24 +1,24 @@
 /*
-厂拉拉 app             cron 0 1,6,12,18,22 * * *  cll.js
+极米 app             cron 0 1,6,12,18,22 * * *  jimi.js
 
 23/4/22    修脚本
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 厂拉拉
-export cll=" unionid # token  # token-key # X-Rqr @ unionid # token  # token-key # X-Rqr"  
+# 极米
+export jimi=" accessToken  @ accessToken "  
 
 多账号用 换行 或 @ 分割  
 
-抓 send.api.fiaohi.com.cn 的包  基本都要需要的变量
+抓 xgimi.com 的包  accessToken 即可 
 
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('厂拉拉')
+const $ = Env('极米')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
 const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['cll']                //支持多变量
+const ckNames = ['jimi']                //支持多变量
 
 //====================================================================================================
 
@@ -30,15 +30,12 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        this.ck = ck.split('#')
-        this.unionid = this.ck[0]
-        this.token = this.ck[1]
-        this.token_key = this.ck[2]
-        this.X_Rqr = this.ck[3]
+        // this.ck = ck.split('#')
+        this.token = ck
 
-        this.salt = '3C45FFEF47D7A9655579ADA26B23EBC1'
-        this.salt2 = 'F73AB6187AA9009A3116FD9EBD373C08'
+        this.salt = '9y$B&E)H@McQeThW'
 
+        this.d_ua = 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)'
 
     }
 
@@ -46,196 +43,171 @@ class UserClass {
         console.log(`\n=============== ${this.idx} ===============`)
 
         $.log(`\n-------------- 个人信息 --------------`)
-        await this.info()
+        await this.checkLogin()
 
         if (this.ckFlog) {
             $.log(`\n-------------- 任务列表 --------------`)
-            await this.getChooseGoods()
-            await this.getPunchVersion()
+            await this.doSign()
+            await this.lottery_num()
+            await this.check()
+            // await this.do_lttery()
 
         }
     }
 
-    async info() { // 个人信息
+    async checkLogin() { // 个人信息
         let options = {
             fn: '个人信息',
-            method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/Customer/getCustomer`,
-            headers: this.get_hd(),
-            form: { 'unionid': this.unionid }
+            method: 'get',
+            url: `https://ucenter-api.i.xgimi.com/open/oauth2/login/checkLogin`,
+            headers: {
+                'source': '2',
+                'token': this.token,
+                'User-Agent': this.d_ua
+            },
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 0) {
-            this.nickname = resp.data.nickname
-            this.phone = resp.data.phone
-            $.log(`${this.idx}: ${options.fn} ${this.nickname} 成功 🎉, 手机号${$.phoneNum(this.phone)}`)
+        if (resp.code == 200) {
+            this.nickName = resp.data.nickName
+            this.uid = resp.data.uid
+            this.openId = resp.data.openId
+            this.mobile = resp.data.mobile
+            $.log(`${this.idx}: ${options.fn} ${this.nickName} ${this.uid} 成功 🎉, 手机号: ${this.mobile}`)
             this.ckFlog = true
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
+
     }
 
-    async getChooseGoods() { // 获取打卡商品
+    async doSign() { // 签到 e3a04a305290e60b752fa652864cb253
+        let ts = $.ts(13)
+        let sign = crypto.MD5(`configNo=2021061111211168&timestamp=${ts}&${this.salt}`).toString()
         let options = {
-            fn: '获取打卡商品',
+            fn: '签到',
             method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/Punch/getChooseGoods`,
-            headers: this.get_hd(this.phone),
-            body: 'https://send.api.fiaohi.com.cn/api/Punch/getChooseGoods'
+            url: `https://mobile-api.xgimi.com/app/v4/integral/signin`,
+            headers: {
+                'timestamp': ts,
+                'openId': this.openId,
+                'sign': sign,
+                'channel': 'superApp',
+                'accessToken': this.token,
+                'User-Agent': this.d_ua
+            },
+            json: { "configNo": "2021061111211168" }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 0) {
+        if (resp.code == 'ok') {
             // console.log(resp)
-            this.sid = resp.data[0].sign_id
-            $.log(`${this.idx}: ${this.nickname} -- 当前选择商品 ${this.sid}：${resp.data[0].name}`)
+            $.log(`${this.idx}: ${this.nickName} ${options.fn}, 获得积分${resp.data.status}`)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
-    async getPunchVersion() { // 获取打卡信息
+    async lottery_num() { // 抽奖次数 e3a04a305290e60b752fa652864cb253
         let options = {
-            fn: '获取打卡信息',
-            method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/v4.Punch/getPunchVersion`,
-            headers: this.get_hd(this.phone),
-            body: 'https://send.api.fiaohi.com.cn/api/v4.Punch/getPunchVersion'
+            fn: '抽奖次数',
+            method: 'get',
+            url: `https://marketing-center-gateway.i.xgimi.com/lottery/query/credit/times/limit?promotionNo=1456570878320967773`,
+            headers: {
+                'source': '2',
+                'token': this.token,
+                'User-Agent': this.d_ua
+            },
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 0) {
+        if (resp.code == 200) {
             // console.log(resp)
-            if (!resp.data[0].is_finish) {
-                $.log(`${this.idx}: ${this.nickname} -- 今日打卡进度 ${resp.data[0].finish}, 还需打卡：${resp.data[0].less_day} 天`, { notify: true })
-                for (let i = 0; i < resp.data[0].lists.length; i++) {
-                    if (resp.data[0].lists[i].status == 0 | resp.data[0].lists[i].status == 1) {
-                        await this.beginPunch(resp.data[0].lists[i].times)
-                    }
-                }
-                // await this.beginPunch(2)
+            this.l_num = resp.data.lotteryTimesLimit
+            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${this.l_num}`)
+            if (this.l_num) {
+                // await this.doLottery()
+            }
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
+    }
+
+    async check() { // 积分查询
+        let ts = $.ts(13)
+        let sign = crypto.MD5(`timestamp=${ts}&${this.salt}`).toString()
+        let options = {
+            fn: '积分查询',
+            method: 'post',
+            url: `https://mobile-api.xgimi.com/app/v4/integral/signinConfig`,
+            headers: {
+                'timestamp': ts,
+                'openId': this.openId,
+                'sign': sign,
+                'channel': 'superApp',
+                'accessToken': this.token,
+                'User-Agent': this.d_ua
+            },
+            json: {}
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.code == 'ok') {
+            // console.log(resp)
+            this.balance = resp.data.balance
+            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${this.balance}`, { notify: true })
+            if (this.l_num > 0 && this.balance >= 50) {
+                await this.lttery_info()
             } else {
-                $.log(`${this.idx}: ${this.nickname} -- 今日打卡已完成, 还需打卡：${resp.data[0].less_day} 天`)
+                $.log(`${this.idx}: ${this.nickName} 不满足抽奖条件, 跳过`)
+
             }
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
-    async beginPunch(times) { // 看视频打卡
-        let t = $.ts(13)
-        let userid = Buffer.from(this.unionid, 'base64').toString('utf-8')
-        let tem_sign1 = crypto.MD5(`customer_id=${userid}mobile=${this.phone}sign_id=${this.getPunchBase64(this.sid, 987)}times=${times}timestamp=${t}${this.salt2}`).toString()
-        let tem_sign2 = tem_sign1.substring(2, 24)
-        let sin = crypto.SHA1(tem_sign2).toString()
+    async lttery_info() { // 抽奖次数 e3a04a305290e60b752fa652864cb253
+        let n = ''
+        if (this.balance >= 150) {
+            n = 3
+        } else if (this.balance >= 100) {
+            n = 2
 
+        } else if (this.balance >= 50) {
+            n = 1
+        }
+        for (let i = 0; i < n; i++) {
+            await this.do_lttery()
+        }
+
+    }
+    async do_lttery() { // 抽奖
         let options = {
-            fn: '看视频打卡',
+            fn: '抽奖',
             method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/v4.Punch/beginPunch`,
-            headers: this.get_hd(this.phone),
-            form: {
-                'times': times,
-                'sign_id': this.getPunchBase64(this.sid, 987),
-                'timestamp': t,
-                'sin': sin
-            }
+            url: `https://marketing-center-gateway.i.xgimi.com/lottery/draw`,
+            headers: {
+                'source': '2',
+                'token': this.token,
+                'User-Agent': this.d_ua
+            },
+            json: { "promotionNo": "1456570878320967773", "templateId": "4" }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 0) {
+        if (resp.code == 200) {
             // console.log(resp)
-            $.log(`${this.idx}: ${this.nickname} 看第 ${times} 个视频ok -- 视频id: ${resp.data}`)
-            await $.wait($.randomInt(30, 50))
-            await this.endPunch(resp.data)
+            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${JSON.stringify(resp.data)}`, { notify: true })
+            await $.wait(5)
+        } else if (resp.code == 100401 || 200119) {
+            $.log(`${this.idx}: ${options.fn} -- ${resp.msg}`)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
 
-    async endPunch(id) { // 结束看视频打卡
-        let t = $.ts(13)
-        let userid = Buffer.from(this.unionid, 'base64').toString('utf-8')
-        let tem_sign1 = crypto.MD5(`customer_id=${userid}mobile=${this.phone}sign_day_id=${this.getPunchBase64(id, 654)}sign_id=${this.getPunchBase64(this.sid, 987)}timestamp=${t}${this.salt2}`).toString()
-        let tem_sign2 = tem_sign1.substring(2, 24)
-        let sin = crypto.SHA1(tem_sign2).toString()
-
-        let options = {
-            fn: '结束看视频打卡',
-            method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/v4.Punch/endPunch`,
-            headers: this.get_hd(this.phone),
-            form: {
-                'sign_day_id': this.getPunchBase64(id, 654),
-                'sign_id': this.getPunchBase64(this.sid, 987),
-                'timestamp': t,
-                'sin': sin
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 0) {
-            // console.log(resp)
-            $.log(`${this.idx}: ${this.nickname} ${options.fn} -- ${resp.message}`)
-            await $.wait($.randomInt(15, 20))
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    getPunchBase64(num, num2) {
-        const valueOf = BigInt(num)
-        const valueOf2 = BigInt(num2)
-        const str = (valueOf * valueOf2).toString()
-        const encodeToString = Buffer.from(str.trim()).toString('base64')
-        const encodeToString2 = Buffer.from(encodeToString.trim()).toString('base64')
-        return encodeToString2.trim()
-    }
-
-    get_hd(phoen) {
-        let t = $.ts(13)
-        let r = $.randomString(32)
-        let n = crypto.MD5(`${t}${r}${this.salt}`).toString()
-        if (phoen) {
-            let authorization = crypto.MD5(`${this.unionid}${this.phone}${r}`).toString()
-            let hd = {
-                'zone': 'clocks',
-                't': t,
-                'r': r,
-                'n': n,
-                'appid': '10002',
-                'from': 'app',
-                'token': this.token,
-                'token-key': this.token_key,
-                'unionid': this.unionid,
-                'authorization': authorization,
-                'X-Ver': '3.4.00',
-                'X-Rqr': this.X_Rqr,
-                'User-Agent': 'okhttp/5.0.0-alpha.10'
-            }
-            return hd
-        } else {
-            let hd = {
-                'zone': 'clocks',
-                't': t,
-                'r': r,
-                'n': n,
-                'appid': '10002',
-                'from': 'app',
-                'token': this.token,
-                'token-key': this.token_key,
-                'unionid': this.unionid,
-                'User-Agent': 'okhttp/5.0.0-alpha.10'
-            }
-            return hd
-        }
-
-
-
-    }
 
 
 
@@ -307,6 +279,9 @@ function Env(name) {
         }
 
         log(msg, options = {}) {
+            if (typeof msg == 'object') {
+                msg = JSON.stringify(msg)
+            }
             let opt = { console: true }
             Object.assign(opt, options)
 

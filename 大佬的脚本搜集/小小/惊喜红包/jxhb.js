@@ -1,212 +1,120 @@
-/*
-极米 app             cron 0 1,6,12,18,22 * * *  jimi.js
+// @title 惊喜红包
+// @author 蛋炒饭
+// @cron 12,42 8-16 * * *
+// 抓包 api.jxhb123.cn 里面的Authorization 值， 我的显示有18个红包，能运行18次
 
-23/4/22    修脚本
 
--------------------  青龙-配置文件-复制区域  -------------------
-# 极米
-export jimi=" accessToken  @ accessToken "  
-
-多账号用 换行 或 @ 分割  
-
-抓 xgimi.com 的包  accessToken 即可 
-
-tg频道: https://t.me/yml2213_tg  
-*/
-const $ = Env('极米')
-const notify = require('./sendNotify')
+const $ = Env('惊喜红包')
+const envSplit = ['\n', '@', '&']     //支持多种分割，但要保证变量里不存在这个字符
+const ckNames = ['jxhb'] //可以支持多变量
 const crypto = require('crypto-js')
 
-const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['jimi']                //支持多变量
-
 //====================================================================================================
-
-
+let DEFAULT_RETRY = 3           // 默认重试次数
 //====================================================================================================
+async function userTasks() {
 
+    let list = []
+    for (let user of $.userList) {
+        list.push(user.money())
+    }
+    await Promise.all(list)
 
+}
 class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        // this.ck = ck.split('#')
-        this.token = ck
-
-        this.salt = '9y$B&E)H@McQeThW'
-
-        this.d_ua = 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)'
+        this.ck = ck
 
     }
 
-    async userTask() { // 个人信息
-        console.log(`\n=============== ${this.idx} ===============`)
 
-        $.log(`\n-------------- 个人信息 --------------`)
-        await this.checkLogin()
+    async getRedId() {
+        return new Promise(resolve => {
+            const WebSocket = require('ws')
+            const ws = new WebSocket('ws://110.41.186.42:9502/socket.io/?EIO=3&transport=websocket')
+            let redId = null
+            ws.on('message', function incoming(message) {
+                message = message.replaceAll("\\", "")
+                let result = message.match(/"redId":(\d+?),/)
+                if (result) {
+                    redId = result[1]
+                    ws.close()
+                }
+            })
 
-        if (this.ckFlog) {
-            $.log(`\n-------------- 任务列表 --------------`)
-            await this.doSign()
-            await this.lottery_num()
-            await this.check()
-            // await this.do_lttery()
+            setTimeout(() => {
+                ws.close()
+                resolve(redId)
+            }, 1500)
+        })
 
+    }
+
+    async money() {
+        let redId = await this.getRedId()
+        if (redId) {
+            $.log("获取到redId = " + redId)
+            await this.redPrepare(redId)
+            $.wait(15)
+            await this.grab(redId)
+        } else {
+            $.log("没有取到redId，结束")
         }
-    }
-
-    async checkLogin() { // 个人信息
-        let options = {
-            fn: '个人信息',
-            method: 'get',
-            url: `https://ucenter-api.i.xgimi.com/open/oauth2/login/checkLogin`,
-            headers: {
-                'source': '2',
-                'token': this.token,
-                'User-Agent': this.d_ua
-            },
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200) {
-            this.nickName = resp.data.nickName
-            this.uid = resp.data.uid
-            this.openId = resp.data.openId
-            this.mobile = resp.data.mobile
-            $.log(`${this.idx}: ${options.fn} ${this.nickName} ${this.uid} 成功 🎉, 手机号: ${this.mobile}`)
-            this.ckFlog = true
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
-
 
     }
-
-    async doSign() { // 签到 e3a04a305290e60b752fa652864cb253
-        let ts = $.ts(13)
-        let sign = crypto.MD5(`configNo=2021061111211168&timestamp=${ts}&${this.salt}`).toString()
+    async redPrepare(redId) {
+        let sign = crypto.MD5(`jxhb123.cn~~&redId${redId}sBoxId0ver1.1.1jxhb123.cn~~&`)
         let options = {
-            fn: '签到',
+            fn: 'redPrepare',
             method: 'post',
-            url: `https://mobile-api.xgimi.com/app/v4/integral/signin`,
+            url: `http://api.jxhb123.cn/api/Red/redPrepare`,
             headers: {
-                'timestamp': ts,
-                'openId': this.openId,
-                'sign': sign,
-                'channel': 'superApp',
-                'accessToken': this.token,
-                'User-Agent': this.d_ua
+                "Authorization": `Bearer ${this.ck}`,
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Host": "api.jxhb123.cn",
+                "Connection": "Keep-Alive",
+                "User-Agent": "okhttp/3.12.12",
+                "Referer": "https://servicewechat.com/wxeb2eb33c531125ce/70/page-frame.html"
             },
-            json: { "configNo": "2021061111211168" }
+            body: `sBoxId=0&ver=1.1.1&sign=${sign}&redId=${redId}`
+
         }
-        // console.log(options)
+        //    $.log(options)
         let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'ok') {
-            // console.log(resp)
-            $.log(`${this.idx}: ${this.nickName} ${options.fn}, 获得积分${resp.data.status}`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async lottery_num() { // 抽奖次数 e3a04a305290e60b752fa652864cb253
-        let options = {
-            fn: '抽奖次数',
-            method: 'get',
-            url: `https://marketing-center-gateway.i.xgimi.com/lottery/query/credit/times/limit?promotionNo=1456570878320967773`,
-            headers: {
-                'source': '2',
-                'token': this.token,
-                'User-Agent': this.d_ua
-            },
+        // $.log(resp)
+        if (resp.success) {
+            $.log(this.idx + `准备领取奖励`)
+        } else {
+            $.log(JSON.stringify(resp))
         }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200) {
-            // console.log(resp)
-            this.l_num = resp.data.lotteryTimesLimit
-            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${this.l_num}`)
-            if (this.l_num) {
-                // await this.doLottery()
-            }
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
     }
-
-    async check() { // 积分查询
-        let ts = $.ts(13)
-        let sign = crypto.MD5(`timestamp=${ts}&${this.salt}`).toString()
+    async grab(redId) {
         let options = {
-            fn: '积分查询',
+            fn: 'grab',
             method: 'post',
-            url: `https://mobile-api.xgimi.com/app/v4/integral/signinConfig`,
+            url: `http://api.jxhb123.cn/api/Red/grab`,
             headers: {
-                'timestamp': ts,
-                'openId': this.openId,
-                'sign': sign,
-                'channel': 'superApp',
-                'accessToken': this.token,
-                'User-Agent': this.d_ua
+                "Authorization": `Bearer ${this.ck}`,
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Host": "api.jxhb123.cn",
+                "Connection": "Keep-Alive",
+                "User-Agent": "okhttp/3.12.12",
+                "Referer": "https://servicewechat.com/wxeb2eb33c531125ce/70/page-frame.html"
             },
-            json: {}
+            body: `isClick=0&ver=1.1.1&redId=${redId}`
+
         }
-        // console.log(options)
+        //    $.log(options)
         let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'ok') {
-            // console.log(resp)
-            this.balance = resp.data.balance
-            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${this.balance}`, { notify: true })
-            if (this.l_num > 0 && this.balance >= 50) {
-                await this.lttery_info()
-            } else {
-                $.log(`${this.idx}: ${this.nickName} 不满足抽奖条件, 跳过`)
-
-            }
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async lttery_info() { // 抽奖次数 e3a04a305290e60b752fa652864cb253
-        let n = ''
-        if (this.balance >= 150) {
-            n = 3
-        } else if (this.balance >= 100) {
-            n = 2
-        } else if (this.balance >= 50) {
-            n = 1
+        // $.log(resp)
+        if (resp.success) {
+            $.log(this.idx + resp.data.tip + resp.data.tip2)
+        } else {
+            $.log(JSON.stringify(resp))
         }
-        for (let i = 0; i < n; i++) {
-            await this.do_lttery()
-        }
-
     }
-    async do_lttery() { // 抽奖
-        let options = {
-            fn: '抽奖',
-            method: 'post',
-            url: `https://marketing-center-gateway.i.xgimi.com/lottery/draw`,
-            headers: {
-                'source': '2',
-                'token': this.token,
-                'User-Agent': this.d_ua
-            },
-            json: { "promotionNo": "1456570878320967773", "templateId": "4" }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200) {
-            // console.log(resp)
-            $.log(`${this.idx}: ${this.nickName} ${options.fn} 获得 -- ${resp.data.prizeDetail.name}`, { notify: true })
-            await $.wait(5)
-        } else if (resp.code == 100401 || 200119) {
-            $.log(`${this.idx}: ${options.fn} -- ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-
 
 
 
@@ -214,12 +122,8 @@ class UserClass {
 
 
 !(async () => {
-    console.log(await $.yiyan())
     if ($.read_env(UserClass)) {
-        // await userTasks()
-        for (let user of $.userList) {
-            await user.userTask()
-        }
+        await userTasks()
     }
 
 
@@ -229,12 +133,13 @@ class UserClass {
 
 
 //===============================================================
+
 function Env(name) {
     return new class {
         constructor(name) {
             this.name = name
             this.startTime = Date.now()
-            this.log(`[${this.name}]开始运行`)
+            this.log(`[${this.name}]开始运行`, { time: true })
 
             this.notifyStr = []
             this.notifyFlag = true
@@ -244,48 +149,49 @@ function Env(name) {
             this.userCount = 0
         }
 
-        async request(opt, type = 'body') {
-            try {
-                const got = require('got')
-                let DEFAULT_TIMEOUT = 8000      // 默认超时时间
-                let resp = null
-                let fn = opt.fn || opt.url
-                opt.timeout = opt.timeout || DEFAULT_TIMEOUT
-                opt.retry = opt.retry || { limit: 0 }
-                opt.method = opt?.method?.toUpperCase() || 'GET'
+        async request(opt) {
+            const got = require('got')
+            let DEFAULT_TIMEOUT = 8000      // 默认超时时间
+            let resp = null, count = 0
+            let fn = opt.fn || opt.url
+            let resp_opt = opt.resp_opt || 'body'
+            opt.timeout = opt.timeout || DEFAULT_TIMEOUT
+            opt.retry = opt.retry || { limit: 0 }
+            opt.method = opt?.method?.toUpperCase() || 'GET'
+            while (count++ < DEFAULT_RETRY) {
                 try {
                     resp = await got(opt)
+                    break
                 } catch (e) {
-                    console.log(e)
+                    if (e.name == 'TimeoutError') {
+                        this.log(`[${fn}]请求超时，重试第${count}次`)
+                    } else {
+                        this.log(`[${fn}]请求错误(${e.message})，重试第${count}次`)
+                    }
                 }
-                if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
-                let { statusCode, headers, body } = resp
-                if (body) try {
-                    body = JSON.parse(body)
-                } catch {
-                }
-                if (type == 'body') {
-                    return Promise.resolve(body)
-                } else if (type == 'hd') {
-                    return Promise.resolve(headers)
-                } else if (type == 'statusCode') {
-                    return Promise.resolve(statusCode)
-                }
-            } catch (error) {
-                console.log(error)
+            }
+            if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
+            let { statusCode, headers, body } = resp
+            if (body) try {
+                body = JSON.parse(body)
+            } catch {
+            }
+            if (resp_opt == 'body') {
+                return Promise.resolve(body)
+            } else if (resp_opt == 'hd') {
+                return Promise.resolve(headers)
+            } else if (resp_opt == 'statusCode') {
+                return Promise.resolve(statusCode)
             }
 
         }
 
         log(msg, options = {}) {
-            if (typeof msg == 'object') {
-                msg = JSON.stringify(msg)
-            }
             let opt = { console: true }
             Object.assign(opt, options)
 
             if (opt.time) {
-                let fmt = opt.fmt || 'hh:mm:ss'
+                let fmt = opt.fmt || 'hh:mm:ss:S'
                 msg = `[${this.time(fmt)}]` + msg
             }
             if (opt.notify) {
@@ -294,7 +200,9 @@ function Env(name) {
             if (opt.console) {
                 console.log(msg)
             }
-
+            if (opt.sp) {
+                console.log(`\n-------------- ${msg} --------------`)
+            }
         }
 
         read_env(Class) {
@@ -334,6 +242,7 @@ function Env(name) {
         time(t, x = null) {
             let xt = x ? new Date(x) : new Date
             let e = {
+                "Y": xt.getFullYear(),
                 "M+": xt.getMonth() + 1,
                 "d+": xt.getDate(),
                 "h+": xt.getHours(),
@@ -350,8 +259,8 @@ function Env(name) {
 
         async showmsg() {
             if (!this.notifyFlag) return
-            if (!this.notifyStr) return
-            let notify = require('./sendNotify')
+            if (!this.notifyStr.length) return
+            var notify = require('./sendNotify')
             this.log('\n============== 推送 ==============')
             await notify.sendNotify(this.name, this.notifyStr.join('\n'))
         }
@@ -504,7 +413,6 @@ function Env(name) {
         }
 
         wait(t) {
-            $.log(`账号[${$.userIdx}]: 随机等待 ${t} 秒 ...`)
             return new Promise(e => setTimeout(e, t * 1000))
         }
 

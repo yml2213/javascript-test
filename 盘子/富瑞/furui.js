@@ -1,24 +1,23 @@
 /*
-厂拉拉 app             cron 0 1,6,12,18,22 * * *  cll.js
+福瑞能源 app             cron 0 1,6,12,18,22 * * *  furui.js
 
-23/4/22    修脚本
+23/4/25    盘子, 自己投资亏了别找我
+300 起提现
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 厂拉拉
-export cll=" unionid # token  # token-key # X-Rqr @ unionid # token  # token-key # X-Rqr"  
+# 福瑞能源
+export furui=" phone # pwd @ phone # pwd "  
 
 多账号用 换行 或 @ 分割  
 
-抓 send.api.fiaohi.com.cn 的包  基本都要需要的变量
-
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('厂拉拉')
+const $ = Env('福瑞能源')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
 const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['cll']                //支持多变量
+const ckNames = ['furui']                //支持多变量
 
 //====================================================================================================
 
@@ -31,212 +30,129 @@ class UserClass {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
         this.ck = ck.split('#')
-        this.unionid = this.ck[0]
-        this.token = this.ck[1]
-        this.token_key = this.ck[2]
-        this.X_Rqr = this.ck[3]
-
-        this.salt = '3C45FFEF47D7A9655579ADA26B23EBC1'
-        this.salt2 = 'F73AB6187AA9009A3116FD9EBD373C08'
-
-
+        this.phone = this.ck[0]
+        this.pwd = this.ck[1]
     }
 
     async userTask() { // 个人信息
         console.log(`\n=============== ${this.idx} ===============`)
 
         $.log(`\n-------------- 个人信息 --------------`)
-        await this.info()
+        await this.checkLogin()
 
         if (this.ckFlog) {
             $.log(`\n-------------- 任务列表 --------------`)
-            await this.getChooseGoods()
-            await this.getPunchVersion()
+            await this.signin()
+
+            await this.check()
 
         }
     }
 
-    async info() { // 个人信息
+    // https://shuhuidc.com/index/account/login.html
+    async checkLogin() { // 登录  
         let options = {
-            fn: '个人信息',
+            fn: '登录',
             method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/Customer/getCustomer`,
-            headers: this.get_hd(),
-            form: { 'unionid': this.unionid }
+            url: `https://zgns451xmkd.com/index/account/login.html`,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Cookie': '',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            form: {
+                'username': this.phone,
+                'password': this.pwd
+            }
         }
         // console.log(options)
         let resp = await $.request(options)
+        let resp_hd = await $.request(options, 'hd')
         // console.log(resp)
-        if (resp.code == 0) {
-            this.nickname = resp.data.nickname
-            this.phone = resp.data.phone
-            $.log(`${this.idx}: ${options.fn} ${this.nickname} 成功 🎉, 手机号${$.phoneNum(this.phone)}`)
+        // console.log(resp_hd)
+        if (resp.code == 1) {
+            this.cookie = resp_hd['set-cookie'][0].split(';')[0]
+            // console.log(this.cookie)
+            $.log(`${this.idx}: ${options.fn} ${this.phone} ${resp.info} 🎉, 当前cookie: ${this.cookie}`)
             this.ckFlog = true
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
+
     }
 
-    async getChooseGoods() { // 获取打卡商品
+    async signin() { // 签到
         let options = {
-            fn: '获取打卡商品',
-            method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/Punch/getChooseGoods`,
-            headers: this.get_hd(this.phone),
-            body: 'https://send.api.fiaohi.com.cn/api/Punch/getChooseGoods'
+            fn: '签到',
+            method: 'get',
+            url: `https://zgns451xmkd.com/handle/signup`,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Cookie': this.cookie,
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)',
+            },
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 0) {
-            // console.log(resp)
-            this.sid = resp.data[0].sign_id
-            $.log(`${this.idx}: ${this.nickname} -- 当前选择商品 ${this.sid}：${resp.data[0].name}`)
+        if (resp.code == 1) {
+            $.log(`${this.idx}: ${options.fn} ${this.phone} ${resp.info} 🎉`)
+        } else if (resp.code == 0) {
+            $.log(`${this.idx}: ${options.fn} -- ${resp.info}`)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
 
     }
 
-    async getPunchVersion() { // 获取打卡信息
+
+    async check() { // 余额查询
         let options = {
-            fn: '获取打卡信息',
-            method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/v4.Punch/getPunchVersion`,
-            headers: this.get_hd(this.phone),
-            body: 'https://send.api.fiaohi.com.cn/api/v4.Punch/getPunchVersion'
+            fn: '余额查询',
+            method: 'get',
+            url: `https://zgns451xmkd.com/index/member/person.html`,
+            headers: {
+                'Upgrade-Insecure-Requests': '1',
+                'X-Requested-With': 'uni.d3cfb64a928ccd301f1',
+                'Sec-Fetch-User': '?1',
+                'Cookie': this.cookie,
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)',
+            },
+
         }
         // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 0) {
-            // console.log(resp)
-            if (!resp.data[0].is_finish) {
-                $.log(`${this.idx}: ${this.nickname} -- 今日打卡进度 ${resp.data[0].finish}, 还需打卡：${resp.data[0].less_day} 天`, { notify: true })
-                for (let i = 0; i < resp.data[0].lists.length; i++) {
-                    if (resp.data[0].lists[i].status == 0 | resp.data[0].lists[i].status == 1) {
-                        await this.beginPunch(resp.data[0].lists[i].times)
-                    }
-                }
-                // await this.beginPunch(2)
-
-            } else {
-                $.log(`${this.idx}: ${this.nickname} -- 今日打卡已完成, 还需打卡：${resp.data[0].less_day} 天`)
-            }
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async beginPunch(times) { // 看视频打卡
-        let t = $.ts(13)
-        let userid = Buffer.from(this.unionid, 'base64').toString('utf-8')
-        let tem_sign1 = crypto.MD5(`customer_id=${userid}mobile=${this.phone}sign_id=${this.getPunchBase64(this.sid, 987)}times=${times}timestamp=${t}${this.salt2}`).toString()
-        let tem_sign2 = tem_sign1.substring(2, 24)
-        let sin = crypto.SHA1(tem_sign2).toString()
-
-        let options = {
-            fn: '看视频打卡',
-            method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/v4.Punch/beginPunch`,
-            headers: this.get_hd(this.phone),
-            form: {
-                'times': times,
-                'sign_id': this.getPunchBase64(this.sid, 987),
-                'timestamp': t,
-                'sin': sin
-            }
+        let cash = await this.httpRequest(options)
+        // console.log(cash)
+        if (cash) {
+            $.log(`${this.idx}: 余额 ${cash} 元`, { notify: true })
         }
-        // console.log(options)
-        let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 0) {
-            // console.log(resp)
-            $.log(`${this.idx}: ${this.nickname} 看第 ${times} 个视频ok -- 视频id: ${resp.data}`)
-            await $.wait($.randomInt(30, 50))
-            await this.endPunch(resp.data)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-
-    async endPunch(id) { // 结束看视频打卡
-        let t = $.ts(13)
-        let userid = Buffer.from(this.unionid, 'base64').toString('utf-8')
-        let tem_sign1 = crypto.MD5(`customer_id=${userid}mobile=${this.phone}sign_day_id=${this.getPunchBase64(id, 654)}sign_id=${this.getPunchBase64(this.sid, 987)}timestamp=${t}${this.salt2}`).toString()
-        let tem_sign2 = tem_sign1.substring(2, 24)
-        let sin = crypto.SHA1(tem_sign2).toString()
-
-        let options = {
-            fn: '结束看视频打卡',
-            method: 'post',
-            url: `https://send.api.fiaohi.com.cn/api/v4.Punch/endPunch`,
-            headers: this.get_hd(this.phone),
-            form: {
-                'sign_day_id': this.getPunchBase64(id, 654),
-                'sign_id': this.getPunchBase64(this.sid, 987),
-                'timestamp': t,
-                'sin': sin
-            }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 0) {
-            // console.log(resp)
-            $.log(`${this.idx}: ${this.nickname} ${options.fn} -- ${resp.message}`)
-            await $.wait($.randomInt(15, 20))
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    getPunchBase64(num, num2) {
-        const valueOf = BigInt(num)
-        const valueOf2 = BigInt(num2)
-        const str = (valueOf * valueOf2).toString()
-        const encodeToString = Buffer.from(str.trim()).toString('base64')
-        const encodeToString2 = Buffer.from(encodeToString.trim()).toString('base64')
-        return encodeToString2.trim()
-    }
-
-    get_hd(phoen) {
-        let t = $.ts(13)
-        let r = $.randomString(32)
-        let n = crypto.MD5(`${t}${r}${this.salt}`).toString()
-        if (phoen) {
-            let authorization = crypto.MD5(`${this.unionid}${this.phone}${r}`).toString()
-            let hd = {
-                'zone': 'clocks',
-                't': t,
-                'r': r,
-                'n': n,
-                'appid': '10002',
-                'from': 'app',
-                'token': this.token,
-                'token-key': this.token_key,
-                'unionid': this.unionid,
-                'authorization': authorization,
-                'X-Ver': '3.4.00',
-                'X-Rqr': this.X_Rqr,
-                'User-Agent': 'okhttp/5.0.0-alpha.10'
-            }
-            return hd
-        } else {
-            let hd = {
-                'zone': 'clocks',
-                't': t,
-                'r': r,
-                'n': n,
-                'appid': '10002',
-                'from': 'app',
-                'token': this.token,
-                'token-key': this.token_key,
-                'unionid': this.unionid,
-                'User-Agent': 'okhttp/5.0.0-alpha.10'
-            }
-            return hd
-        }
-
+        // if (resp.code == 1) {
+        //     $.log(`${this.idx}: ${options.fn} ${this.phone} ${resp.info} 🎉`)
+        //     this.ckFlog = true
+        // } else if (resp.code == 0) {
+        //     $.log(`${this.idx}: ${options.fn} -- ${resp.info}`)
+        // } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
 
     }
 
+
+    async httpRequest(options) {
+        var request = require('request')
+
+        return new Promise((resolve) => {
+            delete options.fn
+            // console.log(options)
+            request(options, async function (error, response) {
+                if (error) throw new Error(error)
+                // console.log(`==============================================`)
+                let a = response.body
+                let cash = a.split('账户余额</span><span ><i>')[1].split('</i></span>')[0]
+                // console.log(`==============================================`)
+                resolve(cash)
+            })
+        })
+    }
 
 
 }
@@ -297,7 +213,7 @@ function Env(name) {
                     return Promise.resolve(body)
                 } else if (type == 'hd') {
                     return Promise.resolve(headers)
-                } else if (type == 'statusCode') {
+                } else if (type == 'code') {
                     return Promise.resolve(statusCode)
                 }
             } catch (error) {
@@ -307,6 +223,9 @@ function Env(name) {
         }
 
         log(msg, options = {}) {
+            if (typeof msg == 'object') {
+                msg = JSON.stringify(msg)
+            }
             let opt = { console: true }
             Object.assign(opt, options)
 
