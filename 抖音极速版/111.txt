@@ -1,0 +1,10 @@
+{"url":"https://api5-normal-c-lq.amemv.com/luckycat/aweme/v1/task/page?mode=done&update_version_code=16209900&os_api=29&device_platform=android&aid=2329&oaid=1900810119516424&device_id=2793068377647352&iid=1d1094241191dfaa&ac=wifi&channel=bf_1007913_2329_47_3&aid=2329","headers":{"Host":"api5-normal-c-lq.amemv.com","Content-Type":"application/json","Cookie":"sessionid=24f7860beaf7d9998d9fbdce43b38c75","User-Agent":"com.ss.android.ugc.aweme.lite/220901 (Linux; U; Android 10; zh_CN; 16s Pro; Build/QKQ1.191222.002; Cronet/TTNetVersion:6fe86402 2022-07-22 QuicVersion:47946d2a 2020-10-14)","Accept-Encoding":"gzip, deflate","X-Gorgon":"0404e0250001b52a735ce903a77f950d0587d25aabed8f19d3aa","X-Khronos":"1681565996"},"timeout":5000}
+{"url":"https://api5-normal-c-lq.amemv.com/luckycat/aweme/v1/task/page?mode=done&update_version_code=16209900&os_api=29&device_platform=android&aid=2329&oaid=8119781286826338&device_id=7692757576121232&iid=e6ebdfff745e3214&ac=wifi&channel=bf_1007913_2329_47_3&aid=2329","headers":{"Host":"api5-normal-c-lq.amemv.com","Content-Type":"application/json","Cookie":"sessionid=bee880992ca59a98d9c1749584a1d7c4","User-Agent":"com.ss.android.ugc.aweme.lite/220901 (Linux; U; Android 10; zh_CN; 16s Pro; Build/QKQ1.191222.002; Cronet/TTNetVersion:6fe86402 2022-07-22 QuicVersion:47946d2a 2020-10-14)","Accept-Encoding":"gzip, deflate","X-Gorgon":"0404c0480405ab67cce1127bc2382bae78fca2e23d2f278892f5","X-Khronos":"1682169229"},"timeout":5000}
+
+
+https://api5-normal-c-lf.amemv.com
+
+
+
+api5-normal-c-lq.amemv.com   失败
+

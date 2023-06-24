@@ -1,7 +1,7 @@
 /*
 酷学院 app             cron 0 1,6,12,18,22 * * *  kxy.js
 
-23/4/3    修改蛋姨脚本
+23/6/19    继续研究
 
 -------------------  青龙-配置文件-复制区域  -------------------
 # 酷学院
@@ -13,7 +13,6 @@ export kxy=" phone # pwd  @  phone # pwd "
 tg频道: https://t.me/yml2213_tg  
 */
 const $ = Env('酷学院')
-const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
 const NodeRSA = require('node-rsa')
@@ -54,15 +53,15 @@ class UserClass {
         await this.login()
 
         if (this.ckFlog) {
-            $.log(`\n-------------- 课程列表 --------------`)
-            await this.study_projects()
-            // await this.share()
-            // for (let i = 0; i < 4; i++) {
-            //     await this.moment()
-            //     await this.comment()
-            // }
-            // $.log(`\n-------------- 查询 --------------`)
-            // await this.userinfo()
+            $.log(`\n-------------- 检查状态 --------------`)
+            // await this.study_projects() // 学习项目
+            // await this.exam_check()  // 考试
+            await this.studies_check('unfinished') // 未完成--学习
+            // await this.studies_check('finished') // 已完成--学习
+            // await this.researches_check() //调研
+
+            // await this.query('1937149800852099072', 10) // 测试学习
+            // await this.do_studies('1937149800852099072', '1937140961100566528', 10) // 测试
 
         }
     }
@@ -88,10 +87,11 @@ class UserClass {
             this.type_str = resp.data.user.type_str         // 职位
             this.enterprise_id = resp.data.user.enterprise_id           // 企业 id
             this.user_id = resp.data.user.enterprises[0].user_id        // 企业用户 id
+            this.id = resp.data.user.id        // 学习要用 id
 
-
+            console.log('this.id', this.id, 'user_id', this.user_id)
             this.hd.timaToken = resp.data.token
-            $.log(`${this.idx}: ${options.fn} ${resp.message} 🎉, 欢迎:${this.enterprise_name}--${this.u_name}--${this.type_str}`)
+            $.log(`${this.idx}: ${options.fn} ${resp.message} 🎉, 欢迎:${this.enterprise_name}--${this.u_name}--${this.type_str} ,本次actoken:${this.access_token}`)
             this.ckFlog = true
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
@@ -102,14 +102,14 @@ class UserClass {
 
 
 
-    // 学习项目 
-    // https://coolapi.coolcollege.cn/training-manage-api/v2/enterprises/1371843837940600987/users/1909191009892438016/study-projects?access_token=956646b5c313460ebca1a0e645789c29&enterprise_id=1371843837940600987&overdue_status=unOverdue&page_number=1&page_size=10&status=unfinished&study_type=task&user_id=1909191009892438016
+    // 学习项目  检查
+    // https://coolapi.coolcollege.cn/training-manage-api/v2/enterprises/${this.enterprise_id}/users/${this.user_id}/study-projects?access_token=956646b5c313460ebca1a0e645789c29&enterprise_id=${this.enterprise_id}&overdue_status=unOverdue&page_number=1&page_size=10&status=unfinished&study_type=task&user_id=${this.user_id}
     async study_projects() {
         try {
             let options = {
                 fn: '学习项目',
                 method: 'get',
-                url: `https://coolapi.coolcollege.cn/training-manage-api/v2/enterprises/1371843837940600987/users/1909191009892438016/study-projects?`,
+                url: `https://coolapi.coolcollege.cn/training-manage-api/v2/enterprises/${this.enterprise_id}/users/${this.user_id}/study-projects?`,
                 headers: {
                     'Pragma': 'no-cache',
                     'Enterprise-Id': this.enterprise_id,
@@ -127,10 +127,10 @@ class UserClass {
                 let { all_count, finished_count, unfinished_count } = resp.data.extend
                 this.unfinished_count = resp.data.extend.unfinished_count
 
-                $.log(`${this.idx}: ${this.u_name},课程情况\n未学习: ${this.unfinished_count} 个, 已学习: ${finished_count} 个, 所有课程共: ${all_count} 个`)
+                $.log(`${this.idx}: ${this.u_name},学习项目情况 ----未学习: ${this.unfinished_count} 个, 已学习: ${finished_count} 个, 所有课程共: ${all_count} 个`)
                 if (this.unfinished_count > 0) {
                     $.log(`${this.idx}: ${this.u_name}, 检测到 ${this.unfinished_count}个 未学习课程, 准备自动学习!`)
-                    await this.do_study()
+                    // await this.do_study()
                 }
             } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
         } catch (e) {
@@ -141,9 +141,257 @@ class UserClass {
     // 自动学习
 
 
+    // 考试    检查
+    // https://coolapi.coolcollege.cn/new-exam-api/v2/enterprises/${this.enterprise_id}/users/${this.user_id}/exams-list?access_token=2b4164b4fb6b45f0bd55c0ee1edf78dc&enterprise_id=${this.enterprise_id}&keyword=&page_number=1&page_size=20&status=&user_id=${this.user_id}
+    async exam_check() {
+        try {
+            let options = {
+                fn: '考试',
+                method: 'get',
+                url: `https://coolapi.coolcollege.cn/new-exam-api/v2/enterprises/${this.enterprise_id}/users/${this.user_id}/exams-list?`,
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Enterprise-Id': this.enterprise_id,
+                    'X-Access-Token': this.access_token,
+                    'X-Requested-With': 'com.coolcollege.kxy',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 Android_App',
+                }
+            }
+            // console.log(options)
+            let resp = await $.request(options)
+            // console.log(resp)
+            if (resp.code == 200000) {
+                // console.log(resp.data)
+                $.log(`${this.idx}: ${this.u_name},考试情况 ---- 共计: ${resp.data.all} 个, 已完成: ${resp.data.finished} 个, 未完成: ${resp.data.unfinished} 个 缺考: ${resp.data.absence} 个`)
+                if (resp.data.unfinished > 0) { // 存在未完成
+                    $.log(`${this.idx}: ${this.u_name}, 检测到 ${resp.data.unfinished} 个 未完成 考试, 准备自动 考试!`)
+                    await this.exam()
+                }
+
+            } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    // 学习    检查
+    // https://coolapi.coolcollege.cn/training-manage-api/v2/${this.enterprise_id}/users/${this.user_id}/studies?access_token=2b4164b4fb6b45f0bd55c0ee1edf78dc&enterprise_id=${this.enterprise_id}&page_number=1&page_size=10&status=unfinished&user_id=${this.user_id}
+    async studies_check(type) {
+        try {
+            let options = {
+                fn: '未完成-学习检查',
+                method: 'get',
+                url: `https://coolapi.coolcollege.cn/training-manage-api/v2/${this.enterprise_id}/users/${this.user_id}/studies?access_token=${this.access_token}&enterprise_id=${this.enterprise_id}&page_number=1&page_size=100&status=${type}&user_id=${this.user_id}`,
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Enterprise-Id': this.enterprise_id,
+                    'X-Access-Token': this.access_token,
+                    'X-Requested-With': 'com.coolcollege.kxy',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 Android_App',
+                }
+            }
+            // console.log(options)
+            let resp = await $.request(options)
+            // console.log(resp)
+            if (resp.has_next_page == 'false') {
+                // console.log(resp.data)
+                if (resp.total > 0) {
+                    $.log(`${this.idx}: ${this.u_name},学习情况 ---- 共计: ${resp.total} 个未完成, , 准备自动 学习!`)
+                    await this.studies(resp.list)
+                } else {
+                    $.log(`${this.idx}: ${this.u_name},学习情况 ---- 已完成所有学习!`)
+                }
+            } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+
+    async studies(lists) { // 自动 学习 1685635200000
+        try {
+            let ts = $.ts(13)
+            // console.log(lists)
+            for (const list of lists) {
+                this.id = list.id
+                this.progress = list.progress
+                console.log(`${list.title}:${this.id}--${list.create_user_name}, 目前进度:${this.progress}%, 开始时间:${$.ts('ts2Data', list.begin_time)}, 截止时间:${$.ts('ts2Data', list.end_time)}`)
+                if (list.begin_time <= ts && list.end_time >= ts && this.progress < 100) {
+                    console.log(`目前任务 ${list.title}, 在规定时间内, 即将开始自动学习!`)
+
+                    await this.query()
+                } else (
+                    console.log(`目前任务 ${list.title}, 已完成学习!`)
+                )
+            }
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+
+    async query() { // 根据id 查看任务详情
+        try {
+            let options = {
+                fn: '任务详情',
+                method: 'get',
+                url: `https://coolapi.coolcollege.cn/training-manage-api/v2/${this.enterprise_id}/users/${this.user_id}/studies/${this.id}/query?access_token=${this.access_token}&enterprise_id=${this.enterprise_id}&user_id=${this.user_id}`,
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Enterprise-Id': this.enterprise_id,
+                    'X-Access-Token': this.access_token,
+                    'X-Requested-With': 'com.coolcollege.kxy',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 Android_App',
+                }
+            }
+            // console.log(options)
+            let resp = await $.request(options)
+            // console.log(resp)
+            if (resp) {
+                let lists = resp.stages[0].course_list
+                // console.log(lists)
+                console.log(`目前任务${resp.title} 共有 ${lists.length} 个小任务!`)
+                for (const list of lists) {
+                    // console.log(list.title, list.id, list.progress)
+                    this._title = list.title
+                    this._id = list.id
+                    this._progress = list.progress
+
+                    if (this._progress < 100) {
+                        console.log(`目前小任务 ${this._title}, 未完成, 即将开始自动学习!`)
+                        await this.do_studies(this.id, this._id, this._progress)
+                    } else (
+                        console.log(`目前小任务 ${list.title}, 已完成学习!`)
+                    )
+                }
+
+            } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+        } catch (e) {
+            console.log(e)
+        }
 
 
 
+    }
+
+    async do_studies(id, _id, _progress) {
+        this.new_p = await this.up_progress(_progress)
+        this.new_p <= 100 ? await this.save_progress('studies', id, _id, this.new_p) : await this.save_progress('studies', id, _id, 100)
+    }
+
+    async up_progress(progress) {
+        await $.wait($.randomInt(15, 30))  // 随机等待时间
+        // await $.wait($.randomInt(4, 6))  // 随机等待时间
+        let a = $.randomInt(3, 10)
+        // console.log(a)
+        a = progress + a
+        this.progress = a
+        return a
+    }
+
+    // https://waf-coolapi.coolcollege.cn/training-manage-api/v2/1371843837940600987/users/1909191009892438016/studies/1937149800852099072/courses/1937141198040993792/resources/1937141198040993792/save_progress?access_token=2b4164b4fb6b45f0bd55c0ee1edf78dc&enterprise_id=1371843837940600987&user_id=1909191009892438016
+    async save_progress(type, id, _id, progress) { // 保存进度 
+        try {
+            let sign = crypto.MD5(`${this.enterprise_id}_${this.user_id}_${this.access_token}_${_id}_${progress}`).toString()
+            let options = {
+                fn: '保存进度',
+                method: 'post',
+                url: `https://waf-coolapi.coolcollege.cn/training-manage-api/v2/${this.enterprise_id}/users/${this.user_id}/${type}/${id}/courses/${_id}/resources/${_id}/save_progress?access_token=${this.access_token}&enterprise_id=${this.enterprise_id}&user_id=${this.user_id}`,
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Enterprise-Id': this.enterprise_id,
+                    'X-Access-Token': this.access_token,
+                    'x-data-sign': sign,
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 Android_App',
+                },
+                json: {
+                    "progress": progress,
+                    "recent_start": progress,
+                    "mapId": ""
+                }
+            }
+            // console.log(options)
+            let resp = await $.request(options)
+            console.log(resp)
+            if (resp.code == 0) {
+                // console.log(resp.data)
+                $.log(`当前进度: ${resp.progress} %`)
+                if (resp.progress < 100) {
+                    await this.do_studies(this.id, this._id, this.new_p)
+                } else {
+                    console.log(`目前小任务, 已完成学习!`)
+                }
+            } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    // 调研    检查
+    // https://coolapi.coolcollege.cn/training-manage-api/v2/${this.enterprise_id}/users/${this.user_id}/researches?access_token=2b4164b4fb6b45f0bd55c0ee1edf78dc&enterprise_id=${this.enterprise_id}&page_number=1&page_size=10&status=unfinished&user_id=${this.user_id}
+    async researches_check() {
+        try {
+            let options = {
+                fn: '调研检查',
+                method: 'get',
+                url: `https://coolapi.coolcollege.cn/training-manage-api/v2/${this.enterprise_id}/users/${this.user_id}/researches?page_number=1&page_size=50`,
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Enterprise-Id': this.enterprise_id,
+                    'X-Access-Token': this.access_token,
+                    'X-Requested-With': 'com.coolcollege.kxy',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 Android_App',
+                }
+            }
+            // console.log(options)
+            let resp = await $.request(options)
+            // console.log(resp)
+            if (resp) {
+                // console.log(resp.data)
+                if (resp.total > 0) {
+                    $.log(`${this.idx}: ${this.u_name},调研情况 ---- 共计: ${resp.total} 个未完成, , 准备自动 调研!`)
+                    // await this.studies()
+                } else {
+                    $.log(`${this.idx}: ${this.u_name},调研情况 ---- 已完成所有调研!`)
+                }
+            } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+
+    async exam() { // 自动 考试
+        try {
+            let options = {
+                fn: '考试',
+                method: 'get',
+                url: `https://coolapi.coolcollege.cn/new-exam-api/v2/enterprises/${this.enterprise_id}/users/${this.user_id}/exams-list?`,
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Enterprise-Id': this.enterprise_id,
+                    'X-Access-Token': this.access_token,
+                    'X-Requested-With': 'com.coolcollege.kxy',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 Android_App',
+                }
+            }
+            // console.log(options)
+            // let resp = await $.request(options)
+            // // console.log(resp)
+            // if (resp.code == 200000) {
+            //     // console.log(resp.data)
+            //     $.log(`${this.idx}: ${this.u_name},考试情况 ---- 共计: ${resp.data.all} 个, 已完成: ${resp.data.finished} 个, 未完成: ${resp.data.unfinished} 个 缺考: ${resp.data.absence} 个`)
+            //     if (resp.data.unfinished >= 0) { // 存在未完成
+            //         $.log(`${this.idx}: ${this.u_name}, 检测到 ${resp.data.unfinished}个 未完成 考试, 准备自动 考试!`)
+            //         await this.exam()
+            //     }
+
+            // } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
 
     //RSA加密
@@ -156,6 +404,7 @@ class UserClass {
         let decryptText = nodersa.encrypt(encryptTxt, 'base64', 'utf8')
         return decryptText
     }
+
 
 
 
@@ -177,7 +426,7 @@ class UserClass {
     .finally(() => $.exitNow())
 
 
-//===============================================================
+//========================= 2023/06/19 ======================================
 function Env(name) {
     return new class {
         constructor(name) {
@@ -224,10 +473,12 @@ function Env(name) {
                 console.log(error)
             }
 
-
         }
 
         log(msg, options = {}) {
+            if (typeof msg == 'object') {
+                msg = JSON.stringify(msg)
+            }
             let opt = { console: true }
             Object.assign(opt, options)
 
@@ -245,6 +496,7 @@ function Env(name) {
         }
 
         read_env(Class) {
+            require('dotenv').config()
             let envStrList = ckNames.map(x => process.env[x])
             for (let env_str of envStrList.filter(x => !!x)) {
                 let sp = envSplit.filter(x => env_str.includes(x))
@@ -262,21 +514,6 @@ function Env(name) {
             return true
         }
 
-        async taskThread(taskName, conf, opt = {}) {
-            while (conf.idx < $.userList.length) {
-                let user = $.userList[conf.idx++]
-                await user[taskName](opt)
-            }
-        }
-
-        async threadManager(taskName, thread) {
-            let taskAll = []
-            let taskConf = { idx: 0 }
-            while (thread--) {
-                taskAll.push(this.taskThread(taskName, taskConf))
-            }
-            await Promise.all(taskAll)
-        }
 
         time(t, x = null) {
             let xt = x ? new Date(x) : new Date
@@ -405,7 +642,7 @@ function Env(name) {
                     break
                 case "ts2Data":
                     if (_data != "") {
-                        time = _data
+                        let time = _data
                         if (time.toString().length == 13) {
                             let date = new Date(time + 8 * 3600 * 1000)
                             a = date.toJSON().substr(0, 19).replace("T", " ")
@@ -450,8 +687,9 @@ function Env(name) {
             return a[idx]
         }
 
+
         wait(t) {
-            $.log(`账号[${$.userIdx}]: 随机等待 ${t} 秒 ...`)
+            $.log(`随机等待 ${t} 秒 ...`)
             return new Promise(e => setTimeout(e, t * 1000))
         }
 

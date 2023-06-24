@@ -1,15 +1,10 @@
 /*
-极米 app             cron 0 1,6,12,18,22 * * *  jimi.js
-
-23/4/22    修脚本
-23/5/16    增加卡密输出
-23/5/18    优化输出
-23/6/19    更新刷新-理论不会过期
+学习强安              cron 0 1,6,12,18,22 * * *  xxqa.js
 
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 极米
-export jimi=" accessToken # refreshToken  @ accessToken # refreshToken "  
+# 学习强安
+export xxqa=" sfz # pwd @ sfz # pwd "  
 
 多账号用 换行 或 @ 分割  
 
@@ -17,16 +12,14 @@ export jimi=" accessToken # refreshToken  @ accessToken # refreshToken "
 
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('极米')
-const notify = require('./sendNotify')
-const crypto = require('crypto-js')
+const $ = Env('学习强安')
 const fs = require('fs')
 const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['jimi']                //支持多变量
+const ckNames = ['xxqa']                //支持多变量
 
 //====================================================================================================
-
-
+let taskarr = []
+let learning = finished = unlearned = 0
 //====================================================================================================
 
 
@@ -35,263 +28,388 @@ class UserClass {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
         this.ck = ck.split('#')
-        this.accessToken = this.ck[0]
-        this.refreshToken = this.ck[1]
+        this.sfz = this.ck[0]
+        this.pwd = this.ck[1]
 
-        this.salt = '9y$B&E)H@McQeThW'
+        this.cookie = 'SESSION=YTJlMWNlOTItYjdkZi00ODZkLTg5ODUtMWZlMDY0YWYyMWNm'
 
-        this.d_ua = 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)'
+        this.d_ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1'
+        this.hd = {
+            'Host': 'xxqaph.sdaj.gov.cn:9999',
+            'openid': '',
+            'tokenid': '',
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            'Origin': 'http://xxqaph.sdaj.gov.cn:9999',
+            'User-Agent': this.d_ua,
+            'Cookie': this.cookie,
+        }
 
     }
 
     async userTask() { // 个人信息
         console.log(`\n=============== ${this.idx} ===============`)
 
-        $.log(`\n-------------- 个人信息 --------------`)
-        await this.refresh()
-        await this.checkLogin()
+        typeof idx
+
+        $.log(`\n-------------- 登录 --------------`)
+        await this.login()
 
         if (this.ckFlog) {
             $.log(`\n-------------- 任务列表 --------------`)
-            await this.doSign()
-            await this.check()  //积分查询
-            await this.lottery_num()  // 抽奖次数
-            await this.dotask()
-            $.log(`\n-------------- 第二次查询抽奖 --------------`)
-            await this.check()  //积分查询
-            await this.lottery_num()  // 抽奖次数
-            await this.dotask()
+            await this.getTaskList(1)
+            await this.doTask()
+
         }
     }
 
-    async refresh() { // 刷新token
-        // let ts = '1685505988527'
-        let ts = $.ts(13)
-        // let aa = `refreshToken=${this.refreshToken}&timestamp=${ts}&${this.salt}`
-        // console.log(aa)
-        let sign = crypto.MD5(`refreshToken=${this.refreshToken}&timestamp=${ts}&${this.salt}`).toString()
+
+    async login() { // 登录
         let options = {
-            fn: '刷新token',
+            fn: '登录',
             method: 'post',
-            url: `https://mobile-api.xgimi.com/app/v4/user/refreshToken`,
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/login/login`,
             headers: {
-                'sign': sign,
-                'timestamp': ts,
-                'accessToken': this.accessToken,
-                'user-agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/89.0.4389.72 MQQBrowser/6.2 TBS/046247 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)',
+                'Host': 'xxqaph.sdaj.gov.cn:9999',
+                'openid': '',
+                'tokenid': '',
+                'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+                'Origin': 'http://xxqaph.sdaj.gov.cn:9999',
+                'User-Agent': this.d_ua,
+                'Cookie': this.cookie,
             },
-            json: { "refreshToken": this.refreshToken }
+            json: { "username": this.sfz, "password": this.pwd }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 'ok') {
-            this.accessToken = resp.data.accessToken
-
-            $.log(`${this.idx}: ${options.fn} ${resp.message}`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-
-    }
-
-    async checkLogin() { // 个人信息
-        let options = {
-            fn: '个人信息',
-            method: 'get',
-            url: `https://ucenter-api.i.xgimi.com/open/oauth2/login/checkLogin`,
-            headers: {
-                'source': '2',
-                'token': this.accessToken,
-                'User-Agent': this.d_ua
-            },
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200) {
-            this.nickName = resp.data.nickName
-            this.uid = resp.data.uid
-            this.openId = resp.data.openId
-            this.mobile = resp.data.mobile
-            $.log(`${this.idx}: ${options.fn} ${this.nickName} ${this.uid} 成功 🎉, 手机号: ${this.mobile}`)
+        if (resp.status == 200) {
+            this.tokenid = resp.obj
+            this.hd.tokenid = this.tokenid
+            await this.userInfo()
             this.ckFlog = true
-        } else if (resp.code == 601) {
-            $.log(`${this.idx}: ${options.fn} -- ${resp.msg}`)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
 
     }
 
-    async doSign() { // 签到 e3a04a305290e60b752fa652864cb253
-        let ts = $.ts(13)
-        let sign = crypto.MD5(`configNo=2021061111211168&timestamp=${ts}&${this.salt}`).toString()
+    async userInfo() { // 用户信息
         let options = {
-            fn: '签到',
-            method: 'post',
-            url: `https://mobile-api.xgimi.com/app/v4/integral/signin`,
-            headers: {
-                'timestamp': ts,
-                'openId': this.openId,
-                'sign': sign,
-                'channel': 'superApp',
-                'accessToken': this.accessToken,
-                'User-Agent': this.d_ua
-            },
-            json: { "configNo": "2021061111211168" }
+            fn: '用户信息',
+            method: 'get',
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/user/userheader`,
+            headers: this.hd,
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 'ok') {
-            // console.log(resp)
-            if (resp.data?.signpopup?.score) {
-                $.log(`${this.idx}: ${this.nickName} ${options.fn}, 获得积分${resp.data?.signpopup?.score}`)
-            } else {
-                $.log(`${this.idx}: ${this.nickName} ${options.fn}, 已签到`)
-            }
+        if (resp.status == 200) {
+            this.score = resp.obj.score
+            this.name = resp.obj.name
+            this.enname = resp.obj.enname
 
+            $.log(`${this.idx}: ${options.fn}  ${this.name} 登录成功 🎉, 公司: ${this.enname}, 新token: ${this.tokenid}`)
             await $.wait(2)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+            this.ckFlog = true
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
     }
 
-    async lottery_num() { // 抽奖次数 e3a04a305290e60b752fa652864cb253
+
+    async getTaskList(num = 1) { // 任务列表 
+
         let options = {
-            fn: '抽奖次数',
+            fn: '任务列表',
             method: 'get',
-            url: `https://marketing-center-gateway.i.xgimi.com/lottery/query/credit/times/limit?promotionNo=1456570878320967773`,
-            headers: {
-                'source': '2',
-                'token': this.accessToken,
-                'User-Agent': this.d_ua
-            },
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/list/0/0/${num}`,
+            headers: this.hd,
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 200) {
-            // console.log(resp)
-            this.l_num = resp.data.lotteryTimesLimit
-            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${this.l_num}`)
-            // if (this.l_num) {
-            //     // await this.doLottery()
-            // }
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
-    }
-
-    async check() { // 积分查询
-        let ts = $.ts(13)
-        let sign = crypto.MD5(`timestamp=${ts}&${this.salt}`).toString()
-        let options = {
-            fn: '积分查询',
-            method: 'post',
-            url: `https://mobile-api.xgimi.com/app/v4/integral/signinConfig`,
-            headers: {
-                'timestamp': ts,
-                'openId': this.openId,
-                'sign': sign,
-                'channel': 'superApp',
-                'accessToken': this.accessToken,
-                'User-Agent': this.d_ua
-            },
-            json: {}
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 'ok') {
-            // console.log(resp)
-            this.balance = resp.data.balance
-            $.log(`${this.idx}: ${this.nickName} ${options.fn} -- ${this.balance}`, { notify: true })
+        if (resp.status == 200) {
+            if (resp.obj.next) {
+                taskarr = taskarr.concat(resp.obj.reslist)
+                await $.wait(1)
+                await this.getTaskList(num + 1)
+            } else {
+                taskarr = taskarr.concat(resp.obj.reslist)
+                return taskarr
+            }
 
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
-    async dotask() { // 任务
 
-        if (this.l_num > 0 && this.balance >= 50) {
-            let n = ''
-            if (this.balance >= 150) {
-                n = 3
-            } else if (this.balance >= 100) {
-                n = 2
-            } else if (this.balance >= 50) {
-                n = 1
+    async doTask() { // 做任务
+
+        learning = finished = unlearned = 0
+        for (const task of taskarr) {
+            if (task.zt == 2) { // 已完成
+                finished++
+            } else if (task.zt == 1) { // 学习中
+                learning++
+            } else if (task.zt == 0) { // 未完成
+                unlearned++
             }
-            for (let i = 0; i < n; i++) {
-                await this.do_lttery()
-            }
-        } else {
-            $.log(`${this.idx}: ${this.nickName} 不满足抽奖条件, 跳过`)
+
+            await this.test_taskInit(task.id) // 每课一练
+
 
         }
 
-    }
+        // console.log(taskarr)
+
+        $.log(`${this.idx}: ${this.name} 共找到 ${taskarr.length} 个任务, 未完成 ${unlearned} 个,学习中 ${learning} 个, 已完成 ${finished} 个`, { notify: true })
 
 
-    async do_lttery() { // 抽奖
-        let options = {
-            fn: '抽奖',
-            method: 'post',
-            url: `https://marketing-center-gateway.i.xgimi.com/lottery/draw`,
-            headers: {
-                'source': '2',
-                'token': this.accessToken,
-                'User-Agent': this.d_ua
-            },
-            json: { "promotionNo": "1456570878320967773", "templateId": "4" }
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200) {
-            // console.log(resp)
-            $.log(`${this.idx}: ${this.nickName} ${options.fn} 获得 -- ${resp.data.prizeDetail.name}`, { notify: true })
-            if (resp.data.prizeDetail.name == '获得芒果TV会员月卡') {
-                await this.get_code()
-            }
-            await $.wait(5)
-        } else if (resp.code == 100401 || 200119) {
-            $.log(`${this.idx}: ${options.fn} -- ${resp.msg}`)
-        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
-    }
 
-    async get_code() { // 获取卡密
-        let options = {
-            fn: '获取卡密',
-            method: 'get',
-            url: `https://marketing-center-gateway.i.xgimi.com/lottery/record/search?promotionNo=1456570878320967773&limit=20`,
-            headers: {
-                'source': '2',
-                'token': this.accessToken,
-                'User-Agent': this.d_ua
-            },
-        }
-        // console.log(options)
-        let resp = await $.request(options)
-        // console.log(resp)
-        if (resp.code == 200) {
-            // console.log(resp)
-            let data = resp.data
-            // console.log(data)
-            for (let i = 0; i < data.length; i++) {
-                let element = data[i]
-                if (element.prizeName == '获得芒果TV会员月卡') {
-                    // $.log(`${this.idx}: ${this.nickName} 卡密为 -- ${data[i].prizeCode} `, { notify: true })
-                    fs.appendFile("mgkm.txt", data[i].prizeCode, (err, data) => {
-                        if (err) throw err
-                    })
-                    $.log(`${this.idx}: ${this.nickName} 卡密为 -- ${data[i].prizeCode}\n已打印到"mgkm.txt文件中"`, { notify: true })
+        if (unlearned > 0 || learning > 0) { // 普通学习
+            $.log(`${this.idx}: ${this.name} 发现 ${unlearned} 个 未完成 任务, 开始自动学习!`)
+            $.log(`${this.idx}: ${this.name} 发现 ${learning} 个 学习中 任务, 开始自动学习!`)
+
+            for (const task of taskarr) {
+                if (task.zt == 0 && task.type == 1 || 3) {  // 未学习
+                    $.log(`${this.idx}: 开始学习 ${task.title}, 即将进入任务详情: ${task.id}!`)
+                    await this.taskInit(task.id)
+                } else if (task.zt == 1 && task.type == 1 || 3) {  // 学习中
+                    $.log(`${this.idx}: 开始学习 ${task.title}, 即将进入任务详情: ${task.id}!`)
+                    await this.taskInit(task.id)
                 }
             }
-            await $.wait(2)
+        }
+
+
+
+    }
+
+
+    async test_taskInit(id) { // 每课一练--任务详情 
+        let options = {
+            fn: '每课一练--任务详情',
+            method: 'get',
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/init/${id}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status == 200) {
+
+            if (resp.obj.kqmn == 1) { // 每课一练 未完成
+                await this.test(resp.obj.id)
+            } else if (resp.obj.kqmn == 2) { // 每课一练 完成或没有
+            }
+
+
+
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }
 
+
+    async taskInit(id) { // 任务详情 
+        let options = {
+            fn: '任务详情',
+            method: 'get',
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/init/${id}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status == 200) {
+            this.taskuserid = resp.obj.taskuserid
+            $.log(`${this.idx}: ${options.fn}  成功, 当前任务id: ${this.taskuserid}, 当前任务数量: ${resp.obj.files.length} 个`)
+            let files = resp.obj.files
+            for (const file of files) {
+                if (file.mytime < file.time) { // 视频 图文 一个接口 
+                    let num = (file.time - file.mytime) / 20 + 1
+                    $.log(`${this.idx}: ${file.title}--- 已观看${file.mytime}秒, 最低学时 ${file.time}秒,  开始模拟观看 ${num * 20} 秒 !`)
+                    await this.time(this.taskuserid, file.id, num)
+                }
+            }
+
+
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+
+    async time(taskuserid, id, num) { // 模拟观看 
+        if (num) {
+            for (let i = 0; i < num; i++) {
+                await this.doTime(taskuserid, id)
+            }
+        }
+
+    }
+
+
+    async doTime(taskuserid, id) { // 模拟观看 
+        let options = {
+            fn: '模拟观看',
+            method: 'get',
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/time/${taskuserid}/${id}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status == 200) {
+            $.log(`${this.idx}: ${options.fn}  成功, 增加 20 s 学时 `)
+            await $.wait($.randomInt(20, 23))
+
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async test(id) { // 每课一练任务
+        let options = {
+            fn: '每课一练',
+            method: 'get',
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/mninfo/${id}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status == 200) {
+            this.totalscore = resp.obj.totalscore
+            this.pass = resp.obj.pass
+            let lists = resp.obj.list
+            if (lists[0].score >= this.pass) {
+                $.log(`${this.idx}: ${options.fn} 当前练习已通过, 跳过!`)
+            } else {
+                $.log(`${this.idx}: ${options.fn} 当前练习未通过--分数不够及格线, 开始 每课一练, id:${id}`)
+                await this.doTest(id)
+            }
+            // if (lists.length) {
+            //     for (const list of lists) {
+            //         if (list.score >= this.pass) {
+            //             $.log(`${this.idx}: ${options.fn} 当前练习已通过, 跳过!`)
+            //         } else {
+            //             $.log(`${this.idx}: ${options.fn} 当前练习未通过--分数不够及格线, 开始 每课一练, id:${id}`)
+            //             await this.doTest(id)
+            //         }
+            //     }
+            // } else {
+            //     $.log(`${this.idx}: ${options.fn} 未完成, 开始 每课一练, id:${id}`)
+            //     await this.doTest(id)
+            // }
+
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async doTest(id) { // 每课一练任务
+        // 创建新的模拟 取返回内容 http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/createmn/2f9da9e76b814c2992001141a2e466cc
+        let c_id = await this.createmn(id)
+        if (c_id) {
+            // http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/mnexaminfo/48f0e325497142e49f6324c3d7270cf5
+            let test_data = await this.mnexaminfo(c_id)
+            for (let i = 0; i < this.totalscore; i++) {
+                // http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/mnanswer/
+                await this.mnanswer(c_id, i + 1, test_data[i + 1])
+                await $.wait($.randomInt(5, 8))
+            }
+            // http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/mnexamtj/48f0e325497142e49f6324c3d7270cf5    提交
+            // await this.mnexamtj(c_id)
+
+            let options = {
+                fn: '提交',
+                method: 'get',
+                url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/mnexamtj/${c_id}`,
+                headers: this.hd,
+            }
+            // console.log(options)
+            let resp = await $.request(options)
+            // console.log(resp)
+            if (resp.status == 200) {
+                let { score, err, pass, bl, time } = resp.obj
+                $.log(`${this.idx}: ${options.fn}  成功, 得分: ${bl}, 错误: ${err} 个, 正确: ${score} 个, 用时: ${time} 分, 本次测试: ${pass ? '通过' : '未通过'}`)
+                await $.wait($.randomInt(10, 15))
+            } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+        } else {
+            await this.doTest()
+        }
+
+
+    }
+
+    async mnanswer(id, num, an) { // 模拟做题  http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/mnanswer/48f0e325497142e49f6324c3d7270cf5/1/D
+        let options = {
+            fn: '模拟做题',
+            method: 'get',
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/mnanswer/${id}/${num}/${an}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status == 200) {
+            $.log(`${this.idx}: ${options.fn} 第${num}题: ${an}--模拟成功`)
+
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async createmn(id) { // 创建新的模拟 http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/createmn/2f9da9e76b814c2992001141a2e466cc
+        let options = {
+            fn: '创建新的模拟',
+            method: 'get',
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/createmn/${id}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status == 200) {
+            return resp.obj
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
+
+    async mnexaminfo(c_id) { // 获取题目及答案信息
+        let options = {
+            fn: '获取题目及答案信息',
+            method: 'get',
+            url: `http://xxqaph.sdaj.gov.cn:9999/yjpxapi/app/xxtask/mnexaminfo/${c_id}`,
+            headers: this.hd,
+        }
+        // console.log(options)
+        let resp = await $.request(options)
+        // console.log(resp)
+        if (resp.status == 200) {
+
+            let obj = resp.obj
+            let end_test_data = {}
+            if (obj.dxlist) {
+                processing('dxlist')
+            }
+            if (obj.pdlist) {
+                processing('pdlist')
+            }
+            if (obj.fxlist) {
+                processing('fxlist')
+            }
+
+            console.log(end_test_data)
+
+            function processing(name) {
+                for (const list of obj[name]) {
+                    // console.log(list.index, list.answer)
+                    end_test_data[list.index] = list.answer
+                    // console.log(end_test_data)
+                }
+            }
+
+            return end_test_data
+        } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
+
+    }
 
 
 
@@ -310,11 +428,11 @@ class UserClass {
 
 
 })()
-    .catch((e) => $.log(e))
+    .catch((e) => console.log(e))
     .finally(() => $.exitNow())
 
 
-//===============================================================
+//========================= 2023/06/19 ======================================
 function Env(name) {
     return new class {
         constructor(name) {
@@ -384,6 +502,7 @@ function Env(name) {
         }
 
         read_env(Class) {
+            require('dotenv').config()
             let envStrList = ckNames.map(x => process.env[x])
             for (let env_str of envStrList.filter(x => !!x)) {
                 let sp = envSplit.filter(x => env_str.includes(x))
@@ -401,21 +520,6 @@ function Env(name) {
             return true
         }
 
-        async taskThread(taskName, conf, opt = {}) {
-            while (conf.idx < $.userList.length) {
-                let user = $.userList[conf.idx++]
-                await user[taskName](opt)
-            }
-        }
-
-        async threadManager(taskName, thread) {
-            let taskAll = []
-            let taskConf = { idx: 0 }
-            while (thread--) {
-                taskAll.push(this.taskThread(taskName, taskConf))
-            }
-            await Promise.all(taskAll)
-        }
 
         time(t, x = null) {
             let xt = x ? new Date(x) : new Date
@@ -589,8 +693,9 @@ function Env(name) {
             return a[idx]
         }
 
+
         wait(t) {
-            $.log(`账号[${$.userIdx}]: 随机等待 ${t} 秒 ...`)
+            $.log(`随机等待 ${t} 秒 ...`)
             return new Promise(e => setTimeout(e, t * 1000))
         }
 

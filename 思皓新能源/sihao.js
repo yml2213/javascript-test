@@ -1,24 +1,23 @@
 /*
-极米 app             cron 0 1,6,12,18,22 * * *  jimi.js
+思皓新能源 app             cron 0 1,6,12,18,22 * * *  sihao.js
 
-23/4/22    修脚本
+23/5/16    修脚本
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 极米
-export jimi=" accessToken  @ accessToken "  
+# 思皓新能源
+export sihao="  手机号 # 密码   @ 手机号 # 密码  "  
 
 多账号用 换行 或 @ 分割  
 
-抓 xgimi.com 的包  accessToken 即可 
 
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('极米')
+const $ = Env('思皓新能源')
 const notify = require('./sendNotify')
 const crypto = require('crypto-js')
 
 const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
-const ckNames = ['jimi']                //支持多变量
+const ckNames = ['sihao']                //支持多变量
 
 //====================================================================================================
 
@@ -30,80 +29,77 @@ class UserClass {
     constructor(ck) {
         this.idx = `账号[${++$.userIdx}]`
         this.ckFlog = true
-        // this.ck = ck.split('#')
-        this.token = ck
-
-        this.salt = '9y$B&E)H@McQeThW'
-
-        this.d_ua = 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36 uni-app Html5Plus/1.0 (Immersed/32.727272)'
-
+        this.ck = ck.split('#')
+        this.phone = this.ck[0]
+        this.pwd = crypto.MD5(this.ck[1]).toString()
+        this.d_ua = 'okhttp/3.10.0'
     }
 
     async userTask() { // 个人信息
         console.log(`\n=============== ${this.idx} ===============`)
 
-        $.log(`\n-------------- 个人信息 --------------`)
-        await this.checkLogin()
+        $.log(`\n-------------- 登录 --------------`)
+        await this.login()
 
         if (this.ckFlog) {
             $.log(`\n-------------- 任务列表 --------------`)
             await this.doSign()
-            await this.lottery_num()
-            await this.check()
+            // await this.lottery_num()
+            // await this.check()
             // await this.do_lttery()
 
         }
     }
 
-    async checkLogin() { // 个人信息
+    async login() { // 登录
         let options = {
-            fn: '个人信息',
-            method: 'get',
-            url: `https://ucenter-api.i.xgimi.com/open/oauth2/login/checkLogin`,
+            fn: '登录',
+            method: 'post',
+            url: `https://jacsupperapp.jac.com.cn/api/jac-admin/admin/userBaseInformation/userLogin`,
             headers: {
-                'source': '2',
-                'token': this.token,
+                'channelID': '5',
+                'Host': 'jacsupperapp.jac.com.cn',
                 'User-Agent': this.d_ua
             },
+            json: { "password": this.pwd, "userCode": this.phone }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 200) {
-            this.nickName = resp.data.nickName
-            this.uid = resp.data.uid
-            this.openId = resp.data.openId
-            this.mobile = resp.data.mobile
-            $.log(`${this.idx}: ${options.fn} ${this.nickName} ${this.uid} 成功 🎉, 手机号: ${this.mobile}`)
+        if (resp.code == 0) {
+            this.nickName = resp.data.userName
+            this.no = resp.data.no
+            this.token = resp.data.token
+            $.log(`${this.idx}: ${options.fn} ${this.nickName} 成功 🎉`)
             this.ckFlog = true
+        } else if (resp.code == 50002) {
+            this.cusLog(`账号 ${this.index}:  ${resp.msg}`)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
 
     }
 
-    async doSign() { // 签到 e3a04a305290e60b752fa652864cb253
-        let ts = $.ts(13)
-        let sign = crypto.MD5(`configNo=2021061111211168&timestamp=${ts}&${this.salt}`).toString()
+    async doSign() { // 签到 
+
         let options = {
             fn: '签到',
             method: 'post',
-            url: `https://mobile-api.xgimi.com/app/v4/integral/signin`,
+            url: `https://jacsupperapp.jac.com.cn/api/pluto-membership/pluto-membership/integral-gather/addintegral-signIn`,
             headers: {
-                'timestamp': ts,
-                'openId': this.openId,
-                'sign': sign,
-                'channel': 'superApp',
-                'accessToken': this.token,
-                'User-Agent': this.d_ua
+                "channelID": "5",
+                "Host": "jacsupperapp.jac.com.cn",
+                "timaToken": this.token
             },
-            json: { "configNo": "2021061111211168" }
+            json: { "ruleStr": "SIGN_IN", "serviceTypeStr": "SERVICE_FIXED", "no": this.no }
         }
         // console.log(options)
         let resp = await $.request(options)
         // console.log(resp)
-        if (resp.code == 'ok') {
+        if (resp.code == 0) {
             // console.log(resp)
-            $.log(`${this.idx}: ${this.nickName} ${options.fn}, 获得积分${resp.data.status}`)
+            $.log(`${this.idx}: ${this.nickName} ${options.fn}, 获得积分${resp.data.integral}`)
+        } else if (resp.code == 50002) {
+            this.cusLog(`账号 ${this.index}  ${options.fn}:   完成 签到 任务  收手吧阿祖！！！`)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
 
     }

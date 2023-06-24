@@ -4,6 +4,9 @@
 
 
 23/2/23      密码登录 ,基本任务
+23/6/8      兑换e卡 
+23/6/17      修复卡密错误 
+
 
 -------------------  青龙-配置文件-复制区域  -------------------
 # 青岛地铁
@@ -12,46 +15,12 @@ export qddt=" phone # pwd  @  phone # pwd   "
 */
 const $ = Env('青岛地铁')
 const crypto = require('crypto-js')
-
-const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
+const envSplit = ['\n', '&', '@']     //支持多种分割, 但要保证变量里不存在这个字符
 const ckNames = ['qddt']                //支持多变量
 
 //====================================================================================================
 let DEFAULT_RETRY = 1           // 默认重试次数
 //====================================================================================================
-
-
-async function userTasks() {
-
-    $.log('登录', { sp: true, console: false })  // 带分割的打印
-    let list = []
-    for (let user of $.userList) {
-        list.push(user.get_iv())
-    }
-    await Promise.all(list)
-
-
-    $.log('任务列表', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.tasklist())
-        }
-    }
-    await Promise.all(list)
-
-
-    $.log('积分查询', { sp: true, console: false })
-    list = []
-    for (let user of $.userList) {
-        if (user.ckFlog) {
-            list.push(user.check())
-        }
-    }
-    await Promise.all(list)
-
-
-}
 
 
 class UserClass {
@@ -95,6 +64,25 @@ class UserClass {
         ZDX4+KE3pBYDhZiC44tDPOW99OI=
         -----END PRIVATE KEY-----`
     }
+
+
+    async userTask() { // 个人信息
+        console.log(`\n=============== ${this.idx} ===============`)
+        $.log(`\n-------------- 登录 --------------`)
+        await this.get_iv()
+
+        if (this.ckFlog) {
+            $.log(`\n-------------- 任务列表 --------------`)
+            await this.tasklist()
+        }
+
+        if (this.ckFlog) {
+            $.log(`\n-------------- 积分查询兑换 --------------`)
+            await this.check()
+        }
+
+    }
+
 
 
     // https://api.qd-metro.com/ngcustomer/Login/loginByPassword
@@ -244,7 +232,7 @@ class UserClass {
         let resp = await $.request(options)
         // console.log(resp)
         if (resp.code == '01') {
-            $.log(`${this.idx}: ${name}, 完成，开始领取奖励`)
+            $.log(`${this.idx}: ${name}, 完成, 开始领取奖励`)
             await this.finish(name, id)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
@@ -270,7 +258,14 @@ class UserClass {
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
 
+
+    // =========================================================================================================================
     async kccx(a) { // 库存查询
+
+        await this.hqmerchantToken()
+        await $.wait(1)
+        await this.hqtoken()
+
         let options = {
             fn: '库存查询',
             method: 'post',
@@ -303,16 +298,16 @@ class UserClass {
         if (resp.code == '00000') {
             for (let task of resp.data.list) {
                 if (task.showName == a) {
-                    $.log(`${this.idx}：去兑换目标商品：[${a}]...`)
-
-                    await this.dhek(task.skuId)
+                    $.log(`${this.idx}: 积分充足呢, 去兑换目标商品 [${a}]...`)
+                    this.skuid = task.skuid
+                    await this.dhek(this.skuid)
                 }
-
             }
-
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
-    async dhek(a) { // 兑换e卡
+
+    // https://gateway.lcago.cn:9195/trade/order/createOrder
+    async dhek(skuid) { // 兑换e卡
         let options = {
             fn: '兑换e卡',
             method: 'post',
@@ -340,7 +335,7 @@ class UserClass {
                     "deviceCoding": ""
                 },
                 "reqBody": {
-                    "skuId": a,
+                    "skuId": skuid,
                     "remark": "",
                     "method": "0",
                     "addressId": ""
@@ -352,12 +347,17 @@ class UserClass {
         // console.log(resp)
         if (resp.code == '00000') {
             $.log(`${this.idx}: 商品：${resp.data.subject}兑换成功 前往查快卡密...`)
-            await this.ckcdk(resp.data.orderNo)
+            await this.ckcdk(resp.data.payOrderNo)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
-    async ckcdk(a) { // 兑换e卡
+
+
+
+    // https://gateway.lcago.cn:9195/trade/order/getOrderDetail
+    // {"reqHead":{"apiVersion":"","platform":"","token":"${this.token}","version":"","model":"","merchantNo":"","systemversion":"","deviceCoding":""},"reqBody":{"orderNo":"${this.ordern}"}}
+    async ckcdk(payOrderNo) { // 查看卡密
         let options = {
-            fn: '查看cdk',
+            fn: '查看卡密',
             method: 'post',
             url: `https://gateway.lcago.cn:9195/trade/order/getOrderDetail`,
             headers: {
@@ -383,7 +383,7 @@ class UserClass {
                     "deviceCoding": ""
                 },
                 "reqBody": {
-                    "orderNo": a
+                    "orderNo": payOrderNo
                 }
             }
         }
@@ -392,6 +392,7 @@ class UserClass {
         // console.log(resp)
         if (resp.code == '00000') {
             $.log(resp.data.cdKey, { notify: true })
+            $.log(`${this.idx}: ${options.fn} ${resp.msg}, 当前卡密信息: ${resp.data.cdKey}  --- ${resp.data.skuName}, 兑换时间:${resp.data.orderTime} `, { notify: true })
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
     async hqmerchantToken() { // 获取新token
@@ -483,42 +484,22 @@ class UserClass {
         let resp = await $.request(options)
         // console.log(resp)
         if (resp.code == '01') {
-            $.log(`${this.idx}: 共有积分 ==> ${resp.data.score}`)
+            $.log(`${this.idx}: 共有积分 ==> ${resp.data.score}`, { notify: true })
 
-            if (resp.data.score >= 630 && resp.data.score <= 1259) {
-                $.log(`${this.idx}: 积分到达兑换5元e卡挡位，检查5元e卡是否充足`)
-                await this.hqmerchantToken()
-                await $.wait(1)
-                await this.hqtoken()
+            this.score = resp.data.score
+            if (this.score >= 630 && this.score <= 1259) {
                 await this.kccx('京东E卡5元')
-            } else if (resp.data.score >= 1260 && resp.data.score <= 6299) {
-                $.log(`${this.idx}: 积分到达兑换10元e卡挡位，检查10元e卡是否充足`)
-                await this.hqmerchantToken()
-                await $.wait(1)
-                await this.hqtoken()
+            } else if (this.score >= 1260 && this.score <= 6299) {
                 await this.kccx('京东E卡10元')
-            } else if (resp.data.score >= 6300 && resp.data.score <= 12599) {
-                $.log(`${this.idx}: 积分到达兑换50元e卡挡位，检查50元e卡是否充足`)
-                await this.hqmerchantToken()
-                await $.wait(1)
-                await this.hqtoken()
+            } else if (this.score >= 6300 && this.score <= 12599) {
                 await this.kccx('京东E卡50元')
-            } else if (resp.data.score >= 12600 && resp.data.score <= 62999) {
-                $.log(`${this.idx}: 积分到达兑换100元e卡挡位，检查100元e卡是否充足`)
-                await this.hqmerchantToken()
-                await $.wait(1)
-                await this.hqtoken()
+            } else if (this.score >= 12600 && this.score <= 62999) {
                 await this.kccx('京东E卡100元')
-            } else if (resp.data.score >= 63000) {
-                $.log(`${this.idx}: 积分到达兑换500元e卡挡位，检查500元e卡是否充足`)
-                await this.hqmerchantToken()
-                await $.wait(1)
-                await this.hqtoken()
+            } else if (this.score >= 63000) {
                 await this.kccx('京东E卡500元')
             }
 
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
-
     }
 
 
@@ -528,7 +509,7 @@ class UserClass {
         key = crypto.enc.Utf8.parse(key)
         iv = crypto.enc.Utf8.parse(iv)
         let srcs = crypto.enc.Utf8.parse(word)
-        // 加密模式为CBC，补码方式为PKCS5Padding（也就是PKCS7）
+        // 加密模式为CBC, 补码方式为PKCS5Padding（也就是PKCS7）
         let encrypted = crypto.AES.encrypt(srcs, key, {
             iv: iv,
             mode: crypto.mode.CBC,
@@ -545,7 +526,7 @@ class UserClass {
         iv = crypto.enc.Utf8.parse(iv)
         let base64 = crypto.enc.Base64.parse(word)
         let src = crypto.enc.Base64.stringify(base64)
-        // 解密模式为CBC，补码方式为PKCS5Padding（也就是PKCS7）
+        // 解密模式为CBC, 补码方式为PKCS5Padding（也就是PKCS7）
         let decrypt = crypto.AES.decrypt(src, key, {
             iv: iv,
             mode: crypto.mode.CBC,
@@ -581,8 +562,13 @@ class UserClass {
 
 
 !(async () => {
+    require('dotenv').config()
     if ($.read_env(UserClass)) {
-        await userTasks()
+        // await userTasks()
+
+        for (let user of $.userList) {
+            await user.userTask()
+        }
     }
 
 
@@ -597,7 +583,7 @@ function Env(name) {
         constructor(name) {
             this.name = name
             this.startTime = Date.now()
-            this.log(`[${this.name}]开始运行`, { time: true })
+            this.log(`[${this.name}]开始运行`)
 
             this.notifyStr = []
             this.notifyFlag = true
@@ -622,9 +608,9 @@ function Env(name) {
                     break
                 } catch (e) {
                     if (e.name == 'TimeoutError') {
-                        this.log(`[${fn}]请求超时，重试第${count}次`)
+                        this.log(`[${fn}]请求超时, 重试第${count}次`)
                     } else {
-                        this.log(`[${fn}]请求错误(${e.message})，重试第${count}次`)
+                        this.log(`[${fn}]请求错误(${e.message}), 重试第${count}次`)
                     }
                 }
             }
@@ -674,7 +660,7 @@ function Env(name) {
             }
             this.userCount = this.userList.length
             if (!this.userCount) {
-                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, { notify: true })
+                this.log(`未找到变量, 请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, { notify: true })
                 return false
             }
             this.log(`共找到${this.userCount}个账号`)
@@ -717,7 +703,11 @@ function Env(name) {
         async showmsg() {
             if (!this.notifyFlag) return
             if (!this.notifyStr.length) return
-            var notify = require('./sendNotify')
+            try {
+                var notify = require('./sendNotify')
+            } catch (error) {
+                // console.log(error)
+            }
             this.log('\n============== 推送 ==============')
             await notify.sendNotify(this.name, this.notifyStr.join('\n'))
         }
@@ -877,7 +867,7 @@ function Env(name) {
             await this.showmsg()
             let e = Date.now()
             let s = (e - this.startTime) / 1000
-            this.log(`[${this.name}]运行结束，共运行了${s}秒`)
+            this.log(`[${this.name}]运行结束, 共运行了${s}秒`)
             process.exit(0)
         }
     }(name)

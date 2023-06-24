@@ -1,18 +1,10 @@
 /*
 广汽传祺 app             cron 22 8,12 * * *  gqcq.js
 
-4-13     	完成签到 抽奖 分享 发帖 评论 任务   有bug及时反馈
-4-14     	修复已知bug  恢复正常使用
-5-21     	更新通知,优化代码
-6-10		更新模板,修改部分逻辑!
-9-12        修复抽奖，增加签到宝箱开启
-9-21        增加用户信息输出
-9-22		修复开宝箱错误
-9-28		修复删除帖子错误
-9-29		增加了快递信息查询,不用来回看了
-10-10		感谢 banxiaya 大佬修复
-12.14       查询增加手机号
+
 23/1/3      更换模版
+23/5/28     库存查询更新
+
 
 -------------------  青龙-配置文件-复制区域  -------------------
 # 广汽传祺
@@ -23,60 +15,39 @@ export gqcq=" token @ token "
 多账号用 换行 或 @ 分割  
 tg频道: https://t.me/yml2213_tg  
 */
-const $ = Env('广汽传祺')
-const {MD5} = require('crypto-js')
+const $ = Env('广汽传祺库存查询')
+const { MD5 } = require('crypto-js')
 const notify = require('./sendNotify')
 
 const envSplitor = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
 const ckNames = ['gqcq']                //支持多变量
 //====================================================================================================
 let DEFAULT_RETRY = 2           // 默认重试次数
-let token = '17fdf8cd32444132bcbc9ff5b74e11bf'   // 自己更换token即可
+let token = '03a1969aa1454ed8934e669151e76c2e'   // 自己更换token即可
+let d_ua = 'GACClient/4.1.2 (iPhone; iOS 16.4.1; Scale/3.00)'
 
 //====================================================================================================
 
 
 async function userTasks() {
-    $.log('用户信息', {sp: true, console: false})  // 带分割的打印
-    await userInfo()
-    await userInfo2()
+    $.log('用户信息', { sp: true, console: false })  // 带分割的打印
+    await ip()
+    await home()
+    await other()
 
 
 }
 
-async function userInfo() {
+// 小传祺ip专区
+// https://gsp.gacmotor.com/gateway/self/shopApp/AppCommodity?categoryId=12&current=1&size=10
+async function ip() {
     let options = {
-        fn: 'userInfo',
+        fn: '小传祺ip专区',
         method: 'get',
-        url: 'https://gsp.gacmotor.com/gateway/app-api/shop/shopcommodity/morecommodity?current=1&size=200&pageNo=1&pageSize=200&subclassId=0&categoryId=16',
+        url: 'https://gsp.gacmotor.com/gateway/self/shopApp/AppCommodity?categoryId=12&current=1&size=20',
         headers: {
             'token': token,
-        }
-    }
-    // console.log(options)
-    let resp = await $.request(options)
-    // console.log(resp)
-    if (resp.errorCode == 200) {
-        $.log(`${this.idx}: 库存: ${resp.errorMessage}`)
-        let goods = resp.data.commodityList.records
-        $.log(`=================== 新品驾到 =========================`, {notify: true})
-        for (let good of goods) {
-            // console.log(good)
-            let {commodityName, stock, mixtureSkuGdou} = good
-            $.log(`${commodityName}: 积分 ${mixtureSkuGdou}, 剩余 ${stock} 个`, {notify: true})
-        }
-    } else console.log(`${options.fn}: 失败, ${resp}`)
-
-}
-
-// https://gsp.gacmotor.com/gateway/app-api/shop/shopcommodity/morecommodity?current=1&size=200&pageNo=1&pageSize=20&subclassId=0&categoryId=1
-async function userInfo2() {
-    let options = {
-        fn: 'userInfo',
-        method: 'get',
-        url: 'https://gsp.gacmotor.com/gateway/app-api/shop/shopcommodity/morecommodity?current=1&size=200&pageNo=1&pageSize=200&subclassId=0&categoryId=1',
-        headers: {
-            'token': token,
+            'User-Agent': d_ua
         }
     }
     // console.log(options)
@@ -84,15 +55,82 @@ async function userInfo2() {
     // console.log(resp)
     if (resp.errorCode == 200) {
         let goods = resp.data.commodityList.records
-        $.log(`\n\n=================== G豆精选 =========================`, {notify: true})
+        let categoryName = resp.data.categoryName
+        $.log(`\n============== ${categoryName} ==============`, { notify: true })
         for (let good of goods) {
             // console.log(good)
-            let {commodityName, stock, mixtureSkuGdou} = good
-            $.log(`${commodityName}: 积分 ${mixtureSkuGdou}, 剩余 ${stock} 个`, {notify: true})
+            let { commodityName, stock, skuMoney } = good
+            $.log(`${commodityName}, 所需积分-${skuMoney * 100}, 剩余-${stock}个`, { notify: true })
         }
     } else console.log(`${options.fn}: 失败, ${resp}`)
 
 }
+
+// 祺享家专区
+// https://gsp.gacmotor.com/gateway/self/shopApp/AppCommodity?categoryId=13&current=1&size=10
+async function home() {
+    let options = {
+        fn: '祺享家专区',
+        method: 'get',
+        url: 'https://gsp.gacmotor.com/gateway/self/shopApp/AppCommodity?categoryId=13&current=1&size=20',
+        headers: {
+            'token': token,
+            'User-Agent': d_ua
+        }
+    }
+    // console.log(options)
+    let resp = await $.request(options)
+    // console.log(resp)
+    if (resp.errorCode == 200) {
+        let goods = resp.data.commodityList.records
+        let categoryName = resp.data.categoryName
+        $.log(`\n============== ${categoryName} ==============`, { notify: true })
+        for (let good of goods) {
+            // console.log(good)
+            let { commodityName, stock, skuMoney } = good
+            $.log(`${commodityName}, 所需积分-${skuMoney * 100}, 剩余-${stock}个`, { notify: true })
+        }
+    } else console.log(`${options.fn}: 失败, ${resp}`)
+
+}
+async function other() {
+    let ids = [1, 16, 73, 74, 75, 11, 9]
+    for (let id of ids) {
+        await task(id)
+    }
+}
+
+
+async function task(id) {
+    let options = {
+        fn: '居家日用',
+        method: 'get',
+        url: `https://gsp.gacmotor.com/gateway/app-api/shop/shopcommodity/morecommodity?categoryId=${id}&current=1&size=50`,
+        headers: {
+            'token': token,
+            'User-Agent': d_ua
+        }
+    }
+    // console.log(options)
+    let resp = await $.request(options)
+    // console.log(resp)
+    if (resp.errorCode == 200) {
+        let goods = resp.data.commodityList.records
+        let categoryName = resp.data.categoryName
+
+        $.log(`\n============== ${categoryName} ==============`, { notify: true })
+        for (let good of goods) {
+            // console.log(good)
+            let { commodityName, stock, mixtureSkuGdou } = good
+            $.log(`${commodityName}, 积分-${mixtureSkuGdou}, 剩余-${stock}个`, { notify: true })
+        }
+    } else console.log(`${options.fn}: 失败, ${resp}`)
+
+}
+
+
+
+
 
 !(async () => {
     console.log(await $.yiyan())
@@ -110,7 +148,7 @@ function Env(name) {
         constructor(name) {
             this.name = name
             this.startTime = Date.now()
-            this.log(`[${this.name}]开始运行`, {time: true})
+            this.log(`[${this.name}]开始运行`, { time: true })
 
             this.notifyStr = []
             this.notifyFlag = true
@@ -127,7 +165,7 @@ function Env(name) {
             let fn = opt.fn || opt.url
             let resp_opt = opt.resp_opt || 'body'
             opt.timeout = opt.timeout || DEFAULT_TIMEOUT
-            opt.retry = opt.retry || {limit: 0}
+            opt.retry = opt.retry || { limit: 0 }
             opt.method = opt?.method?.toUpperCase() || 'GET'
             while (count++ < DEFAULT_RETRY) {
                 try {
@@ -141,8 +179,8 @@ function Env(name) {
                     }
                 }
             }
-            if (resp == null) return Promise.resolve({statusCode: 'timeout', headers: null, body: null})
-            let {statusCode, headers, body} = resp
+            if (resp == null) return Promise.resolve({ statusCode: 'timeout', headers: null, body: null })
+            let { statusCode, headers, body } = resp
             if (body) try {
                 body = JSON.parse(body)
             } catch {
@@ -158,10 +196,13 @@ function Env(name) {
         }
 
         log(msg, options = {}) {
-            let opt = {console: true}
+            let opt = { console: true }
             Object.assign(opt, options)
 
-
+            if (opt.time) {
+                let fmt = opt.fmt || 'hh:mm:ss'
+                msg = `[${this.time(fmt)}]` + msg
+            }
             if (opt.notify) {
                 this.notifyStr.push(msg)
             }
@@ -184,13 +225,45 @@ function Env(name) {
             }
             this.userCount = this.userList.length
             if (!this.userCount) {
-                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, {notify: true})
+                this.log(`未找到变量，请检查变量${ckNames.map(x => '[' + x + ']').join('或')}`, { notify: true })
                 return false
             }
             this.log(`共找到${this.userCount}个账号`)
             return true
         }
 
+        async taskThread(taskName, conf, opt = {}) {
+            while (conf.idx < $.userList.length) {
+                let user = $.userList[conf.idx++]
+                await user[taskName](opt)
+            }
+        }
+
+        async threadManager(taskName, thread) {
+            let taskAll = []
+            let taskConf = { idx: 0 }
+            while (thread--) {
+                taskAll.push(this.taskThread(taskName, taskConf))
+            }
+            await Promise.all(taskAll)
+        }
+
+        time(t, x = null) {
+            let xt = x ? new Date(x) : new Date
+            let e = {
+                "M+": xt.getMonth() + 1,
+                "d+": xt.getDate(),
+                "h+": xt.getHours(),
+                "m+": xt.getMinutes(),
+                "s+": xt.getSeconds(),
+                "q+": Math.floor((xt.getMonth() + 3) / 3),
+                S: this.padStr(xt.getMilliseconds(), 3)
+            };
+            /(y+)/.test(t) && (t = t.replace(RegExp.$1, (xt.getFullYear() + "").substr(4 - RegExp.$1.length)))
+            for (let s in e)
+                new RegExp("(" + s + ")").test(t) && (t = t.replace(RegExp.$1, 1 == RegExp.$1.length ? e[s] : ("00" + e[s]).substr(("" + e[s]).length)))
+            return t
+        }
 
         async showmsg() {
             if (!this.notifyFlag) return
@@ -200,6 +273,22 @@ function Env(name) {
             await notify.sendNotify(this.name, this.notifyStr.join('\n'))
         }
 
+        padStr(num, length, opt = {}) {
+            let padding = opt.padding || '0'
+            let mode = opt.mode || 'l'
+            let numStr = String(num)
+            let numPad = (length > numStr.length) ? (length - numStr.length) : 0
+            let pads = ''
+            for (let i = 0; i < numPad; i++) {
+                pads += padding
+            }
+            if (mode == 'r') {
+                numStr = numStr + pads
+            } else {
+                numStr = pads + numStr
+            }
+            return numStr
+        }
 
         json2str(obj, c, encode = false) {
             let ret = []
@@ -304,6 +393,19 @@ function Env(name) {
             return a
         }
 
+        randomPattern(pattern, charset = 'abcdef0123456789') {
+            let str = ''
+            for (let chars of pattern) {
+                if (chars == 'x') {
+                    str += charset.charAt(Math.floor(Math.random() * charset.length))
+                } else if (chars == 'X') {
+                    str += charset.charAt(Math.floor(Math.random() * charset.length)).toUpperCase()
+                } else {
+                    str += chars
+                }
+            }
+            return str
+        }
 
         randomString(len, charset = 'abcdef0123456789') {
             let str = ''

@@ -1,41 +1,5 @@
-1682149978447gvuHvT2gcpMbaDs4XIwwz3cvE3qVJe8r 3C45FFEF47D7A9655579ADA26B23EBC1
-
-
-gvuHvT2gcpMbaDs4XIwwz3cvE3qVJe8r
+curl -H 'Host: www.sqhulian.com' -H 'Accept: application/json' -H 'X-Requested-With: XMLHttpRequest' -H 'User-Agent: Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/114.0.5735.60 Mobile Safari/537.36' -H 'Origin: https://www.sqhulian.com' -H 'Sec-Fetch-Site: same-origin' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Dest: empty' -H 'Referer: https://www.sqhulian.com/m/apppage/formFillingInvitation/formFillingInvitation.html?mobile=15614832213' -H 'Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7' -H 'Cookie: JSESSIONID=63AE895823785BAA0E5EB491003BC7AE' --data "mobile=13754650804&encrypt=b630fc09d3ce8fa233fd109eb01b4e46" --compressed 'https://www.sqhulian.com/user/doSendLoginCode.do'
 
 
 
-{
-	"code": 0,
-	"message": "成功",
-	"data": ["https:\/\/cll-mall-store.oss-cn-guangzhou.aliyuncs.com\/poster\/user\/person_poster1_user_poster1_appid_10002_from_app_113742.jpg", "https:\/\/cll-mall-store.oss-cn-guangzhou.aliyuncs.com\/poster\/user\/person_poster2_user_poster1_appid_10002_from_app_113742.jpg", "https:\/\/cll-mall-store.oss-cn-guangzhou.aliyuncs.com\/poster\/user\/person_poster3_user_poster1_appid_10002_from_app_113742.jpg"]
-}
-
-{
-            'zone': 'clocks',
-            't': t,
-            'r': r,
-            'n': n,
-            'appid': '10002',
-            'from': 'app',
-            'token': this.token,
-            'token-key': this.token_key,
-            'unionid': 'MTEzNzQy',
-            'User-Agent': 'okhttp/5.0.0-alpha.10'
-        }
-
-
-
-
-
-
-MTEzNzQy 13754650804 bdf0b94b6456b11175d129253c050942
-
-
- let r = randomString(32)
-  let t = ts13()
-  let n = CryptoJS.MD5(`${t}${r}A34E956BE902EE436ECE7B4B1F145654`).toString()
-  let authorization = CryptoJS.MD5(this.userid + this.sjh).toString()
-
-
-customer_id=113742 mobile=13754650804 sign_id=TWpJM016QXlNVFV5 times=1 timestamp=1682154766832 F73AB6187AA9009A3116FD9EBD373C08
+curl -H 'Host: www.sqhulian.com' -H 'Accept: application/json' -H 'X-Requested-With: XMLHttpRequest' -H 'User-Agent: Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/114.0.5735.60 Mobile Safari/537.36' -H 'Origin: https://www.sqhulian.com' -H 'Sec-Fetch-Site: same-origin' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Dest: empty' -H 'Referer: https://www.sqhulian.com/m/apppage/formFillingInvitation/formFillingInvitation.html?mobile=15614832213' -H 'Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7' -H 'Cookie: JSESSIONID=0E472D0C192FEA1C1870493381F67CC8' --data "mobile=13754650804&code=618086&pwd=Lxwy123456.&repwd=Lxwy123456.&inviteMobile=15614832213" --compressed 'https://www.sqhulian.com/user/doInviteRegister.do'
