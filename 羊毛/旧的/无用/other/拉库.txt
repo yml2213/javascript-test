@@ -1,0 +1,9 @@
+ql repo <repourl> <path> <blacklist> <dependence> <branch>
+对应意思  “库地址”   “拉哪些”   “不拉哪些”   “依赖文件”   “分支”
+ql repo http://yml-gitea.ml:3000/yml/javascript.git "" "invalid" "" "master"
+
+ql repo https://github.com/KingRan/KR.git "jd_opencard" "activity|backUp" "^jd[^_]|USER|utils|function|sign|sendNotify|ql|JDJR"
+
+
+
+/Users/{{系统用户名}}/Library/Group Containers/5A4RE8SF68.com.tencent.xinWeChat/Library/Caches/xinWeChat/{{user哈希值}}/WeApp/LocalCache/release

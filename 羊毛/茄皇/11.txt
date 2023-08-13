@@ -1,0 +1,176 @@
+{
+	"code": 0,
+	"data": [
+        
+        {
+		"id": "1682271525788217344",
+		"taskId": "2",
+		"title": "邀请好友助力",
+		"content": "邀请好友助力",
+		"typeKey": "2",
+		"type": 0,
+		"progress": 3,
+		"progressType": 0,
+		"currentProgress": 0,
+		"status": 0,
+		"operateConfig": null,
+		"prizeList": [{
+			"type": "sun",
+			"name": null,
+			"img": null,
+			"num": 3
+		}, {
+			"type": "dice",
+			"name": null,
+			"img": null,
+			"num": 1
+		}],
+		"prizeMultiple": 1
+	}, {
+		"id": "1682271525804994560",
+		"taskId": "3",
+		"title": "邀请新人助力",
+		"content": "邀请新人助力",
+		"typeKey": "3",
+		"type": 0,
+		"progress": 1,
+		"progressType": 0,
+		"currentProgress": 0,
+		"status": 0,
+		"operateConfig": null,
+		"prizeList": [{
+			"type": "sun",
+			"name": null,
+			"img": null,
+			"num": 2
+		}],
+		"prizeMultiple": 1
+	}, {
+		"id": "1682271525821771776",
+		"taskId": "7",
+		"title": "去旅行",
+		"content": "去旅行",
+		"typeKey": "7",
+		"type": 0,
+		"progress": 1,
+		"progressType": 0,
+		"currentProgress": 0,
+		"status": 0,
+		"operateConfig": null,
+		"prizeList": [{
+			"type": "sun",
+			"name": null,
+			"img": null,
+			"num": 2
+		}],
+		"prizeMultiple": 1
+	}, {
+		"id": "1682271525838548992",
+		"taskId": "5",
+		"title": "给番茄撒阳光",
+		"content": "给番茄撒阳光",
+		"typeKey": "4",
+		"type": 0,
+		"progress": 2,
+		"progressType": 0,
+		"currentProgress": 0,
+		"status": 0,
+		"operateConfig": null,
+		"prizeList": [{
+			"type": "dice",
+			"name": null,
+			"img": null,
+			"num": 1
+		}],
+		"prizeMultiple": 1
+	}, {
+		"id": "1682271525859520512",
+		"taskId": "9",
+		"title": "领取伙伴的伴手礼",
+		"content": "领取伙伴的伴手礼",
+		"typeKey": "9",
+		"type": 0,
+		"progress": 1,
+		"progressType": 0,
+		"currentProgress": 0,
+		"status": 0,
+		"operateConfig": null,
+		"prizeList": [{
+			"type": "gold",
+			"name": null,
+			"img": null,
+			"num": 15
+		}],
+		"prizeMultiple": 2
+	}, {
+		"id": "1682271525876297728",
+		"taskId": "4",
+		"title": "浏览统一快乐星球",
+		"content": "浏览统一快乐星球",
+		"typeKey": "5",
+		"type": 0,
+		"progress": 1,
+		"progressType": 0,
+		"currentProgress": 0,
+		"status": 0,
+		"operateConfig": {
+			"appId": "",
+			"type": 1,
+			"url": "/cms_design/index?isqdzz=1&tracepromotionid=100043822&productInstanceId=2555156957&vid=0"
+		},
+		"prizeList": [{
+			"type": "sun",
+			"name": null,
+			"img": null,
+			"num": 2
+		}],
+		"prizeMultiple": 1
+	}, {
+		"id": "1682271525893074944",
+		"taskId": "6",
+		"title": "品牌馆内给内容点赞",
+		"content": "品牌馆内给内容点赞",
+		"typeKey": "6",
+		"type": 0,
+		"progress": 1,
+		"progressType": 0,
+		"currentProgress": 0,
+		"status": 0,
+		"operateConfig": null,
+		"prizeList": [{
+			"type": "sun",
+			"name": null,
+			"img": null,
+			"num": 2
+		}, {
+			"type": "dice",
+			"name": null,
+			"img": null,
+			"num": 1
+		}],
+		"prizeMultiple": 1
+	}, {
+		"id": "1682271525909852160",
+		"taskId": "8",
+		"title": "点击茄皇/伙伴互动",
+		"content": "点击茄皇/伙伴互动",
+		"typeKey": "8",
+		"type": 0,
+		"progress": 1,
+		"progressType": 0,
+		"currentProgress": 0,
+		"status": 0,
+		"operateConfig": null,
+		"prizeList": [{
+			"type": "sun",
+			"name": null,
+			"img": null,
+			"num": 1
+		}],
+		"prizeMultiple": 1
+	}
+    
+    ],
+	"message": null
+}
+

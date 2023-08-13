@@ -18,13 +18,15 @@
     "node-fetch": "^3.2.10",
     "node-rsa": "^1.1.1",
     "node-telegram-bot-api": "^0.59.0",
+    "openai": "^3.3.0",
     "qrcode-terminal": "^0.12.0",
     "random-ua": "^0.0.6",
     "readline": "^1.3.0",
     "request": "^2.88.2",
+    "sablejs": "^1.1.0",
     "sync-request": "^6.1.0",
     "tough-cookie": "^4.0.0",
-    "tunnel": "0.0.6",
+    "tunnel": "^0.0.6",
     "underscore": "^1.13.3",
     "webpack": "^5.74.0"
   }

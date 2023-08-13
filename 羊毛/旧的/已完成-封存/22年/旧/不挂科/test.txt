@@ -1,0 +1,86 @@
+{
+  "status": {
+    "code": 0,
+    "msg": ""
+  },
+  "data": {
+    "activityInfo": {
+      "startDay": "2022年4月7日",
+      "endDay": "2022年5月7日",
+      "scrolling": []
+    },
+    "rewardList": [
+      {
+        "img": "https://edu-tob.bdimg.com/v1/EDU/1%E5%A4%A7-1648807664825.png",
+        "recvd": false,
+        "needDay": 3
+      },
+      {
+        "img": "https://edu-tob.bdimg.com/v1/EDU/5%20%E5%A4%A7-1648807665213.png",
+        "recvd": false,
+        "needDay": 10
+      },
+      {
+        "img": "https://edu-tob.bdimg.com/v1/EDU/10%20%E5%A4%A7-1648807665896.png",
+        "recvd": false,
+        "needDay": 19
+      },
+      {
+        "img": "https://edu-tob.bdimg.com/v1/EDU/10%20%E5%A4%A7-1648807665896.png",
+        "recvd": false,
+        "needDay": 30
+      }
+    ],
+    "dayList": {
+      "totalDay": 31,
+      "currentDay": 1,
+      "rewards": [
+        {
+          "img": "https://edu-tob.bdimg.com/v1/EDU/1-1648807664341.png",
+          "day": 4,
+          "recvd": false,
+          "outStock": false,
+          "outStockText": ""
+        },
+        {
+          "img": "https://edu-tob.bdimg.com/v1/EDU/5-1648807665503.png",
+          "day": 11,
+          "recvd": false,
+          "outStock": false,
+          "outStockText": ""
+        },
+        {
+          "img": "https://edu-tob.bdimg.com/v1/EDU/10-1648807666339.png",
+          "day": 20,
+          "recvd": false,
+          "outStock": false,
+          "outStockText": ""
+        },
+        {
+          "img": "https://edu-tob.bdimg.com/v1/EDU/10-1648807666339.png",
+          "day": 31,
+          "recvd": false,
+          "outStock": false,
+          "outStockText": ""
+        }
+      ]
+    },
+    "signResult": {
+      "status": 2,
+      "windowInfo": {
+        "title": "签到成功",
+        "subTitle": "\u003cspan\u003e再连续签到\u003cspan style\u003d\"color:#F7603E\"\u003e3\u003c/span\u003e天可得\u003cspan style\u003d\"color:#F7603E\"\u003e1元京东卡\u003c/span\u003e\u003c/span\u003e",
+        "img": "https://edu-tob.bdimg.com/v1/EDU/1%E5%A4%A7-1648807664825.png",
+        "buttonTitle": "我知道了",
+        "buttonType": 0,
+        "note": "\u003cspan style\u003d\"color:#858585\"\u003e福利：邀好友可得\u003c/span\u003e\u003cspan style\u003d\"color:#F7603E\"\u003e1天文库VIP\u003c/span\u003e"
+      }
+    },
+    "showBCToast": 0
+  }
+}
+
+
+{ 
+  status: { code: 200001, msg: 'not login error' }, 
+  data: [] }

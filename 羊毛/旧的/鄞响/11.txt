@@ -1,0 +1,46 @@
+[
+  {
+    experience: 60,
+    integral: 60,
+    id: 1472,
+    name: '分享资讯给好友',
+    finish_times: 5,
+    frequency: 5,
+    completed: 1,
+    member_task_type: 3,
+    links: '{"normal":"","ios":"/Main_Activity?click=1","android":"/Main_Activity?click=1"}'
+  },
+  {
+    experience: 60,
+    integral: 80,
+    id: 1474,
+    name: '新闻资讯点赞',
+    finish_times: 0,
+    frequency: 10,
+    completed: 0,
+    member_task_type: 5,
+    links: '{"normal":"","ios":"/Main_Activity?click=1","android":"/Main_Activity?click=1"}'
+  },
+  {
+    experience: 100,
+    integral: 100,
+    id: 1475,
+    name: '新闻资讯评论',
+    finish_times: 0,
+    frequency: 5,
+    completed: 0,
+    member_task_type: 4,
+    links: '{"normal":"","ios":"/Main_Activity?click=1","android":"/Main_Activity?click=1"}'
+  },
+  {
+    experience: 100,
+    integral: 120,
+    id: 1483,
+    name: '邀请好友',
+    finish_times: 0,
+    frequency: 1,
+    completed: 0,
+    member_task_type: 7,
+    links: '{"normal":"/webFunction/newInvite","ios":"/webFunction/invite","android":"/webFunction/invite"}'
+  }
+]

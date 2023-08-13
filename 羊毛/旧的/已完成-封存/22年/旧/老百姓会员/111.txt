@@ -1,0 +1,63 @@
+{
+	"success": true,
+	"customer_signin_list": {
+		"success": true,
+		"signin": {
+			"MONTHS": 0,
+			"IS_RESET": 0,
+			"DAYS2": 0,
+			"CUSTOMER_ID": 3748118,
+			"DAYS": 1,
+			"TOTAL_DAYS": 1,
+			"MONTHS2": 0
+		},
+		"is_userinfo": true,
+		"is_regist": true,
+		"doctyp": 0,
+		"signin_list": ["2022-05-22 00:00:00"]
+	}
+}
+
+
+{
+	"success": true,
+	"customer_signin_list": {
+		"success": true,
+		"is_userinfo": true,
+		"is_regist": true,
+		"doctyp": 0,
+		"signin_list": []
+	}
+}
+
+
+
+签到/////
+{
+	"success": true,
+	"customer_signin": {
+		"months": 0,
+		"next_rule": {
+			"DAYS": 2,
+			"MONTHS": 0,
+			"IS_DAILY": 1,
+			"GROWTH": 1
+		},
+		"success": true,
+		"is_userinfo": true,
+		"days": 1,
+		"rule": {
+			"DAYS": 1,
+			"MONTHS": 0,
+			"IS_DAILY": 1,
+			"GROWTH": 1
+		},
+		"growth": 1,
+		"is_regist": true,
+		"doctyp": 0
+	}
+}
+
+
+
+

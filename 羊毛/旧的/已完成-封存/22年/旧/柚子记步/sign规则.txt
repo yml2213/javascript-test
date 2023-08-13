@@ -1,0 +1,4 @@
+领现金
+{"adCodeId":"5424007854","adId":"10013","ecpm":200.0,"isEcpmSuccess":true,"sourceId":"KuaiShou","timestamp":1650853522334}
+{"adCodeId":"5424003830","adId":"10013","ecpm":75.0,"isEcpmSuccess":true,"sourceId":"KuaiShou","timestamp":1650854230349}
+{"adCodeId":"5424007856","adId":"10013","ecpm":100.0,"isEcpmSuccess":true,"sourceId":"KuaiShou","timestamp":1650854109563}

@@ -1,0 +1,106 @@
+{
+	"success": true,
+	"code": "01",
+	"msg": "SUCCESS",
+	"exceptionString": null,
+	"data": [
+        
+        {
+		"title": "开启绿色美好的一天",
+		"titleImg": "http://appcdn.qd-metro.com/file/202304/08/b4e6bfeae02fad5fc8ff3aa2fcfaea6e85f64196092c433d9691406e3a92167c.jpg",
+		"taskList": [{
+			"id": 1,
+			"icon": "http://appcdn.qd-metro.com/file/202304/07/57a3bbe77d78e96d31ed7509e1ca1cb7b0028e521e19ba93ebdfe62d5dc82c42.png",
+			"name": "使用钱包乘车",
+			"description": "使用钱包乘坐地铁或公交",
+			"score": 1,
+			"status": "4",
+			"getNum": 1,
+			"limitNum": 1,
+			"umEventId": "PointsZoneChengcheTask",
+			"umEventContent": "积分专区-乘车任务点击量",
+			"titleImg": "http://appcdn.qd-metro.com/file/202304/08/b4e6bfeae02fad5fc8ff3aa2fcfaea6e85f64196092c433d9691406e3a92167c.jpg",
+			"taskImg": "http://appcdn.qd-metro.com/file/202304/07/ff1141dc6720ec000b3d55083b91bce8c65308e30fc9f0332177a8c859e03b0f.png",
+			"buttonColor": null
+		}]
+	}, {
+		"title": "超多积分推荐",
+		"titleImg": "http://appcdn.qd-metro.com/file/202304/07/9a8697a2028a219570a113784b9bfe3aff420fea865d5f5d31bf2926f7060fcf.png",
+		"taskList": [{
+			"id": 5,
+			"icon": "http://appcdn.qd-metro.com/file/202304/07/2a8aae366f20cac797c13033779bab667975e2bce807f84cbaee71cf09a63336.png",
+			"name": "浏览龙卡全球支付信用卡",
+			"description": "全币种免兑换，办理赠送10000积分",
+			"score": 1,
+			"status": "4",
+			"getNum": 1,
+			"limitNum": 1,
+			"umEventId": "PointsZoneXinyongkaTask",
+			"umEventContent": "积分专区-信用卡任务点击量",
+			"titleImg": "http://appcdn.qd-metro.com/file/202304/07/9a8697a2028a219570a113784b9bfe3aff420fea865d5f5d31bf2926f7060fcf.png",
+			"taskImg": "http://appcdn.qd-metro.com/file/202304/07/ff1141dc6720ec000b3d55083b91bce8c65308e30fc9f0332177a8c859e03b0f.png",
+			"buttonColor": null
+		}]
+	}, {
+		"title": "玩转青岛  做积分达人",
+		"titleImg": "http://appcdn.qd-metro.com/file/202304/08/b4e6bfeae02fad5fc8ff3aa2fcfaea6e85f64196092c433d9691406e3a92167c.jpg",
+		"taskList": [{
+			"id": 7,
+			"icon": "http://appcdn.qd-metro.com/file/202304/07/715ef59b961369a1068489aebe6ad5958902d19e72f34fbca2e91759e0534dd5.png",
+			"name": "浏览建行生活活动",
+			"description": "浏览15秒，奖励5积分，5成长值",
+			"score": 5,
+			"status": "4",
+			"getNum": 1,
+			"limitNum": 1,
+			"umEventId": "PointsZoneCCBlifeTask",
+			"umEventContent": "积分专区-建行生活任务点击量",
+			"titleImg": "http://appcdn.qd-metro.com/file/202304/08/b4e6bfeae02fad5fc8ff3aa2fcfaea6e85f64196092c433d9691406e3a92167c.jpg",
+			"taskImg": "http://appcdn.qd-metro.com/file/202304/07/ff1141dc6720ec000b3d55083b91bce8c65308e30fc9f0332177a8c859e03b0f.png",
+			"buttonColor": null
+		}, {
+			"id": 9,
+			"icon": "http://appcdn.qd-metro.com/file/202306/25/dea59a12b999f2a223b21efbb240bb3116b5ee4b539ffa5697cd26eac2f6445d.png",
+			"name": "浏览建行企微二维码",
+			"description": "浏览15秒，奖励2积分2成长值，每日1次",
+			"score": 2,
+			"status": "4",
+			"getNum": 1,
+			"limitNum": 1,
+			"umEventId": "PointsCCBWXTask",
+			"umEventContent": "积分专区-建行企微二维码任务点击量",
+			"titleImg": "http://appcdn.qd-metro.com/file/202304/08/b4e6bfeae02fad5fc8ff3aa2fcfaea6e85f64196092c433d9691406e3a92167c.jpg",
+			"taskImg": "http://appcdn.qd-metro.com/file/202304/07/ff1141dc6720ec000b3d55083b91bce8c65308e30fc9f0332177a8c859e03b0f.png",
+			"buttonColor": "1"
+		}, {
+			"id": 3,
+			"icon": "http://appcdn.qd-metro.com/file/202304/07/1e29a27d91d6e731a11b1ce3a95579ff0a3dcfc6902ef4dca35c2030b077a9cf.png",
+			"name": "浏览建行快贷业务",
+			"description": "浏览15秒，奖励5积分，5成长值",
+			"score": 5,
+			"status": "2",
+			"getNum": 0,
+			"limitNum": 1,
+			"umEventId": "PointsZoneKuaidaiTask",
+			"umEventContent": "积分专区-快贷任务点击量",
+			"titleImg": "http://appcdn.qd-metro.com/file/202304/08/b4e6bfeae02fad5fc8ff3aa2fcfaea6e85f64196092c433d9691406e3a92167c.jpg",
+			"taskImg": "http://appcdn.qd-metro.com/file/202304/07/ff1141dc6720ec000b3d55083b91bce8c65308e30fc9f0332177a8c859e03b0f.png",
+			"buttonColor": null
+		}, {
+			"id": 4,
+			"icon": "http://appcdn.qd-metro.com/file/202304/07/561be564c34925173cfb9a1d59611275f22062c787579cbf97eb7fa16742639c.png",
+			"name": "浏览建行贵金属",
+			"description": "浏览15秒，奖励2积分，2成长值",
+			"score": 2,
+			"status": "2",
+			"getNum": 0,
+			"limitNum": 1,
+			"umEventId": "PointsZoneGuijinshuTask",
+			"umEventContent": "积分专区-贵金属任务点击量",
+			"titleImg": "http://appcdn.qd-metro.com/file/202304/08/b4e6bfeae02fad5fc8ff3aa2fcfaea6e85f64196092c433d9691406e3a92167c.jpg",
+			"taskImg": "http://appcdn.qd-metro.com/file/202304/07/ff1141dc6720ec000b3d55083b91bce8c65308e30fc9f0332177a8c859e03b0f.png",
+			"buttonColor": null
+		}]
+	}],
+	"data2": null
+}

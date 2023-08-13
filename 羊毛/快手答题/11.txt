@@ -1,0 +1,261 @@
+abi=arm64androidApiLevel=30appver=11.4.20.5583browseType=3c=ANDROID_JSB_RC_YYSD_CPA_KASCKJB%2C1device_abi=arm64did=ANDROID_10fe68f006abf0eedid_tag=0egid=DFP0CC25C80691547F32C891AC606A89C943CBF67E1242D0433105A99C38C731grant_browse_type=AUTHORIZEDisOpen=trueisReadyOfAdPlay=truekpf=ANDROID_PHONEkpn=NEBULAlanguage=zh-cnmod=Google%28Pixel%29newOc=ANDROID_JSB_RC_YYSD_CPA_KASCKJB%2C1oDid=ANDROID_10fe68f006abf0eerdid=ANDROID_cfa0a62b0d7dcf34sigCatVer=1socName=Qualcomm+MSM8996PRO-ABuserId=2274327570userRecoBit=0
+
+
+
+[Running] node "d:\js\javascript-test\羊毛\快手答题\kuaishou_dt.js"
+[快手答题]开始运行
+共找到1个账号
+
+=============== 账号[1] ===============
+
+-------------- 开始 --------------
+账号[1]: 开始答题 -- 成功, 番茄肉酱烩意大利面属于什么菜的特色菜品？: 江苏菜,鲁菜,江西菜,意大利菜, gpt 时间...
+gpt 选择答案: 本次选择 3--意大利菜
+{ index: 3, answer: '意大利菜' }
+账号[1]: 2010年的《铠甲勇士之帝皇侠》是哪国的电影？ 上传数据库成功...
+账号[1]: 上传答案 第 1 题 -- 回答正确, 题目将会上传服务器题库, 继续答题; 下一题:2010年的《铠甲勇士之帝皇侠》是哪国的电影？--厄瓜多尔,爱沙尼亚,阿尔及利亚,中国, 当前金币:5220
+
+
+
+账号[1]:  第 2 题 --:2010年的《铠甲勇士之帝皇侠》是哪国的电影？--厄瓜多尔,爱沙尼亚,阿尔及利亚,中国
+gpt 选择答案: 本次选择 3--中国
+{ index: 3, answer: '中国' }
+账号[1]: 晋是我国哪个省份的简称？ 上传数据库成功...
+账号[1]: 上传答案 第 2 题 -- 回答正确, 题目将会上传服务器题库, 继续答题; 下一题:晋是我国哪个省份的简称？--山西,湖南,湖北,黑龙江, 当前金币:5320
+
+
+
+账号[1]:  第 3 题 --:晋是我国哪个省份的简称？--山西,湖南,湖北,黑龙江
+gpt 选择答案: 本次选择 0--山西
+{ index: 0, answer: '山西' }
+账号[1]: 2022年的《鼓楼外》是哪国的电视剧？ 上传数据库成功...
+账号[1]: 上传答案 第 3 题 -- 回答正确, 题目将会上传服务器题库, 继续答题; 下一题:2022年的《鼓楼外》是哪国的电视剧？--安提瓜和巴布达,中国,塞拉利昂,萨摩亚, 当前金币:5420
+
+
+
+账号[1]:  第 4 题 --:2022年的《鼓楼外》是哪国的电视剧？--安提瓜和巴布达,中国,塞拉利昂,萨摩亚
+gpt 选择答案: 本次选择 1--中国
+{ index: 1, answer: '中国' }
+账号[1]: 2022年的《蓝焰突击》是哪国的电视剧？ 上传数据库成功...
+账号[1]: 上传答案 第 4 题 -- 回答正确, 题目将会上传服务器题库, 继续答题; 下一题:2022年的《蓝焰突击》是哪国的电视剧？--中国,萨摩亚,爱沙尼亚,安提瓜和巴布达, 当前金币:5520
+
+
+
+账号[1]:  第 5 题 --:2022年的《蓝焰突击》是哪国的电视剧？--中国,萨摩亚,爱沙尼亚,安提瓜和巴布达
+gpt 选择答案: 本次选择 0--中国
+{ index: 0, answer: '中国' }
+账号[1]: 2003年的《黑夜传说》中西丽妮的扮演者是？ 上传数据库成功...
+账号[1]: 上传答案 第 5 题 -- 回答正确, 题目将会上传服务器题库, 继续答题; 下一题:2003年的《黑夜传说》中西丽妮的扮演者是？--卢瑞·奥康纳,张振寰,林俊贤,凯特·贝金赛尔, 当前金币:5620
+
+
+
+账号[1]:  第 6 题 --:2003年的《黑夜传说》中西丽妮的扮演者是？--卢瑞·奥康纳,张振寰,林俊贤,凯特·贝金赛尔
+gpt 选择答案: 本次选择 3--凯特·贝金赛尔
+{ index: 3, answer: '凯特·贝金赛尔' }
+账号[1]: 1952年的《雨中曲》是哪国的电影？ 上传数据库成功...
+账号[1]: 上传答案 第 6 题 -- 回答正确, 题目将会上传服务器题库, 继续答题; 下一题:1952年的《雨中曲》是哪国的电影？--阿尔及利亚,塞拉利昂,美国,厄瓜多尔, 当前金币:5720
+
+
+
+账号[1]:  第 7 题 --:1952年的《雨中曲》是哪国的电影？--阿尔及利亚,塞拉利昂,美国,厄瓜多尔
+gpt 选择答案: 本次选择 2--美国
+{ index: 2, answer: '美国' }
+账号[1]: 2014年的《终极恶女》中查理的扮演者是？ 上传数据库成功...
+账号[1]: 上传答案 第 7 题 -- 回答正确, 题目将会上传服务器题库, 继续答题; 下一题:2014年的《终极恶女》中查理的扮演者是？--晨翔,韩庚,杜双宇,刘松仁, 当前金币:5820
+
+
+
+账号[1]:  第 8 题 --:2014年的《终极恶女》中查理的扮演者是？--晨翔,韩庚,杜双宇,刘松仁
+gpt 选择答案: 本次选择 1--韩庚
+{ index: 1, answer: '韩庚' }
+账号[1]: 上传答案 答题失败
+{"result":1,"host-name":"public-bjxy-amd-kcs-node435.idcyz.hb1.kwaidc.com","data":{"answerDetail":{"correct":false,"correctAnswerIndex":0,"correctAnswer":"晨翔","explanation":{"searchLandingPageId":"0532e20a5872f709a541b67077b0846f","searchLandingPageQuery":"2014年的《终极恶女》中查理的扮演者是？"},"inspiration":0},"amount":null,"nextQuestionDetail":null,"exchangeRate":10000},"timestamp":1691032023556}
+加载sendNotify，当前版本: 20211228
+
+============== 推送 ==============
+开始发送通知...
+通知标题: 快手答题
+[快手答题]运行结束，共运行了80.872秒
+
+[Done] exited with code=0 in 80.955 seconds
+
+
+[Running] node "d:\js\javascript-test\羊毛\快手答题\kuaishou_dt.js"
+[快手答题]开始运行
+共找到1个账号
+
+=============== 账号[1] ===============
+
+-------------- 开始 --------------
+
+
+
+账号[1]:  第 1 题 --:乌干达的首都是？--雅温得,坎帕拉,多多马,班吉
+账号[1]: 开始查询数据库...
+账号[1]: 乌干达的首都是？ 数据库没有这个题
+账号[1]: gpt 时间...
+请求出错： Timeout awaiting 'request' for 10000ms
+gpt2--chat.yqcloud.top : 选项: 2, 坎帕拉
+gpt 选择答案: 本次选择 1--坎帕拉
+{ index: 1, answer: '坎帕拉' }
+账号[1]: 2019年的《怒晴湘西》是哪国的电视剧？ 上传数据库成功...
+账号[1]: 上传答案 第 1 题 -- 回答正确, 上传服务器题库, 继续答题; 下一题:2019年的《怒晴湘西》是哪国的电视剧？--中国,安提瓜和巴布达,阿塞拜疆,萨摩亚, 当前金币:27056
+
+
+
+账号[1]:  第 2 题 --:2019年的《怒晴湘西》是哪国的电视剧？--中国,安提瓜和巴布达,阿塞拜疆,萨摩亚
+账号[1]: 开始查询数据库...
+账号[1]: 2019年的《怒晴湘西》是哪国的电视剧？ 数据库没有这个题
+账号[1]: gpt 时间...
+请求出错： Timeout awaiting 'request' for 10000ms
+gpt2--chat.yqcloud.top : 选项: 1, 中国
+gpt 选择答案: 本次选择 0--中国
+{ index: 0, answer: '中国' }
+账号[1]: 2014年的《妈妈像花儿一样》是哪国的电视剧？ 上传数据库成功...
+账号[1]: 上传答案 第 2 题 -- 回答正确, 上传服务器题库, 继续答题; 下一题:2014年的《妈妈像花儿一样》是哪国的电视剧？--赞比亚,爱沙尼亚,中国,阿尔及利亚, 当前金币:28941
+
+
+
+账号[1]:  第 3 题 --:2014年的《妈妈像花儿一样》是哪国的电视剧？--赞比亚,爱沙尼亚,中国,阿尔及利亚
+账号[1]: 开始查询数据库...
+账号[1]: 2014年的《妈妈像花儿一样》是哪国的电视剧？ 数据库没有这个题
+账号[1]: gpt 时间...
+请求出错： Timeout awaiting 'request' for 10000ms
+gpt2--chat.yqcloud.top : 选项: 3, 中国
+gpt 选择答案: 本次选择 2--中国
+{ index: 2, answer: '中国' }
+账号[1]: 2018年的《皇后的品格》是哪国的电视剧？ 上传数据库成功...
+账号[1]: 上传答案 第 3 题 -- 回答正确, 上传服务器题库, 继续答题; 下一题:2018年的《皇后的品格》是哪国的电视剧？--韩国,巴基斯坦,安提瓜和巴布达,阿塞拜疆, 当前金币:30795
+
+
+
+账号[1]:  第 4 题 --:2018年的《皇后的品格》是哪国的电视剧？--韩国,巴基斯坦,安提瓜和巴布达,阿塞拜疆
+账号[1]: 开始查询数据库...
+账号[1]: 2018年的《皇后的品格》是哪国的电视剧？ 数据库没有这个题
+账号[1]: gpt 时间...
+请求出错： Timeout awaiting 'request' for 10000ms
+gpt2--chat.yqcloud.top : 选项: 1, 韩国
+gpt 选择答案: 本次选择 0--韩国
+{ index: 0, answer: '韩国' }
+账号[1]: 2018年的《卧底巨星》是哪国的电影？ 上传数据库成功...
+账号[1]: 上传答案 第 4 题 -- 回答正确, 上传服务器题库, 继续答题; 下一题:2018年的《卧底巨星》是哪国的电影？--中国,赞比亚,塞拉利昂,津巴布韦, 当前金币:32625
+
+
+
+账号[1]:  第 5 题 --:2018年的《卧底巨星》是哪国的电影？--中国,赞比亚,塞拉利昂,津巴布韦
+账号[1]: 开始查询数据库...
+账号[1]: 2018年的《卧底巨星》是哪国的电影？ 数据库没有这个题
+账号[1]: gpt 时间...
+请求出错： Timeout awaiting 'request' for 10000ms
+gpt2--chat.yqcloud.top : 选项: 1, 中国
+gpt 选择答案: 本次选择 0--中国
+{ index: 0, answer: '中国' }
+账号[1]: 李绅创作的五言古诗《悯农二首》创作于什么年代？ 上传数据库成功...
+账号[1]: 上传答案 第 5 题 -- 回答正确, 上传服务器题库, 继续答题; 下一题:李绅创作的五言古诗《悯农二首》创作于什么年代？--东周,北宋,西晋,中唐, 当前金币:34424
+
+
+
+账号[1]:  第 6 题 --:李绅创作的五言古诗《悯农二首》创作于什么年代？--东周,北宋,西晋,中唐
+账号[1]: 开始查询数据库...
+账号[1]: 李绅创作的五言古诗《悯农二首》创作于什么年代？ 数据库没有这个题
+账号[1]: gpt 时间...
+请求出错： Timeout awaiting 'request' for 10000ms
+gpt2--chat.yqcloud.top : 选项: 4, 中唐
+gpt 选择答案: 本次选择 3--中唐
+{ index: 3, answer: '中唐' }
+账号[1]: 成语插科打诨的出处是？ 上传数据库成功...
+账号[1]: 上传答案 第 6 题 -- 回答正确, 上传服务器题库, 继续答题; 下一题:成语插科打诨的出处是？--《祭石学士文》,《六先生画像·濂溪先生》,《琵琶记·报告戏情》,《百花齐放·单色蓳》, 当前金币:36199
+
+
+
+账号[1]:  第 7 题 --:成语插科打诨的出处是？--《祭石学士文》,《六先生画像·濂溪先生》,《琵琶记·报告戏情》,《百花齐放·单色蓳》
+账号[1]: 开始查询数据库...
+账号[1]: 成语插科打诨的出处是？ 数据库没有这个题
+账号[1]: gpt 时间...
+请求出错： Timeout awaiting 'request' for 10000ms
+gpt2--chat.yqcloud.top : 选项: 2, 《六先生画像·濂溪先生》
+gpt 选择答案: 本次选择 1--《六先生画像·濂溪先生》
+{ index: 1, answer: '《六先生画像·濂溪先生》' }
+账号[1]:  第 7 题 -- 回答错误, 已经将正确答案上传服务器题库, 下次就不会错了鸭!
+账号[1]: 成语插科打诨的出处是？ 上传数据库成功...
+账号[1]: 上传答案 回答错误, 期待你的下一次光临!
+{"result":1,"host-name":"public-zl-c11-13.idchb1az1.hb1.kwaidc.com","data":{"answerDetail":{"correct":false,"correctAnswerIndex":2,"correctAnswer":"《琵琶记·报告戏情》","explanation":{"searchLandingPageId":"63f31da9396ec8384bdcfd9e14a2a4b4","searchLandingPageQuery":"成语插科打诨的出处是？"},"inspiration":0},"amount":null,"nextQuestionDetail":null,"exchangeRate":10000},"timestamp":1691035560775}
+加载sendNotify，当前版本: 20211228
+
+============== 推送 ==============
+开始发送通知...
+通知标题: 快手答题
+[快手答题]运行结束，共运行了115.639秒
+
+[Done] exited with code=0 in 115.722 seconds
+
+我又回来了,今天来个大的!
+
+慢脚答题36提现活动,我们提供限时优惠的答题卡密，助您迅速提现，享受高效答题挣金币体验！
+
+限时特惠，抢购中：
+
+- 开放20张答题卡密，优惠价仅售10元/张，每张可使用500次！
+- 注：只有在调用答题库时才会扣除次数，使用更加贴心省心。
+
+收益: 
+白号用户一次可答题赢得数千金币,每次10题，每天可答题10次
+黑号: 每次100金币 没意思
+
+限量开发20 优惠卡密,卖完再说!
+
+任何问题请联系 @yml2213  
+卡密购买地址: http://menglei.xyz:56789
+
+
+附上100人进群链接: https://t.me/+wApnXyXyFahmYjE1
+
+
+
+
+acme.sh  --issue  -d menglei.xyz  --dns dns_cf  -d *.menglei.xyz -k ec-256
+
+
+acme.sh --issue -d "shop.menglei.xyz" -d "*.shop.menglei.xyz" --dns dns_cf \
+--key-file       /root/dujiaoka/key/yourdomain.key  \
+--fullchain-file /root/dujiaoka/key/yourdomain.pem \
+--reloadcmd "docker restart nginx"
+
+export CF_Account_ID="6893d27eed682609c2928538f62ae8aa"
+
+acme.sh --issue --dns dns_cf -d yourdomain.com -d www.yourdomain.com -k ec-256
+
+acme.sh --issue --dns dns_cf -d menglei.xyz -d *.menglei.xyz -k ec-256
+
+
+
+账号[3]:  第 8 题, 问题:2016年的《招魂2》是哪国的电影？ -- 选项:[美国,巴勒斯坦,爱沙尼亚,毛里求斯]
+账号[3]: 开始查询数据库...
+账号[3]: 2016年的《招魂2》是哪国的电影？   ❀❀❀数据库支援来了❀❀❀ 
+账号[3]: 您是永久卡密！
+随机等待 4 秒 ...
+账号[3]:  第 8 题 -- 回答错误, 请检查数据库答案
+{"result":1,"host-name":"public-bjmt-c11-kce-node2287.idchb1az4.hb1.kwaidc.com","data":{"answerDetail":{"correct":false,"correctAnswerIndex":0,"correctAnswer":"美国","explanation":{"searchLandingPageId":"e1012bd3a221b768485a3951f940d49b","searchLandingPageQuery":"2016年的《招魂2》是哪国的电影？"},"inspiration":0},"amount":null,"nextQuestionDetail":null,"exchangeRate":10000},"timestamp":1691711589044}
+
+[
+  {
+    idx: "账号[1]",
+    ckFlog: true,
+    ck_: [
+      "__NSWJ=;appver=11.6.20.3149;bottom_navigation=true;c=a;cdidTag=0;client_key=63b2bdd7;countryCode=CN;did=1BA16ED9-79ED-48F2-A9E9-4D7D9F33291F;didTag=7;egid=DFP2A655D7F45167F825A20C639C966F875AE045CB3C3A2D60592B51CE7430EA;ftt=;gid=;kpf=IPHONE;kpn=NEBULA;kuaishou.api_st=Cg9rdWFpc2hvdS5hcGkuc3QSoAGl97xJ8POf4YZ_O1R9t18Hyzh0jbGm5fNXlWJJTXmwKe29a37IYRgqqFIzKaOdsq5Au2Eumr8_djqfkgjqWRJIHkUHJoqEoRKUPG7SNZKVbJwXkpGA6OtmGBUiBHvU7X33Ojx8bcdofJwnkMBEjm4ZMzEch4mBhBv4KHuJJrEsh_6OFd90TEMlZ6L8_UODeew68BXaUrBtTe2ew2Vutb9MGhJey_IdJfJMt4oIXuVy7QAVNNEiIIkA7bW4h3XCrFqhb5EsRL19ahYclbaRzTllklO0BocUKAUwAQ;kuaishou.h5_st=Cg5rdWFpc2hvdS5oNS5zdBKgAajrEcwQwgPfllOeCBlMlHHVIjJYUAfXfxo2NtHWkKiYVq_UX12THubMigrBAyfEmsvoPx7T5nuAuZ-Ac4f2v59HOkkewPHh6xOkpGeAJ4mZ4GFa-qVK4PKg_xbGmPhdxu0E26JhM8vX-lm1oVC08Kxg8DFlU1SzCTqxSbQxr2tZiGnyIsv3x1xWdyhTeQd-hXt8QVNKYeB5yaU_4vloHlkaEvQMzUXuEHBlR1EcMZxj9QIq6SIg0-9jK83NCKoiZlZpU_WkutjgDXJjSUJnMr-K-Z2s_cMoBTAB;kuaishou.sixin.login_st=ChdrdWFpc2hvdS5zaXhpbi5sb2dpbi5zdBKgAZV1xUZVpguXUigieoP0ihmzdUsI1q93RTSbXDB-zJxDb5Z87nEe3xLtYWm0gJIhN3rnMHlz_TgHTy-qYD7kpbBDMjJ2p0MpujFwRfsf26r2Esj2GVSiQ1Q4k1ss3XZG30M_NXkx1nfUoRYHV92oePlRv623iEsm6N25_76JHFy31jTaLt3cM8UOaQdIxnAlPs9tuXurUGq0YP7kY8TM4FQaEmm3NVugjUC8kIQ5Uzdr6Ci5eSIgLHagZxrmNqrXefQRFzQXvT-JYaq1kmNp40f59aTSReEoBTAB;language=zh-Hans-CN%3Bq%3D1;mcc=;mod=iPhone10%2C2;net=WIFI;odid=1BA16ED9-79ED-48F2-A9E9-4D7D9F33291F;randomDid=1BA16ED9-79ED-48F2-A9E9-4D7D9F33291F;sys=iOS_14.4;token=Cg9rdWFpc2hvdS5hcGkuc3QSoAGl97xJ8POf4YZ_O1R9t18Hyzh0jbGm5fNXlWJJTXmwKe29a37IYRgqqFIzKaOdsq5Au2Eumr8_djqfkgjqWRJIHkUHJoqEoRKUPG7SNZKVbJwXkpGA6OtmGBUiBHvU7X33Ojx8bcdofJwnkMBEjm4ZMzEch4mBhBv4KHuJJrEsh_6OFd90TEMlZ6L8_UODeew68BXaUrBtTe2ew2Vutb9MGhJey_IdJfJMt4oIXuVy7QAVNNEiIIkA7bW4h3XCrFqhb5EsRL19ahYclbaRzTllklO0BocUKAUwAQ;urlencode_mod=iPhone10%252C2;userId=115446081;ver=11.6",
+      "%E5%BF%AB%E6%89%8B%E6%9E%81%E9%80%9F%E7%89%88/3149 CFNetwork/1220.1 Darwin/20.3.0",
+    ],
+    ck: "__NSWJ=;appver=11.6.20.3149;bottom_navigation=true;c=a;cdidTag=0;client_key=63b2bdd7;countryCode=CN;did=1BA16ED9-79ED-48F2-A9E9-4D7D9F33291F;didTag=7;egid=DFP2A655D7F45167F825A20C639C966F875AE045CB3C3A2D60592B51CE7430EA;ftt=;gid=;kpf=IPHONE;kpn=NEBULA;kuaishou.api_st=Cg9rdWFpc2hvdS5hcGkuc3QSoAGl97xJ8POf4YZ_O1R9t18Hyzh0jbGm5fNXlWJJTXmwKe29a37IYRgqqFIzKaOdsq5Au2Eumr8_djqfkgjqWRJIHkUHJoqEoRKUPG7SNZKVbJwXkpGA6OtmGBUiBHvU7X33Ojx8bcdofJwnkMBEjm4ZMzEch4mBhBv4KHuJJrEsh_6OFd90TEMlZ6L8_UODeew68BXaUrBtTe2ew2Vutb9MGhJey_IdJfJMt4oIXuVy7QAVNNEiIIkA7bW4h3XCrFqhb5EsRL19ahYclbaRzTllklO0BocUKAUwAQ;kuaishou.h5_st=Cg5rdWFpc2hvdS5oNS5zdBKgAajrEcwQwgPfllOeCBlMlHHVIjJYUAfXfxo2NtHWkKiYVq_UX12THubMigrBAyfEmsvoPx7T5nuAuZ-Ac4f2v59HOkkewPHh6xOkpGeAJ4mZ4GFa-qVK4PKg_xbGmPhdxu0E26JhM8vX-lm1oVC08Kxg8DFlU1SzCTqxSbQxr2tZiGnyIsv3x1xWdyhTeQd-hXt8QVNKYeB5yaU_4vloHlkaEvQMzUXuEHBlR1EcMZxj9QIq6SIg0-9jK83NCKoiZlZpU_WkutjgDXJjSUJnMr-K-Z2s_cMoBTAB;kuaishou.sixin.login_st=ChdrdWFpc2hvdS5zaXhpbi5sb2dpbi5zdBKgAZV1xUZVpguXUigieoP0ihmzdUsI1q93RTSbXDB-zJxDb5Z87nEe3xLtYWm0gJIhN3rnMHlz_TgHTy-qYD7kpbBDMjJ2p0MpujFwRfsf26r2Esj2GVSiQ1Q4k1ss3XZG30M_NXkx1nfUoRYHV92oePlRv623iEsm6N25_76JHFy31jTaLt3cM8UOaQdIxnAlPs9tuXurUGq0YP7kY8TM4FQaEmm3NVugjUC8kIQ5Uzdr6Ci5eSIgLHagZxrmNqrXefQRFzQXvT-JYaq1kmNp40f59aTSReEoBTAB;language=zh-Hans-CN%3Bq%3D1;mcc=;mod=iPhone10%2C2;net=WIFI;odid=1BA16ED9-79ED-48F2-A9E9-4D7D9F33291F;randomDid=1BA16ED9-79ED-48F2-A9E9-4D7D9F33291F;sys=iOS_14.4;token=Cg9rdWFpc2hvdS5hcGkuc3QSoAGl97xJ8POf4YZ_O1R9t18Hyzh0jbGm5fNXlWJJTXmwKe29a37IYRgqqFIzKaOdsq5Au2Eumr8_djqfkgjqWRJIHkUHJoqEoRKUPG7SNZKVbJwXkpGA6OtmGBUiBHvU7X33Ojx8bcdofJwnkMBEjm4ZMzEch4mBhBv4KHuJJrEsh_6OFd90TEMlZ6L8_UODeew68BXaUrBtTe2ew2Vutb9MGhJey_IdJfJMt4oIXuVy7QAVNNEiIIkA7bW4h3XCrFqhb5EsRL19ahYclbaRzTllklO0BocUKAUwAQ;urlencode_mod=iPhone10%252C2;userId=115446081;ver=11.6",
+    ua: "%E5%BF%AB%E6%89%8B%E6%9E%81%E9%80%9F%E7%89%88/3149 CFNetwork/1220.1 Darwin/20.3.0",
+    ts13: "1691713296690",
+    hd: {
+      Host: "encourage.kuaishou.com",
+      "User-Agent": "%E5%BF%AB%E6%89%8B%E6%9E%81%E9%80%9F%E7%89%88/3149 CFNetwork/1220.1 Darwin/20.3.0",
+      "X-Requested-With": "com.kuaishou.nebula",
+      "Sec-Fetch-Site": "same-origin",
+      "Sec-Fetch-Dest": "empty",
+      Cookie: "__NSWJ=;appver=11.6.20.3149;bottom_navigation=true;c=a;cdidTag=0;client_key=63b2bdd7;countryCode=CN;did=1BA16ED9-79ED-48F2-A9E9-4D7D9F33291F;didTag=7;egid=DFP2A655D7F45167F825A20C639C966F875AE045CB3C3A2D60592B51CE7430EA;ftt=;gid=;kpf=IPHONE;kpn=NEBULA;kuaishou.api_st=Cg9rdWFpc2hvdS5hcGkuc3QSoAGl97xJ8POf4YZ_O1R9t18Hyzh0jbGm5fNXlWJJTXmwKe29a37IYRgqqFIzKaOdsq5Au2Eumr8_djqfkgjqWRJIHkUHJoqEoRKUPG7SNZKVbJwXkpGA6OtmGBUiBHvU7X33Ojx8bcdofJwnkMBEjm4ZMzEch4mBhBv4KHuJJrEsh_6OFd90TEMlZ6L8_UODeew68BXaUrBtTe2ew2Vutb9MGhJey_IdJfJMt4oIXuVy7QAVNNEiIIkA7bW4h3XCrFqhb5EsRL19ahYclbaRzTllklO0BocUKAUwAQ;kuaishou.h5_st=Cg5rdWFpc2hvdS5oNS5zdBKgAajrEcwQwgPfllOeCBlMlHHVIjJYUAfXfxo2NtHWkKiYVq_UX12THubMigrBAyfEmsvoPx7T5nuAuZ-Ac4f2v59HOkkewPHh6xOkpGeAJ4mZ4GFa-qVK4PKg_xbGmPhdxu0E26JhM8vX-lm1oVC08Kxg8DFlU1SzCTqxSbQxr2tZiGnyIsv3x1xWdyhTeQd-hXt8QVNKYeB5yaU_4vloHlkaEvQMzUXuEHBlR1EcMZxj9QIq6SIg0-9jK83NCKoiZlZpU_WkutjgDXJjSUJnMr-K-Z2s_cMoBTAB;kuaishou.sixin.login_st=ChdrdWFpc2hvdS5zaXhpbi5sb2dpbi5zdBKgAZV1xUZVpguXUigieoP0ihmzdUsI1q93RTSbXDB-zJxDb5Z87nEe3xLtYWm0gJIhN3rnMHlz_TgHTy-qYD7kpbBDMjJ2p0MpujFwRfsf26r2Esj2GVSiQ1Q4k1ss3XZG30M_NXkx1nfUoRYHV92oePlRv623iEsm6N25_76JHFy31jTaLt3cM8UOaQdIxnAlPs9tuXurUGq0YP7kY8TM4FQaEmm3NVugjUC8kIQ5Uzdr6Ci5eSIgLHagZxrmNqrXefQRFzQXvT-JYaq1kmNp40f59aTSReEoBTAB;language=zh-Hans-CN%3Bq%3D1;mcc=;mod=iPhone10%2C2;net=WIFI;odid=1BA16ED9-79ED-48F2-A9E9-4D7D9F33291F;randomDid=1BA16ED9-79ED-48F2-A9E9-4D7D9F33291F;sys=iOS_14.4;token=Cg9rdWFpc2hvdS5hcGkuc3QSoAGl97xJ8POf4YZ_O1R9t18Hyzh0jbGm5fNXlWJJTXmwKe29a37IYRgqqFIzKaOdsq5Au2Eumr8_djqfkgjqWRJIHkUHJoqEoRKUPG7SNZKVbJwXkpGA6OtmGBUiBHvU7X33Ojx8bcdofJwnkMBEjm4ZMzEch4mBhBv4KHuJJrEsh_6OFd90TEMlZ6L8_UODeew68BXaUrBtTe2ew2Vutb9MGhJey_IdJfJMt4oIXuVy7QAVNNEiIIkA7bW4h3XCrFqhb5EsRL19ahYclbaRzTllklO0BocUKAUwAQ;urlencode_mod=iPhone10%252C2;userId=115446081;ver=11.6",
+      "content-type": "application/x-www-form-urlencoded;charset=UTF-8",
+    },
+  },
+]

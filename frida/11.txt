@@ -1,0 +1,7 @@
+let e = Java.use("ld7.e");
+e["h"].implementation = function (request, params) {
+    console.log(`e.h is called: request=${request}, params=${params}`);
+    let result = this["h"](request, params);
+    console.log(`e.h result=${result}`);
+    return result;
+};
