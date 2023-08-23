@@ -532,7 +532,7 @@ class Bar {
             await $.Multithreading('upstep') // 上传步数
         }
 
-        await $.Multithreading('comic')   // 测试
+        await $.Multithreading('comic')   // 1.测试
 
         // await $.Multithreading('advideo')   // 看广告视频   废了 金币溜走了
 

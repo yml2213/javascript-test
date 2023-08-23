@@ -1,5 +1,5 @@
 /*
-cron 8 7 * * * yml_javascript/sqdz.js
+cron 8 7 * * * yml_javascript/aysc.js
 
 软件名称：上汽大众
 或者自己搜索下载

@@ -61,7 +61,7 @@ class UserClass {
             // await this.researches_check() //调研
 
             // await this.query('1937149800852099072', 10) // 测试学习
-            // await this.do_studies('1937149800852099072', '1937140961100566528', 10) // 测试
+            // await this.do_studies('1937149800852099072', '1937140961100566528', 10) // 1.测试
 
         }
     }

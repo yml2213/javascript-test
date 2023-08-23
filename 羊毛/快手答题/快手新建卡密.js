@@ -6,7 +6,7 @@ tg频道: https://t.me/yml2213_tg
 */
 
 
-const $ = Env('测试')
+const $ = Env('1.测试')
 const fs = require('fs')
 const envSplit = ['\n', '&', '@']     //支持多种分割，但要保证变量里不存在这个字符
 const ckNames = ['test']                //支持多变量
@@ -61,8 +61,8 @@ class UserClass {
             },
             json: {
                 "type": 1,              //0是永久，1是次卡
-                "count": 100,           //每个卡密的次数
-                "total": 50            //卡密的数量
+                "count": 600,           //每个卡密的次数
+                "total": 100            //卡密的数量
             }
         }
         console.log(options)
