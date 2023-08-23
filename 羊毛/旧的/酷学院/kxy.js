@@ -5,12 +5,12 @@
 
 -------------------  青龙-配置文件-复制区域  -------------------
 # 酷学院
-export kxy=" phone # pwd  @  phone # pwd "  
+export kxy=" phone # pwd  @  phone # pwd "
 
-多账号用 换行 或 @ 分割  
+多账号用 换行 或 @ 分割
 
 
-tg频道: https://t.me/yml2213_tg  
+tg频道: https://t.me/yml2213_tg
 */
 const $ = Env('酷学院')
 const crypto = require('crypto-js')
@@ -61,7 +61,7 @@ class UserClass {
             // await this.researches_check() //调研
 
             // await this.query('1937149800852099072', 10) // 测试学习
-            // await this.do_studies('1937149800852099072', '1937140961100566528', 10) // 1.测试
+            // await this.do_studies('1937149800852099072', '1937140961100566528', 10) // 测试
 
         }
     }
@@ -72,7 +72,6 @@ class UserClass {
             method: 'post',
             url: `https://coolapi.coolcollege.cn/login-api/v3/login`,
             headers: this.hd,
-            json: { "password": this.pwd, "userCode": this.phone },
             json: { "access_token": "", "password_encrypted": "1", "password": this.pwd, "login_type": "account_password_login", "user_id": "", "mobile": this.phone, "enterprise_id": "" }
         }
         // console.log(options)
@@ -91,7 +90,7 @@ class UserClass {
 
             console.log('this.id', this.id, 'user_id', this.user_id)
             this.hd.timaToken = resp.data.token
-            $.log(`${this.idx}: ${options.fn} ${resp.message} 🎉, 欢迎:${this.enterprise_name}--${this.u_name}--${this.type_str} ,本次actoken:${this.access_token}`)
+            $.log(`${this.idx}: ${options.fn} ${resp.message} 🎉, 欢迎:${this.enterprise_name}--${this.u_name} ,本次actoken:${this.access_token}`)
             this.ckFlog = true
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
 
@@ -291,7 +290,7 @@ class UserClass {
     }
 
     // https://waf-coolapi.coolcollege.cn/training-manage-api/v2/1371843837940600987/users/1909191009892438016/studies/1937149800852099072/courses/1937141198040993792/resources/1937141198040993792/save_progress?access_token=2b4164b4fb6b45f0bd55c0ee1edf78dc&enterprise_id=1371843837940600987&user_id=1909191009892438016
-    async save_progress(type, id, _id, progress) { // 保存进度 
+    async save_progress(type, id, _id, progress) { // 保存进度
         try {
             let sign = crypto.MD5(`${this.enterprise_id}_${this.user_id}_${this.access_token}_${_id}_${progress}`).toString()
             let options = {
@@ -313,7 +312,7 @@ class UserClass {
             }
             // console.log(options)
             let resp = await $.request(options)
-            console.log(resp)
+            // console.log(resp)
             if (resp.code == 0) {
                 // console.log(resp.data)
                 $.log(`当前进度: ${resp.progress} %`)
