@@ -153,9 +153,109 @@ class User {
     }
 
 
+    async withdrawalapply() {
+        const options = {
+            method: "post",
+            url: `https://ad.zyxdit.com/api/withdrawal/apply`,
+            headers: {
+                Connection: `keep-alive`,
+                "User-Agent": `Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20F66 Ariver/1.1.0 AliApp(AP/10.3.86.6100) Nebula WK RVKType(0) AlipayDefined(nt:WIFI,ws:430|932|3.0) AlipayClient/10.3.86.6100 Language/zh-Hans Region/CN NebulaX/1.0.0 XRiver/10.2.58.1`,
+                token: this.token,
+                "Content-Type": `application/x-www-form-urlencoded`,
+            },
+            form: {
+                amount: this.cash,
+            },
+        }
+        this.hd = options.headers
+        let {res} = await requestPromise(options)
+        try {
+            if (res.code == 0) {
+                this.log(`提现 ${this.cash}  ${res.msg}`)
+            } else {
+                this.log(res)
+            }
+        } catch (error) {
+        }
+    }
 
 
+    async detail(a) {
+        // console.log(a)
+        const options = {
+            method: "post",
+            url: `https://ad.zyxdit.com/api/task/rewardAmount`,
+            headers: {
+                Connection: `keep-alive`,
+                "User-Agent": `Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20F66 Ariver/1.1.0 AliApp(AP/10.3.86.6100) Nebula WK RVKType(0) AlipayDefined(nt:WIFI,ws:430|932|3.0) AlipayClient/10.3.86.6100 Language/zh-Hans Region/CN NebulaX/1.0.0 XRiver/10.2.58.1`,
+                token: this.token,
+                "Content-Type": `application/x-www-form-urlencoded`,
+            },
+            form: {
+                "taskNo": a,
+            },
+        }
+        this.hd = options.headers
+        let {res} = await requestPromise(options)
+        try {
+            if (res.msg == "操作成功") {
+                await this.notify(encodeURIComponent(res.data.taskNo))
+                await this.taskall(this.rewardAmount, 150, 150, encodeURIComponent(res.data.taskNo))
+            }
+        } catch (error) {
+        }
+    }
 
+    async notify(a) {
+        const options = {
+            method: "post",
+            url: `https://ad.zyxdit.com/api/denghuoInfo/notify`,
+            headers: {
+                Connection: `keep-alive`,
+                "User-Agent": `Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20F66 Ariver/1.1.0 AliApp(AP/10.3.86.6100) Nebula WK RVKType(0) AlipayDefined(nt:WIFI,ws:430|932|3.0) AlipayClient/10.3.86.6100 Language/zh-Hans Region/CN NebulaX/1.0.0 XRiver/10.2.58.1`,
+                token: this.token,
+                "Content-Type": `application/x-www-form-urlencoded`,
+            },
+            body: `taskNo=${a}`,
+        }
+        this.hd = options.headers
+        let {res} = await requestPromise(options)
+        try {
+        } catch (error) {
+        }
+    }
+
+    async rewardAmount(a) {
+        const options = {
+            method: "post",
+            url: `https://ad.zyxdit.com/api/task/rewardAmount`,
+            headers: {
+                Connection: `keep-alive`,
+                "User-Agent": `Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20F66 Ariver/1.1.0 AliApp(AP/10.3.86.6100) Nebula WK RVKType(0) AlipayDefined(nt:WIFI,ws:430|932|3.0) AlipayClient/10.3.86.6100 Language/zh-Hans Region/CN NebulaX/1.0.0 XRiver/10.2.58.1`,
+                token: this.token,
+                "Content-Type": `application/x-www-form-urlencoded`,
+            },
+            body: `taskNo=${a}`,
+        }
+        this.hd = options.headers
+        let {res} = await requestPromise(options)
+        try {
+        } catch (error) {
+        }
+    }
+
+    async taskall(taskFunc, maxnums, numTasks, ...args) {
+        const task = taskFunc.bind(this, ...args)
+        if (numTasks <= maxnums) {
+            await Promise.all(Array.from({length: numTasks}, (_, i) => i).map((index) => task(index)))
+            return
+        }
+        for (let i = 0; i < numTasks; i += maxnums) {
+            const chunkTasks = Array.from({length: Math.min(maxnums, numTasks - i)}, (_, j) => i + j)
+            if (this.forrun) return
+            await Promise.all(chunkTasks.map((index) => task(index)))
+        }
+    }
 
     log(message, p = 0) {
         if (mode === 1 && !this.hasLogged) {
@@ -203,7 +303,7 @@ class UserList {
         this.logPrefix = `\n[环境检测 ${this.env}]`
         this.mode = mode
     }
-    1
+1
     checkEnv() {
         try {
             let UserData = ""
