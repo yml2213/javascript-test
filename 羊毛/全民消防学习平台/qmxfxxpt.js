@@ -1,19 +1,19 @@
 /*
-所有女生会员服务中心              syns.js
+全民消防学习平台              qmxfxxpt.js
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 爱用商城
-export syns=" token @ token "
+# 全民消防学习平台
+export qmxfxxpt=" token @ token "
 
-抓 https://7.meionetech.com/api/  的 token
+抓 https://qmxfxx.119.gov.cn  的 token
 多账号用 换行 或 @ 分割
 
 tg频道: https://t.me/yml2213_tg
 */
 
 
-const CodeName = "所有女生会员服务中心"
-const env = "syns"
+const CodeName = "全民消防学习平台"
+const env = "qmxfxxpt"
 const envSplit = ["\n", "&", "@"]
 const fs = require("fs")
 const CryptoJS = require("crypto-js")
@@ -23,12 +23,8 @@ const mode = 1    // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
 const ckFile = `${env}.txt`
 //====================================================================================================
-const ck_ = `77d94ea7-1571-4354-b8eb-43fc9e816a1d`  // 快速测试, 直接填入ck即可测试
+const ck_ = ``  // 快速测试, 直接填入ck即可测试
 
-let idArr = []
-let id_2Arr = []
-
-let num = 5         // 无限刷运行次数
 
 //====================================================================================================
 
@@ -59,22 +55,26 @@ class User {
     async check() {
         const options = {
             method: "get",
-            url: `https://7.meionetech.com/api/account/wx/member/assets`,
+            url: `https://qmxfxx.119.gov.cn/alipay/mini/api/users/activeScore`,
             headers: {
-                "Host": "7.meionetech.com",
-                "authorization": `bearer ${this.token}`,
-                "charset": "utf-8",
-                "User-Agent": "Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5235 MMWEBSDK/20230504 MMWEBID/1858 MicroMessenger/8.0.37.2380(0x2800255B) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android",
-                "Referer": "https://servicewechat.com/wx7d1403fe84339669/666/page-frame.html",
-                "content-type": "application/json",
+                "Host": "qmxfxx.119.gov.cn",
+                "Tinyapp-Intercept": "tiny",
+                "Accept": "*/*",
+                "Authorization": this.token,
+                "Accept-Charset": "utf-8",
+                "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+                "Content-Type": "application/json",
+                "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20F75 ChannelId(8) Ariver/1.1.0 AliApp(AP/10.5.16.6000) Nebula WK RVKType(0) AlipayDefined(nt:WIFI,ws:390|780|3.0) AlipayClient/10.5.16.6000 Language/zh-Hans Region/CN NebulaX/1.0.0 XRiver/10.2.58.1",
+                "Referer": "https://2021002177673260.hybrid.alipay-eco.com/2021002177673260/0.2.2308201131.50/index.html#pages/index/index",
+                "Cookie": "",
             },
         }
         // console.log(options)
         this.hd = options.headers
         let {res} = await requestPromise(options)
         // console.log(res)
-        if (res.code === "000") {
-            this.log(`积分: ${res.data.score}`)
+        if (res.code === 1001) {
+            this.log(`积分: ${res.result}`)
             return this.ckFlog = true
         } else {
             this.log(res)
@@ -102,56 +102,60 @@ class User {
 
 
     async do_task() {
-        let ids = [1, 2, 3, 4, 5, 7, 9, 22, 23, 27, 28, 38]
-        for (const id of ids) {
-            await this.doTask(id)
-        }
 
-        // 无限刷运行次数
-        for (let i = 0; i < num; i++) {
-            let ids_2 = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35, 36, 37]
-            for (const id of ids_2) {
-                await this.doTask(id)
+
+        for (let i = 0; i < 20; i++) {
+            // await this.doTask2()
+            if (!await this.doTask1()) {
+                break
             }
         }
 
+        for (let i = 0; i < 10; i++) {
+            // await this.doTask2()
+            if (!await this.doTask2()) {
+                break
+            }
+        }
 
-        // for (let i = 0; i < 40; i++) {
-        //     await this.doTask(i + 1)
-        //
-        // }
-        // console.log(idArr)
-        // console.log(`===========`)
-        // console.log(id_2Arr)
     }
 
-    async doTask(id) {
+    async doTask1() {
+        let n = randomInt(1, 999)
         const options = {
-            method: "post",
-            url: `https://7.meionetech.com/api/operate/wx/rewards/task/done?taskId=${id}`,
+            method: "get",
+            url: `https://qmxfxx.119.gov.cn/alipay/mini/api/home/taskScord/completeTask?parameter1=${n}&parameter2=HTWKT&taskCode=CTWLAVTIME`,
             headers: this.hd,
-            json: {
-                "taskId": id,
-            },
         }
         let {res} = await requestPromise(options)
         // console.log(JSON.stringify(res))
-        console.log(`${id}: ${JSON.stringify(res)}`)
+        // console.log(`${id}: ${JSON.stringify(res)}`)
         // console.log(res)
-        // if (res.code === "000") {
-        //     this.log(`签到: ok`)
-        // } else if (res.code === "999") {
-        //     this.log(`签到: ${res.message}`)
-        // }
-        // await wait(1)
-        if (res.code === "999" && res.message === "已经达到参与次数上限") {
-            idArr.push(id)
-        }
-        if (res.code === "000") {
-            id_2Arr.push(id)
-        }
+        if (res.code === 1001 && res.result === "6") {
+            this.log(`刷积分: ${res.result} 分 --- ok`)
+            await wait(2)
+            return true
+        } else return false
     }
 
+    async doTask2() {
+        let n = randomInt(1, 300)
+        const options = {
+            method: "get",
+            url: `https://qmxfxx.119.gov.cn/alipay/mini/api/home/taskScord/completeTask?parameter1=${n}&parameter2=HZAL&taskCode=CTWLAV`,
+            headers: this.hd,
+        }
+        let {res} = await requestPromise(options)
+        // console.log(JSON.stringify(res))
+        // console.log(`${id}: ${JSON.stringify(res)}`)
+        // console.log(res)
+        if (res.code === 1001 && res.result === '4') {
+            this.log(`刷积分: 视听学习完整视频, 获得 ${res.result} 分`)
+            // await this.doTask()
+            await wait(2)
+            return true
+        } else return false
+    }
 
     log(message, p = 0) {
         if (mode === 1 && !this.hasLogged) {

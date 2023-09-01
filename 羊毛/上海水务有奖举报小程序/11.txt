@@ -1,0 +1,15 @@
+{"userId":"5677699","point":1600000,"needReport":0}46QQKED600526F1784B0649C8264BACD73771D000
+
+
+{"userId":"39920095","point":1600,"needReport":0}46QQKED600526F1784B0649C8264BACD73771D000
+
+
+docker run -dit \
+ -v /volume1/docker/BncrData:/bncr/BncrData \
+ -p 9090:9090 \
+ --name bncr \
+ --hostname bncr \
+ --restart on-failure:5 \
+ --log-opt max-size=5m \
+ --log-opt max-file=3 \
+anmour/bncr && docker attach bncr

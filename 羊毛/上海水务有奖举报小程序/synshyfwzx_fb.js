@@ -21,14 +21,16 @@ require("dotenv").config()
 let sendLog = []
 const mode = 1    // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
-const ckFile = `${env}.txt`
+
+const ckFile = "syns.txt"
 //====================================================================================================
-const ck_ = `77d94ea7-1571-4354-b8eb-43fc9e816a1d`  // 快速测试, 直接填入ck即可测试
+// process.env[env] = ``  // 快速测试, 直接填入ck即可测试
 
 let idArr = []
 let id_2Arr = []
 
-let num = 5         // 无限刷运行次数
+// 无限刷运行次数
+let num = 3
 
 //====================================================================================================
 
@@ -153,6 +155,110 @@ class User {
     }
 
 
+    async withdrawalapply() {
+        const options = {
+            method: "post",
+            url: `https://ad.zyxdit.com/api/withdrawal/apply`,
+            headers: {
+                Connection: `keep-alive`,
+                "User-Agent": `Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20F66 Ariver/1.1.0 AliApp(AP/10.3.86.6100) Nebula WK RVKType(0) AlipayDefined(nt:WIFI,ws:430|932|3.0) AlipayClient/10.3.86.6100 Language/zh-Hans Region/CN NebulaX/1.0.0 XRiver/10.2.58.1`,
+                token: this.token,
+                "Content-Type": `application/x-www-form-urlencoded`,
+            },
+            form: {
+                amount: this.cash,
+            },
+        }
+        this.hd = options.headers
+        let {res} = await requestPromise(options)
+        try {
+            if (res.code == 0) {
+                this.log(`提现 ${this.cash}  ${res.msg}`)
+            } else {
+                this.log(res)
+            }
+        } catch (error) {
+        }
+    }
+
+
+    async detail(a) {
+        // console.log(a)
+        const options = {
+            method: "post",
+            url: `https://ad.zyxdit.com/api/task/rewardAmount`,
+            headers: {
+                Connection: `keep-alive`,
+                "User-Agent": `Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20F66 Ariver/1.1.0 AliApp(AP/10.3.86.6100) Nebula WK RVKType(0) AlipayDefined(nt:WIFI,ws:430|932|3.0) AlipayClient/10.3.86.6100 Language/zh-Hans Region/CN NebulaX/1.0.0 XRiver/10.2.58.1`,
+                token: this.token,
+                "Content-Type": `application/x-www-form-urlencoded`,
+            },
+            form: {
+                "taskNo": a,
+            },
+        }
+        this.hd = options.headers
+        let {res} = await requestPromise(options)
+        try {
+            if (res.msg == "操作成功") {
+                await this.notify(encodeURIComponent(res.data.taskNo))
+                await this.taskall(this.rewardAmount, 150, 150, encodeURIComponent(res.data.taskNo))
+            }
+        } catch (error) {
+        }
+    }
+
+    async notify(a) {
+        const options = {
+            method: "post",
+            url: `https://ad.zyxdit.com/api/denghuoInfo/notify`,
+            headers: {
+                Connection: `keep-alive`,
+                "User-Agent": `Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20F66 Ariver/1.1.0 AliApp(AP/10.3.86.6100) Nebula WK RVKType(0) AlipayDefined(nt:WIFI,ws:430|932|3.0) AlipayClient/10.3.86.6100 Language/zh-Hans Region/CN NebulaX/1.0.0 XRiver/10.2.58.1`,
+                token: this.token,
+                "Content-Type": `application/x-www-form-urlencoded`,
+            },
+            body: `taskNo=${a}`,
+        }
+        this.hd = options.headers
+        let {res} = await requestPromise(options)
+        try {
+        } catch (error) {
+        }
+    }
+
+    async rewardAmount(a) {
+        const options = {
+            method: "post",
+            url: `https://ad.zyxdit.com/api/task/rewardAmount`,
+            headers: {
+                Connection: `keep-alive`,
+                "User-Agent": `Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20F66 Ariver/1.1.0 AliApp(AP/10.3.86.6100) Nebula WK RVKType(0) AlipayDefined(nt:WIFI,ws:430|932|3.0) AlipayClient/10.3.86.6100 Language/zh-Hans Region/CN NebulaX/1.0.0 XRiver/10.2.58.1`,
+                token: this.token,
+                "Content-Type": `application/x-www-form-urlencoded`,
+            },
+            body: `taskNo=${a}`,
+        }
+        this.hd = options.headers
+        let {res} = await requestPromise(options)
+        try {
+        } catch (error) {
+        }
+    }
+
+    async taskall(taskFunc, maxnums, numTasks, ...args) {
+        const task = taskFunc.bind(this, ...args)
+        if (numTasks <= maxnums) {
+            await Promise.all(Array.from({length: numTasks}, (_, i) => i).map((index) => task(index)))
+            return
+        }
+        for (let i = 0; i < numTasks; i += maxnums) {
+            const chunkTasks = Array.from({length: Math.min(maxnums, numTasks - i)}, (_, j) => i + j)
+            if (this.forrun) return
+            await Promise.all(chunkTasks.map((index) => task(index)))
+        }
+    }
+
     log(message, p = 0) {
         if (mode === 1 && !this.hasLogged) {
             console.log(`\n${"•".repeat(12)}  ${this.index} ${"•".repeat(12)}\n`)
@@ -200,33 +306,39 @@ class UserList {
         this.mode = mode
     }
 
-    1
-
     checkEnv() {
+        let UserData = ""
         try {
-            let UserData = ""
-            if (ckFile !== "" && fs.existsSync(ckFile)) {
+            if (ckFile !== "") {
                 UserData = UserData.concat(fs.readFileSync(`./${ckFile}`, "utf-8").split("\n") || [])
                 console.log(`ck文件[ ${ckFile} ]加载成功`)
-            } else {
-                console.log(`ck文件[ ${ckFile} ]不存在, 调用青龙环境变量`)
-                UserData = process.env[env] || ck_
+                this.file_ck = true
             }
-            if (!UserData || UserData.trim() === "") {
-                console.log(`${this.logPrefix} 没有找到账号信息`)
-                return false
-            }
-            this.userList = UserData
-                .split(new RegExp(envSplit.join("|")))
-                .filter((cookie) => cookie.trim() !== "")
-                .map((cookie, index) => new User(cookie.trim(), `账号[${index + 1}]`))
-            const userCount = this.userList.length
-            console.log(`${this.logPrefix} ${userCount > 0 ? `找到 ${userCount} 个账号\n` : "没有找到账号\n"}`)
-            return true
-
         } catch (e) {
-            console.log(e)
+            console.log(`未发现本地文件 调用青龙环境变量`)
+            this.file_ck = false
         }
+
+        if (this.file_ck === false) {
+            try {
+                UserData = process.env[env] || ``
+                if (!UserData || UserData.trim() === "") {
+                    console.log(`${this.logPrefix} 没有找到账号信息`)
+                    return false
+                }
+                this.userList = UserData
+                    .split(new RegExp(envSplit.join("|")))
+                    .filter((cookie) => cookie.trim() !== "")
+                    .map((cookie, index) => new User(cookie.trim(), `账号[${index + 1}]`))
+                const userCount = this.userList.length
+                console.log(`${this.logPrefix} ${userCount > 0 ? `找到 ${userCount} 个账号\n` : "没有找到账号\n"}`)
+                return userCount > 0
+            } catch (e) {
+                //console.log(e)
+            }
+        }
+
+
     }
 
     async runTask() {

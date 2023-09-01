@@ -1,19 +1,19 @@
 /*
-所有女生会员服务中心              syns.js
+上海水务有奖举报小程序              shsw.js
 
 -------------------  青龙-配置文件-复制区域  -------------------
 # 爱用商城
-export syns=" token @ token "
+export shsw=" openid @ openid "
 
-抓 https://7.meionetech.com/api/  的 token
+抓 https://swj.ambermedia.club/xcx_request.php 的 openid
 多账号用 换行 或 @ 分割
 
 tg频道: https://t.me/yml2213_tg
 */
 
 
-const CodeName = "所有女生会员服务中心"
-const env = "syns"
+const CodeName = "上海水务有奖举报小程序"
+const env = "shsw"
 const envSplit = ["\n", "&", "@"]
 const fs = require("fs")
 const CryptoJS = require("crypto-js")
@@ -23,12 +23,7 @@ const mode = 1    // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
 const ckFile = `${env}.txt`
 //====================================================================================================
-const ck_ = `77d94ea7-1571-4354-b8eb-43fc9e816a1d`  // 快速测试, 直接填入ck即可测试
-
-let idArr = []
-let id_2Arr = []
-
-let num = 5         // 无限刷运行次数
+const ck_ = ``  // 快速测试, 直接填入ck即可测试
 
 //====================================================================================================
 
@@ -36,7 +31,7 @@ let num = 5         // 无限刷运行次数
 class User {
     constructor(str, id) {
         // [this.auth_code] = str.split("#")
-        this.token = str
+        this.openid = str
         this.index = id
         this.ckFlog = true
     }
@@ -46,10 +41,9 @@ class User {
         await this.check()
         if (this.ckFlog) {
             // $.log(`\n-------------- 积分查询 --------------`)
-            // await this.signIn()
-            await this.do_task()
+            await this.start()
+            if (ts('d')===1) await this.pufaTask()    // 每月1号 跑一次
             await this.check()
-
 
         }
 
@@ -58,23 +52,24 @@ class User {
 
     async check() {
         const options = {
-            method: "get",
-            url: `https://7.meionetech.com/api/account/wx/member/assets`,
+            method: "post",
+            url: `https://swj.ambermedia.club/xcx_request.php?act=getUserInfo`,
             headers: {
-                "Host": "7.meionetech.com",
-                "authorization": `bearer ${this.token}`,
+                "Host": "swj.ambermedia.club",
                 "charset": "utf-8",
                 "User-Agent": "Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5235 MMWEBSDK/20230504 MMWEBID/1858 MicroMessenger/8.0.37.2380(0x2800255B) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android",
-                "Referer": "https://servicewechat.com/wx7d1403fe84339669/666/page-frame.html",
-                "content-type": "application/json",
+                "content-type": "application/x-www-form-urlencoded",
+                "Referer": "https://servicewechat.com/wxf65a869d4ad572bf/23/page-frame.html",
+                // 'Cookie': 'PHPSESSID=7dlpefs4fo25hg12h8jggnhmmg'
             },
+            form: {openid: this.openid},
         }
         // console.log(options)
         this.hd = options.headers
         let {res} = await requestPromise(options)
         // console.log(res)
-        if (res.code === "000") {
-            this.log(`积分: ${res.data.score}`)
+        if (res.status === 1) {
+            this.log(`积分: ${res.points}`)
             return this.ckFlog = true
         } else {
             this.log(res)
@@ -84,72 +79,112 @@ class User {
     }
 
 
-    async signIn() {
+    async start() {
         const options = {
             method: "post",
-            url: `https://7.meionetech.com/api/operate/wx/record/signIn`,
+            url: `https://swj.ambermedia.club/xcx_request.php?act=getQuestion`,
             headers: this.hd,
-            json: {},
+            form: {},
         }
         let {res} = await requestPromise(options)
-        // console.log(JSON.stringify(res))
-        if (res.code === "000") {
-            this.log(`签到: ok`)
-        } else if (res.code === "999") {
-            this.log(`签到: ${res.message}`)
-        }
-    }
+        // this.log(res)
+        if (res.status === 1) {
+            this.log(`获取题目: ok`)
+            let an_ = {openid: this.openid}
+            for (let i = 0; i < res.list.length; i++) {
+                let t = res.list[i]
+                let an = t.question_tips
+                let option_list = t.option_list
+                let a = getOptionId(option_list, an)
+                if (i + 1 === 1) {
+                    an_.q1_id = t.question_id
+                    an_.q1_sel = a
+                } else if (i + 1 === 2) {
+                    an_.q2_id = t.question_id
+                    an_.q2_sel = a
+                } else if (i + 1 === 3) {
+                    an_.q3_id = t.question_id
+                    an_.q3_sel = a
+                }
 
-
-    async do_task() {
-        let ids = [1, 2, 3, 4, 5, 7, 9, 22, 23, 27, 28, 38]
-        for (const id of ids) {
-            await this.doTask(id)
-        }
-
-        // 无限刷运行次数
-        for (let i = 0; i < num; i++) {
-            let ids_2 = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35, 36, 37]
-            for (const id of ids_2) {
-                await this.doTask(id)
+                function getOptionId(option_list, an) {
+                    for (const optionListElement of option_list) {
+                        if (optionListElement.option_title === an) {
+                            return optionListElement.option_id
+                        }
+                    }
+                }
             }
-        }
-
-
-        // for (let i = 0; i < 40; i++) {
-        //     await this.doTask(i + 1)
-        //
-        // }
-        // console.log(idArr)
-        // console.log(`===========`)
-        // console.log(id_2Arr)
+            // console.log(an_)
+            this.an_ = an_
+            await wait(2)
+            await this.setQuestion()
+        } else this.log(res)
     }
 
-    async doTask(id) {
+    // https://swj.ambermedia.club/xcx_request.php?act=setQuestion
+    async setQuestion() {
         const options = {
             method: "post",
-            url: `https://7.meionetech.com/api/operate/wx/rewards/task/done?taskId=${id}`,
+            url: `https://swj.ambermedia.club/xcx_request.php?act=setQuestion`,
             headers: this.hd,
-            json: {
-                "taskId": id,
+            form: this.an_,
+        }
+        // console.log(options)
+        let {res} = await requestPromise(options)
+        // this.log(res)
+        if (res.status === 1) {
+            console.log(`获得积分: ${res.getPoints}`)
+        } else if (res.status === 0) {
+            console.log(`获得积分: ${res.msg}`)
+        } else this.log(res)
+
+    }
+
+
+    async pufaTask() {
+        let num = Number(await this.getPufa())
+        for (let i = 0; i < num; i++) {
+            // let a = randomInt(1, num)
+            await this.pufa(i)
+        }
+    }
+
+    // openid=oP3Vv5LoDF9yeHE95LXlkLVoxSvo&pufa_id=32
+    async pufa(id) {
+        const options = {
+            method: "post",
+            url: `https://swj.ambermedia.club/xcx_request.php?act=setPufaRead`,
+            headers: this.hd,
+            form: {
+                openid: this.openid,
+                pufa_id: id,
             },
         }
+        // console.log(options)
         let {res} = await requestPromise(options)
-        // console.log(JSON.stringify(res))
-        console.log(`${id}: ${JSON.stringify(res)}`)
-        // console.log(res)
-        // if (res.code === "000") {
-        //     this.log(`签到: ok`)
-        // } else if (res.code === "999") {
-        //     this.log(`签到: ${res.message}`)
-        // }
-        // await wait(1)
-        if (res.code === "999" && res.message === "已经达到参与次数上限") {
-            idArr.push(id)
+        // this.log(res)
+        if (res.status === 1) {
+            console.log(`学习普法: ${id} ---- ${res.msg}`)
+        } else this.log(res)
+
+    }
+
+    async getPufa() {
+        const options = {
+            method: "post",
+            url: `https://swj.ambermedia.club/xcx_request.php?act=getPufa`,
+            headers: this.hd,
+            form: {tpid: 1},
         }
-        if (res.code === "000") {
-            id_2Arr.push(id)
-        }
+        // console.log(options)
+        let {res} = await requestPromise(options)
+        // this.log(res)
+        if (res.status === 1) {
+            return res.list[0].pufa_id
+            // console.log(`获得积分: ${res.mypoints}`)
+        } else this.log(res)
+
     }
 
 
@@ -302,9 +337,6 @@ function ts(type = false, _data = "") {
             break
         case "y":
             a = myDate.getFullYear()
-            break
-        case "h":
-            a = myDate.getHours()
             break
         case "mo":
             a = myDate.getMonth()
