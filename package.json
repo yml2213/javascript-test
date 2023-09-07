@@ -4,6 +4,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",
+    "cheerio": "^1.0.0-rc.12",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.0",
     "fa": "^1.0.1",
@@ -13,6 +14,7 @@
     "http-server": "^0.12.3",
     "https-proxy-agent": "^5.0.1",
     "iconv-lite": "^0.6.3",
+    "jsdom": "^22.1.0",
     "jsencrypt": "^3.2.1",
     "jsrsasign": "^10.6.1",
     "node-fetch": "^3.2.10",
@@ -28,6 +30,7 @@
     "tough-cookie": "^4.0.0",
     "tunnel": "^0.0.6",
     "underscore": "^1.13.3",
-    "webpack": "^5.74.0"
+    "webpack": "^5.74.0",
+    "zlib": "^1.0.5"
   }
 }

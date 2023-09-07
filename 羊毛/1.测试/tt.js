@@ -10,15 +10,17 @@ const crypto = require('crypto-js')
 const axios = require('axios')
 var request = require('request')
 
-const user_id = 1969 // 自定义的 user_id 值
+const user_id = 2169 // 自定义的 user_id 值
 
+
+let device_no = `00000000-6641-8460-0000-000011${$.randomString(6)}`
 
 
 async function userTasks() {
     $.log(`\n-------------- 开始 --------------`)   // 并发运行
     list = []
     for (let user of $.userList) {
-        // if (user.ckFlog) list.push(user.info())
+        if (user.ckFlog) list.push(user.info())
     } await Promise.all(list)
 }
 
@@ -39,7 +41,7 @@ class UserClass {
         console.log(`\n=============== ${this.idx} ===============`)
 
         $.log(`\n-------------- 开始提现 --------------`)
-        await this.info()
+        //await this.info()
         //await this.bandAipay()
         // await this.info()
         //await this.change_bandAipay()
@@ -73,9 +75,12 @@ class UserClass {
 
             this.account_id = resp.data.rst.id
             this.phone = resp.data.rst.phone_number
+            this.nick_name = resp.data.rst.nick_name
+            this.total_integral = resp.data.rst.total_integral
+            this.ref_code = resp.data.rst.ref_code
             $.log(`${this.idx}: ${resp.data.rst.nick_name}, 积分:${resp.data.rst.total_integral} -- sesioon:  ${this.SESSION}`)
 
-            // await this.get_id()  // 获取id
+            await this.get_id()  // 获取id
 
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
     }
@@ -91,6 +96,15 @@ class UserClass {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             form: {
+                nick_name: this.nick_name,
+                score: this.total_integral,
+                mobile: this.phone,
+                ref_code: this.ref_code,
+                invitation_number: '0',
+                ref_user_uid: '',
+                ref_user_code: '',
+                username: this.nick_name,
+                head_img: 'https://img.tmuyun.com/assets/20230705/1688527387503_64a4e21b79f6be61f9bf56ca.png',
                 account_id: this.account_id,
                 sessionId: this.SESSION
             }
@@ -150,9 +164,9 @@ class UserClass {
     console.log(await $.yiyan())
     if ($.read_env(UserClass)) {
         await userTasks()
-        for (let user of $.userList) {
-            await user.userTask()
-        }
+        // for (let user of $.userList) {
+        //     await user.userTask()
+        // }
     }
 
 
