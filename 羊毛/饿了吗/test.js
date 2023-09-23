@@ -29,7 +29,7 @@ var options = {
         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
         'x-ttid': 'apple-iphone%40alipay_iphone_10.5.16.6000',
         'x-t': '1693535795'
-      },
+    },
     body: `data=%7B%22authorizationRequest%22%3A%22%7B%5C%22locale%5C%22%3A%5C%22zh_CN%5C%22%2C%5C%22appVersion%5C%22%3A%5C%2210.5.16%5C%22%2C%5C%22useLiteProcess%5C%22%3A%5C%22true%5C%22%2C%5C%22targetSite%5C%22%3A%5C%22eleme%5C%22%2C%5C%22sdkVersion%5C%22%3A%5C%22iOS_3.0.12.0%5C%22%2C%5C%22appName%5C%22%3A%5C%2223086819%5C%22%2C%5C%22miniAppId%5C%22%3A%5C%222021001110676437%5C%22%2C%5C%22sdkTraceId%5C%22%3A%5C%22login1693535795%5C%22%2C%5C%22userToken%5C%22%3A%5C%22CN-SPLIT-ARCIDiIDVUNDMgEBOJb05fSkMUABShCUJndMU_C2a9XHId2VwDR5RsMaamt_XS3n5Ikx12AnkvL8Y6A%5C%22%2C%5C%22localSite%5C%22%3A%5C%22alipay%5C%22%2C%5C%22utdid%5C%22%3A%5C%22Y42%2B4F1cueIDAEdAXbkehql4%5C%22%7D%22%2C%22riskControlInfo%22%3A%22%7B%5C%22wua%5C%22%3A%5C%22UF20_h9T2SEcriaRJ2R5yIWGO6SIK4aiA4RfohkQJ0pK9YoIDMk2M%2BBHfD%2BPcf6LCN7CYMfR7kVwrbngH2MuuZvrioIpH60RVUx6d56G3aFBv5DiD9pB7Opastr4ywHeTwdeQoQ%5C%5C%5C%2FzRLGpwJvmBOVMWFd0knAm0t%2BtOWI5pQxxbFA8UZSWPPBBsFqIu3oWZe4SY4NP%2BW%2BPNcZ6ZYQBxnEr%2B49QiUpiWcL2C2E19I%5C%5C%5C%2F3ZM6Ayf3pw5Bopi5%2BL1AWKj9OmQMAxNDLvwWrBAvJZMmqgPsbAPiPxm8mx0%5C%5C%5C%2F4hCsRMRajwFY%3D%5C%22%2C%5C%22umidToken%5C%22%3A%5C%22FdtLaLtLOpzjwDUAADe%5C%5C%5C%2FGx3CAAAgnzEe%5C%22%2C%5C%22deviceModel%5C%22%3A%5C%22iPhone14%2C2%5C%22%2C%5C%22apdId%5C%22%3A%5C%22FdtLaLtLOpzjwDUAADe%5C%5C%5C%2FGx3CAAAgnzEe%5C%22%2C%5C%22t%5C%22%3A%5C%221693535795810%5C%22%7D%22%7D`
 
 }
@@ -39,3 +39,12 @@ request(options, function (error, response) {
     if (error) throw new Error(error)
     console.log(response.body)
 })
+
+
+`{
+    x-sgext=JAEoWejUPmL2TfYcewOfLVkZaRlgHHoRaxBsC24LehlvEW0YbhthEG0LaRtpGmkYaRg8S2FKakk7THoYehp6EGkLaRhpHXobehl6GnoZehp6HHoZehg=, 
+    x-umt=RBFLGVRLOr+JwzUAAGQnxRhhAADWYWCY,
+    x-mini-wua=HHnB_2Mdz9Y+W7QKtxIf/eK7E/KeKZl6pnFI/TOBq1LbZQWNH0WhD1WMxUGmevOrQbWcFDDSarpWsFXSQ9GVX6CUv8ksVERRTczs5gssBZKASRK9f00IvurWbZg2Pf0DzXpyI, x-sign=azUOCF002xAAJm3gw7WfIVtkvUEtlm3mbKV0MCGXy9fZp3lX+KLeTZV6XrZt4C+aPGB95mCAe+/mXEmizqShUoqDq3Zt5m3mbcZt5m
+}`
+
+// https://xuxubaobao.ug.ele.me/wow/alsc/mod/71f70bf57776ddbda7c94848?bc_fl_src=undefined&inviterId=120278dc2&actId=1&FastMode=1&_ltracker_f=hjb_app_xbb&chInfo=ch_app_chsub_Photo&_ltracker_share_schema=app_outside_poster&targetUrl=https://tb.ele.me/wow/alsc/mod/d5275789de46503ba0908a9d?from=zxj_wx_scan&scene=afb58b426d8c4ccaab1406f26ff8620f&inviterId=120278dc2&actId=1&FastMode=1&_ltracker_f=hjb_app_xbb&chInfo=ch_app_chsub_Photo&_ltracker_share_schema=app_outside_poster

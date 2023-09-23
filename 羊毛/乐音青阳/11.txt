@@ -1,0 +1,8 @@
+抽奖1
+curl -H "Host: s.yqbtv.cn" -H "Accept: application/json, text/javascript, */*; q=0.01" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Mobile Safari/537.36;xsb_yueqing;xsb_yueqing;1.1.8;native_app" -H "Token: Bearer 1694429376&0,6326bfa1742678221e1db43eaac12c22" -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" -H "Origin: https://s.yqbtv.cn" -H "Sec-Fetch-Site: same-origin" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Dest: empty" -H "Referer: https://s.yqbtv.cn/index.php/Mobile/Active/appAnswer/tag/eyyqJBptZvCI6MX0nvis0" -H "Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" --data-binary "id=1&accountId=64c35d9bc790b00a11066d36&mobile=15614832213&nickname=%E8%AF%BB%E5%8F%8B_W8CUHL" --compressed "https://s.yqbtv.cn/index.php/Mobile/Active/appAnswer/tag/eyyqJBptZvCI6MX0nvis0"
+
+
+6326bfa1742678221e1db43eaac12c22
+
+
+{ code: 40004, msg: 'token校验失败' }
