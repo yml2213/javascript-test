@@ -1,0 +1,22 @@
+自吐模块  
+
+window.c = c;
+window.res = ""; // 保存代码
+window.flag = false;
+window.obj1 = {} //保存已有的代码
+
+c = function(r){
+  if(window.flag &&!window.obj1【r】)  // 如果已经有了，就不追加了
+  {
+    window.res = window.res+`"${r.toString()}"`+":"+(e【r】+"")+",";
+    window.obj1【r】=true;  // 标记已经添加
+  }
+ 
+  return window.c(r);
+}
+
+
+https://www.bilibili.com/video/BV1nu4y1r7m1/?spm_id_from=333.1007.tianma.1-1-1.click&vd_source=924ac12b12c1dd616a45bc3df65e5c1d
+
+
+===============================================

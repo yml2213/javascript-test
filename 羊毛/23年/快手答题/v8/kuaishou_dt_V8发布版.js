@@ -3,7 +3,7 @@
 
 -------------------  青龙-配置文件-复制区域  -------------------
 # 快手答题 
-export kuaishou_dt=" cookie # ua @ cookie  # ua"  
+export kuaishou_dt=" cookie  @ cookie "  
 export kuaishou_dt_code="你的卡密"    需要购买卡密请前往: https://menglei.xyz   
 
 多账号用 换行 或 @ 分割  
@@ -22,8 +22,7 @@ require('dotenv').config()
 let kuaishou_dt_code = process.env.kuaishou_dt_code
 
 //====================================================================================================
-let code_tips = `1. 当前版本:v8, 增加卡密次数合并功能, 默认将第二张卡密的次数转移到第一张中, 两张卡密使用 @ 分割
-2. 修复选项小bug, 移除部分gpt, 可能会提高一奈奈正确率,建议更新 \n`
+let code_tips = `1. 当前版本:最终版, 优化输出\n`
 
 //====================================================================================================
 
@@ -33,7 +32,7 @@ class UserClass {
         this.ckFlog = true
         this.ck_ = ck.split('#')
         this.ck = this.ck_[0]
-        this.ua = this.ck_[1]
+        this.ua = `Mozilla/5.0 (Linux; Android ${$.randomInt(9, 13)}; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/90.0.4430.226 KsWebView/1.8.90.612 (rel) Mobile Safari/537.36 Yoda/3.1.4-rc1 ksNebula/11.4.40.5686 OS_PRO_BIT/64 MAX_PHY_MEM/11598 AZPREFIX/zw ICFO/0 StatusHT/32 TitleHT/44 NetType/WIFI ISLP/0 ISDM/0 ISLB/0 locale/zh-cn CT/0 ISLM/-1`
         this.ts13 = $.ts(13)
 
         this.hd = {
@@ -149,7 +148,7 @@ class UserClass {
             }
             this.ckFlog = true
         } else if (resp.code == 404) {
-            $.log(`${this.idx}: ${options.fn} 失败:${resp.message}, 请检查卡密是否正确, 购买卡密请前往: 'http://menglei.xyz:56789/'`, { notify: true }), this.ckFlog = false
+            $.log(`${this.idx}: ${options.fn} 失败:${resp.message}, 请检查卡密是否正确, 购买卡密请前往: 'http://menglei.xyz'`, { notify: true }), this.ckFlog = false
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`), this.ckFlog = false
     }
 
@@ -182,7 +181,7 @@ class UserClass {
     }
 
 
-    async upload(question, opt, roundId, index, answer, nswer_index, type = 'gpt') { // 上传答案 
+    async upload(question, opt, roundId, index, answer, nswer_index, type = 'database') { // 上传答案 
         let options = {
             fn: '上传答案',
             method: 'post',
@@ -210,31 +209,7 @@ class UserClass {
         let resp = await $.request(options)
         // console.log(resp)
 
-        if (type == 'gpt') {
-            if (resp.result == 1 && resp.data.answerDetail.correct) {
-                if (index == 9) {
-                    await this.up_qs(question, opt, roundId, answer)
-                    $.log(`${this.idx}: 恭喜你个狗子, 10 道题全对了, 当前金币:${resp.data.amount.current}`, { notify: true })
-                } else {
-                    this.roundId = resp.data.nextQuestionDetail.roundId
-                    this.questionDetail = resp.data.nextQuestionDetail.questionDetail
-                    this.question = resp.data.nextQuestionDetail.questionDetail.question
-                    this.opt = resp.data.nextQuestionDetail.questionDetail.options
-                    this.index = resp.data.nextQuestionDetail.questionDetail.index
-                    // this.total = resp.data.nextQuestionDetail.questionDetail.total
-
-                    await this.up_qs(question, opt, roundId, answer)
-                    $.log(`${this.idx}: ${options.fn} 第 ${index + 1} 题 -- 回答正确, 上传服务器题库, 当前金币:${resp.data.amount.current}`)
-
-                    await this.next(this.index, this.question, this.opt, this.roundId)
-                }
-
-            } else if (resp.result == 1 && resp.data.answerDetail.correct == false) {
-                $.log(`${this.idx}:  第 ${index + 1} 题 -- 回答错误, 已经将正确答案上传服务器题库, 下次就不会错了鸭!`)
-                await this.up_qs(question, opt, roundId, resp.data.answerDetail.correctAnswer)
-                console.log(JSON.stringify(resp))
-            } else console.log(`${options.fn}: 失败, ${JSON.stringify(options)} ${JSON.stringify(resp)}`)
-        } else if (type == 'database') {
+        if (type == 'database') {
             if (resp.result == 1 && resp.data.answerDetail.correct) {
                 if (index == 9) {
                     $.log(`${this.idx}: 恭喜你个狗子, 10 道题全对了, 当前金币:${resp.data.amount.current}`, { notify: true })
@@ -263,7 +238,8 @@ class UserClass {
 
     async next(index, question, opt, roundId) { // 答题逻辑
 
-        $.log(`\n\n\n${this.idx}:  第 ${index + 1} 题, 问题:${question} -- 选项:[${this.opt}]`)
+        $.log(`\n\n\n${this.idx}:  第 ${index + 1} 题`)
+        // $.log(`\n\n\n${this.idx}:  第 ${index + 1} 题, 问题:${question} -- 选项:[${this.opt}]`)
 
         $.log(`${this.idx}: 开始查询数据库...`)
         let database_data = await this.checkDatabase(question, opt)
@@ -276,16 +252,6 @@ class UserClass {
 
                 await $.wait($.randomInt(3, 5))
                 await this.upload(question, opt, roundId, index, answer, answer_index, 'database')
-            } else {
-                try {
-                    $.log(`${this.idx}: gpt 时间...`)
-                    let answer_data = await this.to_gpt(question, opt)
-                    let answer_index = answer_data.index
-                    let answer = answer_data.answer
-                    await this.upload(question, opt, roundId, index, answer, answer_index, 'gpt')
-                } catch (error) {
-                    console.log(error)
-                }
             }
 
         } else {
@@ -296,118 +262,10 @@ class UserClass {
                 let answer = database_data_2
                 await $.wait($.randomInt(3, 5))
                 await this.upload(question, opt, roundId, index, answer, answer_index, 'gpt')
-            } else {
-                try {
-                    $.log(`${this.idx}: gpt 时间...`)
-                    let answer_data = await this.to_gpt(question, opt)
-                    let answer_index = answer_data.index
-                    let answer = answer_data.answer
-                    await this.upload(question, opt, roundId, index, answer, answer_index, 'gpt')
-                } catch (error) {
-                    console.log(error)
-                }
             }
         }
     }
 
-
-    async to_gpt(question, opt) {
-
-        let gpt_data = `你是一个答题机器人,我会给你题目以及选项,你直接回答正确答案的即可,  需回答题目: ${question},  题目选项:${opt};请返回我正确答案;使用以下json字符串格式返回:{answer:xxxxx}`
-
-        try {
-            let res4 = await this.gpt1(gpt_data)
-            // console.log(`================ gpt 返回 =================`)
-            // console.log(res4)
-            // console.log(typeof res4)
-            // console.log(`================ =======================`)
-
-            if (typeof res4 == 'object') {
-                // console.log(`是对象`)
-                let answer = res4.answer
-                if (opt.includes(answer)) {
-                    answer_index = opt.indexOf(answer)
-                    // console.log(index)
-                    console.log(`gpt 选择答案: 本次选择 ${answer_index}--${answer}`)
-                    console.log({ 'index': answer_index, 'answer': answer })
-                    return { 'index': answer_index, 'answer': answer }
-                } else {
-                    let b = $.randomInt(0, 3)
-                    console.log(`gpt 不行了--1 开始随机答案: 本次选择${b}`)
-                    return { 'index': b, 'answer': opt[b] }
-                }
-            } else if (typeof res4 == 'string') {
-                function getJsonStr(jsonString) {
-                    const regex = /"answer".*:.*"(.*)"/gm
-                    const match = jsonString.match(regex)
-
-                    if (match) {
-                        const answer = match[0]
-                        // console.log(answer); // 输出: 中国
-                        return `{${answer}}`
-                    } else {
-                        // console.log("未找到匹配的内容")
-                        return false
-                    }
-                }
-
-                if (getJsonStr(res4)) {
-                    let aa = JSON.parse(getJsonStr(res4))
-                    // console.log(aa)
-                    let answer = aa.answer
-                    if (opt.includes(answer)) {
-                        let answer_index = opt.indexOf(answer)
-                        // console.log(index)
-                        console.log(`gpt 选择答案: 本次选择 ${answer_index}--${answer}`)
-                        console.log({ 'index': answer_index, 'answer': answer })
-                        return { 'index': answer_index, 'answer': answer }
-                    } else {
-                        let b = $.randomInt(0, 3)
-                        console.log(`gpt 不行了 开始随机答案: 本次选择${b}`)
-                        return { 'index': b, 'answer': opt[b] }
-                    }
-
-                } else {
-                    for (let option of opt) {
-                        function checkOptionExistence(option, string) {
-                            return string.includes(option)
-                        }
-                        let optionExists = checkOptionExistence(option, res4)
-                        if (optionExists) {
-                            let answer = option
-                            let answer_index = opt.indexOf(answer)
-                            console.log(`gpt 选择答案: 本次选择 ${answer_index}--${answer}`)
-                            console.log({ 'index': answer_index, 'answer': answer })
-                            return { 'index': answer_index, 'answer': answer }
-
-                        } else {
-                            let b = $.randomInt(0, 3)
-                            console.log(`gpt 不行了 --2 开始随机答案: 本次选择 ${b}`)
-                            return { 'index': b, 'answer': opt[b] }
-                        }
-
-                    }
-                }
-
-
-
-            } else if (res4 == undefined) {
-                let b = $.randomInt(0, 3)
-                console.log(`gpt 不行了 --3 开始随机答案: 本次选择${b}`)
-                return { 'index': b, 'answer': opt[b] }
-
-            } else {
-                let b = $.randomInt(0, 3)
-                console.log(`gpt 不行了 --4 开始随机答案: 本次选择${b}`)
-                return { 'index': b, 'answer': opt[b] }
-            }
-
-
-        } catch (error) {
-            console.log(error)
-        }
-
-    }
 
 
     async checkDatabase(question, opt) {
@@ -463,8 +321,6 @@ class UserClass {
     }
 
 
-
-
     async up_qs(question, opt, roundId, answer) {
         const options = {
             method: 'post',
@@ -483,51 +339,11 @@ class UserClass {
         let resp = await $.request(options)
         // console.log(resp)
         if (resp.code == 200 && resp.message == "成功！") {
-            $.log(`${this.idx}: ${question} -- [${opt}]; 答案:${answer}, 上传数据库成功...`)
+            // $.log(`${this.idx}: ${question} -- [${opt}]; 答案:${answer}, 上传数据库成功...`)
         } else if (resp.code == 202 && resp.message == "存在重复题目") {
-            $.log(`${this.idx}: ${resp.message}`)
+            // $.log(`${this.idx}: ${resp.message}`)
         } else console.log(`${options.fn}: 失败,  ${JSON.stringify(resp)}`)
     }
-
-    async gpt1(data) { // 在问 https://www.zaiwen.top  {"message":[{"role":"user","content":"1112\n"}],"mode":"v3.5","key":null}
-        const got = require('got')
-        const options = {
-            method: 'post',
-            url: `https://www.gaosijiaoyu.cn/message`,
-            headers: {
-                'Accept': '*/*',
-                'Accept-Language': 'zh-CN,zh;q=0.9,fr;q=0.8,de;q=0.7,en;q=0.6',
-                'Access-Control-Allow-Origin': '*',
-                'Cache-Control': 'no-cache',
-                'Connection': 'keep-alive',
-                'Origin': 'https://www.zaiwen.top',
-                'Pragma': 'no-cache',
-                'Referer': 'https://www.zaiwen.top/',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'cross-site',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
-                'sec-ch-ua': '"Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Windows"',
-                'Content-Type': 'application/json'
-            },
-            json: { "message": [{ "role": "user", "content": data }], "mode": "v3.5", "key": null },
-            timeout: 10 * 1000
-        }
-
-        try {
-            const res = await got(options)
-            // 处理响应
-            // console.log('响应状态码：', res.statusCode)
-            // console.log('gpt1--www.zaiwen.top :', res.body)
-            return res.body
-
-        } catch (error) {
-            console.error('请求出错：', error.message)
-        }
-    }
-
 
 
 
