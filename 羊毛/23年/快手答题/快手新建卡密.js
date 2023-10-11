@@ -60,9 +60,9 @@ class UserClass {
                 'content-type': 'application/json'
             },
             json: {
-                "type": 0,              //0是永久，1是次卡
-                "count": 500,           //每个卡密的次数
-                "total": 50            //卡密的数量
+                "type": 1,              //0是永久，1是次卡
+                "count": 1200,           //每个卡密的次数
+                "total": 100            //卡密的数量
             }
         }
         console.log(options)
