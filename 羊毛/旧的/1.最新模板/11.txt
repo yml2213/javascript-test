@@ -1,0 +1,7 @@
+signature 514050 1700197445655  17aaf8118ffb270b766c6d6774317a133.8.0
+signature514050170019744565517aaf8118ffb270b766c6d6774317a133.8.0
+
+
+let salt = '17aaf8118ffb270b766c6d6774317a133.8.0'
+        console.log(`signature${reqNonc}${ts}${salt}`)
+        let sign = MD5(`signature${reqNonc}${ts}${salt}`).toString()

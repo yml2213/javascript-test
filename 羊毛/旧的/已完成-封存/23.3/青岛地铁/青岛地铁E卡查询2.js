@@ -9,7 +9,9 @@ NAME = `青岛地铁` //名字
 VALY = ['qddtck'] //变量名
 LOGS = 0 //1开日志，0关闭
 Notify = 0
-CK = '13754650804#qddt123456'
+CK = `15339956683#qddt123456
+15614832213#qddt123456
+13754650804#qddt123456`
 var rs = require("jsrsasign")
 usid = 0
 var privateKeyString = `-----BEGIN PRIVATE KEY-----

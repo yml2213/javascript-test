@@ -1,0 +1,13 @@
+[package]
+name = "ksgy"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1.x", features = ["full"] }
+hyper = {version = "0.14", features = ["client"]}
+reqwest = { version = "0.11.11", features = ["json", "cookies"] }
+serde_json = "1.0"
+
