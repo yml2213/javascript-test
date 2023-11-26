@@ -1,0 +1,136 @@
+
+登录2
+登录sign  Sha1withRsa
+channelId=136002&device=M2102J2SC&imei=____f3429e1c59124c92&phone=kk8odA9fVKABuWy8//3IBIsruhfA6RMMGDi/ULfVvZOmlEFK9tlMKuB5ap6twAeCEJTpZvNLZHGMlaaZ5cszHsTy2uyFFFfF93XBZ42+T45BiE6hi1W3i1y/DxW/b4ob03h5JVsVeejIMumuYTCnITWnGQeATUp1kDURhoIskOo=&timestamp=1700974228953&versionId=25026056
+
+
+
+
+smboxid=BDTqwSU9Mf7AEbSSGgB4osHNxDQw7Hz5cm6Ij9mBlnm6cvg8l%252FH1cKPxoBsQUsvCgBRqTfaSLPDPI1esjmNEcKw%253D%253D&versionId=25026056&device=M2102J2SC&userName=j174924563&imei=____f3429e1c59124c92&sign=RLTDrZo7rXHtTqUYs7VL%2FqcoswASa2J%2B51EI9g0gDqWyfstqW9KBjekDhX3imUZqULH6K4gCR4RruCFrn8fUQcC4rnDnveWwY1c4yYuYlXt0MdgA8YQJc4yfi7I9lEP1yJjxdF8swkRsQycb8V6O%2Bjs0SQEclrP%2FAKA1NG%2FmoRE%3D&timestamp=1700974228953&pInfo=%7B%22DesKey%22%3A%22pXzBaADdxhFQZxgUJf%2BrdMhgn0TDLSLQsbjdIXkCCZr3ahRnQ61CXmaFHJnm3Gchg%5C%2FAz4z%5C%2FLTcGAIGDrWiUF4w37wEEPYMfLSleWUECEKnqkepytEUoOSd9%5C%2F7N8Ur2vMX7SxhUKjQcykDb%5C%2FB1BZ0DspTu0xMvj7S9tLzhAKePg8%3D%22%2C%22Data%22%3A%22%2BdiZhhfY1B3JnezCtoEvCfbG2%5C%2FNfF1Yke%2Bj7D1jq8zMOV98WxQdY%2BA%3D%3D%22%7D&phone=kk8odA9fVKABuWy8%2F%2F3IBIsruhfA6RMMGDi%2FULfVvZOmlEFK9tlMKuB5ap6twAeCEJTpZvNLZHGMlaaZ5cszHsTy2uyFFFfF93XBZ42%2BT45BiE6hi1W3i1y%2FDxW%2Fb4ob03h5JVsVeejIMumuYTCnITWnGQeATUp1kDURhoIskOo%3D&utdId=ZRAJM7m2BL0DAPfjgEB6zhVv&loginSource=%E6%88%91%E7%9A%84_%E9%A9%AC%E4%B8%8A%E7%99%BB%E5%BD%95&channelId=136002
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  method: "post",
+  url: "https://dj.palmestore.com/dj_user/out/login/loginByPhoneV3",
+  headers: {
+    Host: "dj.palmestore.com",
+    "user-agent": "Dalvik/2.1.0 (Linux; U; Android 11; MI 9 Build/RKQ1.200826.002)",
+    "content-type": "application/x-www-form-urlencoded",
+    "accept-encoding": "gzip",
+  },
+  params: {
+    zyeid: "99be9153-79fb-4d45-bf1d-b885d4983977",
+    usr: "j174924563",
+    rgt: "7",
+    p1: "ZRAJM7m2BL0DAPfjgEB6zhVv",
+    ku: "j174924563",
+    pc: "10",
+    p2: "136002",
+    p3: "25026056",
+    p4: "501656",
+    p5: "19",
+    p7: "__f9267e3c57362c76",
+    p9: "1",
+    p12: "",
+    p16: "M2102J2SC",
+    p21: "1303",
+    p22: "12",
+    p25: "25026056",
+    p26: "31",
+    p28: "e998cb31be347dc0",
+    p30: "",
+    p31: "__f9267e3c57362c76",
+    p33: "com.dj.sevenRead",
+    p34: "Xiaomi",
+    d1: "5.2.2",
+    firm: "Xiaomi",
+  },
+  form: {
+    smboxid: "BDTqwSU9Mf7AEbSSGgB4osHNxDQw7Hz5cm6Ij9mBlnm6cvg8l/H1cKPxoBsQUsvCgBRqTfaSLPDPI1esjmNEcKw==",
+    versionId: "25026056",
+    device: "M2102J2SC",
+    userName: "j174924563",
+    imei: "____f3429e1c59124c92",
+    timestamp: 1700926359962,
+    pInfo: "{\"DesKey\":mC3hMAM/VJqDkC/Jz48TBaqRos+6y0DNMcpo3Cn30U+k7FX/DUywdavgxfnENiJWVg4UffeedS9jZ8Mmi89JGpjzDGQQpOQ2QLEomrkH5zW6Ishh1ChLO4bsRigODPIrx1ISAGiUk9lTOO52v8+hnNC/OVOmXzmo24RinzfoE8s=,\"Data\":vTLE2Gpx6vLSzfxPmRg9n03zPGkGUKD4OFlKhtuVcZ89ra67Nk4Zyg==}",
+    phone: "whsAsDOp6vCEmIkOexQzwcVLwcbKTrNekq9C4YTT1MxIK4MOpNljDXGMC0hrjwv2oJ+3sk8UHWOXU1ho+7kk6pgRiRx9PIP/++SyMPHw7K+AZ/A6gVh05RcChPTbDYVYKn8TeGsX396wNjS5rERow0+A0iqcT1WVZHRN7wB1AE8=",
+    utdId: "ZRAJM7m2BL0DAPfjgEB6zhVv",
+    loginSource: "我的_马上登录",
+    channelId: "136002",
+    sign: "dH+1Q21iatXhNnHOBslujl62yvht1JkkvgM/bCZ2AgQycO/95FvUK6be1u8WZXAFKnaa57uDMN1IJxxBUHZI80ogbVJEC2a3YBD1zQ11w310ushPXBPIlaf8O0tLm5vGqkvWv0aQlb5QWzHYVN1xBGuvjJYasmJMLz/VX3xld2k=",
+  },
+}
+
+
+{
+  method: "post",
+  url: "https://dj.palmestore.com/dj_user/out/login/loginByPhoneV3",
+  headers: {
+    Host: "dj.palmestore.com",
+    "user-agent": "Dalvik/2.1.0 (Linux; U; Android 11; MI 9 Build/RKQ1.200826.002)",
+    "content-type": "application/x-www-form-urlencoded",
+    "accept-encoding": "gzip",
+  },
+  params: {
+    zyeid: "99be9153-79fb-4d45-bf1d-b885d4983977",
+    usr: "j174924563",
+    rgt: "7",
+    p1: "ZRAJM7m2BL0DAPfjgEB6zhVv",
+    ku: "j174924563",
+    pc: "10",
+    p2: "136002",
+    p3: "25026056",
+    p4: "501656",
+    p5: "19",
+    p7: "__f9267e3c57362c76",
+    p9: "1",
+    p12: "",
+    p16: "M2102J2SC",
+    p21: "1303",
+    p22: "12",
+    p25: "25026056",
+    p26: "31",
+    p28: "e998cb31be347dc0",
+    p30: "",
+    p31: "__f9267e3c57362c76",
+    p33: "com.dj.sevenRead",
+    p34: "Xiaomi",
+    d1: "5.2.2",
+    firm: "Xiaomi",
+  },
+  form: {
+    smboxid: "BDTqwSU9Mf7AEbSSGgB4osHNxDQw7Hz5cm6Ij9mBlnm6cvg8l/H1cKPxoBsQUsvCgBRqTfaSLPDPI1esjmNEcKw==",
+    versionId: "25026056",
+    device: "M2102J2SC",
+    userName: "j174924563",
+    imei: "____f3429e1c59124c92",
+    timestamp: "1700926359962",
+    pInfo: "{\"DesKey\":SVFGegH9LFWNuGNJuqHkjNkYI7X3szk8yu3EBUqOLOAf7zPXTxmZzD3c3VpuX/FYY3CAR3Ix8yTggSya6GpO+xiuNmmsFriN7H5HZ47LI/4f4Ailn/T1EqdkqI1iIHlfue5l+7uHDHgBzbf/CwYawCsXsrAYxSpdtO0u1aaFdkk=,\"Data\":vTLE2Gpx6vLSzfxPmRg9n03zPGkGUKD4OFlKhtuVcZ89ra67Nk4Zyg==}",
+    phone: "wvDVp2cE38/f9pXymEFbqQ4lzsQbTtTjNkpOPO+q/LBZHBufgIgQFgLq/7ftQ6lusXlR9QjptxnRb009q1YiH1sj5hSgTk87GUx3W7cUHiJNTrCyMOlv+w+J2cd+oel8BKEsUxTRfuuh5IQ9Bhi7wSnPic/qGTeEXUmVKzPIwNU=",
+    utdId: "ZRAJM7m2BL0DAPfjgEB6zhVv",
+    loginSource: "我的_马上登录",
+    channelId: "136002",
+    sign: "Uh9yMgRUQpVn/ifLGwl7arzgYwiOzwby+YcApZbmg+r69wagV9gp7CgxQPBe3AKpeaZbIdcKN5BnJ+/rJYF8GaBTzalUaiXa+AR7DcdF00N5SJZaVodAcqiKlTvbdrUdOoP8Frs67uidux0I/+aaO3RtSzSjb6ZiSIPvqH6WiMI=",
+  },
+}
+
+
+{
+  code: 1,
+  msg: "com.google.gson.stream.MalformedJsonException: Unterminated object at line 1 column 73 path $.DesKey",
+  body: null,
+}
+
+
+

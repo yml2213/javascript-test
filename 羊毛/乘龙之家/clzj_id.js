@@ -3,7 +3,7 @@
 
 -------------------  青龙-配置文件-复制区域  -------------------
 # 乘龙之家
-export clzj=" openid @ openid "
+export clzj=" 备注 # openid @ 备注 # openid "
 
 抓 https://cvweixin-test.dflzm.com.cn    的  openid 就行   记得填上自己的ua  27行
 多账号用 换行 或 @ 分割
@@ -36,8 +36,10 @@ class User {
         this.index = id
         this.ckFlog = true
         this.ck_ = str.split("#")
+        this.remark = this.ck_[0]
 
-        this.openid = this.ck_[0]
+        this.openid = this.ck_[1]
+
 
     }
 
@@ -174,7 +176,7 @@ class User {
             console.log(`\n${"•".repeat(24)}  ${this.index} ${"•".repeat(24)}\n`)
             this.hasLogged = true
         }
-        console.log(`${this.index} ${typeof message === "object" ? JSON.stringify(message) : message}`)
+        console.log(`${this.index} -- ${this.remark},  ${typeof message === "object" ? JSON.stringify(message) : message}`)
         if (p) {
             sendLog.push(`${this.index} ${message}`)
         }

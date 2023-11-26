@@ -618,5 +618,9 @@ function DD() {
       let sign = $.hexToBase64(signatureHex)
       return sign
     }
+
+
+
+    
   })()
 }
