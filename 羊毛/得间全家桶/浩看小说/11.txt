@@ -1,0 +1,45 @@
+
+新人登录  第二天
+curl -H "Host: welfare-dj.palmestore.com" -H "sec-ch-ua: \"Android WebView\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\"" -H "Accept: application/json, text/plain, */*" -H "X-Sign: 5c520d3517aba89889d7aeda8935e6da55ea644dbac299bfdf66751ddb41dcb8" -H "sec-ch-ua-mobile: ?1" -H "User-Agent: Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/119.0.6045.67 Mobile Safari/537.36 zyApp/hkRead zyVersion/2.0.2.4 zyChannel/331016" -H "X-Nonce: 65643250" -H "sec-ch-ua-platform: \"Android\"" -H "Origin: https://dj-h5.palmestore.com" -H "X-Requested-With: com.idejian.sm" -H "Sec-Fetch-Site: same-site" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Dest: empty" -H "Referer: https://dj-h5.palmestore.com/" -H "Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" --compressed "https://welfare-dj.palmestore.com/welfare/web/task/user?event_page=%E4%B9%A6%E5%9F%8E%E9%A2%91%E9%81%93%E9%A1%B5&zyeid=99be9153-79fb-4d45-bf1d-b885d4983977&usr=j174924563&rgt=7&p1=ZWLmsn79mv0DAPfjgEC%2Bl4yo&ku=j174924563&kt=daada922b19c570b4419231f85fa2040&pc=10&p2=331016&p3=24004556&p4=501656&p5=19&p7=__f9267e3c57362c76&p9=1&p12=&p16=M2102J2SC&p21=1303&p22=12&p25=26004956&p26=31&p28=e998cb31be347dc0&p29=zy613a68&p30=&p31=__f9267e3c57362c76&p33=com.idejian.sm&p34=Xiaomi&firm=Xiaomi&d1=2.0.2.4"
+
+============================================================================================================
+签到  288
+
+curl -H "Host: welfare-dj.palmestore.com" -H "sec-ch-ua: \"Android WebView\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\"" -H "Accept: application/json, text/plain, */*" -H "X-Sign: bea037c5d467b16f1bc8dcf7fb8099eecbddc2436ee7aa4f0bb3060e887c9975" -H "sec-ch-ua-mobile: ?1" -H "User-Agent: Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/119.0.6045.67 Mobile Safari/537.36 zyApp/hkRead zyVersion/2.0.2.4 zyChannel/331016" -H "X-Nonce: 6564331a" -H "sec-ch-ua-platform: \"Android\"" -H "Origin: https://dj-h5.palmestore.com" -H "X-Requested-With: com.idejian.sm" -H "Sec-Fetch-Site: same-site" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Dest: empty" -H "Referer: https://dj-h5.palmestore.com/" -H "Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" --compressed "https://welfare-dj.palmestore.com/welfare/web/task/receive?id=23101619432216001&task_type=1005&task_version=1697456601&sub_id=23101619432216601&source=welfare&showContentInStatusBar=1&ecpmMix=0.0&ecpmVideo=41.58&mcTacid=&zyeid=99be9153-79fb-4d45-bf1d-b885d4983977&usr=j174924563&rgt=7&p1=ZWLmsn79mv0DAPfjgEC%2Bl4yo&ku=j174924563&kt=daada922b19c570b4419231f85fa2040&pc=10&p2=331016&p3=24004556&p4=501656&p5=19&p7=__f9267e3c57362c76&p9=1&p12=&p16=M2102J2SC&p21=1303&p22=12&p25=26004956&p26=31&p28=e998cb31be347dc0&p29=zy613a68&p30=&p31=__f9267e3c57362c76&p33=com.idejian.sm&p34=Xiaomi&firm=Xiaomi&d1=2.0.2.4&pca=channel-visit"
+{
+	"body": {
+		"reward_amount": "288"
+	},
+	"code": 0,
+	"msg": "ok"
+}
+
+
+============================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

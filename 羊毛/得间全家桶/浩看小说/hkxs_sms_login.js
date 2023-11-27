@@ -829,7 +829,7 @@ async function done(s, e) {
     async function showmsg() {
         if (!sendLog) return
         if (!sendLog.length) return
-        let notify = require('./sendNotify')
+        let notify = require('../sendNotify')
         console.log('\n============== 本次推送--by_yml ==============')
         await notify.sendNotify(CodeName, sendLog.join('\n'))
     }
