@@ -17,17 +17,19 @@ curl -H "Host: welfare-dj.palmestore.com" -H "sec-ch-ua: \"Android WebView\";v=\
 
 ============================================================================================================
 
+com.idejian.sm  包名
 
 
 
 
 
-
-
-
-
-
-
+let b = Java.use("com.inno.innosdk.b.b");
+b["a"].overload('[B', '[B', 'com.inno.innosdk.bean.BaseDevice').implementation = function (bArr, bArr2, baseDevice) {
+    console.log(`b.a is called: bArr=${bArr}, bArr2=${bArr2}, baseDevice=${baseDevice}`);
+    let result = this["a"](bArr, bArr2, baseDevice);
+    console.log(`b.a result=${result}`);
+    return result;
+};
 
 
 

@@ -52,9 +52,8 @@ async function httpRequest(options) {
 // let uuid = '00000000000005042604A4ED04234B0400A63333EEE90A170095277195325010'
 
 function get_uuid() {
-	let uuid = `00000000000005${randomString(50, { dx: true, sz: true })}`
 	// console.log(uuid)
-	return uuid
+	return `00000000000005${randomString(50, {dx: true, sz: true})}`
 }
 
 async function get_usid(token) {

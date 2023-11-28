@@ -107,15 +107,15 @@ class User {
 
         if (this.ckFlog) {
             // $.log(`\n-------------- 积分查询 --------------`)
-            await this.checkin()  // 签到
-            // await this.reading_time()  // 刷阅读
+            await this.sign_in()  // 签到
+            await this.reading_time()  // 刷阅读
 
             // for (let index = 0; index < ad_num; index++) {
-            //     await this.task_watch_video(10)  // 观看视频
+            // await this.task_watch_video(10)  // 观看视频
             // }
 
             // for (let index = 0; index < cash_ad_num; index++) {
-            //     await this.cash_video("advence")  // 提现视频
+                await this.cash_video("advence")  // 提现视频
             // }
 
         }
@@ -185,17 +185,17 @@ class User {
         }
     }
 
-    async checkin() {  // 签到
+
+    async sign_in() {  // 签到
         try {
-            let ts13 = ts(13)
+            // console.log(JSON.parse(this.ck_data))
+            // console.log(typeof this.ck_data)
+            let num = await this.get_MyContinueLogindays()
             const options = {
                 method: "get",
-                url: `https://dj.palmestore.com/zyuc/api/user/accountInfo`,
+                url: `https://dj.palmestore.com/zycl/gold/dailyWelfareV5`,
                 headers: this.hd,
                 params: {
-                    "pluginVersion": this.pluginVersion,
-                    "timestamp": ts13,
-                    "usr": this.ck_data.usr,
                     "zyeid": this.ck_data.zyeid,
                     "usr": this.ck_data.usr,
                     "rgt": "7",
@@ -207,34 +207,294 @@ class User {
                     "p3": this.p3,
                     "p4": "501656",
                     "p5": "19",
-                    "p7": this.p7,
-                    "p9": this.p9,
+                    "p7": "__e2ba088bce115acf",
+                    "p9": "3",
                     "p12": "",
-                    "p16": this.p16,
+                    "p16": "MI 9",
                     "p21": this.p21,
-                    "p22": this.p22,
+                    "p22": "11",
                     "p25": this.p25,
-                    "p26": this.p26,
-                    "p28": this.p28,
-                    "p29": this.p29,
+                    "p26": "30",
+                    "p28": "146bdb4427eb2ecd",
                     "p30": "",
-                    "p31": this.p31,
+                    "p31": "__e2ba088bce115acf",
                     "p33": this.p33,
-                    "p34": this.p34,
+                    "p34": "Xiaomi",
                     "d1": this.dl,
-                    "firm": this.firm,
+                    "firm": "Xiaomi",
+                    "source": "bookShelf",
+                    "signType": "2",
+                    "ecpmMix": "0.0",
+                    "ecpmVideo": "29.5",
+                    "mcTacid": "13065",
+                    "smboxid": await this.get_smboxid()
                 }
             }
-            let a = `timestamp=${options.params.timestamp}&usr=${options.params.usr}`
-            console.log(a)
+
+            // log(options)
+            let { res } = await requestPromise(options)
+            // this.log(res)
+            if (res.code == 0) {
+                if (res.body.signNormal.isTodayFirstSign) {
+                    this.log(`签到成功, 获得 ${res.body.signNormal.reward.giftNum} 金币, ${res.body.signNormal.reward.signMoBaoNum} 墨宝, 已连续签到 ${num} 天`)
+                } else {
+                    this.log(`已签到, 已连续签到 ${num} 天`)
+                }
+            } else {
+                this.log(res)
+                return this.ckFlog = false
+            }
+        } catch (error) {
+            console.log(error)
+            return this.ckFlog = false
+        }
+    }
+    async reading_time() {  // 刷阅读
+        try {
+            const zlib = require('zlib')
+            let ts13 = ts(13)
+            // let ts13 = 1700917407211
+            // let num = 14895
+            let num = randomInt(10000, 16000)
+            let time = `${ts('y')}-${ts('mo')}-${ts('d')}`
+            // console.log(time)
+            let a = `alias=5b8b1da904bf407e96ff2ab8564620dd&data=[{"type":6,"data":{"${time}":{"d1":[{"bid":"12321351","format":"zyepub","time":${num},"resType":"read"}]}}}]&platformId=501656&timestamp=${ts13}&user_name=${this.ck_data.usr}`
+            // console.log(a)
             let sign = this.Sha1withRsa(a)
-            console.log(sign)
+            // console.log(sign)
+            let data = `{"alias":"5b8b1da904bf407e96ff2ab8564620dd","data":"[{\\"type\\":6,\\"data\\":{\\"${time}\\":{\\"d1\\":[{\\"bid\\":\\"12321351\\",\\"format\\":\\"zyepub\\",\\"time\\":${num},\\"resType\\":\\"read\\"}]}}}]","platformId":"501656","sign":"${sign}","timestamp":"${ts13}","user_name":"${this.ck_data.usr}"}`
+
+            data = zlib.gzipSync(data)
+
+
+            const options = {
+                method: "post",
+                url: `https://dj.palmestore.com/dj_reading/out/readingTime/report`,
+                headers: {
+                    'Host': 'dj.palmestore.com',
+                    'accept-encoding': 'gzip',
+                    'content-type': 'text/plain',
+                    'user-agent': 'Dalvik/2.1.0 (Linux; U; Android 11; MI 9 Build/RKQ1.200826.002)',
+                    // 'Accept-Encoding': 'gzip'
+                },
+                params: {
+                    "zyeid": this.ck_data.zyeid,
+                    "usr": this.ck_data.usr,
+                    "rgt": "7",
+                    "p1": this.ck_data.utdid,
+                    "ku": this.ck_data.usr,
+                    "kt": this.ck_data.token,
+                    "pc": "10",
+                    "p2": this.p2,
+                    "p3": this.p3,
+                    "p4": "501656",
+                    "p5": "19",
+                    "p7": "__e2ba088bce115acf",
+                    "p9": "3",
+                    "p12": "",
+                    "p16": "MI 9",
+                    "p21": this.p21,
+                    "p22": "11",
+                    "p25": this.p25,
+                    "p26": "30",
+                    "p28": "146bdb4427eb2ecd",
+                    "p30": "",
+                    "p31": "__e2ba088bce115acf",
+                    "p33": this.p33,
+                    "p34": "Xiaomi",
+                    "d1": this.dl,
+                    "firm": "Xiaomi",
+                    "pkgName": this.p33,
+                },
+                body: data,
+            }
+            // console.log(options)
+            let { res } = await requestPromise(options)
+            // console.log(res)
+            if (res.code == 0) {
+                this.log(`刷阅读成功, 本次阅读 ${num / 60} 分钟`)
+            } else {
+                this.log(`刷阅读失败`)
+                this.log(res)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async get_MyContinueLogindays() {  // 签到天数查询
+        try {
+            const options = {
+                method: "get",
+                url: `https://${this.welfare_host}/zycl/gold/withdraw`,
+                headers: this.hd,
+                params: {
+                    "zyeid": this.ck_data.zyeid,
+                    "usr": this.ck_data.usr,
+                    "rgt": "7",
+                    "p1": this.ck_data.utdid,
+                    "ku": this.ck_data.usr,
+                    "kt": this.ck_data.token,
+                    "pc": "10",
+                    "p2": this.p2,
+                    "p3": this.p3,
+                    "p4": "501656",
+                    "p5": "19",
+                    "p7": "__6241cd3ba605545d",
+                    "p9": "1",
+                    "p16": "2210132C",
+                    "p21": this.p21,
+                    "p22": "13",
+                    "p25": this.p25,
+                    "p26": "33",
+                    "p28": "44b933d9b5b74f04",
+                    "p31": "__6241cd3ba605545d",
+                    "p33": this.p33,
+                    "p34": "Xiaomi",
+                    "pca": "channel-visit",
+                    "firm": "Xiaomi",
+                    "source": "welfare",
+                    "launch": "newpage",
+
+                }
+            }
+
+            // log(options)
+            let { res } = await requestPromise(options)
+            // this.log(res)
+            if (res) {
+                let num = res.split('myContinueLoginDays = ')[1].split(';var ')[0]
+                // console.log(num)
+                return num
+            }
+
+        } catch (error) {
+            console.log(error)
+            return this.ckFlog = false
+        }
+    }
+
+
+    async task_watch_video(type) {  // 观看视频
+        try {
+            let ts13 = ts(13)
+            const options = {
+                method: "get",
+                url: `https://${this.login_host}/zycl/api/gold/moneyChallengeReport`,
+                headers: this.hd,
+                params: {
+                    "ecpm": "52.16",  // 啥玩意不确定
+                    "timestamp": ts13,
+                    "zyeid": this.ck_data.zyeid,
+                    "usr": this.ck_data.usr,
+                    "type": type,
+                    "rgt": "7",
+                    "p1": this.ck_data.utdid,
+                    "ku": this.ck_data.usr,
+                    "kt": this.ck_data.token,
+                    "pc": "10",
+                    "p2": this.p2,
+                    "p3": this.p3,
+                    "p4": "501656",
+                    "p5": "19",
+                    "p7": "__e2ba088bce115acf",
+                    "p9": "3",
+                    "p12": "",
+                    "p16": "MI+9",
+                    "p21": this.p21,
+                    "p22": "11",
+                    "p25": this.p25,
+                    "p26": "30",
+                    "p28": "146bdb4427eb2ecd",
+                    "p30": "",
+                    "p31": "__e2ba088bce115acf",
+                    "p33": this.p33,
+                    "p34": "Xiaomi",
+                    "d1": this.dl,
+                    "firm": "Xiaomi",
+                }
+            }
+            let a = `ecpm=${options.params.ecpm}&timestamp=${options.params.timestamp}&type=${options.params.type}&usr=${options.params.usr}`
+            let sign = this.Sha1withRsa(a)
+            // console.log(sign)
             options.params.sign = sign
             // log(options)
             let { res } = await requestPromise(options)
             // this.log(res)
             if (res.code == 0) {
-                this.log(`手机号: ${res.body.userInfo.phone}, 总资产: ${res.body.gold.goldAmount}金币==${res.body.gold.goldAmount / 10000}元`, 1)
+                let ad_num = res.conf.redPacketMaxNum - res.conf.receiveRedPacketNum
+                this.log(`观看视频获得金币 ${res.conf.receiveMoney} 个, 剩余 ${ad_num} 次`)
+                await wait(5, 8)
+                // if (ad_num > 0) {
+                //     await this.task_watch_video(10)
+                // }
+            } else {
+                this.log(res)
+                return this.ckFlog = false
+            }
+        } catch (error) {
+            console.log(error)
+            return this.ckFlog = false
+        }
+    }
+
+    async cash_video(type) {  // 提现视频
+        try {
+            let ts13 = ts(13)
+            const options = {
+                method: "get",
+                url: `https://dj.palmestore.com/zycl/gold/notice/video`,
+                headers: this.hd,
+                params: {
+                    "timestamp": ts13,
+                    "zyeid": this.ck_data.zyeid,
+                    "usr": this.ck_data.usr,
+                    "type": type,
+                    "rgt": "7",
+                    "p1": this.ck_data.utdid,
+                    "ku": this.ck_data.usr,
+                    "kt": this.ck_data.token,
+                    "pc": "10",
+                    "p2": this.p2,
+                    "p3": this.p3,
+                    "p4": "501656",
+                    "p5": "19",
+                    "p7": "__e2ba088bce115acf",
+                    "p9": "3",
+                    "p12": "",
+                    "p16": "MI+9",
+                    "p21": this.p21,
+                    "p22": "11",
+                    "p25": this.p25,
+                    "p26": "30",
+                    "p28": "146bdb4427eb2ecd",
+                    "p30": "",
+                    "p31": "__e2ba088bce115acf",
+                    "p33": this.p33,
+                    "p34": "Xiaomi",
+                    "d1": this.dl,
+                    "firm": "Xiaomi",
+                    "pca": "channel-visit",
+                    "param": "10060",
+                    "videoId": "10060",
+                    "smboxid": await this.get_smboxid(),
+                }
+            }
+            let a = `p2=${options.params.p2}&param=${options.params.param}&timestamp=${options.params.timestamp}&usr=${options.params.usr}`
+            let sign = this.Sha1withRsa(a)
+            // console.log(sign)
+            options.params.sign = sign
+            // log(options)
+            let { res } = await requestPromise(options)
+            this.log(res)
+            if (res.code == 0) {
+                this.log(`观看第 ${res.body.usedCount} 个提现视频 `)
+                await wait(5, 8)
+                // if (ad_num > 0) {
+                //     await this.task_watch_video(10)
+                // }
+            } else if (res.code == 40161) {
+                this.log(`观看 提现视频  ${res.msg}`)
             } else {
                 this.log(res)
                 return this.ckFlog = false
@@ -246,7 +506,6 @@ class User {
     }
 
 
-  
 
     async get_issuedId(utdid) {
         try {
@@ -310,6 +569,20 @@ class User {
             return this.ckFlog = false
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     waitForUserInput() {

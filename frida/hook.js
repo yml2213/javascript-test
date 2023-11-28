@@ -8,13 +8,14 @@ Java.perform(function () {
     //     return this.encodeMD5(data)///劫持完代码看一下怎么个事就给你反回去
     // }
 
-    let e = Java.use("ld7.e")
-    e["h"].implementation = function (request, params) {
-        console.log(`e.h is called: request=${request}, params=${params}`)
-        let result = this["h"](request, params)
-        console.log(`e.h result=${result}`)
-        return result
-    }
+    let b = Java.use("com.inno.innosdk.b.b");
+    b["a"].overload('[B', '[B', 'com.inno.innosdk.bean.BaseDevice').implementation = function (bArr, bArr2, baseDevice) {
+        console.log(`b.a is called: bArr=${bArr}, bArr2=${bArr2}, baseDevice=${baseDevice}`);
+        let result = this["a"](bArr, bArr2, baseDevice);
+        console.log(`b.a result=${result}`);
+        return result;
+    };
+    
 })
 
 
