@@ -1,0 +1,2 @@
+let a = "{\"type\":\"innerlink\",\"action\":\"innerlinkClick\",\"num\":0,\"score\":1,\"link_url\":\"\",\"content_info\":null,\"news_id\":\"6712620\"}"
+console.log(a.split('"news_id\":\"')[1].split('\"}')[0])
