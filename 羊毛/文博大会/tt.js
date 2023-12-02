@@ -24,7 +24,7 @@ const mode = 1    // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
 const ckFile = `${env}.txt`
 //====================================================================================================
-const ck_ = `2213#1d88f645c396bbfc045819f05ee8f44e#1fd3e576acc4ce431d28fa1d09966150f39535ae`
+const ck_ = `2213#ef0aa938055269a811f6c88cf7897fb5#1fd3e576acc4ce431d28fa1d09966150f39535ae`
 // const ck_ = `测试1#22df38055c5026444f107b4cb25083dd#c0e5cc5408c57e507f41c6cc55b016fe20639e8d` 
 let as_arr = []
 
@@ -55,7 +55,7 @@ class User {
 
 	}
 
-	async userTask() {
+	async userTask() {``
 
 		// 1596 
 

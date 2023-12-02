@@ -24,7 +24,8 @@ const mode = 1    // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
 const ckFile = `${env}.txt`
 //====================================================================================================
-const ck_ = ``
+// const ck_ = `梦里梦#ef0aa938055269a811f6c88cf7897fb5#738d7eb55e3554143433204958a673f52f69d82d`
+const ck_ = `梦里梦#22df38055c5026444f107b4cb25083dd#738d7eb55e3554143433204958a673f52f69d82d`
 
 
 
@@ -177,6 +178,8 @@ class User {
                     let e = res.data[i]
                     if (e.status == 3) {
                         this.log(`${e.name} 已抽奖过了, 跳过!`)
+                        // await this.start_qs(e.id)
+
                     } else if (e.status == 1) {
                         this.log(`开始参加 ${e.name} 答题!`)
                         // await this.start_qs(e.id)

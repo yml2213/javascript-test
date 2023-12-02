@@ -5,8 +5,8 @@
 # 文博大会
 export wbdh=" 备注 # uuid # sign @ 备注 # uuid # sign "
 
-  
-抓  小程序 域名 https://wbdh.jiiimo.cn  的  uuid  sign 就行  
+
+抓  小程序 域名 https://wbdh.jiiimo.cn  的  uuid  sign 就行
 多账号用 换行 或 @ 分割
 
 tg频道: https://t.me/yml2213_tg
@@ -414,7 +414,7 @@ class UserList {
         this.mode = mode
     }
 
-    
+
 
     checkEnv() {
         try {
