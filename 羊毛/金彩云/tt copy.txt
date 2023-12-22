@@ -1,0 +1,285 @@
+{
+	"code": 0,
+	"msg": "success",
+	"data": {
+		"action": "",
+		"member": {
+			"id": 460947,
+			"member_name": "15614832213",
+			"account_id": "1f1a7f6db8e00e268fb98b8bc0501751",
+			"nick_name": "网友2213",
+			"salt": "",
+			"type": "mobile",
+			"group_id": 0,
+			"role_id": 1,
+			"avatar": "",
+			"credits": 27,
+			"exp_points": 0,
+			"frozen_credit": 0,
+			"signature": "",
+			"email": "",
+			"mobile": "15614832213",
+			"status": 1,
+			"is_verify": 0,
+			"ip": "119.186.2.59",
+			"last_login_ip": "119.186.2.59",
+			"push_device": "190e35f7e144fac8287",
+			"reg_device": "Xiaomi M2102J2SC",
+			"last_login_device": "70a8848f-80f3-4e54-8ed3-8b83ee7ea44a",
+			"last_push_device": "190e35f7e144fac8287",
+			"reg_device_type": "Android 12",
+			"last_login_device_type": "Android 12",
+			"last_login_time": "1703128681",
+			"user_id": 0,
+			"referee_id": 0,
+			"third_party_id": "",
+			"site_id": 2,
+			"remember_token": "",
+			"created_at": "2023-12-20T13:44:21+08:00",
+			"updated_at": "2023-12-21T11:34:39+08:00",
+			"login_failed_time": 0,
+			"locked": 0,
+			"foreign_id": "",
+			"is_remind_sign": 0,
+			"first_bind": "",
+			"unit_id": 0,
+			"locked_user": 0,
+			"locked_username": "",
+			"locked_date": "",
+			"locked_reason": "",
+			"invite_real_name": "",
+			"extend": "",
+			"token": "6daefdd97b8b4ecb858ccf31730c79de",
+			"reg_longitude": "",
+			"reg_latitude": "",
+			"last_longitude": "117.815705",
+			"last_latitude": "36.876657",
+			"credits_total": 27,
+			"credits_consume": 0,
+			"channel_id": 0
+		},
+		"extend": {
+			"member_id": 460947,
+			"province": "",
+			"city": "",
+			"dist": "",
+			"detail": "",
+			"wechat": "",
+			"qq": "",
+			"birthday": "",
+			"gender": "secret",
+			"created_at": "2023-12-20T13:44:21+08:00",
+			"updated_at": "2023-12-20T13:44:21+08:00",
+			"ID": "",
+			"passport": "",
+			"name": "",
+			"ID_photos": "",
+			"authentication_time": "0001-01-01T00:00:00Z",
+			"last_group_id": 0,
+			"refuse_reason": "",
+			"workplace": "",
+			"master_work": ""
+		},
+		"binds": {
+			"wechat": false,
+			"qq": false,
+			"mobile": true,
+			"details": [{
+				"member_id": 460947,
+				"platform_id": "15614832213",
+				"third_name": "",
+				"avatar_url": "",
+				"type": "mobile",
+				"type_name": "手机登录",
+				"ip": "119.186.2.59",
+				"bind_device_token": "",
+				"site_id": 2,
+				"created_at": "2023-12-20T13:44:21+08:00",
+				"updated_at": "2023-12-20T13:44:21+08:00",
+				"unionid": ""
+			}]
+		},
+		"other": {
+			"post_num": 0,
+			"press_follow_num": 0,
+			"collect_num": 0,
+			"following_count": 0,
+			"follows_count": 0
+		}
+	}
+}
+
+
+
+=================================================
+
+bab52793-8d19-4b77-951c-7aadaa5c363f
+70a8848f-80f3-4e54-8ed3-8b83ee7ea44a
+
+
+   let access_nonce_str = `${randomString(8, {xx: true, sz: true})}-${randomString(4, {xx: true, sz: true})-${randomString(4, {xx: true, sz: true})-${randomString(12, {xx: true, sz: true})}`
+
+
+
+{
+  method: 'get',
+  url: 'https://op-api.cloud.jinhua.com.cn/api/welfare/info',
+  headers: {
+    Host: 'op-api.cloud.jinhua.com.cn',
+    'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Android WebView";v="120"',
+    'access-auth-id': '56902e1507b9d4418313e262bdb81df2',
+    'access-api-signature': 'efac2ac0e64f2812b27a0f8f6f94a34c1a0ce99ea0e0293e3ec0dd85700018ea',
+    'access-nonce-str': 'mrv93f3o-ioc3tldd5kid1r60ng6usvn0',
+    'sec-ch-ua-mobile': '?1',
+    'user-agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/120.0.6099.43 Mobile Safari/537.36 JinHua_JCY jcy_version:B',
+    'access-device-id': '70a8848f-80f3-4e54-8ed3-8b83ee7ea44a',
+    'access-app-id': 'wxc097803934a957eb',
+    'access-timestamp': '1703157409157',
+    'access-api-token': '377ce9e6a3e74859aa9db7d994515963',
+    accept: 'application/json, text/plain, */*',
+    'content-type': 'application/json',
+    'access-type': 'app',
+    'sec-ch-ua-platform': '"Android"',
+    origin: 'https://op-h5.cloud.jinhua.com.cn',
+    'x-requested-with': 'com.hoge.android.jinhua',
+    'sec-fetch-site': 'same-site',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-dest': 'empty',
+    referer: 'https://op-h5.cloud.jinhua.com.cn/',
+    'accept-language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+    authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDc1MjgxLCJzaXRlSWQiOjIsImV4cCI6MTcwMzE2ODIxM30.qPnPEJ5vgyq2zmkIOr1ODFcix6d1m88snazSK40Zy-M'
+  }
+}
+
+
+
+{
+  method: 'get',
+  url: 'https://op-api.cloud.jinhua.com.cn/api/welfare/info',
+  headers: {
+    Host: 'op-api.cloud.jinhua.com.cn',
+    'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Android WebView";v="120"',
+    'access-auth-id': '56902e1507b9d4418313e262bdb81df2',
+    'access-api-signature': '78b4a75063e4cac7b18b7277013804392c3b8524cc7a78d17e020ba53930a759',
+    'access-nonce-str': 'eryj6e5x-u9mgi136s3naexs329udfers',
+    'sec-ch-ua-mobile': '?1',
+    'user-agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/120.0.6099.43 Mobile Safari/537.36 JinHua_JCY jcy_version:B',
+    'access-device-id': '70a8848f-80f3-4e54-8ed3-8b83ee7ea44a',
+    'access-app-id': 'wxc097803934a957eb',
+    'access-timestamp': '1703157493161',
+    'access-api-token': '7c2208ba1ddc4b36b1db1c454e4b8c9f',
+    accept: 'application/json, text/plain, */*',
+    'content-type': 'application/json',
+    'access-type': 'app',
+    'sec-ch-ua-platform': '"Android"',
+    origin: 'https://op-h5.cloud.jinhua.com.cn',
+    'x-requested-with': 'com.hoge.android.jinhua',
+    'sec-fetch-site': 'same-site',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-dest': 'empty',
+    referer: 'https://op-h5.cloud.jinhua.com.cn/',
+    'accept-language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+    authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDc1MjgxLCJzaXRlSWQiOjIsImV4cCI6MTcwMzE2ODI5N30.6MAmQlzj8L5uGV0M8Fq6DGaaYhpOMvUEthsbmkPQLtI'
+  }
+}
+ // this.account_id = '1f1a7f6db8e00e268fb98b8bc0501751'
+            // this.token = '02a8ed95f7b4451589a4bd2e5138384a'
+            let qs = {
+                "app_id": this.app_id,
+                "auth_id": this.account_id,
+                "device_id": this.device_id,
+                "nonce_str": access_nonce_str,
+                "page": 1,
+                "pageSize": 10000,
+                "source_type": "app",
+                "timestamp": ts13,
+                "token": this.token,
+            }
+            let sortedQs = Object.keys(qs).sort().reduce((sorted, key) => {
+                sorted[key] = qs[key];
+                return sorted;
+            }, {});
+
+            let queryString = Object.entries(sortedQs).map(([key, value]) => `${key}=${value}`).join('&&');
+
+app_id=wxc097803934a957eb&&auth_id=56902e1507b9d4418313e262bdb81df2&&device_id=70a8848f-80f3-4e54-8ed3-8b83ee7ea44a&&nonce_str=87uc1i9f-9u53-v6hw-kk02-a00c03897o0n&&page=1&&pageSize=10000&&source_type=app&&timestamp=1703166536932&&token=12bb4dfbab7f4ab782b727cdcad8d19b&&3(GMx,4]ISc[nK<#
+
+===============
+对的
+app_id=wxc097803934a957eb&&auth_id=1f1a7f6db8e00e268fb98b8bc0501751&&device_id=70a8848f-80f3-4e54-8ed3-8b83ee7ea44a&&nonce_str=0e3b1b9c-ae49-464a-81d8-a22c3175d073&&page=1&&pageSize=10000&&source_type=app&&timestamp=1703164096222&&token=02a8ed95f7b4451589a4bd2e5138384a&&3(GMx,4]ISc[nK<#
+
+73d3f9e17dd3bad116f22cb298bfa8f3c863e9ba89e7815ed9704522d267d71a
+
+
+app_id=wxc097803934a957eb&&auth_id=1f1a7f6db8e00e268fb98b8bc0501751&&device_id=70a8848f-80f3-4e54-8ed3-8b83ee7ea44a&&nonce_str=2daab710-3a73-4c23-945a-928b996fe73e&&page=1&&pageSize=10000&&source_type=app&&timestamp=1703166831154&&token=02a8ed95f7b4451589a4bd2e5138384a&&Y=SW~4;Q;8Br8k&d
+
+e6ff5c65ec6fd6aec92e465745f8cec476b44364cd1cff22204eda671de422f6
+
+
+
+
+{
+			"taskType": "",
+			"taskId": 3620,
+			"contentId": 1507161,
+			"title": "一线·教师笔记 | 金华市南苑小学叶静修：平凡中担使命 细微处守初心",
+			"desc": "",
+			"indexPic": "https://img.jcy.jinhua.com.cn/20231221110a10f8f550e0009b2a6e1fa091b3b7.png?imageView/1/w/400/h/400/q/85\u0026x-oss-process=image/resize,w_400,h_400",
+			"url": "https://share.jcy.jinhua.com.cn/c/231221/ART8Vp2lYPBPu0fkJC.html?id=1507161\u0026jcyincontentid=1507161",
+			"read": 5,
+			"share": 5,
+			"praise": 5,
+			"comment": 5,
+			"readComplete": 0,
+			"shareComplete": 0,
+			"praiseComplete": 0,
+			"commentComplete": 0
+		}
+
+
+{
+			"taskType": "",
+			"taskId": 3620,
+			"contentId": 1507161,
+			"title": "一线·教师笔记 | 金华市南苑小学叶静修：平凡中担使命 细微处守初心",
+			"desc": "",
+			"indexPic": "https://img.jcy.jinhua.com.cn/20231221110a10f8f550e0009b2a6e1fa091b3b7.png?imageView/1/w/400/h/400/q/85\u0026x-oss-process=image/resize,w_400,h_400",
+			"url": "https://share.jcy.jinhua.com.cn/c/231221/ART8Vp2lYPBPu0fkJC.html?id=1507161\u0026jcyincontentid=1507161",
+			"read": 5,
+			"share": 5,
+			"praise": 5,
+			"comment": 5,
+			"readComplete": 1,
+			"shareComplete": 0,
+			"praiseComplete": 1,
+			"commentComplete": 0
+		}
+{
+			"taskType": "",
+			"taskId": 3620,
+			"contentId": 1507161,
+			"title": "一线·教师笔记 | 金华市南苑小学叶静修：平凡中担使命 细微处守初心",
+			"desc": "",
+			"indexPic": "https://img.jcy.jinhua.com.cn/20231221110a10f8f550e0009b2a6e1fa091b3b7.png?imageView/1/w/400/h/400/q/85\u0026x-oss-process=image/resize,w_400,h_400",
+			"url": "https://share.jcy.jinhua.com.cn/c/231221/ART8Vp2lYPBPu0fkJC.html?id=1507161\u0026jcyincontentid=1507161",
+			"read": 5,
+			"share": 5,
+			"praise": 5,
+			"comment": 5,
+			"readComplete": 1,
+			"shareComplete": 0,
+			"praiseComplete": 1,
+			"commentComplete": 0
+		}
+
+
+
+
+
+
+
+兑换
+curl -H "Host: op-api.cloud.jinhua.com.cn" -H "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Android WebView\";v=\"120\"" -H "access-auth-id: 1f1a7f6db8e00e268fb98b8bc0501751" -H "access-api-signature: 03e02345da3425a0fa724cd8330169c35d2b44c54f7affd091067256e2c7850f" -H "access-nonce-str: 660749c5-52a9-41d8-a675-c7e055fa5037" -H "sec-ch-ua-mobile: ?1" -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDczNzE0LCJzaXRlSWQiOjIsImV4cCI6MTcwMzE4MTExN30.kguyMlaIjPvOfpM88PwBqbTHpFAJdYT-k5AQLEgkeoM" -H "access-device-id: 70a8848f-80f3-4e54-8ed3-8b83ee7ea44a" -H "access-app-id: wxc097803934a957eb" -H "access-timestamp: 1703170348008" -H "access-api-token: 02a8ed95f7b4451589a4bd2e5138384a" -H "accept: application/json, text/plain, */*" -H "content-type: application/json; charset=UTF-8" -H "user-agent: Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/120.0.6099.43 Mobile Safari/537.36 JinHua_JCY jcy_version:B" -H "access-type: app" -H "sec-ch-ua-platform: \"Android\"" -H "origin: https://op-h5.cloud.jinhua.com.cn" -H "x-requested-with: com.hoge.android.jinhua" -H "sec-fetch-site: same-site" -H "sec-fetch-mode: cors" -H "sec-fetch-dest: empty" -H "referer: https://op-h5.cloud.jinhua.com.cn/" -H "accept-language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7" --data-binary "{\"gold\":\"192\",\"rate\":3,\"cash\":64}" --compressed "https://op-api.cloud.jinhua.com.cn/api/welfare/golden/exchange"
+
+
+

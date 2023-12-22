@@ -23,7 +23,7 @@ const mode = 1    // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
 const ckFile = `${env}.txt`
 //====================================================================================================
-const ck_ = ``  // 快速测试, 直接填入ck即可测试
+const ck_ = `1356#624d99e0-e01b-40be-bad5-971febf98136`  // 快速测试, 直接填入ck即可测试
 let ua = "Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/118.0.0.0 Mobile Safari/537.36 AgentWeb/5.0.0  UCBrowser/11.6.4.950"
 
 
@@ -46,15 +46,20 @@ class User {
 
     async userTask() {
 
-
-        let ids = [10009, 10010, 10011, 10012, 10013, 10014, 10015, 10017, 10018, 10100, 1000, 1004, 1005, 1006, 1008, 1009, 1104, 1201, 1202, 1203, 1204, 221201, 221202, 221203, 221204, 221205, 10015, 10017, 10018]
-        for (let t = 0; t < ids.length; t++) {
-            // console.log(t)
-            await this.addIntegral(ids[t])
-        }
-
-
         await this.check()
+
+        // let ids = [2000]
+        // for (let t = 0; t < ids.length; t++) {
+        //     // console.log(t)
+        //
+        // }
+        for (let i = 0; i < 1000; i++) {
+            console.log(`第 ${i} 次`);
+            await this.addIntegral(2000)
+        }
+        await this.check()
+
+
 
         // if (this.ckFlog) {
         //     // $.log(`\n-------------- 积分查询 --------------`)
@@ -107,7 +112,7 @@ class User {
             // this.log(res)
             if (res.data.code == 200) {
                 this.log(`当前 ${id}, 执行 ${res.data.data.name}成功, 积分 +${res.data.data.quantity}`)
-                await wait(randomInt(3, 5))
+                await wait(randomInt(1, 3))
                 await this.addIntegral(id)
             } else if (res.data.code == 500) {
                 this.log(`当前 ${id}, ${res.data.message}`)

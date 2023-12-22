@@ -13,7 +13,7 @@ tg频道: https://t.me/yml2213_tg
 
 
 const CodeName = "乘龙之家"
-const env = "clzj"
+const env = "clzj2"
 const envSplit = ["\n", "&", "@"]
 const fs = require("fs")
 const CryptoJS = require("crypto-js")
@@ -23,9 +23,9 @@ const mode = 1    // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
 const ckFile = `${env}.txt`
 //====================================================================================================
-const ck_ = ``  // 快速测试, 直接填入ck即可测试
-let ua = "Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/118.0.0.0 Mobile Safari/537.36 AgentWeb/5.0.0  UCBrowser/11.6.4.950"
+const ck_ = `1356#624d99e0-e01b-40be-bad5-971febf98136`  // 快速测试, 直接填入ck即可测试
 
+let ua = "Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/118.0.0.0 Mobile Safari/537.36 AgentWeb/5.0.0  UCBrowser/11.6.4.950"
 
 let out_log = ""
 
@@ -38,80 +38,49 @@ class User {
         this.ckFlog = true
         this.ck_ = str.split("#")
         this.remark = this.ck_[0]
-
         this.openid = this.ck_[1]
 
 
     }
 
     async userTask() {
-
-
-        let ids = [10009, 10010, 10011, 10012, 10013, 10014, 10015, 10017, 10018, 10100, 1000, 1004, 1005, 1006, 1008, 1009, 1104, 1201, 1202, 1203, 1204, 221201, 221202, 221203, 221204, 221205, 10015, 10017, 10018]
-        for (let t = 0; t < ids.length; t++) {
-            // console.log(t)
-            await this.addIntegral(ids[t])
-        }
-
-
         await this.check()
-
-        // if (this.ckFlog) {
-        //     // $.log(`\n-------------- 积分查询 --------------`)
-        //     await this.check()
-        //     // await this.task()
-        //     // await this.get_id()
-
-
-        // }
-
     }
-
-
-
 
     async check() {
         try {
             const options = {
                 method: "post",
-                url: `https://cvweixin-test.dflzm.com.cn/tg-cvcar-api/mini/carMasterVip/findByOpenId`,
-                headers: this.hd,
-                body: this.openid,
+                url: `https://cvweixin-test.dflzm.com.cn/tg-cvcar-api/mini/jingDong/checkJdStock`,
+                headers: {
+                    Host: 'cvweixin-test.dflzm.com.cn',
+                    Accept: '*/*',
+                    'Sec-Fetch-Site': 'same-origin',
+                    'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+                    'Sec-Fetch-Mode': 'cors',
+                    'Content-Type': 'application/json',
+                    Origin: 'https://cvweixin-test.dflzm.com.cn',
+                    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+                    Referer: 'https://cvweixin-test.dflzm.com.cn/clzx/',
+                    'Sec-Fetch-Dest': 'empty',
+                    'content-type': 'application/json'
+                },
+                json: {
+                    skuId: '4028800989719614018985add0b55cf8',
+                    buyNum: '1',
+                    provinceCode: 13,
+                    cityCode: 1090,
+                    countyCode: 1092
+                },
             }
             // console.log(options)
             let {res} = await requestPromise(options)
             // this.log(res)
-            if (res.code == 200) {
-                this.log(` ${res.data.weChatPhone}, 微信${res.data.weChatNickName}, 积分 ${res.data.integral}`, 2)
-                // await wait(randomInt(4, 7))
-            } else if (res.data.code == 500) {
-                this.log(` ${res.data.message}`)
-            } else {
-                this.log(res)
-            }
-        } catch (error) {
-            this.log(error)
-        }
-
-    }
-
-    async addIntegral(id) {
-        try {
-            const options = {
-                method: "post",
-                url: `https://cvweixin-test.dflzm.com.cn/tg-cvcar-api/mini/integral_record/addIntegral`,
-                headers: this.hd,
-                json: {"code": id, "openid": this.openid},
-            }
-            let {res} = await requestPromise(options)
-            // this.log(res)
-            if (res.data.code == 200) {
-                this.log(`当前 ${id}, 执行 ${res.data.data.name}成功, 积分 +${res.data.data.quantity}`)
-                await wait(randomInt(3, 5))
-                await this.addIntegral(id)
-            } else if (res.data.code == 500) {
-                this.log(`当前 ${id}, ${res.data.message}`)
-                // await wait(randomInt(1, 2))
+            if (res.code === 1 && res.content) {
+                this.log(`AirPods Pro 有库存了~~`, 2)
+                this.log(`AirPods Pro 有库存了~~`, 2)
+                this.log(`AirPods Pro 有库存了~~`, 2)
+                this.log(`AirPods Pro 有库存了~~`, 2)
             } else {
                 this.log(res)
             }
@@ -173,7 +142,7 @@ class UserList {
         this.mode = mode
     }
 
-    1
+
 
     checkEnv() {
         try {
@@ -194,6 +163,9 @@ class UserList {
                 .filter((cookie) => cookie.trim() !== "")
                 .map((cookie, index) => new User(cookie.trim(), `账号[${index + 1}]`))
             const userCount = this.userList.length
+            console.log(`=================`)
+            console.log(this.userList)
+            console.log(`=================`)
             console.log(`${this.logPrefix} ${userCount > 0 ? `找到 ${userCount} 个账号\n` : "没有找到账号\n"}`)
             return true
 
