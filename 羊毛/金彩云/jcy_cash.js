@@ -56,9 +56,91 @@ class User {
         if (this.ckFlog) {
             // console.log(`\n-------------- 积分查询 --------------`)
             await this.login_h5()
-            await this.get_captcha()    // 获取验证码
+            await this.exchange_1(100, 19)    // 获取验证码
         }
     }
+
+    // 100  19
+    // https://op-api.cloud.jinhua.com.cn/api/welfare/cash/exchange
+    async exchange_1(amount, id) {
+        try {
+
+            let access_nonce_str = '212f0bd7-bf31-43e4-ba2a-ca8e0abf0b12'
+            let ts13 = 1703231978351
+            this.account_id = '1f1a7f6db8e00e268fb98b8bc0501751'
+            this.token = '633099696f8a43e8bc8ae77a3b1cffe5'
+            this.signkey = 'R}\u0026cg6#P`P-ZrlaZ'
+            this.X_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDczNzE0LCJzaXRlSWQiOjIsImV4cCI6MTcwMzI0Mjc3OH0.G7NIBatXyPs6c0l0BhTQ9hcCcw-j97rgqYttWHevc9o'
+            this.h5_hd['access-auth-id'] = this.account_id
+            this.h5_hd['access-api-token'] = this.token
+
+
+
+            // let ts13 = ts(13)
+            // let access_nonce_str = `${randomString(8)}-${randomString(4)}-${randomString(4)}-${randomString(4)}-${randomString(12)}`
+
+            let str1 = `app_id=${this.wx_app_id}&&cash=${amount}&&auth_id=${this.account_id}&&device_id=${this.device_id}&&id=${id}&&nonce_str=${access_nonce_str}&&optionId=${id}&&source_type=app&&timestamp=${ts13}&&token=${this.token}&&${this.signkey}`.trim()
+            // console.log(str1)
+            let sign = CryptoJS.SHA256(str1).toString()
+            // console.log(sign)
+            this.h5_hd['access-api-signature'] = sign
+            this.h5_hd['access-timestamp'] = ts13
+            this.h5_hd['access-nonce-str'] = access_nonce_str
+
+
+            const options = {
+                method: "post",
+                url: `https://op-api.cloud.jinhua.com.cn/api/welfare/cash/exchange`,
+                headers: this.h5_hd,
+                json: {"cash": amount, "optionId": id}
+            }
+            console.log(options)
+            // let {res} = await requestPromise(options)
+            // console.log(res)
+            // if (res.code === 0) {
+            //     this.log(`整点 领取宝箱奖励: 领取 ${score} 金币`)
+            //     await wait(3, 5)
+            // } else {
+            //     this.log(res)
+            // }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+    async get_captcha() {
+        try {
+            let ts13 = ts(13)
+            let access_nonce_str = `${randomString(8)}-${randomString(4)}-${randomString(4)}-${randomString(4)}-${randomString(12)}`
+            let str1 = `app_id=${this.wx_app_id}&&auth_id=${this.account_id}&&device_id=${this.device_id}&&id=${id}&&nonce_str=${access_nonce_str}&&source_type=app&&timestamp=${ts13}&&token=${this.token}&&${this.signkey}`.trim()
+            // console.log(str1)
+            let sign = CryptoJS.SHA256(str1).toString()
+            // console.log(sign)
+            this.h5_hd['access-api-signature'] = sign
+            this.h5_hd['access-timestamp'] = ts13
+            this.h5_hd['access-nonce-str'] = access_nonce_str
+
+            const options = {
+                method: "post",
+                url: `https://op-api.cloud.jinhua.com.cn/api/welfare/task/box/getGold`,
+                headers: this.h5_hd,
+                json: {"id": id}
+            }
+            // console.log(options)
+            let {res} = await requestPromise(options)
+            // console.log(res)
+            if (res.code === 0) {
+                this.log(`整点 领取宝箱奖励: 领取 ${score} 金币`)
+                await wait(3, 5)
+            } else {
+                this.log(res)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     async get_cache() {
         try {
@@ -90,6 +172,81 @@ class User {
             return this.ckFlog = false
         }
     }
+
+
+    //宝箱任务列表(0,6-23整点任务)
+    async boxtask() {
+        try {
+            let ts13 = ts(13)
+            let access_nonce_str = `${randomString(8)}-${randomString(4)}-${randomString(4)}-${randomString(4)}-${randomString(12)}`
+            let str1 = `app_id=${this.wx_app_id}&&auth_id=${this.account_id}&&device_id=${this.device_id}&&nonce_str=${access_nonce_str}&&source_type=app&&timestamp=${ts13}&&token=${this.token}&&${this.signkey}`.trim()
+            // console.log(str1)
+            let sign = CryptoJS.SHA256(str1).toString()
+            // console.log(sign)
+            this.h5_hd['access-api-signature'] = sign
+            this.h5_hd['access-timestamp'] = ts13
+            this.h5_hd['access-nonce-str'] = access_nonce_str
+
+            const options = {
+                method: "get",
+                url: `https://op-api.cloud.jinhua.com.cn/api/welfare/task/box`,
+                headers: this.h5_hd,
+            }
+            // console.log(options)
+            let {res} = await requestPromise(options)
+            // console.log(res)
+            if (res.code === 0) {
+                for (let aa of res.data.list) {
+                    const currentTime = new Date();
+                    const startTime = new Date(aa.startTime);
+                    const endTime = new Date(aa.endTime);
+                    if (aa.complete === 0 && currentTime >= startTime && currentTime <= endTime) {
+                        await this.get_box_gold(aa.id, aa.score)
+                    } else {
+                        this.log(`暂时没有宝箱哎!`)
+                    }
+                }
+            } else {
+                this.log(res)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+    async get_box_gold(id, score) {
+        try {
+            let ts13 = ts(13)
+            let access_nonce_str = `${randomString(8)}-${randomString(4)}-${randomString(4)}-${randomString(4)}-${randomString(12)}`
+            let str1 = `app_id=${this.wx_app_id}&&auth_id=${this.account_id}&&device_id=${this.device_id}&&id=${id}&&nonce_str=${access_nonce_str}&&source_type=app&&timestamp=${ts13}&&token=${this.token}&&${this.signkey}`.trim()
+            // console.log(str1)
+            let sign = CryptoJS.SHA256(str1).toString()
+            // console.log(sign)
+            this.h5_hd['access-api-signature'] = sign
+            this.h5_hd['access-timestamp'] = ts13
+            this.h5_hd['access-nonce-str'] = access_nonce_str
+
+            const options = {
+                method: "post",
+                url: `https://op-api.cloud.jinhua.com.cn/api/welfare/task/box/getGold`,
+                headers: this.h5_hd,
+                json: {"id": id}
+            }
+            // console.log(options)
+            let {res} = await requestPromise(options)
+            // console.log(res)
+            if (res.code === 0) {
+                this.log(`整点 领取宝箱奖励: 领取 ${score} 金币`)
+                await wait(3, 5)
+            } else {
+                this.log(res)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     async set_cache(ck, timeout = 10) {
         try {
@@ -232,118 +389,7 @@ class User {
     }
 
 
-
     // https://op-api.cloud.jinhua.com.cn/api/captcha/
-    async get_captcha() {
-        try {
-            let ts13 = ts(13)
-            let access_nonce_str = `${randomString(8)}-${randomString(4)}-${randomString(4)}-${randomString(4)}-${randomString(12)}`
-            let str1 = `app_id=${this.wx_app_id}&&auth_id=${this.account_id}&&device_id=${this.device_id}&&id=${id}&&nonce_str=${access_nonce_str}&&source_type=app&&timestamp=${ts13}&&token=${this.token}&&${this.signkey}`.trim()
-            // console.log(str1)
-            let sign = CryptoJS.SHA256(str1).toString()
-            // console.log(sign)
-            this.h5_hd['access-api-signature'] = sign
-            this.h5_hd['access-timestamp'] = ts13
-            this.h5_hd['access-nonce-str'] = access_nonce_str
-
-            const options = {
-                method: "post",
-                url: `https://op-api.cloud.jinhua.com.cn/api/welfare/task/box/getGold`,
-                headers: this.h5_hd,
-                json: {"id": id}
-            }
-            // console.log(options)
-            let {res} = await requestPromise(options)
-            // console.log(res)
-            if (res.code === 0) {
-                this.log(`整点 领取宝箱奖励: 领取 ${score} 金币`)
-                await wait(3, 5)
-            } else {
-                this.log(res)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-
-
-
-
-    //宝箱任务列表(0,6-23整点任务)
-    async boxtask() {
-        try {
-            let ts13 = ts(13)
-            let access_nonce_str = `${randomString(8)}-${randomString(4)}-${randomString(4)}-${randomString(4)}-${randomString(12)}`
-            let str1 = `app_id=${this.wx_app_id}&&auth_id=${this.account_id}&&device_id=${this.device_id}&&nonce_str=${access_nonce_str}&&source_type=app&&timestamp=${ts13}&&token=${this.token}&&${this.signkey}`.trim()
-            // console.log(str1)
-            let sign = CryptoJS.SHA256(str1).toString()
-            // console.log(sign)
-            this.h5_hd['access-api-signature'] = sign
-            this.h5_hd['access-timestamp'] = ts13
-            this.h5_hd['access-nonce-str'] = access_nonce_str
-
-            const options = {
-                method: "get",
-                url: `https://op-api.cloud.jinhua.com.cn/api/welfare/task/box`,
-                headers: this.h5_hd,
-            }
-            // console.log(options)
-            let {res} = await requestPromise(options)
-            // console.log(res)
-            if (res.code === 0) {
-                for (let aa of res.data.list) {
-                    const currentTime = new Date();
-                    const startTime = new Date(aa.startTime);
-                    const endTime = new Date(aa.endTime);
-                    if (aa.complete === 0 && currentTime >= startTime && currentTime <= endTime) {
-                        await this.get_box_gold(aa.id, aa.score)
-                    }else {
-                        this.log(`暂时没有宝箱哎!`)
-                    }
-                }
-            } else {
-                this.log(res)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-
-    async get_box_gold(id, score) {
-        try {
-            let ts13 = ts(13)
-            let access_nonce_str = `${randomString(8)}-${randomString(4)}-${randomString(4)}-${randomString(4)}-${randomString(12)}`
-            let str1 = `app_id=${this.wx_app_id}&&auth_id=${this.account_id}&&device_id=${this.device_id}&&id=${id}&&nonce_str=${access_nonce_str}&&source_type=app&&timestamp=${ts13}&&token=${this.token}&&${this.signkey}`.trim()
-            // console.log(str1)
-            let sign = CryptoJS.SHA256(str1).toString()
-            // console.log(sign)
-            this.h5_hd['access-api-signature'] = sign
-            this.h5_hd['access-timestamp'] = ts13
-            this.h5_hd['access-nonce-str'] = access_nonce_str
-
-            const options = {
-                method: "post",
-                url: `https://op-api.cloud.jinhua.com.cn/api/welfare/task/box/getGold`,
-                headers: this.h5_hd,
-                json: {"id": id}
-            }
-            // console.log(options)
-            let {res} = await requestPromise(options)
-            // console.log(res)
-            if (res.code === 0) {
-                this.log(`整点 领取宝箱奖励: 领取 ${score} 金币`)
-                await wait(3, 5)
-            } else {
-                this.log(res)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-
 
 
     // https://mapi.jcy.jinhua.com.cn/api/member/m_get_member?timestamp=1703131472003&noncestr=66a7ad54be5345b2a64c22332d269f32&sign=9701aeeea5bcaf4bfccf65fa8eaeaaa3

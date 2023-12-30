@@ -1,19 +1,19 @@
 /*
-乘龙之家              clzj.js
+战马能量星球              zm.js
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 乘龙之家
-export clzj=" 备注 # openid @ 备注 # openid "
+# 战马能量星球
+export clzj=" seaf @ seaf "
 
-抓 https://cvweixin-test.dflzm.com.cn    的  openid 就行   记得填上自己的ua  27行
+抓 zm.t7a.cn    的  seaf=后面的id就行   记得填上自己的ua  27行
 多账号用 换行 或 @ 分割
 
 tg频道: https://t.me/yml2213_tg
 */
 
 
-const CodeName = "乘龙之家"
-const env = "clzj"
+const CodeName = "战马能量星球"
+const env = "zm"
 const envSplit = ["\n", "&", "@"]
 const fs = require("fs")
 const CryptoJS = require("crypto-js")
@@ -23,11 +23,11 @@ const mode = 1    // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
 const ckFile = `${env}.txt`
 //====================================================================================================
-const ck_ = `1356#624d99e0-e01b-40be-bad5-971febf98136`  // 快速测试, 直接填入ck即可测试
-let ua = "Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/118.0.0.0 Mobile Safari/537.36 AgentWeb/5.0.0  UCBrowser/11.6.4.950"
+const ck_ = `8131703595456733`  // 快速测试, 直接填入ck即可测试  3541703594970981
+let ua = ''
 
 
-let out_log = ""
+let idarr = []
 
 //====================================================================================================
 
@@ -36,56 +36,75 @@ class User {
     constructor(str, id) {
         this.index = id
         this.ckFlog = true
-        this.ck_ = str.split("#")
-        this.remark = this.ck_[0]
-
-        this.openid = this.ck_[1]
-
+        this.ck = str
 
     }
+
 
     async userTask() {
 
 
-        let ids = [10009, 10010, 10011, 10012, 10013, 10014, 10015, 10017, 10018, 10100, 1000, 1004, 1005, 1006, 1008, 1009, 1104, 1201, 1202, 1203, 1204, 221201, 221202, 221203, 221204, 221205, 10015, 10017, 10018]
-        for (let t = 0; t < ids.length; t++) {
-            // console.log(t)
-            await this.addIntegral(ids[t])
+        if (this.ckFlog) {
+
+            // await this.sign()
+            // await this.share()
+            await this.test()
+            // await this.getusercenter()
         }
-
-
-        await this.check()
-
-        // if (this.ckFlog) {
-        //     // $.log(`\n-------------- 积分查询 --------------`)
-        //     await this.check()
-        //     // await this.task()
-        //     // await this.get_id()
-
-
-        // }
-
     }
 
 
+    async test() {
+
+        for (let i = 0; i < 10000; i++) {
+            try {
+                let i = randomString(16, {xx: false, dx: false, sz: true})
+                console.log(i)
+                await this.getusercenter(i)
+            } catch (error) {
+                this.log(error);
+            }
+        }
 
 
-    async check() {
+    }
+
+    async test1() {
+        const batchSize = 100;
+        const start = 4681687080190001;
+        const end = 4681687080198731;
+
+        try {
+            for (let i = start; i < end; i += batchSize) {
+                const batchIds = Array.from({length: batchSize}, (_, index) => i + index);
+                const promises = batchIds.map(id => this.getusercenter(id));
+                await Promise.all(promises);
+            }
+        } catch (error) {
+            this.log(error);
+        }
+    }
+
+
+    async sign() {
         try {
             const options = {
-                method: "post",
-                url: `https://cvweixin-test.dflzm.com.cn/tg-cvcar-api/mini/carMasterVip/findByOpenId`,
-                headers: this.hd,
-                body: this.openid,
+                method: "get",
+                url: `https://zm.t7a.cn/api/checkin.php?safe=${this.ck}`,
+                headers: {
+                    "Host": "zm.t7a.cn",
+                    "content-type": "application/x-www-form-urlencoded",
+                },
             }
             // console.log(options)
+            this.hd = options.headers
             let {res} = await requestPromise(options)
             // this.log(res)
-            if (res.code == 200) {
-                this.log(` ${res.data.weChatPhone}, 微信${res.data.weChatNickName}, 积分 ${res.data.integral}`, 2)
-                // await wait(randomInt(4, 7))
-            } else if (res.data.code == 500) {
-                this.log(` ${res.data.message}`)
+            if (res.status == 1) {
+                this.log(` ${res.msg}, 获得积分 ${res.checkscore}`)
+
+            } else if (res.status == 0) {
+                this.log(` ${res.msg}`)
             } else {
                 this.log(res)
             }
@@ -95,23 +114,77 @@ class User {
 
     }
 
-    async addIntegral(id) {
+    async share() {
         try {
             const options = {
-                method: "post",
-                url: `https://cvweixin-test.dflzm.com.cn/tg-cvcar-api/mini/integral_record/addIntegral`,
+                method: "get",
+                url: `https://zm.t7a.cn/api/share.php?safe=${this.ck}`,
                 headers: this.hd,
-                json: {"code": id, "openid": this.openid},
+
             }
+            // console.log(options)
             let {res} = await requestPromise(options)
-            this.log(res)
-            if (res.data.code == 200) {
-                this.log(`当前 ${id}, 执行 ${res.data.data.name}成功, 积分 +${res.data.data.quantity}`)
-                await wait(randomInt(3, 5))
-                await this.addIntegral(id)
-            } else if (res.data.code == 500) {
-                this.log(`当前 ${id}, ${res.data.message}`)
-                // await wait(randomInt(1, 2))
+            // this.log(res)
+            if (res.status == 1) {
+                this.log(` ${res.msg}`)
+
+            } else if (res.status == 0) {
+                this.log(` ${res.msg}`)
+            } else {
+                this.log(res)
+            }
+        } catch (error) {
+            this.log(error)
+        }
+
+    }
+
+    async horseeat() {
+        try {
+            const options = {
+                method: "get",
+                url: `https://zm.t7a.cn/api/horseeat.php?safe=${this.ck}`,
+                headers: this.hd,
+
+            }
+            // console.log(options)
+            let {res} = await requestPromise(options)
+            // this.log(res)
+            if (res.status == 1) {
+                this.log(` 喂马${res.msg}`)
+
+            } else if (res.status == 0) {
+                this.log(` ${res.msg}`)
+            } else {
+                this.log(res)
+            }
+        } catch (error) {
+            this.log(error)
+        }
+
+    }
+
+    async getusercenter(i) {
+        try {
+            const options = {
+                method: "get",
+                url: `https://zm.t7a.cn/api/getusercenter.php?safe=${i}`,
+                headers: this.hd,
+
+            }
+            // console.log(options)
+            let {res} = await requestPromise(options)
+            // this.log(res)
+            if (res.status === 1) {
+                this.log(` 用户 ${res.nickname}--${i}-积分${res.nowscore}`)
+                idarr.push(i)
+
+                if (idarr.length>0){
+                    console.log(idarr)
+                }
+
+            } else if (res.includes("SQL") > -1) {
+                this.log(`${i}-下一个`)
             } else {
                 this.log(res)
             }
@@ -127,13 +200,9 @@ class User {
             console.log(`\n${"•".repeat(24)}  ${this.index} ${"•".repeat(24)}\n`)
             this.hasLogged = true
         }
-        console.log(`${this.index} -- ${this.remark},  ${typeof message === "object" ? JSON.stringify(message) : message}`)
-        if (p === 1) {
-            sendLog.push(`${this.index} -- ${this.remark}, ${message}`)
-        } else if (p === 2) {
-            sendLog.push(`${this.index} -- ${this.remark}, ${message}`)
-            out_log += `${this.index}-- ${this.remark}, ${message}\n`
-
+        console.log(`${this.index} ${typeof message === "object" ? JSON.stringify(message) : message}`)
+        if (p) {
+            sendLog.push(`${this.index} ${message}`)
         }
     }
 }
@@ -243,10 +312,6 @@ class UserList {
 
 
 async function done(s, e) {
-    console.log(`开始重要日志输出\n`)
-    console.log(`${out_log}`)
-    console.log(`结束重要日志输出\n`)
-
     const el = (e - s) / 1000
     console.log(`\n[任务执行完毕 ${CodeName}] 耗时：${el.toFixed(2)}秒`)
     await showmsg()
@@ -254,9 +319,9 @@ async function done(s, e) {
     async function showmsg() {
         if (!sendLog) return
         if (!sendLog.length) return
-        let notify = require("./sendNotify")
-        console.log("\n============== 本次推送--by_yml ==============")
-        await notify.sendNotify(CodeName, sendLog.join("\n"))
+        let notify = require('./sendNotify')
+        console.log('\n============== 本次推送--by_yml ==============')
+        await notify.sendNotify(CodeName, sendLog.join('\n'))
     }
 
     process.exit(0)

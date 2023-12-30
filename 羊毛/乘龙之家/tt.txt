@@ -1,11 +1,47 @@
-修改本机hosts文件，将下面地址指向 127.0.0.1
-127.0.0.1 www.youtusoft.com
-127.0.0.1 youtusoft.com
-127.0.0.1 hostbuf.com
-127.0.0.1 www.hostbuf.com
-127.0.0.1 dkys.org
-127.0.0.1 tcpspeed.com
-127.0.0.1 www.wn1998.com
-127.0.0.1 wn1998.com
-127.0.0.1 pwlt.wn1998.com
-127.0.0.1 backup.www.hostbuf.com
+
+signin
+
+curl -H "Host: cvweixin-test.dflzm.com.cn" -H "Accept: */*" -H "Sec-Fetch-Site: same-origin" -H "Accept-Language: zh-CN,zh-Hans;q=0.9" -H "Sec-Fetch-Mode: cors" -H "Content-Type: application/json" -H "Origin: https://cvweixin-test.dflzm.com.cn" -H "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148" -H "Referer: https://cvweixin-test.dflzm.com.cn/clzx/" -H "Sec-Fetch-Dest: empty" --data-binary "6060daa3-af40-4918-bef2-a08be1048cc8" --compressed "https://cvweixin-test.dflzm.com.cn/tg-cvcar-api/mini/integral_record/signIn"
+
+
+
+lVk/i8/DNY3xs4EX2thQ5gCauQJWz3dFSBWDN6XO66yH/1L5HPxbJb7uWwqGoATIIgx6FOP7BZikjN8ZUxYCQoq1UR0QoSsHLmlfFvEPwoTd3pX1tpYZcvTajfPt+iKQ2WwHFUsr0z47sZfjQCudIa7u9iC4BVWgXOgKxQIvW4qgWG03x0RXxsK5wpzAAYNH4tlkUsScFqeSEd1+mSXoK72ti7CbLAcx5ftBAiMoSqnqeWS4k7DyL1KfdWYnX0viNDDVd6Y6ffYEg2Ruh7PZXkPWmyDMFQBN1C+Y89ejr7n3uiC06ZxpSlIjeU9UCLzNEVDl3aA0u2OTM4eeMb4Cs5vTc2zzngLIec+rJDu4cpGbu2YoQCKPqg==
+
+
+lVk/i8/DNY3xs4EX2thQ5gCauQJWz3dFSBWDN6XO66yH/1L5HPxbJb7uWwqGoATIIgx6FOP7BZikjN8ZUxYCQoq1UR0QoSsHLmlfFvEPwoTd3pX1tpYZcvTajfPt+iKQ2WwHFUsr0z47sZfjQCudIa7u9iC4BVWgXOgKxQIvW4qgWG03x0RXxsK5wpzAAYNH4tlkUsScFqeSEd1+mSXoK72ti7CbLAcx5ftBAiMoSqnqeWS4k7DyL1KfdWYnX0viNDDVd6Y6ffYEg2Ruh7PZXkPWmyDMFQBN1C+Y89ejr7n3uiC06ZxpSlIjeU9UCLzNEVDl3aA0u2OTM4eeMb4Cs5vTc2zzngLIec+rJDu4cpGbu2YoQCKPqg==
+
+
+Psj/lasg4tjdOSZc6w/WCqoLcOWHPC3OtwxB6r3wBdWzPQMZXHlB+WHWdBk18NvoQgq3UpTe7gy39kYHbP0fOIUxDT/68vdFLDwZlmjoSCjAw6vsS+nuTNiNynj5z7/i5Nn7E2NFZqWVPUWYm6dFdBH2vqTKGoB538Vcm2RzJBco7hbaG2EXfTgxoLs3B0IZm8KIklmPzdVdBUZBzhlwMLQ74FMOGKuFnO81n7t94APxW/W8N+vbOiQD1IlGzMlIMjRxPf3MhTWR9hyOQczSiuRDZ1Ze98zxciTD9r6Wvui6MBfL45DWLe18CkZAJxfa/csXioosXrJ7xXbpjisQjA\u003d\u003d
+
+Psj/lasg4tjdOSZc6w/WCqoLcOWHPC3OtwxB6r3wBdWzPQMZXHlB+WHWdBk18NvoQgq3UpTe7gy39kYHbP0fOIUxDT/68vdFLDwZlmjoSCjAw6vsS+nuTNiNynj5z7/i5Nn7E2NFZqWVPUWYm6dFdBH2vqTKGoB538Vcm2RzJBco7hbaG2EXfTgxoLs3B0IZm8KIklmPzdVdBUZBzhlwMLQ74FMOGKuFnO81n7t94APxW/W8N+vbOiQD1IlGzMlIMjRxPf3MhTWR9hyOQczSiuRDZ1Ze98zxciTD9r6Wvui6MBfL45DWLe18CkZAJxfa/csXioosXrJ7xXbpjisQjA%3D%3D
+
+
+
+public static void main(String[] strArr) {
+        try {
+            System.out.println("--------------------");
+            byte[] encryptByPrivateKey = encryptByPrivateKey("测试提交数据".getBytes(), "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCJyEZMQ/RAWzCe+f5kBCuAYczxV4Nksm57MaGDGHh31LJFR+chb/N59PvWvBLhtlSzUw/EnBq87LEAEk4cu5yR0deScKwYRbPvyCwDoPT47712XWAJlHb2ec382XOY1tKMWfO+xMlgGVLzypKvflFcUT7oMzu4+xLwWbYj7rkW14nynbIy+lKDvZCQhfzG8jUXW7BetyIgH7i7u5OjPEimUw6jhrq6ECbdb4qOnPeeLZu2MaodFupvd5tJnKX6cV+eNBoF7dfJXEBYNJqeOAWP/Bupt66D0UGz6dAVU8hlH3PRoTk12Lmjd5KRXscWZamTFqI9nQEtErdccxoG25KnAgMBAAECggEBAIPz1b88ZTMtIgdejA7lH3Q4Nbn8gc1yRPSet3uBd/3rKT/IeMZBHQBzaqxgOgUIRV3n8nXsun6sf2b+IOjLlErimH2agnZMauL85YokH/g4QU6WZl9GXBf41xmMd3SsZ8AadaEBfYoXNqZcHtcLNogfFwvx5QRnD+A3SoRnH8OLBeVvOEe4AqHLT2xEZ9TeCf3fJe0Rf0fUIbw7I5ioiRZV/ir0L1VM7+1k2JODUkdC2Luj5Tl3nl1Eg6EmkYCmGE1bip1NAatsfjPBLMF7XdPNjLboiffjgKVBOjb7Y9vL18BCoLtWeTT2GkMpi5Sr94T1te1Ox77dF4BP33Xn7eECgYEA1TNUrAQsh14NbbkwFtUHXS8/YXt81p9wbSpFBymIawF2Lkk0913TB4CHSun45LhYXjdZZxK/TgqC5EIq5v2RA0jY3cSxoqVe6RZKB04E8wszeJHiEJPdu2vFnpZh9iAyhswiM5FmuKZKoWsVc2SZrBXAI02smSn3lXYok1VBS3sCgYEApXEZS6gjUu4o7ZL53Ur1HDfi/nxpkxqrPh+D1HVYjzjT+4vTeZwtLXt2VCInPWNXH+f11mzhxIrLkI0jMcSCah81DuU8aFXnqvPuyFvt9uaQBYlVWBtkcGZyeaxHFrbfCyeu0jm7SfwmiIg12hKlIHtPTjEZQUX+kkWr8cdaZ8UCgYEAh0Pl+K09QzVc97yC0jmeTnTnlYWvksvdnKUw3nZvYtSukndH75nLhfr524HOs+5xwnUDd+3hCjaJDSEd7yf5lUfmr+1XdoXNTb0igrfxU/JLWbfU4geuqnaaDyACTxHmfLePC4C413ZJ61fxaCDvjsrN+JgTZanGt0EcRT3WC3kCgYEAgf5/GMJxlw0JXbs515a5R8Xl9358Whj/at3KcRsPTeIiNqnkrc54dR9ol60KViMDZ0+VDDobn5pLXzZ26/jzXD1PLHgU4gp18Q6glhAdx/3cNm11gLhtUCA/XLlwVjm0wggZRpgUQIr/IBKe9c3mr8IUS2Uq6e38nKRf+adhst0CgYAM4tvl+U1MPbbz3YzDv8QPepZ7Pglgdfxqfr5OkXA7jNhqTZjSq10B6oClGvirBo1m6f26F02iUKk1n67AuiLlTP/RRZHi1cfq6P9IaXl23PcxJfUMvIxQDS0U+UTFpNXryTw/qNAkSfufN48YzKdGvc8vHrYJyaeemaVlbdJOCw==");
+            PrintStream printStream = System.out;
+            printStream.println("私钥加密后的数据：" + u.encode(encryptByPrivateKey));
+            String sign = sign("测试提交数据".getBytes(), "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCJyEZMQ/RAWzCe+f5kBCuAYczxV4Nksm57MaGDGHh31LJFR+chb/N59PvWvBLhtlSzUw/EnBq87LEAEk4cu5yR0deScKwYRbPvyCwDoPT47712XWAJlHb2ec382XOY1tKMWfO+xMlgGVLzypKvflFcUT7oMzu4+xLwWbYj7rkW14nynbIy+lKDvZCQhfzG8jUXW7BetyIgH7i7u5OjPEimUw6jhrq6ECbdb4qOnPeeLZu2MaodFupvd5tJnKX6cV+eNBoF7dfJXEBYNJqeOAWP/Bupt66D0UGz6dAVU8hlH3PRoTk12Lmjd5KRXscWZamTFqI9nQEtErdccxoG25KnAgMBAAECggEBAIPz1b88ZTMtIgdejA7lH3Q4Nbn8gc1yRPSet3uBd/3rKT/IeMZBHQBzaqxgOgUIRV3n8nXsun6sf2b+IOjLlErimH2agnZMauL85YokH/g4QU6WZl9GXBf41xmMd3SsZ8AadaEBfYoXNqZcHtcLNogfFwvx5QRnD+A3SoRnH8OLBeVvOEe4AqHLT2xEZ9TeCf3fJe0Rf0fUIbw7I5ioiRZV/ir0L1VM7+1k2JODUkdC2Luj5Tl3nl1Eg6EmkYCmGE1bip1NAatsfjPBLMF7XdPNjLboiffjgKVBOjb7Y9vL18BCoLtWeTT2GkMpi5Sr94T1te1Ox77dF4BP33Xn7eECgYEA1TNUrAQsh14NbbkwFtUHXS8/YXt81p9wbSpFBymIawF2Lkk0913TB4CHSun45LhYXjdZZxK/TgqC5EIq5v2RA0jY3cSxoqVe6RZKB04E8wszeJHiEJPdu2vFnpZh9iAyhswiM5FmuKZKoWsVc2SZrBXAI02smSn3lXYok1VBS3sCgYEApXEZS6gjUu4o7ZL53Ur1HDfi/nxpkxqrPh+D1HVYjzjT+4vTeZwtLXt2VCInPWNXH+f11mzhxIrLkI0jMcSCah81DuU8aFXnqvPuyFvt9uaQBYlVWBtkcGZyeaxHFrbfCyeu0jm7SfwmiIg12hKlIHtPTjEZQUX+kkWr8cdaZ8UCgYEAh0Pl+K09QzVc97yC0jmeTnTnlYWvksvdnKUw3nZvYtSukndH75nLhfr524HOs+5xwnUDd+3hCjaJDSEd7yf5lUfmr+1XdoXNTb0igrfxU/JLWbfU4geuqnaaDyACTxHmfLePC4C413ZJ61fxaCDvjsrN+JgTZanGt0EcRT3WC3kCgYEAgf5/GMJxlw0JXbs515a5R8Xl9358Whj/at3KcRsPTeIiNqnkrc54dR9ol60KViMDZ0+VDDobn5pLXzZ26/jzXD1PLHgU4gp18Q6glhAdx/3cNm11gLhtUCA/XLlwVjm0wggZRpgUQIr/IBKe9c3mr8IUS2Uq6e38nKRf+adhst0CgYAM4tvl+U1MPbbz3YzDv8QPepZ7Pglgdfxqfr5OkXA7jNhqTZjSq10B6oClGvirBo1m6f26F02iUKk1n67AuiLlTP/RRZHi1cfq6P9IaXl23PcxJfUMvIxQDS0U+UTFpNXryTw/qNAkSfufN48YzKdGvc8vHrYJyaeemaVlbdJOCw==");
+            PrintStream printStream2 = System.out;
+            printStream2.println("私钥签名后的数据：" + sign);
+            byte[] decryptByPublicKey = decryptByPublicKey(encryptByPrivateKey, "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAichGTEP0QFswnvn+ZAQrgGHM8VeDZLJuezGhgxh4d9SyRUfnIW/zefT71rwS4bZUs1MPxJwavOyxABJOHLuckdHXknCsGEWz78gsA6D0+O+9dl1gCZR29nnN/NlzmNbSjFnzvsTJYBlS88qSr35RXFE+6DM7uPsS8Fm2I+65FteJ8p2yMvpSg72QkIX8xvI1F1uwXrciIB+4u7uTozxIplMOo4a6uhAm3W+Kjpz3ni2btjGqHRbqb3ebSZyl+nFfnjQaBe3XyVxAWDSanjgFj/wbqbeug9FBs+nQFVPIZR9z0aE5Ndi5o3eSkV7HFmWpkxaiPZ0BLRK3XHMaBtuSpwIDAQAB");
+            PrintStream printStream3 = System.out;
+            printStream3.println("公钥解密后的数据：" + new String(decryptByPublicKey));
+            boolean verify = verify("测试提交数据".getBytes(), "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAichGTEP0QFswnvn+ZAQrgGHM8VeDZLJuezGhgxh4d9SyRUfnIW/zefT71rwS4bZUs1MPxJwavOyxABJOHLuckdHXknCsGEWz78gsA6D0+O+9dl1gCZR29nnN/NlzmNbSjFnzvsTJYBlS88qSr35RXFE+6DM7uPsS8Fm2I+65FteJ8p2yMvpSg72QkIX8xvI1F1uwXrciIB+4u7uTozxIplMOo4a6uhAm3W+Kjpz3ni2btjGqHRbqb3ebSZyl+nFfnjQaBe3XyVxAWDSanjgFj/wbqbeug9FBs+nQFVPIZR9z0aE5Ndi5o3eSkV7HFmWpkxaiPZ0BLRK3XHMaBtuSpwIDAQAB", sign);
+            PrintStream printStream4 = System.out;
+            printStream4.println("签名是否正确：" + verify);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+ Psj/lasg4tjdOSZc6w/WCqoLcOWHPC3OtwxB6r3wBdWzPQMZXHlB+WHWdBk18NvoQgq3UpTe7gy39kYHbP0fOIUxDT/68vdFLDwZlmjoSCjAw6vsS+nuTNiNynj5z7/i5Nn7E2NFZqWVPUWYm6dFdBH2vqTKGoB538Vcm2RzJBco7hbaG2EXfTgxoLs3B0IZm8KIklmPzdVdBUZBzhlwMLQ74FMOGKuFnO81n7t94APxW/W8N+vbOiQD1IlGzMlIMjRxPf3MhTWR9hyOQczSiuRDZ1Ze98zxciTD9r6Wvui6MBfL45DWLe18CkZAJxfa/csXioosXrJ7xXbpjisQjA\u003d\u003d
+
+
+
+ psj/lasg4tjdoszc6w/wcqolcowhpc3otwxb6r3wbdwzpqmzxhlb+whwdbk18nvoqgq3upte7gy39kyhbp0foiuxdt/68vdfldwzlmjoscjaw6vss+nutninynj5z7/i5nn7e2nfzqwvpuwym6dfdbh2vqtkgob538vcm2rzjbco7hbag2exftgxols3b0izm8kiklmpzdvdbuzbzhlwmlq74fmogkufno81n7t94apxw/w8n+vboiqd1ilgzmlimjrxpf3mhtwr9hyoqczsiurdz1ze98zxcitd9r6wvui6mbfl45dwle18ckzajxfa/csxioosxrj7xxbpjisqja==

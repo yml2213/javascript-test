@@ -1,0 +1,49 @@
+function t1(_0x5807e0, _0x305087, _0xecbb44) {
+    'use strict';
+    let _0x504501 = a0_0x4070;
+    let _0x172277 = _0xecbb44(_0x504501(0x1610))
+    let _0x31381f = _0xecbb44['n'](_0x172277);
+    let _0x922809 = _0x504501(0x15ff)
+    let {g: _0x205b5a, s: _0x147ed0} = _0x31381f['a'][_0x922809]
+    let _0x14a5aa = '' + _0x205b5a['p'] + _0x205b5a['u'] + _0x205b5a['b'] + _0x205b5a['k'] + _0x205b5a['e'] + _0x205b5a['y']
+    let _0x1f7645 = '' + _0x147ed0['p'] + _0x147ed0['r'] + _0x147ed0['i'] + _0x147ed0['k'] + _0x147ed0['e'] + _0x147ed0['y'];
+    
+    _0x305087['a'] = {
+        'jsEncrypt'(_0x584d18) {
+            let _0xb03a50 = _0x504501;
+            let _0x9ebf3c = new JSEncrypt();
+            _0x9ebf3c[_0xb03a50(0x68a)](_0x14a5aa);
+            let _0x10c7ef = _0x9ebf3c['encryptLong2'](_0x584d18);
+            return _0x10c7ef;
+        },
+        'jsDecrypt'(_0x3b3bfb) {
+            let _0x70c1e0 = _0x504501;
+            let _0x839954 = new JSEncrypt();
+            _0x839954['setPrivateKey'](_0x1f7645);
+            let _0x37e09c = _0x839954[_0x70c1e0(0x7a5)](_0x3b3bfb);
+            return _0x37e09c;
+        }
+    };
+}
+
+
+function a0_0x4070(_0x38a68c, _0x4aea90) {
+    var _0x3bdea0 = a0_0x33c8();
+    return a0_0x4070 = function(_0x172af2, _0x4a781a) {
+        _0x172af2 = _0x172af2 - 0x110;
+        var _0xa5551a = _0x3bdea0[_0x172af2];
+        return _0xa5551a;
+    }
+        ,
+        a0_0x4070(_0x38a68c, _0x4aea90);
+}
+
+
+function jsEncrypt(){
+    var _0xb03a50 = _0x504501;
+    let _0x9ebf3c = new JSEncrypt();
+    _0x9ebf3c[_0xb03a50(0x68a)](_0x14a5aa);
+    return _0x9ebf3c['encryptLong2'](_0x584d18);
+}
+
+jsEncrypt('{"advertCodes":"JF02","encode":true}')

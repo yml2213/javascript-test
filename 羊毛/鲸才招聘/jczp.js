@@ -1,36 +1,28 @@
 /*
-乘龙之家              clzj.js
+鲸才招聘
 
 -------------------  青龙-配置文件-复制区域  -------------------
-# 乘龙之家
-export clzj=" 备注 # openid @ 备注 # openid "
+# 鲸才招聘
+export jczp=" 备注 # toekn # memberId  #  备注 # toekn # memberId   "
 
-抓 https://cvweixin-test.dflzm.com.cn    的  openid 就行   记得填上自己的ua  27行
 多账号用 换行 或 @ 分割
-
 tg频道: https://t.me/yml2213_tg
 */
 
-
-const CodeName = "乘龙之家"
-const env = "clzj"
+const CodeName = "鲸才招聘"
+const env = "jczp"
 const envSplit = ["\n", "&", "@"]
 const fs = require("fs")
 const CryptoJS = require("crypto-js")
 require("dotenv").config()
 let sendLog = []
-const mode = 1    // 并发-2   顺序-1
+const mode = 1  // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
 const ckFile = `${env}.txt`
 //====================================================================================================
-const ck_ = `1356#624d99e0-e01b-40be-bad5-971febf98136`  // 快速测试, 直接填入ck即可测试
-let ua = "Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/118.0.0.0 Mobile Safari/537.36 AgentWeb/5.0.0  UCBrowser/11.6.4.950"
-
-
-let out_log = ""
+const ck_ = ``
 
 //====================================================================================================
-
 
 class User {
     constructor(str, id) {
@@ -38,86 +30,129 @@ class User {
         this.ckFlog = true
         this.ck_ = str.split("#")
         this.remark = this.ck_[0]
+        this.token = this.ck_[1]
+        this.memberId = this.ck_[2]
 
-        this.openid = this.ck_[1]
-
+        this.key = '0603080708080808'
+        this.iv = '0603080708080808'
 
     }
 
     async userTask() {
+        await this.do_sign()  // 获取缓存的变量
+        await this.info()  // 获取缓存的变量
 
-
-        let ids = [10009, 10010, 10011, 10012, 10013, 10014, 10015, 10017, 10018, 10100, 1000, 1004, 1005, 1006, 1008, 1009, 1104, 1201, 1202, 1203, 1204, 221201, 221202, 221203, 221204, 221205, 10015, 10017, 10018]
-        for (let t = 0; t < ids.length; t++) {
-            // console.log(t)
-            await this.addIntegral(ids[t])
-        }
-
-
-        await this.check()
-
-        // if (this.ckFlog) {
-        //     // $.log(`\n-------------- 积分查询 --------------`)
-        //     await this.check()
-        //     // await this.task()
-        //     // await this.get_id()
-
-
-        // }
 
     }
 
-
-
-
-    async check() {
+    // 100  19 1703727815953
+    // https://op-api.cloud.jinhua.com.cn/api/welfare/cash/exchange
+    async do_sign() {
         try {
+            let ts13 = ts(13)
+            let ivKey = await this.en_aes(ts13)
+            let signIv = CryptoJS.MD5(`memberId=${this.memberId}&loginType=wx&token=${this.token}&ivKey=${ts13}`).toString()
+
             const options = {
                 method: "post",
-                url: `https://cvweixin-test.dflzm.com.cn/tg-cvcar-api/mini/carMasterVip/findByOpenId`,
-                headers: this.hd,
-                body: this.openid,
+                url: `https://erp.5jingcai.com/signIn/signIn`,
+                headers: {
+                    Host: 'erp.5jingcai.com',
+                    authorization: `Bearer ${this.token}`,
+                    charset: 'utf-8',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Mobile Safari/537.36 XWEB/1160027 MMWEBSDK/20230504 MMWEBID/1858 MicroMessenger/8.0.37.2380(0x2800255B) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android',
+                    'content-type': 'application/json',
+                    Referer: 'https://servicewechat.com/wxb848fb987b3393a8/336/page-frame.html'
+                },
+                json: {
+                    loginFrom: 'wx',
+                    memberId: `${this.memberId}`,
+                    token: this.token,
+                    loginType: 'wx',
+                    fromType: '',
+                    flag: 'weixin',
+                    ivKey: ivKey,
+                    signIv: signIv,
+                    sendFlag: '0'
+                },
             }
             // console.log(options)
             let {res} = await requestPromise(options)
-            // this.log(res)
-            if (res.code == 200) {
-                this.log(` ${res.data.weChatPhone}, 微信${res.data.weChatNickName}, 积分 ${res.data.integral}`, 2)
-                // await wait(randomInt(4, 7))
-            } else if (res.data.code == 500) {
-                this.log(` ${res.data.message}`)
+            console.log(res)
+            if (res.code === '0') {
+                this.log(`签到成功: 获得 ${res.data} 金币`)
+                await wait(3, 5)
+            } else if (res.code === "2") {
+                this.log(`签到: ${res.msg}`)
             } else {
                 this.log(res)
             }
         } catch (error) {
-            this.log(error)
+            console.log(error)
         }
-
     }
 
-    async addIntegral(id) {
+    // https://erp.5jingcai.com/signIn/getRewardIndexInfo
+    async info() {
         try {
+            let ts13 = ts(13)
+            let ivKey = await this.en_aes(ts13)
+            let signIv = CryptoJS.MD5(`memberId=${this.memberId}&loginType=wx&token=${this.token}&ivKey=${ts13}`).toString()
+
             const options = {
                 method: "post",
-                url: `https://cvweixin-test.dflzm.com.cn/tg-cvcar-api/mini/integral_record/addIntegral`,
-                headers: this.hd,
-                json: {"code": id, "openid": this.openid},
+                url: `https://erp.5jingcai.com/signIn/getRewardIndexInfo`,
+                headers: {
+                    Host: 'erp.5jingcai.com',
+                    authorization: `Bearer ${this.token}`,
+                    charset: 'utf-8',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; M2102J2SC Build/SKQ1.211006.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Mobile Safari/537.36 XWEB/1160027 MMWEBSDK/20230504 MMWEBID/1858 MicroMessenger/8.0.37.2380(0x2800255B) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android',
+                    'content-type': 'application/json',
+                    Referer: 'https://servicewechat.com/wxb848fb987b3393a8/336/page-frame.html'
+                },
+                json: {
+                    loginFrom: 'wx',
+                    memberId: `${this.memberId}`,
+                    token: this.token,
+                    loginType: 'wx',
+                    fromType: '',
+                    flag: 'weixin',
+                    sendFlag: '0',
+                    "fromFlag": "signIn"
+                },
             }
+            // console.log(options)
             let {res} = await requestPromise(options)
-            this.log(res)
-            if (res.data.code == 200) {
-                this.log(`当前 ${id}, 执行 ${res.data.data.name}成功, 积分 +${res.data.data.quantity}`)
-                await wait(randomInt(3, 5))
-                await this.addIntegral(id)
-            } else if (res.data.code == 500) {
-                this.log(`当前 ${id}, ${res.data.message}`)
-                // await wait(randomInt(1, 2))
+            // console.log(res)
+            if (res.code === '0') {
+                this.log(`可提现: ${res.data.info.cashoutMoney} 元, 现有: ${res.data.info.freezeMoney} 元`)
             } else {
                 this.log(res)
             }
         } catch (error) {
-            this.log(error)
+            console.log(error)
         }
+    }
+
+
+
+    // ECC9809F77B6175A6C26BD0FD72FC8BA
+    // 717e27201dc7e5d504d156436aa6519f
+    async en_aes(word) {
+        let key = this.key
+        let iv = this.iv
+        key = CryptoJS.enc.Utf8.parse(key)
+        iv = CryptoJS.enc.Utf8.parse(iv)
+        let srcs = CryptoJS.enc.Utf8.parse(word)
+        // 加密模式为CBC，补码方式为PKCS5Padding（也就是PKCS7）
+        let encrypted = CryptoJS.AES.encrypt(srcs, key, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        })
+        //返回base64
+        // return CryptoJS.enc.Base64.stringify(encrypted.ciphertext)
+        return encrypted.ciphertext.toString(CryptoJS.enc.Hex).toUpperCase()
 
     }
 
@@ -127,22 +162,23 @@ class User {
             console.log(`\n${"•".repeat(24)}  ${this.index} ${"•".repeat(24)}\n`)
             this.hasLogged = true
         }
-        console.log(`${this.index} -- ${this.remark},  ${typeof message === "object" ? JSON.stringify(message) : message}`)
-        if (p === 1) {
-            sendLog.push(`${this.index} -- ${this.remark}, ${message}`)
-        } else if (p === 2) {
-            sendLog.push(`${this.index} -- ${this.remark}, ${message}`)
-            out_log += `${this.index}-- ${this.remark}, ${message}\n`
-
+        console.log(`${this.index}-${this.remark},  ${typeof message === "object" ? JSON.stringify(message) : message}`)
+        if (p) {
+            sendLog.push(`${this.index} ${message}`)
         }
     }
 }
+
 
 async function requestPromise(options) {
     const got = require("got")
     let response, body, headers, res
     try {
         if (options.method.toUpperCase() === "GET") delete options.json, options.body, options.from
+        if (options.params) {
+            options.searchParams = options.params
+            delete options.params
+        }
         response = await got(options, {
             followRedirect: false,
             https: {rejectUnauthorized: false},
@@ -150,6 +186,7 @@ async function requestPromise(options) {
         })
     } catch (error) {
         response = error.response
+        console.log(error)
     }
     if (response) {
         body = response.body
@@ -173,7 +210,6 @@ class UserList {
         this.mode = mode
     }
 
-    1
 
     checkEnv() {
         try {
@@ -214,7 +250,7 @@ class UserList {
                 while (taskQueue.length >= concurrency) {
                     await Promise.race(taskQueue)
                 }
-                const promise = user.task()
+                const promise = user.userTask()
                 taskQueue.push(promise)
                 promise.finally(() => {
                     taskQueue.splice(taskQueue.indexOf(promise), 1)
@@ -243,10 +279,6 @@ class UserList {
 
 
 async function done(s, e) {
-    console.log(`开始重要日志输出\n`)
-    console.log(`${out_log}`)
-    console.log(`结束重要日志输出\n`)
-
     const el = (e - s) / 1000
     console.log(`\n[任务执行完毕 ${CodeName}] 耗时：${el.toFixed(2)}秒`)
     await showmsg()
@@ -254,18 +286,19 @@ async function done(s, e) {
     async function showmsg() {
         if (!sendLog) return
         if (!sendLog.length) return
-        let notify = require("./sendNotify")
-        console.log("\n============== 本次推送--by_yml ==============")
-        await notify.sendNotify(CodeName, sendLog.join("\n"))
+        let notify = require('./sendNotify')
+        console.log('\n============== 本次推送--by_yml ==============')
+        await notify.sendNotify(CodeName, sendLog.join('\n'))
     }
 
     process.exit(0)
 
 }
 
-function wait(seconds) {
-    console.log(`等待 ${seconds} 秒`)
-    return new Promise((resolve) => setTimeout(resolve, seconds * 1000))
+function wait(min = 2, max = 3) {  //默认等待 2-3 秒， 自定义的话需要两个值
+    let s = Math.round(Math.random() * (max - min) + min)
+    console.log(`等待 ${s} 秒`)
+    return new Promise((resolve) => setTimeout(resolve, s * 1000))
 }
 
 function randomInt(min, max) {
@@ -295,7 +328,7 @@ function ts(type = false, _data = "") {
             a = myDate.getHours()
             break
         case "mo":
-            a = myDate.getMonth()
+            a = myDate.getMonth() + 1
             break
         case "d":
             a = myDate.getDate()
@@ -320,7 +353,7 @@ function ts(type = false, _data = "") {
     return a
 }
 
-function randomString(length, options = {xx: true, dx: true, sz: true}) {
+function randomString1(length, options = {xx: true, dx: true, sz: true}) {
     let charset = ""
     if (options.xx) {
         charset += "abcdefghijklmnopqrstuvwxyz"
@@ -333,6 +366,25 @@ function randomString(length, options = {xx: true, dx: true, sz: true}) {
     }
     let res = ""
     for (let i = 0; i < length; i++) {
+        let randomIndex = Math.floor(Math.random() * charset.length)
+        res += charset.charAt(randomIndex)
+    }
+    return res
+}
+
+function randomString(len, up = false, xx = true, sz = true) {
+    let charset = ""
+    if (xx) {
+        charset += "abcdefghijklmnopqrstuvwxyz"
+    }
+    if (up) {
+        charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    }
+    if (sz) {
+        charset += "0123456789"
+    }
+    let res = ""
+    for (let i = 0; i < len; i++) {
         let randomIndex = Math.floor(Math.random() * charset.length)
         res += charset.charAt(randomIndex)
     }
