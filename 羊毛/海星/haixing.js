@@ -74,9 +74,7 @@ class User {
 
     async userTask() {
 
-
         await this.task_day()      // 每日任务
-
 
         // await this.signIn()      // 签到
         // await this.do_draw()     // 抽奖
@@ -172,15 +170,12 @@ class User {
                             case '评论文章':
                                 // await this.share()
                                 break
-
-
                         }
 
                     }
                 }
 
-
-            } else if (res.data.code === 500) {
+            } else if (res.code === 500 || 10005) {
                 this.log(res.msg)
             } else {
                 this.log(res)
@@ -367,7 +362,7 @@ class User {
                 } else {
                     this.log(res)
                 }
-            }else await this.praise_comment()
+            } else await this.praise_comment()
 
 
         } catch (error) {

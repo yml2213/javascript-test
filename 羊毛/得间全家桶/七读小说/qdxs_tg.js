@@ -3,7 +3,7 @@
 
 -------------------  青龙-配置文件-复制区域  -------------------
 # 七读小说
-export qdxs_task=" 你扫码的ck  "
+export qdxs=" tg_id#备注#ck  "
 
 抓   的  sessionId 就行   记得填上自己的 ua  29行左右
 多账号用 换行 或 @ 分割
@@ -13,7 +13,7 @@ tg频道: https://t.me/yml2213_tg
 
 
 const CodeName = "七读小说"
-const env = "qdxs_task"
+const env = "qdxs"
 const envSplit = ["\n", "&", "@"]
 const fs = require("fs")
 const CryptoJS = require("crypto-js")
@@ -24,13 +24,15 @@ const mode = 1    // 并发-2   顺序-1
 const runMax = 3  // 最大并发数量
 const ckFile = `${env}.txt`
 //====================================================================================================
-// const ck_ = `13754650804#{"usr":"j174924563","utdid":"ZMl91UcGKg7puy6VUd3yd9gn","token":"daada922b19c570b4419231f85fa2040","authToken":"7640b25e5ba9449001462b5277552f1c","nickname":"ymlk6m5q7"}`  // 快速测试, 直接填入ck即可测试
-const ck_ = `758550620#17682166389#{"usr":"j185149565","utdid":"ZMeZFFNRqeqNPOP9hFMhAmEK","token":"180c897f1cd034e5de48ee665f75218d","authToken":"a2546802510c05709de9e7c66d2be8b7","nickname":"来西少林喝酒滴德鄂"}`  // 快速测试, 直接填入ck即可测试
+// const ck_ = `758550620#17682166389#{"usr":"j185149565","utdid":"ZMeZFFNRqeqNPOP9hFMhAmEK","token":"180c897f1cd034e5de48ee665f75218d","authToken":"a2546802510c05709de9e7c66d2be8b7","nickname":"来西少林喝酒滴德鄂"}`  // 快速测试, 直接填入ck即可测试
+
+const ck_=`723756771#15614832213#{"usr":"j187804327","utdid":"ZMPvTWytfho17xzhcUvemqjU","token":"e945fc702e2665d0c84b3fb26d7f93bf","authToken":"187d292ff78b3ed27cc1a4c2511a1722","nickname":"去神庭演练的小意"}`
 
 
-let ad_num = 50
+let ad_num = 100
 let cash_ad_num = 10
 
+let tg_log = ""
 
 //====================================================================================================
 
@@ -39,26 +41,19 @@ class User {
         this.index = id
         this.ckFlog = true
         this.ck_ = str.split("#")
-        this.remark = this.ck_[0]
+        this.tg_id = this.ck_[0]
+        this.remark = this.ck_[1]
         // this.ck_data = JSON.parse(this.ck_[1].replace(/'/g, '"'))
-        this.ck_data = this.ck_[1]
+        this.ck_data = this.ck_[2]
         // console.log(this.ck_data)
-        try {
-            this.ck_data = JSON.parse(this.ck_[1])
-
-        } catch (error) {
-            console.log(`请检查你的变量是否是 jSON 字符串, 可以直接用登录生成的ck`)
-            console.log(error)
-        }
-
-
+        this.ck_data = JSON.parse(this.ck_[2])
 
         this.privateKey = `-----BEGIN PRIVATE KEY-----
         MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAMXGjyS3p+3AVnlBJe5VQ6tC9inh8tVBve4r+yBjC5HQD6th2n3tSyuNVYaNRAFSEq+OENwnwwhjbYUnjLWb+qZscB43K1+4/WlKdvfgwQVXm0ZQ2+jMBf+165UBEEuuWT2WqXeKkkUqPQta5lrt4eFfbo53JcOO4D5fDSGQS5bZAgMBAAECgYAor4I/AXEQXeLsKtTMxMmY77uIPi0gZdfWqUGOFhIJOw4eKZEzGp++I+MWPPVieCnT55vcTmm2zg13uP0fVykmukWqZszG/ZNpPKYleOqnZOqQj7O3au8Ywz18F/pqD++PsUzxRVeXxSOOwmjQ0D2Pe/9yutz62pyiFGAzDsaI6QJBAMn8DeBT3AtcWuONdiHL3yC4NkGJDdyBbMOaWyvrcvUUZr13uS9mZO6pLTN6v9tkmPUdvYxcPTJ9wdGR7NcNPDsCQQD6qluGI2VAlz4s5UoDnelFKrwDPeiruE3I6wsrasK6h37DsAE6OrQgx2dm4yH7ntJHUlJCZ5ay1EBNfEexgQv7AkA1r2vUwxVKY7q4nqHWa8SbgrrRAmePw0qwVreC3erJHyoLk+XBpnqPQKIF+8tAueU5yTTXOLD/WZOJazrDEf5/AkBpwG+Ggu5Xtrcbd8ynA/sDHElf0MGVmNbwOgFnWs42pa1cX6fU6ilOXvIH3TFcF6A9SMS9kThpz9QlHJaek4P7AkAavQillA/wnrha9GsK5UFmzmwNfkjLLW4psAUsXOsqFXWMoxTd0xWuSbuVOzERpbFMBl1VoZQmD9BLSVOTNe+v
         -----END PRIVATE KEY-----`
 
         this.privateKey2 = `MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFxo8kt6ftwFZ5QSXuVUOrQvYp4fLVQb3uK/sgYwuR0A+rYdp97UsrjVWGjUQBUhKvjhDcJ8MIY22FJ4y1m/qmbHAeNytfuP1pSnb34MEFV5tGUNvozAX/teuVARBLrlk9lql3ipJFKj0LWuZa7eHhX26OdyXDjuA+Xw0hkEuW2QIDAQAB`
-        this.des_key = '97243249'
+        this.des_key = "97243249"
 
         this.app_name = "七读免费小说"          // # config.get(App, "app_name")
         this.wxappid = "wx0488b2337ff4a61a"          // # config.get(App, "wxappid")
@@ -69,20 +64,19 @@ class User {
         this.p21 = "1303"
         this.p25 = "25006056"
         this.p33 = "com.dj.sevenRead"
-        this.dl = "5.2.2"
+        this.dl = "5.3.1" // "5.2.2"
 
         this.hd = {
             "Host": "dj.palmestore.com",
             "user-agent": "Dalvik/2.1.0 (Linux; U; Android 11; MI 9 Build/RKQ1.200826.002)",
             "content-type": "application/x-www-form-urlencoded",
-            "accept-encoding": "gzip"
+            "accept-encoding": "gzip",
         }
-        this.wx_ua = 'Mozilla/5.0 (Linux; Android 9; PBBT00 Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/70.0.3538.110 Mobile Safari/537.36 MMWEBID/3625 MicroMessenger/7.0.17.1720(0x27001134) Process/tools WeChat/arm32 NetType/4G Language/zh_CN ABI/arm64'
+        this.wx_ua = "Mozilla/5.0 (Linux; Android 9; PBBT00 Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/70.0.3538.110 Mobile Safari/537.36 MMWEBID/3625 MicroMessenger/7.0.17.1720(0x27001134) Process/tools WeChat/arm32 NetType/4G Language/zh_CN ABI/arm64"
 
     }
 
     async userTask() {
-
 
 
         await this.get_userinfo()     // 个人信息
@@ -93,18 +87,19 @@ class User {
             await this.checkin()  // 签到
             await this.reading_time()  // 刷阅读
 
-            for (let index = 0; index < ad_num; index++) {
-                await this.task_watch_video(10)  // 观看视频
-            }
-
-            for (let index = 0; index < cash_ad_num; index++) {
-                await this.cash_video("advence")  // 提现视频
-            }
-
+            // for (let index = 0; index < ad_num; index++) {
+            //     await this.task_watch_video(10)  // 观看视频
+            // }
+            // for (let index = 0; index < cash_ad_num; index++) {
+            //     await this.cash_video("advence")  // 提现视频
+            // }
         }
 
-    }
+        await this.Sendtg_bot()     // tg 发送通知
+        tg_log=''
 
+
+    }
 
 
     async checkin() {  // 签到
@@ -148,8 +143,8 @@ class User {
                     "ecpmMix": "0.0",
                     "ecpmVideo": "29.5",
                     "mcTacid": "13065",
-                    "smboxid": await this.get_smboxid()
-                }
+                    "smboxid": await this.get_smboxid(),
+                },
             }
 
             // log(options)
@@ -157,7 +152,7 @@ class User {
             // this.log(res)
             if (res.code == 0) {
                 if (res.body.signNormal.isTodayFirstSign) {
-                    this.log(`签到成功, 获得 ${res.body.signNormal.reward.giftNum} 金币, ${res.body.signNormal.reward.signMoBaoNum} 墨宝, 已连续签到 ${num} 天`)
+                    this.log(`签到成功, 获得 ${res.body.signNormal.reward.giftNum} 金币, ${res.body.signNormal.reward.signMoBaoNum} 墨宝, 已连续签到 ${num} 天`, 2)
                 } else {
                     this.log(`已签到, 已连续签到 ${num} 天`)
                 }
@@ -205,14 +200,14 @@ class User {
                     "source": "welfare",
                     "launch": "newpage",
 
-                }
+                },
             }
 
             // log(options)
             let { res } = await requestPromise(options)
             // this.log(res)
             if (res) {
-                let num = res.split('myContinueLoginDays = ')[1].split(';var ')[0]
+                let num = res.split("myContinueLoginDays = ")[1].split(";var ")[0]
                 // console.log(num)
                 return num
             }
@@ -258,7 +253,7 @@ class User {
                     "p34": "Xiaomi",
                     "d1": this.dl,
                     "firm": "Xiaomi",
-                }
+                },
             }
             let a = `timestamp=${options.params.timestamp}&usr=${options.params.usr}`
             let sign = this.Sha1withRsa(a)
@@ -266,9 +261,9 @@ class User {
             options.params.sign = sign
             // log(options)
             let { res } = await requestPromise(options)
-            // this.log(res)
+            this.log(res)
             if (res.code == 0) {
-                this.log(`手机号: ${res.body.userInfo.phone}, 总资产: ${res.body.gold.goldAmount}金币==${res.body.gold.goldAmount / 10000}元`, 1)
+                this.log(`手机号: ${res.body.userInfo.phone}, 总资产: ${res.body.gold.goldAmount}金币==${res.body.gold.goldAmount / 10000}元`, 2)
             } else {
                 this.log(res)
                 return this.ckFlog = false
@@ -279,21 +274,33 @@ class User {
         }
     }
 
+
+
+    // {"alias":"9ef9e1fd1c4d4132b56afce5c280b2ef","data":"[{\"type\":6,\"data\":{\"2024-01-04\":{\"d1\":[{\"bid\":\"12766029\",\"format\":\"zyepub\",\"time\":23,\"resType\":\"read\"}]}}}]","platformId":"501656","sign":"Lcen996oKwCpeb9M
+    // Sgv4kRB26PixCUZeSPHklKZ1KBEyhy/5243aNOetHtNX+Jd1xeEu3cX7BcZ9QKRLMN0JHln0zNqXGxLf7dFzT6q4l/xvoewZoJUm/0zVkfJ6H2dQKzmf7KG5Ka4kj7EO9H6pm+xBfXlUco+Z6cRPcGFNCQ4=","timestamp":"1704333493406","user_name":"j174924563"}
     async reading_time() {  // 刷阅读
         try {
-            const zlib = require('zlib')
+            const zlib = require("zlib")
             let ts13 = ts(13)
             // let ts13 = 1700917407211
             // let num = 14895
+
+            const now = new Date();
+            let month = (now.getMonth() + 1).toString(); // JavaScript中月份是从0开始计数的，所以要加1
+            month = month.padStart(2, '0'); // 使用padStart函数确保月份为两位数，不足的地方用0填充
+            let day = now.getDate().toString();
+            day = day.padStart(2, '0'); // 使用padStart函数确保日期为两位数，不足的地方用0填充
+
             let num = randomInt(10000, 16000)
-            let time = `${ts('y')}-${ts('mo')}-${ts('d')}`
+            let time = `${ts("y")}-${month}-${day}`
             // console.log(time)
-            let a = `alias=5b8b1da904bf407e96ff2ab8564620dd&data=[{"type":6,"data":{"${time}":{"d1":[{"bid":"12321351","format":"zyepub","time":${num},"resType":"read"}]}}}]&platformId=501656&timestamp=${ts13}&user_name=${this.ck_data.usr}`
-            // console.log(a)
+            let a = `alias=9ef9e1fd1c4d4132b56afce5c280b2ef&data=[{"type":6,"data":{"${time}":{"d1":[{"bid":"12766029","format":"zyepub","time":${num},"resType":"read"}]}}}]&platformId=501656&timestamp=${ts13}&user_name=${this.ck_data.usr}`
+            console.log(a)
             let sign = this.Sha1withRsa(a)
             // console.log(sign)
-            let data = `{"alias":"5b8b1da904bf407e96ff2ab8564620dd","data":"[{\\"type\\":6,\\"data\\":{\\"${time}\\":{\\"d1\\":[{\\"bid\\":\\"12321351\\",\\"format\\":\\"zyepub\\",\\"time\\":${num},\\"resType\\":\\"read\\"}]}}}]","platformId":"501656","sign":"${sign}","timestamp":"${ts13}","user_name":"${this.ck_data.usr}"}`
+            let data = `{"alias":"9ef9e1fd1c4d4132b56afce5c280b2ef","data":"[{\\"type\\":6,\\"data\\":{\\"${time}\\":{\\"d1\\":[{\\"bid\\":\\"12766029\\",\\"format\\":\\"zyepub\\",\\"time\\":${num},\\"resType\\":\\"read\\"}]}}}]","platformId":"501656","sign":"${sign}","timestamp":"${ts13}","user_name":"${this.ck_data.usr}"}`
 
+            console.log(data)
             data = zlib.gzipSync(data)
 
 
@@ -301,10 +308,10 @@ class User {
                 method: "post",
                 url: `https://dj.palmestore.com/dj_reading/out/readingTime/report`,
                 headers: {
-                    'Host': 'dj.palmestore.com',
-                    'accept-encoding': 'gzip',
-                    'content-type': 'text/plain',
-                    'user-agent': 'Dalvik/2.1.0 (Linux; U; Android 11; MI 9 Build/RKQ1.200826.002)',
+                    "Host": "dj.palmestore.com",
+                    "accept-encoding": "gzip",
+                    "content-type": "text/plain",
+                    "user-agent": "Dalvik/2.1.0 (Linux; U; Android 11; MI 9 Build/RKQ1.200826.002)",
                     // 'Accept-Encoding': 'gzip'
                 },
                 params: {
@@ -320,12 +327,12 @@ class User {
                     "p4": "501656",
                     "p5": "19",
                     "p7": "__e2ba088bce115acf",
-                    "p9": "3",
+                    "p9": "1",
                     "p12": "",
                     "p16": "MI 9",
-                    "p21": this.p21,
+                    "p21": "3",
                     "p22": "11",
-                    "p25": this.p25,
+                    "p25": "25051056",  // this.p25
                     "p26": "30",
                     "p28": "146bdb4427eb2ecd",
                     "p30": "",
@@ -342,7 +349,7 @@ class User {
             let { res } = await requestPromise(options)
             console.log(res)
             if (res.code == 0) {
-                this.log(`刷阅读成功, 本次阅读 ${num / 60} 分钟`)
+                this.log(`刷阅读成功, 本次阅读 ${num / 60} 分钟`, 2)
             } else {
                 this.log(`刷阅读失败`)
                 this.log(res)
@@ -389,7 +396,7 @@ class User {
                     "p34": "Xiaomi",
                     "d1": this.dl,
                     "firm": "Xiaomi",
-                }
+                },
             }
             let a = `ecpm=${options.params.ecpm}&timestamp=${options.params.timestamp}&type=${options.params.type}&usr=${options.params.usr}`
             let sign = this.Sha1withRsa(a)
@@ -401,7 +408,7 @@ class User {
             if (res.code == 0) {
                 let ad_num = res.conf.redPacketMaxNum - res.conf.receiveRedPacketNum
                 this.log(`观看视频获得金币 ${res.conf.receiveMoney} 个, 剩余 ${ad_num} 次`)
-                await wait(5, 8)
+                // await wait(5, 8)
                 // if (ad_num > 0) {
                 //     await this.task_watch_video(10)
                 // }
@@ -455,7 +462,7 @@ class User {
                     "param": "10060",
                     "videoId": "10060",
                     "smboxid": await this.get_smboxid(),
-                }
+                },
             }
             let a = `p2=${options.params.p2}&param=${options.params.param}&timestamp=${options.params.timestamp}&usr=${options.params.usr}`
             let sign = this.Sha1withRsa(a)
@@ -466,7 +473,7 @@ class User {
             this.log(res)
             if (res.code == 0) {
                 this.log(`观看第 ${res.body.usedCount} 个提现视频 `)
-                await wait(5, 8)
+                // await wait(5, 8)
                 // if (ad_num > 0) {
                 //     await this.task_watch_video(10)
                 // }
@@ -484,146 +491,22 @@ class User {
 
 
 
-
-
-
-
-
-    async WX_login(utdid, _name, zyeId) {
+    async Sendtg_bot() {
         try {
-
-            let ts13 = ts(13)
-            let code = await this.post_qrcode()
-            let wx_code = await this.post_code(code)
-            let smboxid = this.get_smboxid()
-
-            const options = {
-                method: "post",
-                url: `https://${this.login_host}/dj_user/out/login/loginByOAuthV2`,
-                headers: this.hd,
-                params: {
-                    "zyeid": zyeId,
-                    "usr": _name,
-                    "rgt": "7",
-                    "p1": utdid,
-                    "pc": "10",
-                    "p2": this.p2,
-                    "p3": this.p3,
-                    "p4": "501656",
-                    "p5": "19",
-                    "p7": "__e2ba088bce115acf",
-                    "p9": "3",
-                    "p12": "",
-                    "p16": "MI+9",
-                    "p21": this.p21,
-                    "p22": "11",
-                    "p25": this.p25,
-                    "p26": "30",
-                    "p28": "146bdb4427eb2ecd",
-                    "p30": "",
-                    "p31": "__e2ba088bce115acf",
-                    "p33": this.p33,
-                    "p34": "Xiaomi",
-                    "firm": "Xiaomi",
-                    "d1": this.dl
-                },
-                form: {
-                    "smboxid": smboxid,
-                    "versionId": this.p25,
-                    "device": "MI+9",
-                    "pkgName": this.p33,
-                    "userName": _name,
-                    "uid": wx_code,
-                    "imei": "____e4ba066bce775acf",
-                    "timestamp": ts13,
-                    "utdId": utdid,
-                    "loginSource": "%E6%88%91%E7%9A%84_%E9%A9%AC%E4%B8%8A%E7%99%BB%E5%BD%95",
-                    "authMode": "token",
-                    "authToken": this.wxappid,
-                    "channelId": this.p2,
-                    "platform": "weixin"
-                }
-            }
-
-
-            let a = `authToken=${options.form.authToken}&channelId=${options.form.channelId}&device=${options.form.device}&imei=${options.form.imei}&pkgName=${options.form.pkgName}&platform=${options.form.platform}&timestamp=${options.form.timestamp}&uid=${options.form.uid}&versionId=${options.form.versionId}`
-            let sign = this.Sha1withRsa(a)
-            // console.log(sign)
-            options.form.sign = sign
-            // console.log(options)
-            let { res } = await requestPromise(options)
-            // this.log(res)
-            if (res.code == 0) {
-                let ck_data = {}
-                ck_data.usr = res.body.userName
-                ck_data.utdid = utdid
-                ck_data.zyeid = res.body.zyeid
-                ck_data.token = res.body.token
-                ck_data.authToken = res.body.authToken
-                ck_data.nickname = res.body.usrMsg.nick
-                this.log(`${res.body.userName}, 登录成功, 您的ck 信息\n`)
-                this.log(ck_data)
-                // console.log(ck_data)
-                // return res.body.name, res.body.zyeId
-                return ck_data
-            } else {
-                this.log(res)
-            }
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    async post_qrcode() {
-        try {
-            const options = {
-                method: "post",
-                url: `http://open.weixin.qq.com/connect/app/qrconnect?appid=${this.wxappid}&bundleid=(null)&scope=snsapi_userinfo&state=w&from=message&isappinstalled=0`,
-                headers: { 'User-Agent': this.wx_ua }
-            }
-            // console.log(options)
-            let { res } = await requestPromise(options)
-            // this.log(res)
-            let auth_qrcode_url = res.split('class="auth_qrcode" src="')[1].split('" />')[0]
-            let auth_qrcode = auth_qrcode_url.split('qrcode/')[1]
-            // console.log(auth_qrcode)
-            // this.auth_qrcode = auth_qrcode
-            this.log(`打开以下网址微信扫码\n${auth_qrcode_url}\n`, 1)
-            return auth_qrcode
-
-        } catch (error) {
-            console.log(error)
-            return this.ckFlog = false
+            const TelegramBot = require("node-telegram-bot-api")
+            const tg_token = process.env.tg_token
+            // console.log(tg_token);
+            let bot = new TelegramBot(tg_token)
+            let msg = tg_log
+            console.log(`======= Sendtg_bot ==========`);
+            console.log(this.chatId, msg);
+            await bot.sendMessage(this.tg_id, msg)
+        } catch (e) {
+            console.log(e)
         }
     }
 
-    async post_code(code) {
-        try {
-            let ts10 = ts(10)
-            const options = {
-                method: "post",
-                url: `http://long.open.weixin.qq.com/connect/l/qrconnect?uuid=${code}&_=${ts10}`,
-                headers: { 'User-Agent': this.wx_ua }
-            }
-            // console.log(options)
-            while (true) {
-                let res = await httpRequest(options)
-                // console.log(res)
-                if (res.indexOf('405') > -1) {
-                    let wx_code = res.split("window.wx_code='")[1].split("'")[0]
-                    // console.log(wx_code)
-                    return wx_code
-                } else {
-                    this.log(`等待扫码中...`)
-                }
-                await wait()
-            }
 
-        } catch (error) {
-            console.log(error)
-            return this.ckFlog = false
-        }
-    }
 
     async get_smboxid() {
         try {
@@ -631,7 +514,16 @@ class User {
                 method: "post",
                 url: `http://fp-it.fengkongcloud.com/deviceprofile/v4`,
                 // headers: { 'User-Agent': this.wx_ua },
-                json: { "organization": "q8VWRaAq7Qkv7w6EgXDV", "os": "android", "appId": "qidu", "encode": 2, "compress": 3, "data": "Yg8tu7LrclMENRVAa+ygDSoaUo1ED6NYV3d0dYAnsFiSivRLcAV45NAKzTvZg41Q+fNSqL7qV1Fm2jZhQ\/FtbvRbcMqZTTJVnbT9vymgzmxjPBmH4TiGun9mz89\/GYeHUjQEO3\/9LW74+9fpUolaeKMFoSFNHpvKcyzpJ1AL8wpfxY5D\/6C24JjX2piYr8SdsUbJQY43LV5rZVmH6i2s3JPkFmmq0W2XOPEHSc1gMca1\/y\/NOlVJ6GxRuLuC2SdzXetntTVy2WpDya9dN6mUpb7P1t1+RI76f4iWrzcwghBx3bRHPJVmgrkz6mtUDt+qOlCbEYXNoV1ohOvz\/kk2XhZ9j1KKvsue8TaLrQ7Q4xUnMKVxCQfSymD+c2R+x6LDPqrD\/6Kfu1eakU1b3IZ0cAhoy6sprF4cILmFOvzCw6JSNo8A1Ydnd2x49Q8oHsUR0ZwB0r5l6j0y+CfOM\/ctAGJRcmfG81FFH5QNB7x2Xoy9D1ztH+g8W\/scgb9XW0i3t9IVe1p6G9K9QNnDkAFbeTekBWbGZZQjYs12YkT15yJ3bbYc+nRPdObVgfGabA1pf1wroJGHAwMaxHNRvn1s2RRs9pWWTDgl1uM2SeBIgfypTguobsQRuU7WcHsARbnowbB4ZK7oPpliKgnElE2dNrDHxuHM\/E5iQCgmkYrtfYheD0mCHY8dbiu0U1eCN6\/fWhHzuRoF7zLMpIzV7Sc2YE6a4\/lR2mSNcougmho\/pYpnPiQX6Tj0wlhtuljyz\/EjzbruFGFhwmscX5d9BAWvGYVkJTtFdq+Fo3mhgqjBSw3+qd06TMR\/GuB+1PRPlcYgNba\/BrQNz0psBDXo2sYtFFiTMRkQp\/wvG4HSw+7ycEc5I1DkudtQNSjIzF\/t4vuBWjqZ+RHuCzS5ykpiuMWBE1MmAkKgNPqL3rkYjQCLVa8kWFYGzKsZQLT6H8Qvumr6P9rjoQ1jRzyZoFGMmSbKgWaTgMAJxf\/yUCaskejfEPxFmE3GW8+aQq2CHbRnsxtrvuzb971dVXhXEtyWOrBjWiBYK3FdTQsndghQ1s29oiRH4ekapalIMtx31TxyuLi8zj9fIlz78GoP16uf4uOYcZE8bTNjoXa5LHx1I1\/UBElT\/JUd\/ELlEG7419TftvGr3FW8CxZMalow\/4FOsbRSA8NLZQq2aBuaqyBJkJpzbtdnExsl1a+VV6SmEvUobWhtkkV7ooNkWOL\/g\/EEOkXLUNENp\/L\/ZPtkVbgwlh11TeWceYcluLcM5jLFlwXhErenP4eWRvwVDhNmHApzLjm8CzW2lG3wUVuuML6\/lfifMebXga2WhSxXomwjS7lRuNy3\/QFLBkTvoAXjkL7V87zlUEVgUrHakY80ydZWVYHer9Si15n8Zpz2brDTqLFbZ2unmAniZa0jtAz70t274+wTeZlIk8uQf4cmfARxYOzdnPqcRL+waumHUm4\/bzgNsLbuglMo025oaJmL8qvNxPjEXGT9O7CPvh1+wHEnNTt+irWMiLjBvmGrN7+5eLWS\/1iR37JKPPH2uZDhJ0aK1rH0DKq4d3dHCc2jYpqRNvug3e74ms3ZUreRw1PS9jfpoTCHvVNlJe0oAeJ+H3517SByoQba1yERI\/g4PNJpe7kiFU2k5qtnl\/KYO1iUmYs043xkakyOVhGAuFDylHHqVB\/rkTuOev7bmEnQbnh8tofQVBOO3qiEMmTc3Qh0rI32XDZr+SX4lKYxlIoLDGLQkTF5DGwTVteAf\/AOwzbcphU5ojZqddeeC1UHe3WsxNWVyV\/pLB5uUBFZj42WIucbMWHRQo7JZrIjDRtv7neM5MdAfdVV1Z5mIBWBdwlMocz0JYL96kieuPn9EI\/6iSKSQZV9BS9P7L\/iaeojbfC6Qd+TrTwPgkLs7D2TUQiWYmR7R6ZNqxyOS0a5yMPxMotWqE3SNJqF6trfRVvs8MvgFdbezdftBXVKc9SYzMSCaSghJ99rE44HLzRHXpadjgmeQkeR2Ur7rrdpptOylkVDDzUSgfyrkW6p2nkcSDDcKQkos\/XyXDme0oetglKdM2UmfSzqMJd99Vbqi0VHnYK69dD6Tdf7IC8owdlMT9TwI\/v3sJxFBIbMvizPbKiyYhv1unvSoOhIXgvEodUHnhLr35WFFdhlehegGRypqhWoASQpezL+tbFzdgiiGzCFLQS+sKTvvunv7tfFuq5KNL+G1vnl4++vIoyvh603zJfx3PrsDjAnF22CbUYeLEbvVUGEt6pcYQLU5O9U6r4lT+FjP0LYf1YwJ5NVl9gQRWO+kkJw97CDXUkvsbvEauQqaHPdzc82EzksU9BPV3GuGwANy4t23eQ9Py+zW4FGdML\/VPIYxMu1xbFy94V9YHulf\/0IuBx4IW5a+PbGJpW\/HeA4HS8u0c5BdTnQH9Mfc2e1ypGOOvrEy50uKXodrzxbg7uPnLXcN5lbVa4f6r\/8nGH4ucai3XTRY6MXcSaujCc4wdYOwELqINDWaXnkWdhRXR2mXJPz1U3T51a74KMPgoTgN7gy4e6oCwCVS4DrH\/GnUJdHqG4TpklxVj6LvrW\/xCKVWqWVlj+rktwzKcF29otPrwZM2l3MfpndfF99adok6PZWJQf0X8s6FScYdrJnjIxygejEGJqsBOJGWqKdv0zJ\/\/yNAS\/HyyxvEfw35\/Y2UZ2\/Aa63Y7eakCMzQwFJfLHaKGYj9Wgn63eEVMRkx7yb2I5kcSnV1LihGhru4JmakfB903CYL\/O1HNfujYbkmWBfkqobzuH64UUeQj+psVTOQZig3au9eYR7Va+kTErMPM2Fk486VDucaxVCLU1CmLDqCO6smrsijiaqEXPu8RQfI+RxHEKbqWnYTgoLCe4KxNx2e5Qsg0YPUyB6YxY04sCKI5EeMHoVnco9GwOxCpE0uzyarXbVqNDLXhjHP6AtNC9GWNGtimQoxwnW3zWxopqhRYx\/UUxnDVkeYBC65DVgGgCKTlxT0YtTcwKgjMzLyWi\/WYEHE1YX\/m5GeU3gguKtajAMn9Oekno3UbzVeqMJpX0DPCLe5DmIigDB2kBi\/DSdjGwvb4PVn4CFzvn2Kcn7h83EKXpYGr5YJzjHtS7LVGjg\/2++IxHhAItPb8V7HbEFsbow", "tn": "NZ30raQQgcvbqiVizz\/3WK2HzPIRYgaXxxBK72DY1tjPpVYuanNFn8DByukQioN+whywF82Zngdlp+w6KW4wsD\/0H\/DvoCSITP001FOxm+2R\/C+Of0MOr0N+vaxJIib03D51l8XZb5Y0C697Q0X736UQyr+F\/8plwuIhUUBObDuo79v4InZ\/t9QW1RMSVtr8atuNeCs3nqGupCxxwbl7G+XRZTo061tVtqT7jvmQjDa0vvGK2vzQDYicGBZE4h60NaiYtqs+c2Gs5kxnYTWZyXjXOzuauesO0QyMyjx3+XAXVC4uqdn64+JamIwxdD05V3U3MhOxhYl4DXWfgKyNyA==", "ep": "g7cfWsrfx2E1OG\/68RV4mhHjbwirs5TvZdWmrYSaKf+kgQDd7wrRaR5PDGpy36ZCvvAMjMJtVvfXzlVfK1U8MQEEnIeqBkrJexmqcWVz4pNVVmDmADpNeR+mOy+OHq0SnaDWWI4N9yFU96n39Gs7nlVE\/9PAm\/wx6wg0fi8xCvcYfMg5Hxh7gw6Hbs1r\/\/aQpHbZwlGKYm5DLP5L5nt5sARi2P1NWRifv9ercQ76iStMwzk\/CNWC\/yj6IyDTnFkKA\/XnvSeaH3i\/WJy6PXr51jP1ZXujV3a5JGWd3426OCL94sBAdWrERL12P0XYNnejPvg0fPibn8e+y2ZOIFyFgg==" }
+                json: {
+                    "organization": "q8VWRaAq7Qkv7w6EgXDV",
+                    "os": "android",
+                    "appId": "qidu",
+                    "encode": 2,
+                    "compress": 3,
+                    "data": "Yg8tu7LrclMENRVAa+ygDSoaUo1ED6NYV3d0dYAnsFiSivRLcAV45NAKzTvZg41Q+fNSqL7qV1Fm2jZhQ\/FtbvRbcMqZTTJVnbT9vymgzmxjPBmH4TiGun9mz89\/GYeHUjQEO3\/9LW74+9fpUolaeKMFoSFNHpvKcyzpJ1AL8wpfxY5D\/6C24JjX2piYr8SdsUbJQY43LV5rZVmH6i2s3JPkFmmq0W2XOPEHSc1gMca1\/y\/NOlVJ6GxRuLuC2SdzXetntTVy2WpDya9dN6mUpb7P1t1+RI76f4iWrzcwghBx3bRHPJVmgrkz6mtUDt+qOlCbEYXNoV1ohOvz\/kk2XhZ9j1KKvsue8TaLrQ7Q4xUnMKVxCQfSymD+c2R+x6LDPqrD\/6Kfu1eakU1b3IZ0cAhoy6sprF4cILmFOvzCw6JSNo8A1Ydnd2x49Q8oHsUR0ZwB0r5l6j0y+CfOM\/ctAGJRcmfG81FFH5QNB7x2Xoy9D1ztH+g8W\/scgb9XW0i3t9IVe1p6G9K9QNnDkAFbeTekBWbGZZQjYs12YkT15yJ3bbYc+nRPdObVgfGabA1pf1wroJGHAwMaxHNRvn1s2RRs9pWWTDgl1uM2SeBIgfypTguobsQRuU7WcHsARbnowbB4ZK7oPpliKgnElE2dNrDHxuHM\/E5iQCgmkYrtfYheD0mCHY8dbiu0U1eCN6\/fWhHzuRoF7zLMpIzV7Sc2YE6a4\/lR2mSNcougmho\/pYpnPiQX6Tj0wlhtuljyz\/EjzbruFGFhwmscX5d9BAWvGYVkJTtFdq+Fo3mhgqjBSw3+qd06TMR\/GuB+1PRPlcYgNba\/BrQNz0psBDXo2sYtFFiTMRkQp\/wvG4HSw+7ycEc5I1DkudtQNSjIzF\/t4vuBWjqZ+RHuCzS5ykpiuMWBE1MmAkKgNPqL3rkYjQCLVa8kWFYGzKsZQLT6H8Qvumr6P9rjoQ1jRzyZoFGMmSbKgWaTgMAJxf\/yUCaskejfEPxFmE3GW8+aQq2CHbRnsxtrvuzb971dVXhXEtyWOrBjWiBYK3FdTQsndghQ1s29oiRH4ekapalIMtx31TxyuLi8zj9fIlz78GoP16uf4uOYcZE8bTNjoXa5LHx1I1\/UBElT\/JUd\/ELlEG7419TftvGr3FW8CxZMalow\/4FOsbRSA8NLZQq2aBuaqyBJkJpzbtdnExsl1a+VV6SmEvUobWhtkkV7ooNkWOL\/g\/EEOkXLUNENp\/L\/ZPtkVbgwlh11TeWceYcluLcM5jLFlwXhErenP4eWRvwVDhNmHApzLjm8CzW2lG3wUVuuML6\/lfifMebXga2WhSxXomwjS7lRuNy3\/QFLBkTvoAXjkL7V87zlUEVgUrHakY80ydZWVYHer9Si15n8Zpz2brDTqLFbZ2unmAniZa0jtAz70t274+wTeZlIk8uQf4cmfARxYOzdnPqcRL+waumHUm4\/bzgNsLbuglMo025oaJmL8qvNxPjEXGT9O7CPvh1+wHEnNTt+irWMiLjBvmGrN7+5eLWS\/1iR37JKPPH2uZDhJ0aK1rH0DKq4d3dHCc2jYpqRNvug3e74ms3ZUreRw1PS9jfpoTCHvVNlJe0oAeJ+H3517SByoQba1yERI\/g4PNJpe7kiFU2k5qtnl\/KYO1iUmYs043xkakyOVhGAuFDylHHqVB\/rkTuOev7bmEnQbnh8tofQVBOO3qiEMmTc3Qh0rI32XDZr+SX4lKYxlIoLDGLQkTF5DGwTVteAf\/AOwzbcphU5ojZqddeeC1UHe3WsxNWVyV\/pLB5uUBFZj42WIucbMWHRQo7JZrIjDRtv7neM5MdAfdVV1Z5mIBWBdwlMocz0JYL96kieuPn9EI\/6iSKSQZV9BS9P7L\/iaeojbfC6Qd+TrTwPgkLs7D2TUQiWYmR7R6ZNqxyOS0a5yMPxMotWqE3SNJqF6trfRVvs8MvgFdbezdftBXVKc9SYzMSCaSghJ99rE44HLzRHXpadjgmeQkeR2Ur7rrdpptOylkVDDzUSgfyrkW6p2nkcSDDcKQkos\/XyXDme0oetglKdM2UmfSzqMJd99Vbqi0VHnYK69dD6Tdf7IC8owdlMT9TwI\/v3sJxFBIbMvizPbKiyYhv1unvSoOhIXgvEodUHnhLr35WFFdhlehegGRypqhWoASQpezL+tbFzdgiiGzCFLQS+sKTvvunv7tfFuq5KNL+G1vnl4++vIoyvh603zJfx3PrsDjAnF22CbUYeLEbvVUGEt6pcYQLU5O9U6r4lT+FjP0LYf1YwJ5NVl9gQRWO+kkJw97CDXUkvsbvEauQqaHPdzc82EzksU9BPV3GuGwANy4t23eQ9Py+zW4FGdML\/VPIYxMu1xbFy94V9YHulf\/0IuBx4IW5a+PbGJpW\/HeA4HS8u0c5BdTnQH9Mfc2e1ypGOOvrEy50uKXodrzxbg7uPnLXcN5lbVa4f6r\/8nGH4ucai3XTRY6MXcSaujCc4wdYOwELqINDWaXnkWdhRXR2mXJPz1U3T51a74KMPgoTgN7gy4e6oCwCVS4DrH\/GnUJdHqG4TpklxVj6LvrW\/xCKVWqWVlj+rktwzKcF29otPrwZM2l3MfpndfF99adok6PZWJQf0X8s6FScYdrJnjIxygejEGJqsBOJGWqKdv0zJ\/\/yNAS\/HyyxvEfw35\/Y2UZ2\/Aa63Y7eakCMzQwFJfLHaKGYj9Wgn63eEVMRkx7yb2I5kcSnV1LihGhru4JmakfB903CYL\/O1HNfujYbkmWBfkqobzuH64UUeQj+psVTOQZig3au9eYR7Va+kTErMPM2Fk486VDucaxVCLU1CmLDqCO6smrsijiaqEXPu8RQfI+RxHEKbqWnYTgoLCe4KxNx2e5Qsg0YPUyB6YxY04sCKI5EeMHoVnco9GwOxCpE0uzyarXbVqNDLXhjHP6AtNC9GWNGtimQoxwnW3zWxopqhRYx\/UUxnDVkeYBC65DVgGgCKTlxT0YtTcwKgjMzLyWi\/WYEHE1YX\/m5GeU3gguKtajAMn9Oekno3UbzVeqMJpX0DPCLe5DmIigDB2kBi\/DSdjGwvb4PVn4CFzvn2Kcn7h83EKXpYGr5YJzjHtS7LVGjg\/2++IxHhAItPb8V7HbEFsbow",
+                    "tn": "NZ30raQQgcvbqiVizz\/3WK2HzPIRYgaXxxBK72DY1tjPpVYuanNFn8DByukQioN+whywF82Zngdlp+w6KW4wsD\/0H\/DvoCSITP001FOxm+2R\/C+Of0MOr0N+vaxJIib03D51l8XZb5Y0C697Q0X736UQyr+F\/8plwuIhUUBObDuo79v4InZ\/t9QW1RMSVtr8atuNeCs3nqGupCxxwbl7G+XRZTo061tVtqT7jvmQjDa0vvGK2vzQDYicGBZE4h60NaiYtqs+c2Gs5kxnYTWZyXjXOzuauesO0QyMyjx3+XAXVC4uqdn64+JamIwxdD05V3U3MhOxhYl4DXWfgKyNyA==",
+                    "ep": "g7cfWsrfx2E1OG\/68RV4mhHjbwirs5TvZdWmrYSaKf+kgQDd7wrRaR5PDGpy36ZCvvAMjMJtVvfXzlVfK1U8MQEEnIeqBkrJexmqcWVz4pNVVmDmADpNeR+mOy+OHq0SnaDWWI4N9yFU96n39Gs7nlVE\/9PAm\/wx6wg0fi8xCvcYfMg5Hxh7gw6Hbs1r\/\/aQpHbZwlGKYm5DLP5L5nt5sARi2P1NWRifv9ercQ76iStMwzk\/CNWC\/yj6IyDTnFkKA\/XnvSeaH3i\/WJy6PXr51jP1ZXujV3a5JGWd3426OCL94sBAdWrERL12P0XYNnejPvg0fPibn8e+y2ZOIFyFgg==",
+                },
             }
             // console.log(options)
             let { res } = await requestPromise(options)
@@ -655,39 +547,6 @@ class User {
     }
 
 
-
-
-
-
-
-    sortObjectByKey(obj) {
-        return Object.entries(obj)
-            .sort((a, b) => a[0].localeCompare(b[0]))
-            .reduce((obj, [key, value]) => {
-                obj[key] = value
-                return obj
-            }, {})
-    }
-
-
-
-
-    //RSA加密
-    RSA(msg, Key) {
-        const NodeRSA = require('node-rsa')
-        let nodersa = new NodeRSA('-----BEGIN PUBLIC KEY-----\n' + Key + '\n-----END PUBLIC KEY-----')
-        nodersa.setOptions({ encryptionScheme: 'pkcs1' })
-        return nodersa.encrypt(msg, 'base64', 'utf8')
-    }
-    getSHA256withRSA(content) {
-        const key = rs.KEYUTIL.getKey(this.privateKey)
-        const signature = new rs.KJUR.crypto.Signature({ alg: "SHA1withRSA" })
-        signature.init(key)
-        signature.updateString(content)
-        const originSign = signature.sign()
-        const sign64u = rs.hextob64u(originSign)
-        return sign64u
-    }
     hexToBase64(hex) {
         const bytes = []
         for (let i = 0; i < hex.length; i += 2) {
@@ -696,60 +555,27 @@ class User {
         const base64 = btoa(String.fromCharCode(...bytes))
         return base64
     }
+
     Sha1withRsa(data) {
         // log(typeof data)
-        if (typeof data != 'string') {
+        if (typeof data != "string") {
             let encodedData = {}
             for (let key in data) {
                 encodedData[key] = (data[key])
             }
-            data = Object.entries(encodedData).map(([key, value]) => `${key}=${value}`).join('&')
+            data = Object.entries(encodedData).map(([key, value]) => `${key}=${value}`).join("&")
             // console.log(data)
         }
 
-        const { KEYUTIL, KJUR, b64utoutf8, utf8tob64 } = require('jsrsasign')
+        const { KEYUTIL, KJUR, b64utoutf8, utf8tob64 } = require("jsrsasign")
         const key = KEYUTIL.getKey(this.privateKey)
-        const sig = new KJUR.crypto.Signature({ alg: 'SHA1withRSA' })
+        const sig = new KJUR.crypto.Signature({ alg: "SHA1withRSA" })
         sig.init(key)
         sig.updateString(data)
         const signatureHex = sig.sign()
         let sign = this.hexToBase64(signatureHex)
         return sign
     }
-
-    //AES/DES加解密 0=加密  1=解密
-    //使用方法：DecryptCrypto(`0`,`AES`, `ECB`, `Pkcs7`, data, 'key', 'iv')  AES/DES加解密 0=加密  1=解密
-    DecryptCrypto(i, method, mode, padding, data, key, iv) {
-        if (i == 0) {
-            const encrypted = CryptoJS[method].encrypt(CryptoJS.enc.Utf8.parse(data), CryptoJS.enc.Utf8.parse(key), {
-                iv: CryptoJS.enc.Utf8.parse(iv),
-                mode: CryptoJS.mode[mode],
-                padding: CryptoJS.pad[padding],
-            })
-            return encrypted.toString()
-        } else {
-            const decrypt = CryptoJS[method].decrypt(data, CryptoJS.enc.Utf8.parse(key), {
-                iv: CryptoJS.enc.Utf8.parse(iv),
-                mode: CryptoJS.mode[mode],
-                padding: CryptoJS.pad[padding],
-            })
-            return decrypt.toString(CryptoJS.enc.Utf8)
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     log(message, p = 0) {
@@ -758,57 +584,15 @@ class User {
             this.hasLogged = true
         }
         console.log(`${this.index}-${this.remark},  ${typeof message === "object" ? JSON.stringify(message) : message}`)
-        if (p) {
+
+        if (p === 1) {
             sendLog.push(`${this.index} ${message}`)
+        } else if (p === 2) {
+            sendLog.push(`${this.index} ${message}`)
+            tg_log += `${this.index} ${message}\n`
+
         }
     }
-}
-
-
-
-async function httpRequest(options) {
-    const request = require('request')
-
-    return new Promise((resolve) => {
-
-        request(options, function (error, response) {
-            // if (error) throw new Error(error)
-            // response.body
-            let data = response.body
-            try {
-                // console.log(typeof (data));
-                if (typeof data == "string") {
-                    if (isJsonString(data)) {
-                        let result = JSON.parse(data)
-                        resolve(result)
-                    } else {
-                        let result = data
-                        resolve(result)
-                    }
-                    function isJsonString(str) {
-                        if (typeof str == "string") {
-                            try {
-                                if (typeof JSON.parse(str) == "object") {
-                                    return true
-                                }
-                            } catch (e) {
-                                return false
-                            }
-                        }
-                        return false
-                    }
-                } else {
-                    let result = data
-                    resolve(result)
-                }
-            } catch (e) {
-                console.log(error, response)
-                console.log(`\n 失败了!请稍后尝试!!`)
-            } finally {
-                resolve()
-            }
-        })
-    })
 }
 
 async function requestPromise(options) {
@@ -924,13 +708,15 @@ async function done(s, e) {
     const el = (e - s) / 1000
     console.log(`\n[任务执行完毕 ${CodeName}] 耗时：${el.toFixed(2)}秒`)
     await showmsg()
+
     async function showmsg() {
         if (!sendLog) return
         if (!sendLog.length) return
-        let notify = require('./sendNotify')
-        console.log('\n============== 本次推送--by_yml ==============')
-        await notify.sendNotify(CodeName, sendLog.join('\n'))
+        let notify = require("./sendNotify")
+        console.log("\n============== 本次推送--by_yml ==============")
+        await notify.sendNotify(CodeName, sendLog.join("\n"))
     }
+
     process.exit(0)
 
 }
